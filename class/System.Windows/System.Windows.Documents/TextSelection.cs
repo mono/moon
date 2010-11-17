@@ -90,17 +90,27 @@ namespace System.Windows.Documents {
 			}
 		}
 
+		TextPointer end;
 		public TextPointer End {
 			get {
-				IntPtr tp = NativeMethods.text_selection_get_end (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (end == null) {
+					IntPtr tp = NativeMethods.text_selection_get_end (native);
+					if (tp != IntPtr.Zero)
+						end = new TextPointer (tp);
+				}
+				return end;
 			}
 		}
 
+		TextPointer start;
 		public TextPointer Start {
 			get {
-				IntPtr tp = NativeMethods.text_selection_get_start (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (start == null) {
+					IntPtr tp = NativeMethods.text_selection_get_start (native);
+					if (tp != IntPtr.Zero)
+						start = new TextPointer (tp);
+				}
+				return start;
 			}
 		}
 	}

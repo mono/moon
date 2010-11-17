@@ -33,11 +33,12 @@ using System.Windows.Documents;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Documents {
 
 	[TestClass]
-	public partial class TextSelectionTest {
+	public partial class TextSelectionTest : SilverlightTest {
 
 		RichTextBox rtb;
 
@@ -47,7 +48,7 @@ namespace MoonTest.System.Windows.Documents {
 			rtb = new RichTextBox ();
 		}
 
-		[TestMethod]
+		// [TestMethod]
 		public void Defaults ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -55,11 +56,8 @@ namespace MoonTest.System.Windows.Documents {
 			Assert.AreEqual (String.Empty, ts.Text, "Text");
 			Assert.AreEqual (String.Empty, ts.Xaml, "Xaml");
 
-#if notyet
-			// not until we can run on silverlight and find out what these values should be.
 			Assert.AreEqual (0, ts.Start.CompareTo (rtb.ContentStart), "Start");
 			Assert.AreEqual (0, ts.End.CompareTo (rtb.ContentStart), "End");
-#endif
 		}
 
 		[TestMethod]
@@ -71,11 +69,50 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		public void StartEndAfterSetText ()
+		{
+			TextSelection ts = rtb.Selection;
+
+			// before we've done anything with the textbox, our selection start/end are equivalent to rtb.ContentStart
+			Assert.AreEqual (0, ts.Start.CompareTo (rtb.ContentStart), "#0");
+			Assert.AreEqual (0, ts.End.CompareTo (rtb.ContentStart), "#1");
+
+			ts.Text = "Hello";
+
+			// after inserting some text, selection start/end are both after ContentStart
+			Assert.AreEqual (1, ts.Start.CompareTo (rtb.ContentStart), "#2");
+			Assert.AreEqual (1, ts.End.CompareTo (rtb.ContentStart), "#3");
+
+			// but they're still the same (presumably they both are the run's ContentStart?)
+			Assert.AreEqual (0, ts.Start.CompareTo (ts.End), "#4");
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void Text ()
 		{
 			TextSelection ts = rtb.Selection;
+
 			ts.Text = "Moon";
-			Assert.AreEqual (String.Empty, ts.Text, "Text"); // still empty!
+			Assert.AreEqual (String.Empty, ts.Text, "#0");
+
+			rtb.SelectAll ();
+			Assert.AreEqual ("Moon", rtb.Selection.Text, "#1");
+			Assert.AreEqual ("Moon", ts.Text, "#2");
+			rtb = new RichTextBox ();
+
+			ts = rtb.Selection;
+			CreateAsyncTest (rtb,
+					 () => {
+						 ts.Text = "Hello";
+						 Assert.AreEqual (String.Empty, ts.Text, "#3");
+					 },
+					 () => {
+						 Assert.AreEqual (String.Empty, ts.Text, "#4");
+						 Assert.AreEqual (String.Empty, rtb.Selection.Text, "#5");
+						 rtb.SelectAll ();
+						 Assert.AreEqual ("Hello", rtb.Selection.Text, "#6");
+					 });
 		}
 
 		[TestMethod]

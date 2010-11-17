@@ -1292,7 +1292,7 @@ RichTextBox::GetSelection ()
 {
 	if (!selection) {
 		selection = new TextSelection ();
-		// should we fill in cursor/anchor?
+		selection->Select (GetContentStart(), GetContentStart());
 	}
 		
 	return selection;

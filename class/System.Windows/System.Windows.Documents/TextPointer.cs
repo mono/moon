@@ -43,11 +43,6 @@ namespace System.Windows.Documents {
 
 			native = raw;
 		}
-		
-		~TextPointer ()
-		{
-			NativeMethods.text_pointer_free (native);
-		}
 
 		public bool IsAtInsertionPosition {
 			get; private set;

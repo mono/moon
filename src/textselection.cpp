@@ -221,6 +221,7 @@ TextSelection::GetText ()
 			Run *run = (Run*)tp.GetParent();
 			if (tp.GetParent() == moving.GetParent()) {
 				// tp and moving are in the same element, so we append the substring and set tp = moving.
+				printf ("g_string_append_len (%s + %d, %d)\n", run->GetText() + tp.ResolveLocation(), moving.ResolveLocation() - tp.ResolveLocation());
 				g_string_append_len (gstr, run->GetText() + tp.ResolveLocation(), moving.ResolveLocation() - tp.ResolveLocation());
 				tp = moving;
 			}

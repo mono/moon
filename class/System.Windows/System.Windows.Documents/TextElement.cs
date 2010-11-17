@@ -50,31 +50,51 @@ namespace System.Windows.Documents {
 			throw new NotImplementedException ();;
 		}
 
+		TextPointer contentStart;
 		public TextPointer ContentStart {
 			get {
-				IntPtr tp = NativeMethods.text_element_get_content_start (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (contentStart == null) {
+					IntPtr tp = NativeMethods.text_element_get_content_start (native);
+					if (tp != IntPtr.Zero)
+						contentStart = new TextPointer (tp);
+				}
+				return contentStart;
 			}
 		}
 
+		TextPointer contentEnd;
 		public TextPointer ContentEnd {
 			get {
-				IntPtr tp = NativeMethods.text_element_get_content_end (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (contentEnd == null) {
+					IntPtr tp = NativeMethods.text_element_get_content_end (native);
+					if (tp != IntPtr.Zero)
+						contentEnd = new TextPointer (tp);
+				}
+				return contentEnd;
 			}
 		}
 
+		TextPointer elementStart;
 		public TextPointer ElementStart {
 			get {
-				IntPtr tp = NativeMethods.text_element_get_element_start (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (elementStart == null) {
+					IntPtr tp = NativeMethods.text_element_get_element_start (native);
+					if (tp != IntPtr.Zero)
+						elementStart = new TextPointer (tp);
+				}
+				return elementStart;
 			}
 		}
 
+		TextPointer elementEnd;
 		public TextPointer ElementEnd {
 			get {
-				IntPtr tp = NativeMethods.text_element_get_element_end (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (elementEnd == null) {
+					IntPtr tp = NativeMethods.text_element_get_element_end (native);
+					if (tp != IntPtr.Zero)
+						elementEnd = new TextPointer (tp);
+				}
+				return elementEnd;
 			}
 		}
 	}

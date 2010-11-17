@@ -145,24 +145,39 @@ namespace System.Windows.Controls {
 			return tp == IntPtr.Zero ? null : new TextPointer (tp);
 		}
 
+		TextSelection selection;
 		public TextSelection Selection {
 			get {
-				IntPtr ts = NativeMethods.rich_text_box_get_selection (native);
-				return ts == IntPtr.Zero ? null : new TextSelection (ts);
+				if (selection == null) {
+					IntPtr ts = NativeMethods.rich_text_box_get_selection (native);
+					if (ts != IntPtr.Zero)
+						selection = new TextSelection (ts);
+				}
+				return selection;
 			}
 		}
 
+		TextPointer contentStart;
 		public TextPointer ContentStart {
 			get {
-				IntPtr tp = NativeMethods.rich_text_box_get_content_start (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (contentStart == null) {
+					IntPtr tp = NativeMethods.rich_text_box_get_content_start (native);
+					if (tp != IntPtr.Zero)
+						contentStart = new TextPointer (tp);
+				}
+				return contentStart;
 			}
 		}
 
+		TextPointer contentEnd;
 		public TextPointer ContentEnd {
 			get {
-				IntPtr tp = NativeMethods.rich_text_box_get_content_end (native);
-				return tp == IntPtr.Zero ? null : new TextPointer (tp);
+				if (contentEnd == null) {
+					IntPtr tp = NativeMethods.rich_text_box_get_content_end (native);
+					if (tp != IntPtr.Zero)
+						contentEnd = new TextPointer (tp);
+				}
+				return contentEnd;
 			}
 		}
 	}
