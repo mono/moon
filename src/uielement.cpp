@@ -1469,7 +1469,11 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
-		if (!region->IsEmpty ())
+		// 
+		// NOTE: we cannot safely restrict to the region
+		// when doing occlusion culling since our region
+		// may have been culled in that case
+		if (!region->IsEmpty () && !skip_children)
 			r = r.Intersection (region->GetExtents ());
 
 		bounds = bounds.Intersection (r);
@@ -1539,7 +1543,10 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		// will keep all descendents from drawing to the
 		// screen.
 		// 
-		if (!region->IsEmpty ())
+		// NOTE: we cannot safely restrict to the region
+		// when doing occlusion culling since our region
+		// may have been culled
+		if (!region->IsEmpty () && !skip_children)
 			r = r.Intersection (region->GetExtents ());
 
 		if (flags & COMPOSITE_OPACITY)
