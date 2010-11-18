@@ -3172,6 +3172,70 @@ namespace MoonTest.System.Windows.Controls
 				}
 			);
 		}
+
+
+		[TestMethod]
+		[Asynchronous]
+		public void AutoCol_Empty_MaxWidth ()
+		{
+			// Ensure MaxWidth is respected in an empty Auto segment
+			var grid = new Grid ();
+			grid.AddColumns (Auto, Star);
+			grid.ColumnDefinitions [0].MaxWidth = 10;
+			grid.AddChild (ContentControlWithChild (), 0, 1, 0, 0);
+
+			CreateAsyncTest(grid,() => {
+				grid.UpdateLayout();
+				Assert.AreEqual(0, grid.ColumnDefinitions[0].ActualWidth, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AutoCol_Empty_MinWidth ()
+		{
+			// Ensure MinWidth is respected in an empty Auto segment
+			var grid = new Grid();
+			grid.AddColumns(Auto, Star);
+			grid.ColumnDefinitions[0].MinWidth = 10;
+			grid.AddChild(ContentControlWithChild(), 0, 1, 0, 0);
+
+			CreateAsyncTest(grid, () => {
+				grid.UpdateLayout();
+				Assert.AreEqual(10, grid.ColumnDefinitions[0].ActualWidth, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AutoCol_MaxWidth ()
+		{
+			// MaxWidth is *not* respected in an Auto segment
+			var grid = new Grid();
+			grid.AddColumns(Auto, Star);
+			grid.ColumnDefinitions[0].MaxWidth = 10;
+			grid.AddChild(ContentControlWithChild(), 0, 0, 0, 0);
+
+			CreateAsyncTest(grid, () => {
+				grid.UpdateLayout();
+				Assert.AreEqual(50, grid.ColumnDefinitions[0].ActualWidth, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AutoCol_MinWidth ()
+		{
+			var grid = new Grid ();
+			grid.AddColumns(Auto, Star);
+			grid.ColumnDefinitions[0].MinWidth = 10;
+			grid.AddChild(ContentControlWithChild(), 0, 0, 0, 0);
+
+			CreateAsyncTest(grid, () => {
+				grid.UpdateLayout();
+				Assert.AreEqual(50, grid.ColumnDefinitions[0].ActualWidth, "#1");
+			});
+		}
 	}
 
 	class MyContentControl : ContentControl
