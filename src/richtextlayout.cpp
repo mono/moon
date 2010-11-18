@@ -1696,9 +1696,51 @@ RichTextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 }
 
 Rect
-RichTextLayout::GetCursor (const Point &offset, int index)
+RichTextLayout::GetCursor (const Point &offset, TextPointer *tp)
 {
-	return Rect (0,0,-1,-1);
+	Rect r (offset, Size (1.0, 0.0));
+
+	for (guint i = 0; i < lines->len; i ++) {
+		RichTextLayoutLine *line = (RichTextLayoutLine*)lines->pdata[i];
+
+		int start_compare, end_compare;
+		bool in_this_line = false;
+
+		start_compare = tp->CompareTo_np (line->start);
+		end_compare = tp->CompareTo_np (line->end);
+
+		if (start_compare == 0) {
+			// the cursor is at the beginning of the line
+			in_this_line = true;
+		}
+		else if (end_compare == 0) {
+			// the cursor is at the end of the line
+			in_this_line = true;
+			r.x += line->size.width;
+		}
+		else if (start_compare > 0 && end_compare < 0) {
+			in_this_line = true;
+
+			for (guint j = 0; j < line->inlines->len; j ++) {
+				RichTextLayoutInline *inline_ = (RichTextLayoutInline*)line->inlines->pdata[j];
+				if (tp->CompareTo_np (inline_->start) >= 0 && tp->CompareTo_np (inline_->end) <= 0) {
+					// the cursor is in this inline
+
+					// FIXME just set the cursor to blink at the start of the inline
+					r.x += inline_->position.x;
+					break;
+				}
+			}
+		}
+
+		if (in_this_line) {
+			r.y += line->y;
+			r.height = line->size.height;
+			break;
+		}
+	}
+
+	return r;
 #if 0
 	const char *inptr, *inend, *pchar;
 	double height, x0, y0, y1;
@@ -1971,12 +2013,17 @@ RichTextLayoutLine::GetLocationFromX (const Point &offset, double x)
 void
 RichTextLayoutLine::AddInline (RichTextLayoutInline *inline_)
 {
+	inline_->position.y = y;
+	inline_->position.x = size.width;
+
 	size.width += inline_->size.width;
 	size.height = MAX (size.height, inline_->size.height);
 
 	descend = MIN (descend, inline_->descend);
 
 	g_ptr_array_add (inlines, inline_);
+
+	end = inline_->end;
 }
 
 void

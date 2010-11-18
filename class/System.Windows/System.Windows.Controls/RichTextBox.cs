@@ -44,9 +44,15 @@ namespace System.Windows.Controls {
 	[TemplateVisualState (Name = "Disabled", GroupName = "CommonStates")]
 	[TemplateVisualState (Name = "Normal", GroupName = "CommonStates")]
 	public partial class RichTextBox : Control {
+		bool IsMouseOver {
+			get; set;
+		}
+
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			base.OnGotFocus (e);
+			ChangeVisualState ();
+			NativeMethods.rich_text_box_on_got_focus (native, e.NativeHandle);
 		}
 
 		protected override void OnKeyDown (KeyEventArgs e)
@@ -70,15 +76,21 @@ namespace System.Windows.Controls {
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
 			base.OnLostFocus (e);
+			ChangeVisualState ();
+			NativeMethods.rich_text_box_on_lost_focus (native, e.NativeHandle);
 		}
 
 		protected override void OnMouseEnter (MouseEventArgs e)
 		{
+			IsMouseOver = true;
+			ChangeVisualState ();
 			base.OnMouseEnter (e);
 		}
 
 		protected override void OnMouseLeave (MouseEventArgs e)
 		{
+			IsMouseOver = false;
+			ChangeVisualState ();
 			base.OnMouseLeave (e);
 		}
 
@@ -178,6 +190,31 @@ namespace System.Windows.Controls {
 						contentEnd = new TextPointer (tp);
 				}
 				return contentEnd;
+			}
+		}
+
+
+		void ChangeVisualState ()
+		{
+			ChangeVisualState (true);
+		}
+
+		void ChangeVisualState (bool useTransitions)
+		{
+			if (!IsEnabled) {
+				VisualStateManager.GoToState (this, "Disabled", useTransitions);
+			} else if (IsReadOnly) {
+				VisualStateManager.GoToState (this, "ReadOnly", useTransitions);
+			} else if (IsMouseOver) {
+				VisualStateManager.GoToState (this, "MouseOver", useTransitions);
+			} else {
+				VisualStateManager.GoToState (this, "Normal", useTransitions);
+			}
+
+			if (Focused) {
+				VisualStateManager.GoToState (this, "Focused", useTransitions);
+			} else {
+				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
 			}
 		}
 	}

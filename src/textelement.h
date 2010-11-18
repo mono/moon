@@ -98,7 +98,9 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
+	virtual IDocumentNode* GetParentDocumentNode ();
 	virtual DependencyObjectCollection *GetDocumentChildren () { return NULL; }
+	virtual DependencyObject *Split (int loc) { return NULL; }
 	virtual char* Serialize () { return NULL; }
 	virtual void SerializeProperties (bool force, GString *str);
 
@@ -249,6 +251,7 @@ class Run : public Inline {
 	//
 	virtual char* Serialize ();
 	virtual void SerializeProperties (bool force, GString *str);
+	virtual DependencyObject* Split (int loc);
 
 	//
 	// Property Accessors
@@ -323,6 +326,7 @@ class Paragraph : public Block {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
+	virtual DependencyObject *Split (int loc);
 	virtual char* Serialize ();
 };
 
@@ -359,6 +363,7 @@ class Section : public Block {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetBlocks(); }
+	virtual DependencyObject* Split (int loc);
 	virtual char* Serialize ();
 };
 
@@ -390,6 +395,7 @@ class Span : public Inline {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
+	virtual DependencyObject* Split (int loc);
 
 	static Value *CreateInlineCollection (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };

@@ -56,38 +56,123 @@ TextSelection::GetPropertyValue (DependencyProperty *formatting)
 }
 
 void
+TextSelection::ClearSelection ()
+{
+	// clear out the selection
+	if (anchor.GetParent() == moving.GetParent()) {
+		bool remove_element = false;
+
+		if (anchor.GetLocation () != moving.GetLocation()) {
+
+			if (anchor.GetParent()->Is (Type::RUN)) {
+				Run *run = (Run*)anchor.GetParent();
+				char *run_text = g_strdup (run->GetText());
+
+				int length_to_remove = moving.ResolveLocation() - anchor.ResolveLocation();
+
+				memmove (run_text + anchor.ResolveLocation(), run_text + moving.ResolveLocation (), strlen (run_text + moving.ResolveLocation()));
+				*(run_text + strlen(run_text) - length_to_remove) = 0;
+
+				run->SetText (run_text);
+
+				// we need to remove the run if we've cleared all the text in it
+				remove_element = !*run_text;
+
+				g_free (run_text);
+			}
+			else {
+				IDocumentNode *node = anchor.GetParentNode();
+
+				int length_to_remove = moving.ResolveLocation() - anchor.ResolveLocation();
+
+				for (int i = 0; i < length_to_remove; i ++)
+					node->GetDocumentChildren()->RemoveAt (anchor.ResolveLocation());
+
+				// we need to remove the element if we've removed all the children
+				remove_element = node->GetDocumentChildren()->GetCount() == 0;
+			}
+		}
+
+		DependencyObject *el = anchor.GetParent();
+		while (remove_element) {
+			if (el->Is (Type::RICHTEXTBOX))
+				break;
+
+			DependencyObject* parent = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+			if (!parent) {
+				g_warning ("shouldn't happen");
+				return;
+			}
+
+			IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
+			parent_node->GetDocumentChildren()->Remove (Value(el));
+
+			el = parent;
+			remove_element = parent_node->GetDocumentChildren()->GetCount() == 0;
+		}
+	}
+	else {
+		// harder case, anchor/moving are in different elements
+		printf ("NIEX hard case TextSelection::ClearSelection\n");
+	}
+}
+
+
+void
 TextSelection::Insert (TextElement *element)
 {
 	if (anchor.GetParent() == NULL || moving.GetParent() == NULL)
 		// if either are null we're going nowhere fast...
 		return;
 
-	if (anchor.GetParent() == moving.GetParent()) {
-		// refactor out the "clear out selection" from SetText
+	// refactor out the "clear out selection" from SetText
+	ClearSelection ();
 
-		if (anchor.GetParent()->Is (Type::RUN)) {
-			if (element->Is (Type::RUN)) {
-				// FIXME we need to verify what SL does here,
-				// but I would *hope* that if you insert a run
-				// with identical formatting into another run,
-				// we just copy the text into the existing
-				// run's text.  but for now we'll just be
-				// naive and take the easy way out - split the
-				// run into two, and add the new one as a
-				// sibling between then.
-			}
-			else {
-			}
+	// at this point both anchor and moving are the same location
+
+	// depending on what the anchor's parent is,
+	// and what @element is, we might need to
+	// split the tree higher up
+	DependencyObject *el = anchor.GetParent ();
+	int loc = anchor.ResolveLocation();
+
+	while (el) {
+		DependencyObject *el_parent = el->GetParent();
+		if (el_parent)
+			el_parent = el_parent->GetParent();
+
+		IDocumentNode *node = IDocumentNode::CastToIDocumentNode (el);
+
+		DependencyObjectCollection *children = node->GetDocumentChildren ();
+		if (children && element->Is (children->GetElementType())) {
+			// we can insert the element here, so let's do it and be done with things
+			children->Insert (loc, element);
+			return;
 		}
-		else {
-			// depending on what the anchor's parent is,
-			// and what @element is, we might need to
-			// split the tree higher up/lower down.
+
+		if (!el_parent) {
+			g_warning ("new element cannot fit inside element, and we can't split it");
+			return;
 		}
-	}
-	else {
-		// harder case, anchor/moving are in different elements
-		printf ("NIEX hard case TextSelection::Insert\n");
+				
+		// we need to split the current element at
+		// @loc, add the new element to el's parent
+		// after el, and walk back up to el's parent
+		// with new_el's index as @loc.
+		IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (el_parent);
+		DependencyObjectCollection *parents_children = parent_node->GetDocumentChildren ();
+		DependencyObject *new_el = node->Split (loc);
+
+		if (!new_el) {
+			g_warning ("split failed");
+			return;
+		}
+
+		int new_el_loc = parents_children->IndexOf (el) + 1;
+		parents_children->Insert (new_el_loc, new_el);
+
+		el = el_parent;
+		loc = new_el_loc;
 	}
 
 
@@ -127,82 +212,53 @@ TextSelection::SetText (const char *text)
 		// if either are null we're going nowhere fast...
 		return;
 
-	if (anchor.GetParent() == moving.GetParent()) {
-		// clear out the selection
-		if (anchor.GetLocation () != moving.GetLocation()) {
+	ClearSelection ();
 
-			if (anchor.GetParent()->Is (Type::RUN)) {
-				Run *run = (Run*)anchor.GetParent();
-				char *run_text = g_strdup (run->GetText());
-
-				int length_to_remove = moving.ResolveLocation() - anchor.ResolveLocation();
-
-				memmove (run_text + anchor.ResolveLocation(), run_text + length_to_remove, length_to_remove);
-				*(run_text + anchor.ResolveLocation() + length_to_remove) = 0;
-
-				run->SetText (run_text);
-
-				g_free (run_text);
-			}
-			else {
-				IDocumentNode *node = anchor.GetParentNode();
-
-				int length_to_remove = moving.ResolveLocation() - anchor.ResolveLocation();
-
-				for (int i = 0; i < length_to_remove; i ++)
-					node->GetDocumentChildren()->RemoveAt (anchor.ResolveLocation());
-			}
-		}
-
-		if (text && *text) {
-			if (anchor.GetParent()->Is (Type::RUN)) {
-				const char *run_text = ((Run*)anchor.GetParent())->GetText();
-				char *new_text = (char*)g_malloc0 (strlen (run_text) + strlen (text) + 1);
+	// at this point the selection is empty and anchor == moving
+	if (text && *text) {
+		if (anchor.GetParent()->Is (Type::RUN)) {
+			const char *run_text = ((Run*)anchor.GetParent())->GetText();
+			char *new_text = (char*)g_malloc0 (strlen (run_text) + strlen (text) + 1);
 				
-				strncpy (new_text, run_text, anchor.ResolveLocation());
-				strcpy (new_text + anchor.ResolveLocation(), text);
-				strncpy (new_text + anchor.ResolveLocation() + strlen(text), run_text + anchor.ResolveLocation(), strlen (run_text) - anchor.ResolveLocation());
+			strncpy (new_text, run_text, anchor.ResolveLocation());
+			strcpy (new_text + anchor.ResolveLocation(), text);
+			strncpy (new_text + anchor.ResolveLocation() + strlen(text), run_text + anchor.ResolveLocation(), strlen (run_text) - anchor.ResolveLocation());
 
-				((Run*)anchor.GetParent())->SetText (new_text);
+			((Run*)anchor.GetParent())->SetText (new_text);
 
-				if (moving.GetLocation() > strlen (new_text)) {
-					anchor = TextPointer (anchor.GetParent(), CONTENT_END, anchor.GetLogicalDirection());
-					moving = TextPointer (anchor.GetParent(), CONTENT_END, anchor.GetLogicalDirection());
-				}
-				else {
-					TextPointer new_anchor (anchor.GetParent(), anchor.ResolveLocation () + strlen (text), anchor.GetLogicalDirection());
-					moving = TextPointer (anchor.GetParent(), anchor.ResolveLocation () + strlen (text), anchor.GetLogicalDirection());
-					anchor = new_anchor;
-				}
-
-				g_free (new_text);
+			if (moving.GetLocation() > strlen (new_text)) {
+				anchor = TextPointer (anchor.GetParent(), CONTENT_END, anchor.GetLogicalDirection());
+				moving = TextPointer (anchor.GetParent(), CONTENT_END, anchor.GetLogicalDirection());
 			}
 			else {
-				IDocumentNode *node = anchor.GetParentNode();
-				DependencyObjectCollection *children = node->GetDocumentChildren();
-
-				Run *r = MoonUnmanagedFactory::CreateRun ();
-				r->SetText (text);
-
-				if (children->Is(Type::BLOCK_COLLECTION)) {
-					// the node takes Blocks as children, so we need to create a Paragraph first.
-					Paragraph *p = MoonUnmanagedFactory::CreateParagraph();
-					children->Insert (anchor.GetLocation(), Value (p));
-					children = p->GetInlines();
-					children->Add (Value (r));
-				}
-				else {
-					children->Insert (anchor.GetLocation(), Value (r));
-				}
-
-				anchor = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
-				moving = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
+				TextPointer new_anchor (anchor.GetParent(), anchor.ResolveLocation () + strlen (text), anchor.GetLogicalDirection());
+				moving = TextPointer (anchor.GetParent(), anchor.ResolveLocation () + strlen (text), anchor.GetLogicalDirection());
+				anchor = new_anchor;
 			}
+
+			g_free (new_text);
 		}
-	}
-	else {
-		// harder case, anchor/moving are in different elements
-		printf ("NIEX hard case TextSelection::SetText\n");
+		else {
+			IDocumentNode *node = anchor.GetParentNode();
+			DependencyObjectCollection *children = node->GetDocumentChildren();
+
+			Run *r = MoonUnmanagedFactory::CreateRun ();
+			r->SetText (text);
+
+			if (children->Is(Type::BLOCK_COLLECTION)) {
+				// the node takes Blocks as children, so we need to create a Paragraph first.
+				Paragraph *p = MoonUnmanagedFactory::CreateParagraph();
+				children->Insert (anchor.GetLocation(), Value (p));
+				children = p->GetInlines();
+				children->Add (Value (r));
+			}
+			else {
+				children->Insert (anchor.GetLocation(), Value (r));
+			}
+
+			anchor = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
+			moving = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
+		}
 	}
 }
 

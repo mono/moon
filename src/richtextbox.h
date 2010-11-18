@@ -200,7 +200,9 @@ protected:
 	virtual void OnApplyTemplate ();
 
 	// IDocumentNode interface
+	virtual IDocumentNode* GetParentDocumentNode ();
 	virtual DependencyObjectCollection* GetDocumentChildren ();
+	virtual DependencyObject* Split (int loc);
 	virtual void AddTextPointer (TextPointer *pointer);
 	virtual void RemoveTextPointer (TextPointer *pointer);
 

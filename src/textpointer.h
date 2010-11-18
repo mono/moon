@@ -16,6 +16,7 @@
 #include <glib.h>
 #include "enums.h"
 #include "rect.h"
+#include "error.h"
 
 namespace Moonlight {
 
@@ -25,6 +26,10 @@ class TextPointer;
 
 class IDocumentNode {
 public:
+	// splits this node at loc, with locations 0-loc remaining in @this, and (loc+1)... moving to the return value
+	virtual DependencyObject *Split (int loc) = 0;
+
+	virtual IDocumentNode *GetParentDocumentNode () = 0;
 	virtual DependencyObjectCollection *GetDocumentChildren () = 0;
 
 	virtual void AddTextPointer (TextPointer *pointer) = 0;
@@ -60,7 +65,7 @@ public:
 	static void Free (TextPointer *pointer) { delete pointer; }
 
 	/* @GeneratePInvoke */
-	int CompareTo (TextPointer *pointer);
+	int CompareToWithError (TextPointer *pointer, MoonError *error);
 	/* @GeneratePInvoke */
 	Rect GetCharacterRect (LogicalDirection dir);
 	/* @GeneratePInvoke */
@@ -71,6 +76,7 @@ public:
 	TextPointer GetNextInsertionPosition_np (LogicalDirection dir);
 	TextPointer GetPositionAtOffset_np (int offset, LogicalDirection dir);
 	int CompareTo_np (TextPointer pointer);
+	int CompareTo (TextPointer *pointer);
 
 	/* @GeneratePInvoke */
 	bool GetIsAtInsertionPosition ();

@@ -216,6 +216,8 @@ namespace Mono {
 				return new NotImplementedException (msg);
 			case 13:
 				return new SecurityException (msg);
+			case 14:
+				return new NotSupportedException (msg);
 			}
 		}
 	}

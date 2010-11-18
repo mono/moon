@@ -49,7 +49,6 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Defaults ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -62,7 +61,6 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Text_Set_Null ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
@@ -92,7 +90,6 @@ namespace MoonTest.System.Windows.Documents {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Text ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -196,7 +193,6 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TextPointersUpdatePosition_clear2 ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -222,7 +218,6 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TextPointersUpdatePosition_clear3 ()
 		{
 			Paragraph p = new Paragraph ();
@@ -248,12 +243,33 @@ namespace MoonTest.System.Windows.Documents {
 
 			Assert.AreEqual (@"", rtb.Xaml, "#1");
 
-			// message on the exception is TextElement_OperationNotSupportedOutsideRTB
+			// message on the exception is
+			// TextElement_OperationNotSupportedOutsideRTB,
+			// which should only happen if the
+			// textpointer's parent is not in the document
+			// model for the RTB anymore (this is also
+			// indicated in the Xaml being "" above.)
 			Assert.Throws<NotSupportedException> ( () => pos.CompareTo (r.ContentEnd), "#2" );
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		public void TextPointerContentEndAfterInsert ()
+		{
+			Paragraph p = new Paragraph ();
+			Run r = new Run ();
+
+			p.Inlines.Add (r);
+
+			rtb.Blocks.Add (p);
+
+			TextPointer tp = r.ContentEnd;
+
+			r.Text = "Moonlight";
+
+			Assert.AreEqual (0, tp.CompareTo (r.ContentEnd), "#0");
+		}
+
+		[TestMethod]
 		public void Xaml_Set_Null ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {

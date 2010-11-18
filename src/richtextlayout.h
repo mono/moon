@@ -84,6 +84,7 @@ public:
 	  : RichTextLayoutInline (line, attrs, start, end)
 	{
 		path = NULL;
+		offset_into_text = 0;
 	}
 
 	virtual ~RichTextLayoutInlineGlyphs ()
@@ -92,7 +93,7 @@ public:
 			moon_path_destroy (path);
 	}
 
-	virtual const char *GetText() { return ((Run*)start.GetParent())->GetText(); }
+	virtual const char *GetText() { return ((Run*)start.GetParent())->GetText() + offset_into_text; }
 
 	virtual void Render (cairo_t *cr, const Point &origin, double x, double y, bool is_last_run);
 
@@ -101,6 +102,7 @@ public:
 
 	moon_path *path;
 	double uadvance;
+	int offset_into_text;
 };
 
 class RichTextLayoutInlineUIElement : public RichTextLayoutInline {
@@ -191,7 +193,7 @@ class RichTextLayout {
 	
 	TextPointer GetLocationFromXY (const Point &offset, double x, double y);
 
-	Rect GetCursor (const Point &offset, int pos);
+	Rect GetCursor (const Point &offset, TextPointer* tp);
 	
 	void GetActualExtents (double *width, double *height);
 	Rect GetRenderExtents ();

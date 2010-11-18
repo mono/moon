@@ -44,9 +44,31 @@ compare_locations (guint32 loc1, guint32 loc2)
 	}
 }
 
-int
-TextPointer::CompareTo (TextPointer *pointer)
+static bool
+verify_textpointer_in_document (TextPointer *pointer, MoonError *error)
 {
+	DependencyObject *el = pointer->GetParent();
+	while (el) {
+		if (el->Is (Type::RICHTEXTBOX))
+			return true;
+		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+		if (!el)
+			break;
+	}
+
+	MoonError::FillIn (error, MoonError::NOT_SUPPORTED_EXCEPTION, "Can't use a TextPointer which is outside of a RichTextBox's document");
+
+	return false;
+}
+
+
+int
+TextPointer::CompareToWithError (TextPointer *pointer, MoonError *error)
+{
+	if (!verify_textpointer_in_document (this, error) ||
+	    !verify_textpointer_in_document (pointer, error))
+		return -1;
+
 	if (this->GetParent() == pointer->GetParent()) {
 		DependencyObjectCollection *children = this->GetParentNode()->GetDocumentChildren();
 		if (children && children->GetCount() > 0)
@@ -122,7 +144,7 @@ TextPointer::CompareTo (TextPointer *pointer)
 			IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
 			guint32 child_index = parent_node->GetDocumentChildren()->IndexOf (Value ((DependencyObject*)g_ptr_array_index(this_array, count_to_compare)));
 
-			return pointer->GetLocation() >= child_index ? -1 : 1;
+			return pointer->GetLocation() > child_index ? -1 : 1;
 		}
 		else if (count_to_compare < pointer_array->len) {
 			// @pointer's parent is a child of this_array[count_to_compare-1]
@@ -138,7 +160,15 @@ TextPointer::CompareTo (TextPointer *pointer)
 int
 TextPointer::CompareTo_np (TextPointer pointer)
 {
-	return CompareTo (&pointer);
+	MoonError error;
+	return CompareToWithError (&pointer, &error);
+}
+
+int
+TextPointer::CompareTo (TextPointer *pointer)
+{
+	MoonError error;
+	return CompareToWithError (pointer, &error);
 }
 
 Rect

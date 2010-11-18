@@ -79,7 +79,9 @@ TextElement::NotifyLayoutContainerOnPropertyChanged (PropertyChangedEventArgs *a
 			return;
 		}
 		else if (el->Is (Type::RICHTEXTBOX)) {
-			((RichTextBox*)el)->GetView()->DocumentPropertyChanged (this, args);
+			RichTextBoxView *view = ((RichTextBox*)el)->GetView();
+			if (view)
+				view->DocumentPropertyChanged (this, args);
 			return;
 		}
 		else {
@@ -385,24 +387,34 @@ TextElement::GetElementEnd ()
 				LogicalDirectionForward);
 }
 
+IDocumentNode*
+TextElement::GetParentDocumentNode ()
+{
+	DependencyObject *p = GetParent();
+	if (p)
+		p = p->GetParent();
+
+	return IDocumentNode::CastToIDocumentNode (p);
+}
+
 void
 TextElement::SerializeProperties (bool force, GString *str)
 {
 	if (force || LocalValueOverrides (FontSizeProperty))
-		g_string_append_printf (str, "FontSize=\"%g\" ", GetFontSize());
+		g_string_append_printf (str, " FontSize=\"%g\"", GetFontSize());
 	if (force || LocalValueOverrides (FontFamilyProperty))
-		g_string_append_printf (str, "FontFamily=\"%s\" ", GetFontFamily()->source);
+		g_string_append_printf (str, " FontFamily=\"%s\"", GetFontFamily()->source);
 	if (force || LocalValueOverrides (ForegroundProperty)) {
 		if (GetForeground()->Is (Type::SOLIDCOLORBRUSH)) {
-			g_string_append_printf (str, "Foreground=\"%s\" ", color_to_string (((SolidColorBrush*)GetForeground())->GetColor()));
+			g_string_append_printf (str, " Foreground=\"%s\"", color_to_string (((SolidColorBrush*)GetForeground())->GetColor()));
 		}
 	}
 	if (force || LocalValueOverrides (FontWeightProperty))
-		g_string_append_printf (str, "FontWeight=\"%s\" ", enums_int_to_str ("FontWeight", GetFontWeight()->weight));
+		g_string_append_printf (str, " FontWeight=\"%s\"", enums_int_to_str ("FontWeight", GetFontWeight()->weight));
 	if (force || LocalValueOverrides (FontStyleProperty))
-		g_string_append_printf (str, "FontStyle=\"%s\" ", enums_int_to_str ("FontStyle", GetFontStyle()->style));
+		g_string_append_printf (str, " FontStyle=\"%s\"", enums_int_to_str ("FontStyle", GetFontStyle()->style));
 	if (force || LocalValueOverrides (FontStretchProperty))
-		g_string_append_printf (str, "FontStretch=\"%s\" ", enums_int_to_str ("FontStretch", GetFontStretch()->stretch));
+		g_string_append_printf (str, " FontStretch=\"%s\"", enums_int_to_str ("FontStretch", GetFontStretch()->stretch));
 }
 
 //
@@ -523,21 +535,42 @@ Run::Equals (Inline *item)
 	return true;
 }
 
+DependencyObject*
+Run::Split (int loc)
+{
+	char *existing_text = g_strdup (GetText());
+	if (!existing_text)
+		return NULL;
+
+	char *right_text = g_strdup (existing_text + loc);
+	existing_text[loc] = 0;
+
+	Run *new_r = new Run ();
+	new_r->SetText (right_text);
+
+	SetText (existing_text);
+
+	g_free (right_text);
+	g_free (existing_text);
+
+	return new_r;
+}
+
 void
 Run::SerializeProperties (bool force, GString *str)
 {
 	Inline::SerializeProperties (force, str);
 
 	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(FlowDirectionProperty)) == PropertyPrecedence_LocalValue)
-		g_string_append_printf (str, "FlowDirection=\"%s\" ", enums_int_to_str ("FlowDirection", GetFlowDirection()));
+		g_string_append_printf (str, " FlowDirection=\"%s\"", enums_int_to_str ("FlowDirection", GetFlowDirection()));
 
-	g_string_append_printf (str, "Text=\"%s\" ", GetText ());
+	g_string_append_printf (str, " Text=\"%s\" ", GetText ());
 }
 
 char*
 Run::Serialize ()
 {
-	GString *str = g_string_new ("<Run ");
+	GString *str = g_string_new ("<Run");
 	SerializeProperties (false, str);
 	g_string_append (str, "/>");
 	return g_string_free (str, FALSE);
@@ -570,7 +603,7 @@ Block::SerializeProperties (bool force, GString *str)
 	TextElement::SerializeProperties (force, str);
 
 	if (force || LocalValueOverrides (TextAlignmentProperty))
-		g_string_append_printf (str, "TextAlignment=\"%s\" ", enums_int_to_str ("TextAlignment", GetTextAlignment()));
+		g_string_append_printf (str, " TextAlignment=\"%s\"", enums_int_to_str ("TextAlignment", GetTextAlignment()));
 }
 
 
@@ -596,16 +629,32 @@ Paragraph::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	}
 }
 
+DependencyObject*
+Paragraph::Split (int loc)
+{
+	InlineCollection *inlines = GetInlines();
+	int count = inlines->GetCount();
+
+	Paragraph *new_p = new Paragraph ();
+	InlineCollection *new_inlines = new_p->GetInlines();
+
+	for (int i = loc + 1; i < count; i ++) {
+		Inline *inline_ = inlines->GetValueAt (loc + 1)->AsInline();
+		inlines->RemoveAt (loc + 1);
+		new_inlines->Add (inline_);
+	}
+
+	return new_p;
+}
+
 char*
 Paragraph::Serialize ()
 {
-	const char *trailer = "</Paragraph>";
-
-	GString* str = g_string_new ("<Paragraph ");
+	GString* str = g_string_new ("<Paragraph");
 
 	SerializeProperties (true, str);
 
-	g_string_append (str, "/>");
+	g_string_append (str, ">");
 
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
@@ -625,6 +674,24 @@ Paragraph::Serialize ()
 Section::Section ()
 {
 	SetObjectType (Type::SECTION);
+}
+
+DependencyObject*
+Section::Split (int loc)
+{
+	BlockCollection *blocks = GetBlocks();
+	int count = blocks->GetCount();
+
+	Section *new_s = new Section ();
+	BlockCollection *new_blocks = new_s->GetBlocks();
+
+	for (int i = loc + 1; i < count; i ++) {
+		Block *block = blocks->GetValueAt (loc + 1)->AsBlock();
+		blocks->RemoveAt (loc + 1);
+		new_blocks->Add (block);
+	}
+
+	return new_s;
 }
 
 char*
@@ -678,6 +745,24 @@ Span::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	} else {
 		Inline::OnCollectionChanged (col, args);
 	}
+}
+
+DependencyObject*
+Span::Split (int loc)
+{
+	InlineCollection *inlines = GetInlines();
+	int count = inlines->GetCount();
+
+	Span *new_s = new Span ();
+	InlineCollection *new_inlines = new_s->GetInlines();
+
+	for (int i = loc + 1; i < count; i ++) {
+		Inline *inline_ = inlines->GetValueAt (loc + 1)->AsInline();
+		inlines->RemoveAt (loc + 1);
+		new_inlines->Add (inline_);
+	}
+
+	return new_s;
 }
 
 Value* 
@@ -802,14 +887,14 @@ Hyperlink::SerializeProperties (bool force, GString *str)
 	Span::SerializeProperties (force, str);
 
 	// is this something that's actually set by the hyperlink class?
-	g_string_append (str, "TextDecorations=\"Underline\" ");
+	g_string_append (str, " TextDecorations=\"Underline\"");
 
 	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(TargetNameProperty)) == PropertyPrecedence_LocalValue)
-		g_string_append_printf (str, "TargetName=\"%s\" ", GetTargetName ());
-	g_string_append_printf (str, "NavigateUri=\"%s\" ", GetNavigateUri()->GetOriginalString()); // FIXME do we check for null uri here?
+		g_string_append_printf (str, " TargetName=\"%s\"", GetTargetName ());
+	g_string_append_printf (str, " NavigateUri=\"%s\"", GetNavigateUri()->GetOriginalString()); // FIXME do we check for null uri here?
 	if (force || LocalValueOverrides (MouseOverForegroundProperty)) {
 		if (GetMouseOverForeground()->Is (Type::SOLIDCOLORBRUSH)) {
-			g_string_append_printf (str, "MouseOverForeground=\"%s\" ", color_to_string (((SolidColorBrush*)GetMouseOverForeground())->GetColor()));
+			g_string_append_printf (str, " MouseOverForeground=\"%s\"", color_to_string (((SolidColorBrush*)GetMouseOverForeground())->GetColor()));
 		}
 	}
 }
@@ -817,9 +902,9 @@ Hyperlink::SerializeProperties (bool force, GString *str)
 char*
 Hyperlink::Serialize ()
 {
-	GString* str = g_string_new ("<Hyperlink ");
+	GString* str = g_string_new ("<Hyperlink");
 	SerializeProperties (false, str);
-	g_string_append (str, "/>");
+	g_string_append (str, ">");
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();

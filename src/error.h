@@ -42,6 +42,7 @@ public:
 		SEND_FAILED = 11,
 		NOT_IMPLEMENTED_EXCEPTION = 12,
 		SECURITY_EXCEPTION = 13,
+		NOT_SUPPORTED_EXCEPTION = 14
 	};
 
 	// non-zero if an error occurred.

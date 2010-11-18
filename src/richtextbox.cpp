@@ -1210,6 +1210,18 @@ RichTextBox::OnApplyTemplate ()
 	Control::OnApplyTemplate ();
 }
 
+DependencyObject* 
+RichTextBox::Split (int loc)
+{
+	return NULL;
+}
+
+IDocumentNode*
+RichTextBox::GetParentDocumentNode ()
+{
+	return NULL;
+}
+
 DependencyObjectCollection*
 RichTextBox::GetDocumentChildren ()
 {
@@ -1274,13 +1286,48 @@ RichTextBox::GetContentEnd ()
 	return new TextPointer (this, -1, LogicalDirectionForward);
 }
 
+static TextElement*
+FindRun (TextElement *el, bool from_start)
+{
+	if (el->Is(Type::RUN))
+		return el;
+
+	IDocumentNode *node = IDocumentNode::CastToIDocumentNode (el);
+	DependencyObjectCollection *col = node->GetDocumentChildren ();
+	int count = col ? col->GetCount () : 0;
+	if (!col || !count)
+		return el;
+
+	for (int i = 0; i < count; i ++) {
+		TextElement *child_el = FindRun (col->GetValueAt(from_start ? i : count - 1 - i)->AsTextElement(), from_start);
+		if (child_el->Is (Type::RUN))
+			return child_el;
+	}
+
+	// there wasn't a run child, we return our first child
+	return col->GetValueAt(from_start ? 0 : count - 1)->AsTextElement();
+}
+
 void
 RichTextBox::SelectAll ()
 {
 	TextPointer *start, *end;
 
-	start = GetContentStart ();
-	end = GetContentEnd ();
+	BlockCollection *col = GetBlocks();
+	if (col->GetCount() == 0) {
+		start = GetContentStart ();
+		end = GetContentEnd ();
+	}
+	else {
+		Paragraph *start_p = col->GetValueAt(0)->AsParagraph ();
+		Paragraph *end_p = col->GetValueAt(col->GetCount() - 1)->AsParagraph ();
+
+		TextElement *start_e = FindRun (start_p, true);
+		TextElement *end_e = FindRun (end_p, false);
+
+		start = start_e->GetContentStart();
+		end = end_e->GetContentEnd();
+	}
 
 	GetSelection()->Select (start, end);
 
@@ -1292,8 +1339,10 @@ TextSelection *
 RichTextBox::GetSelection ()
 {
 	if (!selection) {
+		TextPointer *start = GetContentStart();
 		selection = new TextSelection ();
-		selection->Select (GetContentStart(), GetContentStart());
+		selection->Select (start, start);
+		delete start;
 	}
 		
 	return selection;
@@ -1582,7 +1631,8 @@ RichTextBoxView::HideCursor ()
 void
 RichTextBoxView::UpdateCursor (bool invalidate)
 {
-	int cur = textbox->GetCursor ();
+	TextPointer* cur = textbox->GetSelection()->GetStart();
+
 	Rect current = cursor;
 	Rect rect;
 	
@@ -1694,8 +1744,6 @@ RichTextBoxView::GetBaselineOffset ()
 void
 RichTextBoxView::Paint (cairo_t *cr)
 {
-	layout->Layout (this);
-
 	cairo_save (cr);
 
 	if (GetFlowDirection () == FlowDirectionRightToLeft) {

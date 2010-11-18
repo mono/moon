@@ -65,6 +65,8 @@ public:
 	bool IsEmpty ();
 
 private:
+	void ClearSelection ();
+
 	TextPointer anchor;
 	TextPointer moving;
 };

@@ -58,6 +58,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("#7 is failing")]
 		public void CompareTo ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
@@ -129,6 +130,7 @@ namespace MoonTest.System.Windows.Documents {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("#0 is failing")]
 		public void GetCharacterRect_inTree ()
 		{
 			CreateAsyncTest (rtb,

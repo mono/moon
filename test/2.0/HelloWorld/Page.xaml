@@ -3,5 +3,17 @@
 	     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	     Width="400" Height="300">
 
-	     <Button Content="Hello"/>
+	     <Grid>
+	       <Grid.RowDefinitions>
+		<RowDefinition Height="250" />
+		<RowDefinition Height="*" />
+	       </Grid.RowDefinitions>
+	       <RichTextBox x:Name="rtb" Grid.Row="0">
+	         <Paragraph>
+		   <Bold>Hi there</Bold><LineBreak/>
+		   <Italic>Hi there again</Italic>
+	         </Paragraph>
+	       </RichTextBox>
+	       <Button x:Name="button" Content="Insert Button" Grid.Row="1"/>
+	     </Grid>
 </UserControl>
