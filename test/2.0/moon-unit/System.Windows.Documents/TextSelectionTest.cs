@@ -48,7 +48,8 @@ namespace MoonTest.System.Windows.Documents {
 			rtb = new RichTextBox ();
 		}
 
-		// [TestMethod]
+		[TestMethod]
+		[MoonlightBug]
 		public void Defaults ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -61,6 +62,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Text_Set_Null ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
@@ -69,6 +71,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void StartEndAfterSetText ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -89,6 +92,7 @@ namespace MoonTest.System.Windows.Documents {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void Text ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -116,6 +120,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TextPointersAreSnapshots ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -133,6 +138,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TextPointersUpdatePosition_insert ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -161,6 +167,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TextPointersUpdatePosition_clear ()
 		{
 			TextSelection ts = rtb.Selection;
@@ -189,6 +196,64 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void TextPointersUpdatePosition_clear2 ()
+		{
+			TextSelection ts = rtb.Selection;
+
+			ts.Text = "Moonlight";
+
+			rtb.SelectAll ();
+
+			TextPointer pos = ts.Start.GetPositionAtOffset (4, LogicalDirection.Backward);
+
+			Run r = (Run)pos.Parent;
+
+			ts.Select (r.ContentStart, r.ContentEnd);
+
+			Assert.AreEqual (@"&lt;Section xml:space=""preserve"" HasTrailingParagraphBreakOnPaste=""False"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">&lt;Paragraph FontSize=""11"" FontFamily=""Portable User Interface"" Foreground=""#FF000000"" FontWeight=""Normal"" FontStyle=""Normal"" FontStretch=""Normal"" TextAlignment=""Left"">&lt;Run Text=""Moonlight"" />&lt;/Paragraph>&lt;/Section>", rtb.Xaml.Replace ("<", "&lt;"), "#0");
+
+			ts.Text = "";
+
+			Assert.AreEqual (@"", rtb.Xaml.Replace("<","&lt;"), "#1");
+
+			// message on the exception is TextElement_OperationNotSupportedOutsideRTB
+			Assert.Throws<NotSupportedException> ( () => pos.CompareTo (r.ContentEnd), "#2" );
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void TextPointersUpdatePosition_clear3 ()
+		{
+			Paragraph p = new Paragraph ();
+			Run r = new Run ();
+
+			r.Text = "Moonlight";
+
+			p.Inlines.Add (r);
+
+			rtb.Blocks.Add (p);
+
+			TextSelection ts = rtb.Selection;
+
+			rtb.SelectAll ();
+
+			TextPointer pos = ts.Start.GetPositionAtOffset (4, LogicalDirection.Backward);
+
+			ts.Select (r.ContentStart, r.ContentEnd);
+
+			Assert.AreEqual (@"&lt;Section xml:space=""preserve"" HasTrailingParagraphBreakOnPaste=""False"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">&lt;Paragraph FontSize=""11"" FontFamily=""Portable User Interface"" Foreground=""#FF000000"" FontWeight=""Normal"" FontStyle=""Normal"" FontStretch=""Normal"" TextAlignment=""Left"">&lt;Run Text=""Moonlight"" />&lt;/Paragraph>&lt;/Section>", rtb.Xaml.Replace ("<", "&lt;"), "#0" );
+
+			ts.Text = "";
+
+			Assert.AreEqual (@"", rtb.Xaml, "#1");
+
+			// message on the exception is TextElement_OperationNotSupportedOutsideRTB
+			Assert.Throws<NotSupportedException> ( () => pos.CompareTo (r.ContentEnd), "#2" );
+		}
+
+		[TestMethod]
+		[MoonlightBug]
 		public void Xaml_Set_Null ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
