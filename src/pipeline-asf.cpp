@@ -2749,7 +2749,7 @@ MmsSource::StartedHandler (HttpRequest *request, EventArgs *args)
 	List *headers;
 	HttpHeader *header;
 
-	LOG_MMS ("MmsSource::DownloadStoppedHandler ()\n");
+	LOG_MMS ("MmsSource::StartedHandler ()\n");
 
 	VERIFY_MAIN_THREAD;
 
