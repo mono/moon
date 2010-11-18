@@ -76,7 +76,6 @@ protected:
 	short need_im_reset:1;
 	short have_offset:1;
 	short selecting:1;
-	short setvalue:1;
 	short captured:1;
 	short focused:1;
 	

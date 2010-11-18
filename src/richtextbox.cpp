@@ -227,7 +227,6 @@ RichTextBox::RichTextBox ()
 	need_im_reset = false;
 	have_offset = false;
 	selecting = false;
-	setvalue = true;
 	captured = false;
 	focused = false;
 	view = NULL;
@@ -515,9 +514,7 @@ RichTextBox::SyncContent ()
 	// FIXME: generate the proper xaml
 	char *xaml = NULL;
 	
-	setvalue = false;
 	SetValue (RichTextBox::XamlProperty, Value (xaml, true));
-	setvalue = true;
 }
 
 void
@@ -1234,11 +1231,15 @@ RichTextBox::RemoveTextPointer (TextPointer *pointer)
 char*
 RichTextBox::Serialize ()
 {
+	int c = GetBlocks()->GetCount();
+
+	if (c == 0)
+		return g_strdup ("");
+
 	const char *header = "<Section xml:space=\"preserve\" HasTrailingParagraphBreakOnPaste=\"False\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">";
 	const char *trailer = "</Section>";
 
 	GString* str = g_string_new (header);
-	int c = GetBlocks()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
 		char *b_str = b->Serialize();
