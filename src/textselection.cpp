@@ -280,13 +280,13 @@ TextSelection::GetXaml ()
 TextPointer*
 TextSelection::GetStart ()
 {
-	return &anchor;
+	return new TextPointer (anchor);
 }
 
 TextPointer*
 TextSelection::GetEnd ()
 {
-	return &moving;
+	return new TextPointer (moving);
 }
 
 bool

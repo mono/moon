@@ -116,6 +116,79 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		public void TextPointersAreSnapshots ()
+		{
+			TextSelection ts = rtb.Selection;
+
+			ts.Text = "Moon";
+
+			rtb.SelectAll ();
+
+			TextPointer start = ts.Start;
+			TextPointer end = ts.End;
+
+			ts.Select (ts.Start.GetPositionAtOffset (1, LogicalDirection.Backward), ts.End.GetPositionAtOffset (-1, LogicalDirection.Forward));
+			Assert.AreEqual (-1, start.CompareTo (ts.Start), "#1");
+			Assert.AreEqual (1, end.CompareTo (ts.End), "#2");
+		}
+
+		[TestMethod]
+		public void TextPointersUpdatePosition_insert ()
+		{
+			TextSelection ts = rtb.Selection;
+
+			ts.Text = "Moonlight";
+
+			rtb.SelectAll ();
+
+			TextPointer start = ts.Start;
+			TextPointer insert = ts.Start;
+
+			start = start.GetPositionAtOffset (4, LogicalDirection.Backward);
+			insert = insert.GetPositionAtOffset (3, LogicalDirection.Backward);
+
+			ts.Select (insert, insert);
+
+			ts.Text = "1";
+
+			ts.Select (start, start);
+
+			ts.Text = "2";
+
+			rtb.SelectAll ();
+
+			Assert.AreEqual ("Moo1n2light", ts.Text, "#0");
+		}
+
+		[TestMethod]
+		public void TextPointersUpdatePosition_clear ()
+		{
+			TextSelection ts = rtb.Selection;
+
+			ts.Text = "Moonlight";
+
+			rtb.SelectAll ();
+
+			TextPointer start = ts.Start;
+			TextPointer insert = ts.Start;
+
+			start = start.GetPositionAtOffset (4, LogicalDirection.Backward);
+			insert = insert.GetPositionAtOffset (3, LogicalDirection.Backward);
+
+			ts.Select (insert, insert.GetPositionAtOffset (1, LogicalDirection.Forward));
+
+			ts.Text = "";
+
+			ts.Select (start, start);
+
+			ts.Text = "2";
+
+			rtb.SelectAll ();
+
+			Assert.AreEqual ("Moo2light", ts.Text, "#0");
+		}
+
+		[TestMethod]
 		public void Xaml_Set_Null ()
 		{
 			Assert.Throws<ArgumentNullException> (delegate {
