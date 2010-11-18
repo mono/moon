@@ -19,6 +19,11 @@ namespace Moonlight {
 #define MAX_W 65536
 #define MAX_H MAX_W
 
+Context::Cairo::Cairo ()
+{
+	r = Rect (MIN_X, MIN_Y, MAX_W, MAX_H);
+}
+
 Context::Surface::Surface ()
 {
 	native        = NULL;
@@ -234,6 +239,13 @@ Context::Push (Group extents, MoonSurface *surface)
 	cs->unref ();
 }
 
+cairo_t *
+Context::Push (Cairo extents)
+{
+	Push (Clip (extents.r));
+	return Top ()->Cairo ();
+}
+
 Context::Node *
 Context::Top ()
 {
@@ -258,12 +270,6 @@ Context::Pop (MoonSurface **ref)
 	delete node;
 
 	return r;
-}
-
-cairo_t *
-Context::Cairo ()
-{
-	return Top ()->Cairo ();
 }
 
 bool

@@ -534,7 +534,7 @@ Grid::PostRender (Context *ctx, Region *region, bool skip_children)
 		double dash = 4;
 		ColumnDefinitionCollection *cols = GetColumnDefinitionsNoAutoCreate ();
 		RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
-		cairo_t *cr = ctx->Cairo ();
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 		int col_count = cols ? cols->GetCount () : 0;
 		int row_count = rows ? rows->GetCount () : 0;
 		
@@ -569,6 +569,8 @@ Grid::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_set_source_rgb (cr, 1.0, 1.0, 0.3);
 		}
 		cairo_restore (cr);
+
+		ctx->Pop ();
 	}		
 
 	// Chain up, but skip children since we've already rendered them here.

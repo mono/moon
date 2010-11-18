@@ -911,8 +911,6 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 
 	bool did_occlusion_culling = false;
 
-	cairo_t *cr = ctx->Cairo ();
-
 	int layer_count = 0;
 	if (layers)
 		layer_count = layers->GetCount ();
@@ -927,17 +925,15 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 		}
 
 		if (!render_list->IsEmpty ()) {
-			region->Draw (cr);
-
-			cairo_clip (cr);
-
 			if (!copy->IsEmpty()) {
+				cairo_t *cr = ctx->Push (Context::Cairo ());
+
 				copy->Draw (cr);
 				PaintBackground (cr, transparent, clear_transparent);
-				cairo_new_path (cr);
+
+				ctx->Pop ();
 			}
 
-			cairo_save (cr);
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
 				node->Render (ctx);
 
@@ -945,30 +941,29 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 			}
 
 			did_occlusion_culling = true;
-			cairo_restore (cr);
 		}
 		delete copy;
 	}
 
 	if (!did_occlusion_culling) {
-		region->Draw (cr);
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 
+		region->Draw (cr);
 		PaintBackground (cr, transparent, clear_transparent);
 
-		cairo_clip (cr);
+		ctx->Pop ();
 
-		cairo_save (cr);
 		for (int i = 0; i < layer_count; i ++) {
 			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
 			layer->DoRender (ctx, region);
 		}
-		cairo_restore (cr);
 	}
 
 #ifdef DEBUG
 	if (debug_selected_element) {
 		Rect bounds = debug_selected_element->GetSubtreeBounds();
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 // 			printf ("debug_selected_element is %s\n", debug_selected_element->GetName());
 // 			printf ("bounds is %g %g %g %g\n", bounds.x, bounds.y, bounds.w, bounds.h);
 		cairo_save (cr);
@@ -980,6 +975,8 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 		cairo_rectangle (cr, bounds.x, bounds.y, bounds.width, bounds.height);
 		cairo_stroke (cr);
 		cairo_restore (cr);
+
+		ctx->Pop ();
 	}
 #endif
 
@@ -990,12 +987,15 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 		int r = abs (frames) % 3 == 2 ? 127 : 234;
 		int g = abs (frames) % 3 == 1 ? 239 : 127;
 		int b = abs (frames) % 3 == 1 ? 110 : 222;
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 		
 		cairo_new_path (cr);
 		region->Draw (cr);
 		//cairo_set_line_width (cr, 2.0);
 		cairo_set_source_rgba (cr, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
 		cairo_fill (cr);
+
+		ctx->Pop ();
 	}
 
 
@@ -1610,7 +1610,9 @@ RenderNode::Render (Context *ctx)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
 	if (render_element && ctx->IsMutable ()) {
-		uielement->Render (ctx->Cairo (), region);
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		uielement->Render (cr, region);
+		ctx->Pop ();
 	}
 	
 	if (post_render)

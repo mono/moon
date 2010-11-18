@@ -587,7 +587,7 @@ Effect::Blur (Context     *ctx,
 {
 	const cairo_format_t format = CAIRO_FORMAT_ARGB32;
 	cairo_surface_t      *surface = src->Cairo ();
-	cairo_t              *cr = ctx->Cairo ();
+	cairo_t              *cr = ctx->Push (Context::Cairo ());
 	Rect                 r = Rect (x, y, width, height);
 	unsigned char        *data;
 	int                  stride, n = -1;
@@ -648,6 +648,8 @@ Effect::Blur (Context     *ctx,
 	g_free (data);
 	cairo_surface_destroy (surface);
 	g_free (table);
+
+	ctx->Pop ();
 }
 
 void
@@ -665,7 +667,7 @@ Effect::DropShadow (Context     *ctx,
 	const cairo_format_t format = CAIRO_FORMAT_ARGB32;
 	cairo_surface_t      *surface = src->Cairo ();
 	cairo_surface_t      *image;
-	cairo_t              *cr = ctx->Cairo ();
+	cairo_t              *cr = ctx->Push (Context::Cairo ());
 	Rect                 r = Rect (x, y, width, height);
 	unsigned char        *data;
 	int                  stride, n = -1;
@@ -728,6 +730,8 @@ Effect::DropShadow (Context     *ctx,
 	g_free (data);
 	cairo_surface_destroy (surface);
 	g_free (table);
+
+	ctx->Pop ();
 }
 
 Effect::Effect ()

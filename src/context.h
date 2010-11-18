@@ -55,6 +55,14 @@ public:
 		cairo_matrix_t m;
 	};
 
+	struct Cairo {
+	public:
+		Cairo ();
+		Cairo (Rect cairo) : r (cairo) {}
+
+		Rect r;
+	};
+
 	class Surface : public MoonSurface {
 	public:
 		Surface ();
@@ -106,13 +114,13 @@ public:
 	void Pop ();
 	Rect Pop (MoonSurface **surface);
 
-	cairo_t *Cairo ();
-
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
 
 	virtual void Push (Group extents);
 	virtual void Push (Group extents, MoonSurface *surface);
+
+	virtual cairo_t *Push (Cairo extents);
 
 	virtual void Clear (Color *color);
 

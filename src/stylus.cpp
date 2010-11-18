@@ -848,7 +848,7 @@ InkPresenter::PostRender (Context *ctx, Region *region, bool skip_children)
 	int strokes_count = strokes->GetCount ();
 
 	if (strokes_count > 0 && ctx->IsMutable ()) {
-		cairo_t *cr = ctx->Cairo ();
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 	
 		cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
 		cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
@@ -867,6 +867,8 @@ InkPresenter::PostRender (Context *ctx, Region *region, bool skip_children)
 		
 			stroke->ResetDirty ();
 		}
+
+		ctx->Pop ();
 	}
 
 	// Chain up, but skip children since we've already rendered them here.

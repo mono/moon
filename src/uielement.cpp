@@ -1300,9 +1300,10 @@ UIElement::DoRender (Context *ctx, Region *parent_region)
 	PreRender (ctx, region, false);
 
 	if (ctx->IsMutable ()) {
-		cairo_t *cr = ctx->Cairo ();
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 
 		Render (cr, region);
+		ctx->Pop ();
 	}
 
 	PostRender (ctx, region, false);
@@ -1484,10 +1485,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		if (!bounds.IsEmpty ()) {
 			cairo_rectangle_list_t *list;
 			cairo_rectangle_t      *rect = NULL;
-			cairo_t                *cr = ctx->Cairo ();
+			cairo_t                *cr = ctx->Push (Context::Cairo ());
 
-			// COMPOSITE_CLIP in ::PostRender is affected
-			// by the clip path rendered here
 			RenderClipPath (cr);
 
 			cairo_save (cr);
@@ -1512,6 +1511,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 							    rect->height));
 
 			cairo_rectangle_list_destroy (list);
+
+			ctx->Pop ();
 		}
 
 		if (!bounds.IsEmpty ())
@@ -1564,7 +1565,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			ctx->Push (Context::AbsoluteTransform (cache_xform));
 
 			VisualTreeWalker walker (this, ZForward, false);
-			Render (ctx->Cairo (), region);
+			Render (ctx->Push (Context::Cairo ()), region);
+			ctx->Pop ();
 			while (UIElement *child = walker.Step ())
 				child->DoRender (ctx, region);
 
@@ -1600,12 +1602,14 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
-			cairo_t         *cr = ctx->Cairo ();
+			cairo_t         *cr = ctx->Push (Context::Cairo ());
 
 			cairo_identity_matrix (cr);
 			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_paint (cr);
 			cairo_surface_destroy (src);
+
+			ctx->Pop ();
 
 			surface->unref ();
 		}
@@ -1621,7 +1625,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
-			cairo_t         *cr = ctx->Cairo ();
+			cairo_t         *cr = ctx->Push (Context::Cairo ());
 			cairo_matrix_t  ctm;
 			Point           p = GetOriginPoint ();
 			Rect            area = Rect (p.x, p.y, 0.0, 0.0);
@@ -1639,6 +1643,8 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			cairo_pattern_destroy (mask);
 			cairo_surface_destroy (src);
 
+			ctx->Pop ();
+
 			surface->unref ();
 		}
 
@@ -1653,13 +1659,15 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
-			cairo_t         *cr = ctx->Cairo ();
+			cairo_t         *cr = ctx->Push (Context::Cairo ());
 			double          local_opacity = GetOpacity ();
 
 			cairo_identity_matrix (cr);
 			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_paint_with_alpha (cr, local_opacity);
 			cairo_surface_destroy (src);
+
+			ctx->Pop ();
 
 			surface->unref ();
 		}
@@ -1686,12 +1694,16 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 		if (!r.IsEmpty ()) {
 			cairo_surface_t *src = surface->Cairo ();
-			cairo_t         *cr = ctx->Cairo ();
+			cairo_t         *cr = ctx->Push (Context::Cairo ());
+
+			RenderClipPath (cr);
 
 			cairo_identity_matrix (cr);
 			cairo_set_source_surface (cr, src, r.x, r.y);
 			cairo_paint (cr);
 			cairo_surface_destroy (src);
+
+			ctx->Pop ();
 
 			surface->unref ();
 		}
@@ -1721,7 +1733,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING) {
-		cairo_t *cr = ctx->Cairo ();
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 
 		cairo_save (cr);
 		cairo_new_path (cr);
@@ -1743,10 +1755,12 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		}
 
 		cairo_restore (cr);
+
+		ctx->Pop ();
 	}
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES) {
-		cairo_t *cr = ctx->Cairo ();
+		cairo_t *cr = ctx->Push (Context::Cairo ());
 
 		cairo_save (cr);
 		cairo_new_path (cr);
@@ -1757,6 +1771,8 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		cairo_rectangle (cr, bounds.x + .5, bounds.y + .5, bounds.width - .5, bounds.height - .5);
 		cairo_stroke (cr);
 		cairo_restore (cr);
+
+		ctx->Pop ();
 	}
 }
 

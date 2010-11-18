@@ -139,7 +139,7 @@ main (int argc, char **argv)
 	bounds = Rect (0, 0, 512, 512);
 
 	e.ctx->Push (Context::Group (bounds));
-	cairo_t *cr = e.ctx->Cairo ();
+	cairo_t *cr = e.ctx->Push (Context::Cairo ());
 	cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
 	cairo_paint (cr);
 	cairo_scale (cr, bounds.width, bounds.height);
@@ -151,6 +151,7 @@ main (int argc, char **argv)
 	cairo_close_path (cr);
 	cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
 	cairo_fill (cr);
+	e.ctx->Pop ();
 	bounds = e.ctx->Pop (&e.surface);
 
 	if (argc > 2)

@@ -555,7 +555,7 @@ GalliumContext::Project (MoonSurface  *src,
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
 			cairo_surface_t *cs = src->Cairo ();
-			cairo_t         *cr = Cairo ();
+			cairo_t         *cr = Context::Push (Cairo ());
 			Rect            r = Rect (x,
 						  y,
 						  view->texture->width0,
@@ -571,6 +571,7 @@ GalliumContext::Project (MoonSurface  *src,
 			cairo_restore (cr);
 			cairo_surface_destroy (cs);
 
+			Pop ();
 			return;
 		}
 	}
