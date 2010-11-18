@@ -238,6 +238,21 @@ _available (CallData *sender)
 	res->Available (data->buffer, data->size);
 }
 
+static inline const char *
+get_state_name (int state)
+{
+	switch (state) {
+	case 0: return "STOPPED";
+	case 1: return "STARTED";
+	case 2: return "FINISHED";
+	case 3: return "HEADER";
+	case 4: return "DATA";
+	case 5: return "DONE";
+	default: return "UNKNOWN";
+	}
+}
+
+
 #if 0
 static void
 _finished (CallData *sender)
@@ -343,7 +358,7 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
 	: HttpResponse (Type::CURLDOWNLOADERRESPONSE, request),
 	  bridge(bridge), request(request),
 	  status(0), statusText(NULL),
-	  delay(2), state(STOPPED), aborted (false)
+	  delay(2), state(STOPPED), aborted (false), reported_start (false)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p\n", this);
 
@@ -557,11 +572,12 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 void
 CurlDownloaderResponse::Started ()
 {
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::Started %p\n", this);
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Started %p state: %s\n", this, get_state_name (state));
 
 	SetCurrentDeployment ();
 	state = HEADER;
 	request->Started ();
+	reported_start = true;
 	if (state == FINISHED)
 		Finished ();
 }
@@ -585,9 +601,13 @@ CurlDownloaderResponse::Available (char* buffer, size_t size)
 void
 CurlDownloaderResponse::Finished ()
 {
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::Finished %p\n", this);
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Finished %p state: %s IsAborted: %i\n", this, get_state_name (state), IsAborted ());
 
 	SetCurrentDeployment ();
+
+	if (!reported_start && !IsAborted ())
+		request->Started ();
+
 	if (state == STARTED) {
 		state = FINISHED;
 		return;

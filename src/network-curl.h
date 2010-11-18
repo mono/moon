@@ -168,6 +168,7 @@ class CurlDownloaderResponse : public HttpResponse {
 	};
 	State state;
 	bool aborted;
+	bool reported_start;
 
  public:
 	/* @SkipFactories */
