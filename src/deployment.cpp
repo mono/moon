@@ -451,6 +451,8 @@ Deployment::InnerConstructor ()
 	surface = NULL;
 	medias = NULL;
 	keepalive = NULL;
+	appdomain_initialized = false;
+	appdomain_initialization_result = false;
 	is_initializing = false;
 	is_shutting_down = false;
 	is_network_stopped = false;
@@ -700,14 +702,24 @@ Deployment::DestroyManagedApplication (gpointer plugin_instance)
 bool
 Deployment::InitializeAppDomain ()
 {
+	return InitializeAppDomain ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e");
+}
+
+bool
+Deployment::InitializeAppDomain (const char *system_windows_fullname)
+{
 	bool result = false;
 
-	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
-	
+	LOG_DEPLOYMENT ("Deployment::InitializeAppDomain ('%s'): initialized: %i result: %s\n",
+		system_windows_fullname, appdomain_initialized, appdomain_initialized ? (appdomain_initialization_result ? "OK" : "FAILED") : "N/A");
+
+	if (appdomain_initialized)
+		return appdomain_initialization_result;
+
+	system_windows_assembly = mono_assembly_load_with_partial_name (system_windows_fullname, NULL);
+
 	if (system_windows_assembly) {
 		MonoClass *app_launcher;
-
-		result = true;
 
 		system_windows_image = mono_assembly_get_image (system_windows_assembly);
 		
@@ -715,14 +727,14 @@ Deployment::InitializeAppDomain ()
 		
 		app_launcher = mono_class_from_name (system_windows_image, "Mono", "ApplicationLauncher");
 		if (!app_launcher) {
-			g_warning ("Could not find ApplicationLauncher type.");
-			return false;
+			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find ApplicationLauncher type.\n");
+			goto completed;
 		}
 
 		moon_exception = mono_class_from_name (system_windows_image, "Mono", "MoonException");
 		if (!moon_exception) {
-			g_warning ("Could not find MoonException type.");
-			return false;
+			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find MoonException type.\n");
+			goto completed;
 		}
 		
 		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
@@ -732,30 +744,38 @@ Deployment::InitializeAppDomain ()
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
 		if (moon_load_xaml == NULL || moon_ensure_managed_peer == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
-			g_warning ("Lookup of ApplicationLauncher methods failed.");
-			result = false;
+			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: lookup of ApplicationLauncher methods failed.\n");
+			goto completed;
 		}
 
 		moon_exception_message = MonoGetPropertyFromName (mono_get_exception_class(), "Message");
 		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
 
 		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
-			g_warning ("Lookup of MoonException properties failed.");
-			result = false;
+			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: lookup of MoonException properties failed.\n");
+			goto completed;
 		}
 
 		if (!InitializeManagedXamlParser (system_windows_image)) {
-			g_warning ("Unable to Initialize the Managed Xaml Parser.");
-			result = false;
+			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: unable to initialize the managed xaml parser.\n");
+			goto completed;
 		}
+
+		result = true;
 	} else {
-		g_warning ("Plugin AppDomain Creation: could not find System.Windows.dll.");
+		fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find assembly '%s'.\n", system_windows_fullname);
 	}
 
 	if (result)
 		EnsureManagedPeer ();
 
+#if DEBUG
 	printf ("Moonlight: Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
+#endif
+
+completed:
+	appdomain_initialization_result = result;
+	appdomain_initialized = true;
 
 	return result;
 }

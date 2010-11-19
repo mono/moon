@@ -270,6 +270,8 @@ public:
 	
 	bool InitializeManagedDeployment (gpointer plugin_instance, const char *culture, const char *uiculture);
 	bool InitializeAppDomain ();
+	/* @GeneratePInvoke */
+	bool InitializeAppDomain (const char *system_windows_fullname);
 
 	virtual void Dispose ();
 
@@ -516,6 +518,8 @@ private:
 	GHashTable *keepalive;
 	Mutex keepalive_mutex;
 
+	bool appdomain_initialized;
+	bool appdomain_initialization_result;
 	bool is_initializing;
 	bool is_shutting_down;
 	bool is_network_stopped;

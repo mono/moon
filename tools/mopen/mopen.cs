@@ -408,7 +408,53 @@ class MonoOpen {
 		else
 			return 1;
 	}
-	
+
+	static Assembly Find (string name)
+	{
+		AssemblyName an = new AssemblyName (name);
+		foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies ()) {
+			if (an.Name == a.GetName ().Name) {
+				Console.WriteLine ("Find ({0}) => {1} YES", name, a.FullName);
+				return a;
+			}
+			Console.WriteLine ("Find ({0}) => {1} NO", name, a.FullName);
+		}
+		return null;
+	}
+
+	static string MapVersion (string name)
+	{
+		string version = typeof (int).Assembly.GetName ().Version.ToString ();
+		switch (name) {
+			case "Microsoft.VisualBasic, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35":
+				return "Microsoft.VisualBasic, Version=" + version + ", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
+			case "mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "mscorlib, Version=" + version + ", Culture=neutral, PublicKeyToken=b77a5c561934e089";
+			case "System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.Core, Version=" + version + ", Culture=neutral, PublicKeyToken=b77a5c561934e089";
+			case "System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System, Version=" + version + ", Culture=neutral, PublicKeyToken=b77a5c561934e089";
+			case "System.Net, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.Net, Version=" + version + ", Culture=neutral, PublicKeyToken=7cec85d7bea7798e";
+			case "System.Runtime.Serialization, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.Runtime.Serialization, Version=" + version + ", Culture=neutral, PublicKeyToken=b77a5c561934e089";
+			case "System.ServiceModel, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35":
+				return "System.ServiceModel, Version=" + version + ", Culture=neutral, PublicKeyToken=b77a5c561934e089";
+			case "System.ServiceModel.Web, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.ServiceModel.Web, Version=" + version + ", Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+			case "System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.Xml, Version=" + version + ", Culture=neutral, PublicKeyToken=b77a5c561934e089";
+
+			/* these are the only 3.0 assemblies we need to redirect to, all the others redirect to fx assemblies */
+			case "System.Windows.Browser, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.Windows.Browser, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756";
+			case "System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+				return "System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756";
+		}
+
+		return null;
+	}
+
 	static int Main (string [] args)
 	{
 		List<string> cmdargs = new List<string> ();
@@ -462,6 +508,15 @@ class MonoOpen {
 		} else {
 			file = rest [0];
 		}
+
+		AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs rea) {
+			string mapped = MapVersion (rea.Name);
+			Assembly result = mapped != null ? Assembly.Load (mapped) : null;
+
+			Console.WriteLine ("AssemblyResolveEvent ({0}, {1}) mapped to: '{2}' loaded assembly: '{3}'", sender, rea.Name, mapped, result != null ? result.FullName : "not found");
+
+			return result;
+		};
 
 		if (File.Exists (file)) {
 			if (all_stories && file.EndsWith (".xaml")) {

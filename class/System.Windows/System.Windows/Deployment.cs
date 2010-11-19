@@ -60,6 +60,7 @@ namespace System.Windows {
 
 		private new void Initialize ()
 		{
+			NativeMethods.deployment_initialize_app_domain (this.native, GetType ().Assembly.FullName);
 			UriHelper.Initialize (this);
 
 			parse_uri_stack = new Stack<Uri>();
@@ -688,13 +689,14 @@ namespace System.Windows {
 #if SANITY
 				Type t = entry_type;
 				int spacing = 0;
+				Console.WriteLine ("Application type: {0}", typeof (Application).AssemblyQualifiedName);
 				while (t != null) {
 					if (spacing > 0) {
 						for (int i = 0; i < spacing; i ++)
 							Console.Write (" ");
 						Console.Write ("+ ");
 					}
-					Console.WriteLine ("{0}", t);
+					Console.WriteLine ("{0} from {1}", t.AssemblyQualifiedName, t.Assembly.Location);
 					spacing += 2;
 					t = t.BaseType;
 				}
