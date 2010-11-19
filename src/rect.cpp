@@ -19,6 +19,8 @@
 
 namespace Moonlight {
 
+const Rect Rect::ManagedEmpty = Rect (0,0,-1,-1);
+
 bool
 Rect::FromStr (const char *s, Rect *r)
 {

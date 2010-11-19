@@ -32,11 +32,9 @@ public:
 	virtual IDocumentNode *GetParentDocumentNode () = 0;
 	virtual DependencyObjectCollection *GetDocumentChildren () = 0;
 
-	virtual void AddTextPointer (TextPointer *pointer) = 0;
-	virtual void RemoveTextPointer (TextPointer *pointer) = 0;
-
-	virtual char* Serialize () = 0;
-	virtual void SerializeProperties (bool force, GString *str) = 0;
+	virtual void SerializeText (GString *str) = 0;
+	virtual void SerializeXaml (GString *str) = 0;
+	virtual void SerializeXamlProperties (bool force, GString *str) = 0;
 
 	static IDocumentNode* CastToIDocumentNode (DependencyObject *obj);
 };
@@ -58,8 +56,6 @@ public:
 	{ }
 
 	~TextPointer () {}
-
-	static int Comparer (gconstpointer tpp1, gconstpointer tpp2);
 
 	/* @GeneratePInvoke */
 	static void Free (TextPointer *pointer) { delete pointer; }

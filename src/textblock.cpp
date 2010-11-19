@@ -40,12 +40,14 @@ static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
 
 class TextBlockDynamicPropertyValueProvider : public FrameworkElementProvider {
 	Value *baseline_offset_value;
+	Value *text_value;
 
  public:
 	TextBlockDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, int flags = 0)
 		: FrameworkElementProvider (obj, precedence, flags)
 	{
 		baseline_offset_value = NULL;
+		text_value = NULL;
 	}
 
 	virtual ~TextBlockDynamicPropertyValueProvider ()
@@ -55,6 +57,16 @@ class TextBlockDynamicPropertyValueProvider : public FrameworkElementProvider {
 
 	virtual Value *GetPropertyValue (DependencyProperty *property)
 	{
+#if false
+		if (property->GetId () == TextBlock::TextProperty) {
+			delete text_value;
+			GString *str = g_string_new ("");
+			((TextBlock*)obj)->SerializeText(str);
+			text_value = new Value (g_string_free (str, FALSE), true);
+			return text_value;
+		}
+		else
+#endif
 		if (property->GetId () == TextBlock::BaselineOffsetProperty) {
 			delete baseline_offset_value;
 			TextLayout *layout = ((TextBlock*)obj)->layout;
@@ -102,8 +114,8 @@ TextBlock::~TextBlock ()
 void
 TextBlock::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args)
 {
-	if (!setvalue)
-		return;
+	// if (!setvalue)
+	// 	return;
 
 	if (args->GetId () != Inline::ForegroundProperty) {
 		if (args->GetId () == Run::TextProperty) {
@@ -132,11 +144,48 @@ TextBlock::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEvent
 void
 TextBlock::DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args)
 {
+	// update our TextProperty
+	setvalue = false;
+	SetValue (TextBlock::TextProperty, Value (GetTextInternal (GetInlines()), true));
+	setvalue = true;
+			
+	UpdateLayoutAttributes ();
+
 	// All non-Foreground property changes require
 	// recalculating layout which can change the bounds.
 	InvalidateMeasure ();
 	InvalidateArrange ();
 	UpdateBounds (true);
+}
+
+DependencyObject* 
+TextBlock::Split (int loc)
+{
+	return NULL;
+}
+
+IDocumentNode*
+TextBlock::GetParentDocumentNode ()
+{
+	return NULL;
+}
+
+DependencyObjectCollection*
+TextBlock::GetDocumentChildren ()
+{
+	return GetInlines();
+}
+
+void
+TextBlock::SerializeText (GString *str)
+{
+	InlineCollection *inlines = GetInlines ();
+	int inlines_count = inlines->GetCount ();
+	for (int i = 0; i < inlines_count; i++) {
+		Inline *item = inlines->GetValueAt (i)->AsInline ();
+		
+		item->SerializeText (str);
+	}
 }
 
 bool
@@ -346,11 +395,37 @@ TextBlock::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 }
 
 void
+TextBlock::UpdateLayoutAttributesForInline (Inline *item, int *length, List *runs)
+{
+	if (item->Is (Type::RUN)) {
+		const char *text = ((Run *) item)->GetText ();
+				
+		if (text && text[0]) {
+			runs->Append (new TextLayoutAttributes ((ITextAttributes *) item, *length));
+					
+			*length += strlen (text);
+		}
+	}
+	else if (item->Is (Type::LINEBREAK)) {
+		runs->Append (new TextLayoutAttributes ((ITextAttributes *) item, *length));
+				
+		*length += utf8_linebreak_len;
+	}
+	else if (item->Is (Type::SPAN)) {
+		InlineCollection *inlines = ((Span*)item)->GetInlines ();
+
+		int inlines_count = inlines->GetCount ();
+		for (int i = 0; i < inlines_count; i++) {
+			Inline *sub_item = inlines->GetValueAt (i)->AsInline ();
+			UpdateLayoutAttributesForInline (sub_item, length, runs);
+		}
+	}
+}
+
+void
 TextBlock::UpdateLayoutAttributes ()
 {
 	InlineCollection *inlines = GetInlines ();
-	TextLayoutAttributes *attrs;
-	const char *text;
 	int length = 0;
 	Inline *item;
 	List *runs;
@@ -361,38 +436,15 @@ TextBlock::UpdateLayoutAttributes ()
 	
 	UpdateFontDescription (false);
 	
-	if (inlines != NULL) {
-		int inlines_count = inlines->GetCount ();
-		for (int i = 0; i < inlines_count; i++) {
-			item = inlines->GetValueAt (i)->AsInline ();
-			
- 			switch (item->GetObjectType ()) {
-			case Type::RUN:
-				text = ((Run *) item)->GetText ();
-				
-				if (text && text[0]) {
-					attrs = new TextLayoutAttributes ((ITextAttributes *) item, length);
-					runs->Append (attrs);
-					
-					length += strlen (text);
-				}
-				
-				break;
-			case Type::LINEBREAK:
-				attrs = new TextLayoutAttributes ((ITextAttributes *) item, length);
-				runs->Append (attrs);
-				
-				length += utf8_linebreak_len;
-				break;
-			default:
-				break;
-			}
-		}
-		
-		if (inlines_count > 0)
-			was_set = true;
+	int inlines_count = inlines->GetCount ();
+	for (int i = 0; i < inlines_count; i++) {
+		item = inlines->GetValueAt (i)->AsInline ();
+		UpdateLayoutAttributesForInline (item, &length, runs);
 	}
-	
+
+	if (inlines_count > 0)
+		was_set = true;
+
 	layout->SetText (GetText (), length);
 	layout->SetTextAttributes (runs);
 }
@@ -508,39 +560,22 @@ TextBlock::Paint (cairo_t *cr)
 char *
 TextBlock::GetTextInternal (InlineCollection *inlines)
 {
-	const char *text;
 	GString *block;
 	Inline *item;
-	char *str;
 	
 	if (!inlines)
 		return g_strdup ("");
 	
 	block = g_string_new ("");
-	
+
 	int inlines_count = inlines->GetCount ();
 	for (int i = 0; i < inlines_count; i++) {
 		item = inlines->GetValueAt (i)->AsInline ();
 		
-		switch (item->GetObjectType ()) {
-		case Type::RUN:
-			text = ((Run *) item)->GetText ();
-			
-			if (text && text[0])
-				g_string_append (block, text);
-			break;
-		case Type::LINEBREAK:
-			g_string_append_len (block, utf8_linebreak, utf8_linebreak_len);
-			break;
-		default:
-			break;
-		}
+		item->SerializeText (block);
 	}
 	
-	str = block->str;
-	g_string_free (block, false);
-	
-	return str;
+	return g_string_free (block, FALSE);
 }
 
 void
@@ -603,25 +638,14 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args, error);
 		
-		if (args->GetId () == FrameworkElement::LanguageProperty) {
-			// a change in xml:lang might change font characteristics
-			if (UpdateFontDescriptions (false)) {
-				InvalidateMeasure ();
-				InvalidateArrange ();
-				UpdateBounds (true);
-				dirty = true;
-			}
-		}
-		
-		/*
-		if (args->GetId () == FrameworkElement::WidthProperty) {
-			//if (layout->SetMaxWidth (args->GetNewValue()->AsDouble ()))
-			//	dirty = true;
-			
-			UpdateBounds (true);
-		}
-		*/
-		return;
+		if (args->GetId () != FrameworkElement::LanguageProperty)
+			return;
+
+		// a change in xml:lang might change font characteristics
+		if (!UpdateFontDescriptions (false))
+			return;
+
+		dirty = true;
 	}
 	
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
@@ -662,7 +686,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
 			const char *text = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
-			
+
 			SetTextInternal (text);
 			UpdateLayoutAttributes ();
 			dirty = true;

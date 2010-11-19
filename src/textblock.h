@@ -32,7 +32,7 @@ class TextBlockDynamicPropertyValueProvider;
 
 /* @ContentProperty="Inlines" */
 /* @Namespace=System.Windows.Controls */
-class TextBlock : public FrameworkElement, public ITextLayoutContainer {
+class TextBlock : public FrameworkElement, public ITextLayoutContainer, public IDocumentNode {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
 	TextFontDescription *font;
@@ -59,6 +59,7 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer {
 	void AddFontSource (Downloader *downloader);
 	
 	void UpdateLayoutAttributes ();
+	void UpdateLayoutAttributesForInline (Inline *item, int *length, List *runs);
 	bool UpdateFontDescription (bool force);
 	bool UpdateFontDescriptions (bool force);
 	
@@ -129,6 +130,15 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual bool CanFindElement () { return true; }
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+
+	// IDocumentNode interface
+	virtual IDocumentNode* GetParentDocumentNode ();
+	virtual DependencyObjectCollection* GetDocumentChildren ();
+	virtual DependencyObject* Split (int loc);
+
+	virtual void SerializeText (GString *str);
+	virtual void SerializeXaml (GString *str) {}
+	virtual void SerializeXamlProperties (bool force, GString *str) {}
 
 	// ITextLayoutContainer interface
 	virtual void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);

@@ -64,7 +64,6 @@ protected:
 	DependencyObject *contentElement;
 	
 	TextSelection *selection;
-	GPtrArray *text_pointers;
 
 	Stack *undo;
 	Stack *redo;
@@ -203,11 +202,10 @@ protected:
 	virtual IDocumentNode* GetParentDocumentNode ();
 	virtual DependencyObjectCollection* GetDocumentChildren ();
 	virtual DependencyObject* Split (int loc);
-	virtual void AddTextPointer (TextPointer *pointer);
-	virtual void RemoveTextPointer (TextPointer *pointer);
 
-	virtual char* Serialize ();
-	virtual void SerializeProperties (bool force, GString *str);
+	virtual void SerializeText (GString *str) {}
+	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlProperties (bool force, GString *str);
 
 	//
 	// ITextAttributes Interface Methods

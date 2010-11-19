@@ -184,7 +184,7 @@ TextPointer::GetCharacterRect (LogicalDirection dir)
 	}
 	if (!el) {
 		g_warning ("a TextPointer outside of a RichTextBox?  say it ain't so...");
-		return Rect (0,0,-1,-1);
+		return Rect::ManagedEmpty;
 	}
 
 	return ((RichTextBox*)el)->GetCharacterRect (this, dir);
@@ -477,30 +477,6 @@ TextPointer::GetIsAtInsertionPosition ()
 {
 	// FIXME we need a bunch more tests to see if this is correct, but it seems to work for the tests we have..
 	return parent->Is (Type::RUN);
-}
-
-int
-TextPointer::Comparer (gconstpointer tpp1, gconstpointer tpp2)
-{
-	TextPointer *tp1 = *(TextPointer **)tpp1;
-	TextPointer *tp2 = *(TextPointer **)tpp2;
-
-	int location_diff = tp1->GetLocation() - tp2->GetLocation ();
-
-	if (location_diff == 0) {
-		if (tp1->GetLogicalDirection() == tp2->GetLogicalDirection())
-			return 0;
-		else if (tp1->GetLogicalDirection () == LogicalDirectionBackward)
-			return -1;
-		else
-			return 1;
-	}
-	else if (location_diff < 0) {
-		return -1;
-	}
-	else {
-		return 1;
-	}
 }
 
 

@@ -56,7 +56,6 @@ TextElement::TextElement ()
 
 	font = new TextFontDescription ();
 	downloaders = g_ptr_array_new ();
-	text_pointers = g_ptr_array_new ();
 
 	UpdateFontDescription (true);
 }
@@ -65,7 +64,6 @@ TextElement::~TextElement ()
 {
 	CleanupDownloaders ();
 	g_ptr_array_free (downloaders, TRUE);
-	g_ptr_array_free (text_pointers, TRUE);
 	delete font;
 }
 
@@ -323,18 +321,6 @@ TextElement::UpdateFontDescription (bool force)
 }
 
 
-void
-TextElement::AddTextPointer (TextPointer *pointer)
-{
-	g_ptr_array_insert_sorted (text_pointers, TextPointer::Comparer, pointer);
-}
-
-void
-TextElement::RemoveTextPointer (TextPointer *pointer)
-{
-	g_ptr_array_remove (text_pointers, pointer);
-}
-
 TextPointer*
 TextElement::GetContentStart ()
 {
@@ -398,7 +384,7 @@ TextElement::GetParentDocumentNode ()
 }
 
 void
-TextElement::SerializeProperties (bool force, GString *str)
+TextElement::SerializeXamlProperties (bool force, GString *str)
 {
 	if (force || LocalValueOverrides (FontSizeProperty))
 		g_string_append_printf (str, " FontSize=\"%g\"", GetFontSize());
@@ -482,13 +468,21 @@ LineBreak::LineBreak ()
 	SetObjectType (Type::LINEBREAK);
 }
 
-char*
-LineBreak::Serialize ()
+static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
+#define utf8_linebreak_len 3
+
+void
+LineBreak::SerializeText (GString *str)
 {
-	GString *str = g_string_new ("<LineBreak ");
-	SerializeProperties (false, str);
+	g_string_append_len (str, utf8_linebreak, utf8_linebreak_len);
+}
+
+void
+LineBreak::SerializeXaml (GString *str)
+{
+	g_string_append (str, "<LineBreak ");
+	SerializeXamlProperties (false, str);
 	g_string_append (str, "/>");
-	return g_string_free (str, FALSE);
 }
 
 //
@@ -557,9 +551,9 @@ Run::Split (int loc)
 }
 
 void
-Run::SerializeProperties (bool force, GString *str)
+Run::SerializeXamlProperties (bool force, GString *str)
 {
-	Inline::SerializeProperties (force, str);
+	Inline::SerializeXamlProperties (force, str);
 
 	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(FlowDirectionProperty)) == PropertyPrecedence_LocalValue)
 		g_string_append_printf (str, " FlowDirection=\"%s\"", enums_int_to_str ("FlowDirection", GetFlowDirection()));
@@ -567,13 +561,20 @@ Run::SerializeProperties (bool force, GString *str)
 	g_string_append_printf (str, " Text=\"%s\" ", GetText ());
 }
 
-char*
-Run::Serialize ()
+void
+Run::SerializeText (GString *str)
 {
-	GString *str = g_string_new ("<Run");
-	SerializeProperties (false, str);
+	const char *text = GetText ();
+	if (text)
+		g_string_append (str, text);
+}
+
+void
+Run::SerializeXaml (GString *str)
+{
+	g_string_append (str, "<Run");
+	SerializeXamlProperties (false, str);
 	g_string_append (str, "/>");
-	return g_string_free (str, FALSE);
 }
 
 bool
@@ -598,9 +599,9 @@ Block::Block ()
 }
 
 void
-Block::SerializeProperties (bool force, GString *str)
+Block::SerializeXamlProperties (bool force, GString *str)
 {
-	TextElement::SerializeProperties (force, str);
+	TextElement::SerializeXamlProperties (force, str);
 
 	if (force || LocalValueOverrides (TextAlignmentProperty))
 		g_string_append_printf (str, " TextAlignment=\"%s\"", enums_int_to_str ("TextAlignment", GetTextAlignment()));
@@ -647,24 +648,31 @@ Paragraph::Split (int loc)
 	return new_p;
 }
 
-char*
-Paragraph::Serialize ()
+void
+Paragraph::SerializeText (GString *str)
 {
-	GString* str = g_string_new ("<Paragraph");
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		il->SerializeText(str);
+	}
+}
 
-	SerializeProperties (true, str);
+void
+Paragraph::SerializeXaml (GString *str)
+{
+	g_string_append (str, "<Paragraph");
+
+	SerializeXamlProperties (true, str);
 
 	g_string_append (str, ">");
 
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		char *il_str = il->Serialize();
-		g_string_append (str, il_str);
-		g_free (il_str);
+		il->SerializeXaml(str);
 	}
 	g_string_append (str, "</Paragraph>");
-	return g_string_free (str, FALSE);
 }
 
 //
@@ -694,22 +702,26 @@ Section::Split (int loc)
 	return new_s;
 }
 
-char*
-Section::Serialize ()
+void
+Section::SerializeText (GString *str)
 {
-	const char *header = "<Section>";
-	const char *trailer = "</Section>";
-
-	GString* str = g_string_new (header);
 	int c = GetBlocks()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
-		char *b_str = b->Serialize();
-		g_string_append (str, b_str);
-		g_free (b_str);
+		b->SerializeText(str);
 	}
-	g_string_append (str, trailer);
-	return g_string_free (str, FALSE);
+}
+
+void
+Section::SerializeXaml (GString *str)
+{
+	g_string_append (str, "<Section>");
+	int c = GetBlocks()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
+		b->SerializeXaml(str);
+	}
+	g_string_append (str, "</Section>");
 }
 
 void
@@ -765,6 +777,16 @@ Span::Split (int loc)
 	return new_s;
 }
 
+void
+Span::SerializeText (GString *str)
+{
+	int c = GetInlines()->GetCount();
+	for (int i = 0; i < c; i ++) {
+		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
+		il->SerializeText(str);
+	}
+}
+
 Value* 
 Span::CreateInlineCollection (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
@@ -787,22 +809,16 @@ Bold::Bold ()
 	SetFontWeight (&weight);
 }
 
-char*
-Bold::Serialize ()
+void
+Bold::SerializeXaml (GString *str)
 {
-	const char *header = "<Bold>";
-	const char *trailer = "</Bold>";
-
-	GString* str = g_string_new (header);
+	g_string_append (str, "<Bold>");
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		char *il_str = il->Serialize();
-		g_string_append (str, il_str);
-		g_free (il_str);
+		il->SerializeXaml(str);
 	}
-	g_string_append (str, trailer);
-	return g_string_free (str, FALSE);
+	g_string_append (str, "</Bold>");
 }
 
 //
@@ -817,22 +833,16 @@ Italic::Italic ()
 	SetFontStyle (&style);
 }
 
-char*
-Italic::Serialize ()
+void
+Italic::SerializeXaml (GString *str)
 {
-	const char *header = "<Italic>";
-	const char *trailer = "</Italic>";
-
-	GString* str = g_string_new (header);
+	g_string_append (str, "<Italic>");
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		char *il_str = il->Serialize();
-		g_string_append (str, il_str);
-		g_free (il_str);
+		il->SerializeXaml(str);
 	}
-	g_string_append (str, trailer);
-	return g_string_free (str, FALSE);
+	g_string_append (str, "</Italic>");
 }
 
 //
@@ -845,22 +855,16 @@ Underline::Underline ()
 	SetTextDecorations (TextDecorationsUnderline);
 }
 
-char*
-Underline::Serialize ()
+void
+Underline::SerializeXaml (GString *str)
 {
-	const char *header = "<Underline>";
-	const char *trailer = "</Underline>";
-
-	GString* str = g_string_new (header);
+	g_string_append (str, "<Underline>");
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		char *il_str = il->Serialize();
-		g_string_append (str, il_str);
-		g_free (il_str);
+		il->SerializeXaml(str);
 	}
-	g_string_append (str, trailer);
-	return g_string_free (str, FALSE);
+	g_string_append (str, "</Underline>");
 }
 
 //
@@ -882,9 +886,9 @@ Hyperlink::Hyperlink ()
 }
 
 void
-Hyperlink::SerializeProperties (bool force, GString *str)
+Hyperlink::SerializeXamlProperties (bool force, GString *str)
 {
-	Span::SerializeProperties (force, str);
+	Span::SerializeXamlProperties (force, str);
 
 	// is this something that's actually set by the hyperlink class?
 	g_string_append (str, " TextDecorations=\"Underline\"");
@@ -899,21 +903,18 @@ Hyperlink::SerializeProperties (bool force, GString *str)
 	}
 }
 
-char*
-Hyperlink::Serialize ()
+void
+Hyperlink::SerializeXaml (GString *str)
 {
-	GString* str = g_string_new ("<Hyperlink");
-	SerializeProperties (false, str);
+	g_string_append (str, "<Hyperlink");
+	SerializeXamlProperties (false, str);
 	g_string_append (str, ">");
 	int c = GetInlines()->GetCount();
 	for (int i = 0; i < c; i ++) {
 		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		char *il_str = il->Serialize();
-		g_string_append (str, il_str);
-		g_free (il_str);
+		il->SerializeXaml(str);
 	}
 	g_string_append (str, "</Hyperlink>");
-	return g_string_free (str, FALSE);
 }
 
 
@@ -926,10 +927,10 @@ InlineUIContainer::InlineUIContainer ()
 	SetObjectType (Type::INLINEUICONTAINER);
 }
 
-char*
-InlineUIContainer::Serialize ()
+void
+InlineUIContainer::SerializeXaml (GString *str)
 {
-	return g_strdup ("<Run Text=\"\"/>");
+	g_string_append (str, "<Run Text=\"\"/>");
 }
 
 void

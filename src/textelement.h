@@ -46,7 +46,6 @@ class ITextLayoutContainer {
 class TextElement : public DependencyObject, public ITextAttributes, public IDocumentNode {
 	TextFontDescription *font;
 	GPtrArray *downloaders;
-	GPtrArray *text_pointers;
 	
 	void AddFontResource (const char *resource);
 	void AddFontSource (Downloader *downloader);
@@ -101,11 +100,9 @@ public:
 	virtual IDocumentNode* GetParentDocumentNode ();
 	virtual DependencyObjectCollection *GetDocumentChildren () { return NULL; }
 	virtual DependencyObject *Split (int loc) { return NULL; }
-	virtual char* Serialize () { return NULL; }
-	virtual void SerializeProperties (bool force, GString *str);
-
-	virtual void AddTextPointer (TextPointer *pointer);
-	virtual void RemoveTextPointer (TextPointer *pointer);
+	virtual void SerializeText (GString *str) { }
+	virtual void SerializeXaml (GString *str) { }
+	virtual void SerializeXamlProperties (bool force, GString *str);
 
 	//
 	// ITextAttributes Interface Methods
@@ -213,7 +210,8 @@ class LineBreak : public Inline {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
+	virtual void SerializeText (GString *str);
+	virtual void SerializeXaml (GString *str);
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -249,8 +247,9 @@ class Run : public Inline {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
-	virtual void SerializeProperties (bool force, GString *str);
+	virtual void SerializeText (GString *str);
+	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlProperties (bool force, GString *str);
 	virtual DependencyObject* Split (int loc);
 
 	//
@@ -289,7 +288,7 @@ class Block : public TextElement {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual void SerializeProperties (bool force, GString *str);
+	virtual void SerializeXamlProperties (bool force, GString *str);
 	
 	//
 	// Property Accessors
@@ -327,7 +326,8 @@ class Paragraph : public Block {
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
 	virtual DependencyObject *Split (int loc);
-	virtual char* Serialize ();
+	virtual void SerializeText (GString *str);
+	virtual void SerializeXaml (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -364,7 +364,8 @@ class Section : public Block {
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetBlocks(); }
 	virtual DependencyObject* Split (int loc);
-	virtual char* Serialize ();
+	virtual void SerializeText (GString *str);
+	virtual void SerializeXaml (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -396,6 +397,7 @@ class Span : public Inline {
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
 	virtual DependencyObject* Split (int loc);
+	virtual void SerializeText (GString *str);
 
 	static Value *CreateInlineCollection (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
 };
@@ -414,7 +416,7 @@ class Bold : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
+	virtual void SerializeXaml (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -431,7 +433,7 @@ class Italic : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
+	virtual void SerializeXaml (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -448,7 +450,7 @@ class Underline : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
+	virtual void SerializeXaml (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -495,8 +497,8 @@ class Hyperlink : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
-	virtual void SerializeProperties (bool force, GString *str);
+	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlProperties (bool force, GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -524,7 +526,7 @@ class InlineUIContainer : public Inline {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual char* Serialize ();
+	virtual void SerializeXaml (GString *str);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };

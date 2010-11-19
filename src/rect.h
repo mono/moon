@@ -247,6 +247,8 @@ struct Rect {
 	//   this was successful, false otherwise.
 	//
 	static bool FromStr (const char *s, Rect *r);
+
+	static const Rect ManagedEmpty;
 };
 
 G_BEGIN_DECLS

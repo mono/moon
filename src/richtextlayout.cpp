@@ -1259,7 +1259,7 @@ Rect
 RichTextLayout::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 {
 	if (lines->len == 0)
-		return Rect (0,0,-1,-1);
+		return Rect::ManagedEmpty;
 
 	/* find the line that contains the textpointer */
 	RichTextLayoutLine *line = NULL;
@@ -1293,7 +1293,7 @@ RichTextLayout::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 	}
 
 	printf ("NIEX GetCharacterRect()\n");
-	return Rect (0,0,-1,-1);
+	return Rect::ManagedEmpty;
 }
 
 Rect

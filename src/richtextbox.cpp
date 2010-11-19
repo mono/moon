@@ -49,8 +49,9 @@ class RichTextBoxProvider : public FrameworkElementProvider {
 	{
 		if (property->GetId () == RichTextBox::XamlProperty) {
 			delete xaml_value;
-			char *serialized_xaml = ((RichTextBox*)obj)->Serialize();
-			xaml_value = new Value (serialized_xaml);
+			GString *str = g_string_new ("");
+			((RichTextBox*)obj)->SerializeXaml(str);
+			xaml_value = new Value (g_string_free (str, FALSE), true);
 			return xaml_value;
 		}
 		else if (property->GetId () == RichTextBox::BaselineOffsetProperty) {
@@ -202,8 +203,6 @@ RichTextBox::RichTextBox ()
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
 
-	text_pointers = g_ptr_array_new ();
-
 	contentElement = NULL;
 	
 	MoonWindowingSystem *ws = runtime_get_windowing_system ();
@@ -239,8 +238,6 @@ RichTextBox::RichTextBox ()
 
 RichTextBox::~RichTextBox ()
 {
-	g_ptr_array_free (text_pointers, TRUE);
-
 	if (view) {
 		view->SetTextBox (NULL);
 		view->unref ();
@@ -1229,41 +1226,26 @@ RichTextBox::GetDocumentChildren ()
 }
 
 void
-RichTextBox::AddTextPointer (TextPointer *pointer)
-{
-	g_ptr_array_insert_sorted (text_pointers, TextPointer::Comparer, pointer);
-}
-
-void
-RichTextBox::RemoveTextPointer (TextPointer *pointer)
-{
-	g_ptr_array_remove (text_pointers, pointer);
-}
-
-char*
-RichTextBox::Serialize ()
+RichTextBox::SerializeXaml (GString *str)
 {
 	int c = GetBlocks()->GetCount();
 
 	if (c == 0)
-		return g_strdup ("");
+		return;
 
 	const char *header = "<Section xml:space=\"preserve\" HasTrailingParagraphBreakOnPaste=\"False\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">";
 	const char *trailer = "</Section>";
 
-	GString* str = g_string_new (header);
+	g_string_append (str, header);
 	for (int i = 0; i < c; i ++) {
 		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
-		char *b_str = b->Serialize();
-		g_string_append (str, b_str);
-		g_free (b_str);
+		b->SerializeXaml(str);
 	}
 	g_string_append (str, trailer);
-	return g_string_free (str, FALSE);
 }
 
 void
-RichTextBox::SerializeProperties (bool force, GString *str)
+RichTextBox::SerializeXamlProperties (bool force, GString *str)
 {
 }
 
@@ -1422,7 +1404,7 @@ RichTextBox::Redo ()
 Rect
 RichTextBox::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 {
-	return view ? view->GetCharacterRect (tp, direction) : Rect(0,0,-1,-1);
+	return view ? view->GetCharacterRect (tp, direction) : Rect::ManagedEmpty;
 }
 
 
