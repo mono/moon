@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 580 methods needs to be decorated.
+# 581 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -72,6 +72,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_read_only(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::deployment_initialize_app_domain(System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::framework_element_apply_template_with_error_(System.IntPtr,Mono.MoonError&)
@@ -431,7 +434,7 @@
 +SC-M: System.Int32 Mono.NativeMethods::surface_get_user_initiated_counter(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::text_pointer_compare_to(System.IntPtr,System.IntPtr)
++SC-M: System.Int32 Mono.NativeMethods::text_pointer_compare_to_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)

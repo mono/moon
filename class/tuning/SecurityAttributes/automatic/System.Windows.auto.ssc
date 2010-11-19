@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 639 methods
+# 640 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -411,7 +411,6 @@
 +SSC-M: System.Windows.Documents.TextPointer System.Windows.Documents.TextElement::get_ElementStart()
 +SSC-M: System.Windows.Documents.TextPointer System.Windows.Documents.TextElement::get_ElementEnd()
 +SSC-M: System.Void System.Windows.Documents.TextPointer::.ctor(System.IntPtr)
-+SSC-M: System.Void System.Windows.Documents.TextPointer::Finalize()
 +SSC-M: System.Int32 System.Windows.Documents.TextPointer::CompareTo(System.Windows.Documents.TextPointer)
 +SSC-M: System.Windows.Rect System.Windows.Documents.TextPointer::GetCharacterRect(System.Windows.Documents.LogicalDirection)
 +SSC-M: System.Windows.Documents.TextPointer System.Windows.Documents.TextPointer::GetNextInsertionPosition(System.Windows.Documents.LogicalDirection)
