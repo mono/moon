@@ -84,7 +84,7 @@ namespace Mono.Xaml {
 			Kind k = Deployment.Current.Types.TypeToKind (typeof (PropertyPath));
 
 			bool v_set;
-			IntPtr unmanaged_value;
+			IntPtr unmanaged_value = IntPtr.Zero;
 			try {
 				if (!NativeMethods.xaml_value_from_str_with_parser (parser, k, AttributeName, piece, out unmanaged_value, out v_set) || !v_set) {
 					Console.Error.WriteLine ("Unable to parse property path: '{0}'", piece);
