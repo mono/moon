@@ -24,6 +24,8 @@ public:
 	virtual ~GLXContext ();
 
 	void Push (Group extents);
+	cairo_t *Push (Cairo extents);
+	Rect Pop (MoonSurface **ref);
 
 	void Clear (Color *color);
 
@@ -70,6 +72,7 @@ protected:
 	void SetFramebuffer ();
 	void SetScissor ();
 	void ForceCurrent ();
+	void FlushCache ();
 
 private:
 	Display       *dpy;

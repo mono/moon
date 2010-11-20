@@ -116,15 +116,14 @@ public:
 	void Push (Clip clip);
 	Node *Top ();
 	void Pop ();
-	Rect Pop (MoonSurface **surface);
 
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
 
 	virtual void Push (Group extents);
 	virtual void Push (Group extents, MoonSurface *surface);
-
 	virtual cairo_t *Push (Cairo extents);
+	virtual Rect Pop (MoonSurface **surface);
 
 	virtual void Clear (Color *color);
 

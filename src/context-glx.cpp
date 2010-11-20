@@ -18,6 +18,7 @@
 #include "context-glx.h"
 #include "projection.h"
 #include "effect.h"
+#include "region.h"
 
 namespace Moonlight {
 
@@ -58,10 +59,10 @@ GLXContext::SetupVertexData (const double *matrix,
 			     double       width,
 			     double       height)
 {
-	Context::Target *target = Top ()->GetTarget ();
-	MoonSurface     *ms;
-	Rect            r = target->GetData (&ms);
-	GLXSurface      *dst = (GLXSurface *) ms;
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
 
 	GLContext::SetupVertexData (matrix, x, y, width, height);
 
@@ -76,6 +77,75 @@ GLXContext::SetupVertexData (const double *matrix,
 	}
 
 	ms->unref ();
+}
+
+void
+GLXContext::FlushCache ()
+{
+	Target *target = Top ()->GetTarget ();
+	Target *cairo = target->GetCairoTarget ();
+
+	if (cairo) {
+		MoonSurface *mDst;
+		Rect        rDst = target->GetData (&mDst);
+		GLXSurface  *dst = (GLXSurface  *) mDst;
+		MoonSurface *mSrc;
+		Rect        rSrc = cairo->GetData (&mSrc);
+		GLXSurface  *src = (GLXSurface  *) mSrc;
+		GLuint      texture0 = src->Texture ();
+		GLuint      program = GetProjectProgram (1.0);
+		GLsizei     width0 = src->Width ();
+		GLsizei     height0 = src->Height ();
+
+		if (!dst->GetGLXDrawable ())
+			GLContext::SetFramebuffer ();
+
+		SetViewport ();
+
+		glUseProgram (program);
+
+		SetupVertexData (NULL, rSrc.x, rSrc.y, width0, height0);
+
+		glVertexAttribPointer (0, 4,
+				       GL_FLOAT, GL_FALSE, 0,
+				       vertices);
+		glVertexAttribPointer (1, 4,
+				       GL_FLOAT, GL_FALSE, 0,
+				       texcoords);
+
+		glBindTexture (GL_TEXTURE_2D, texture0);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				 GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				 GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+				 GL_CLAMP_TO_EDGE);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+				 GL_CLAMP_TO_EDGE);
+		glUniform1i (glGetUniformLocation (program, "sampler0"), 0);
+
+		glEnableVertexAttribArray (0);
+		glEnableVertexAttribArray (1);
+
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+		glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
+
+		glDisable (GL_BLEND);
+
+		glDisableVertexAttribArray (1);
+		glDisableVertexAttribArray (0);
+			
+		glBindTexture (GL_TEXTURE_2D, 0);
+
+		glBindFramebuffer (GL_FRAMEBUFFER, 0);
+
+		mDst->unref ();
+		mSrc->unref ();
+
+		target->SetCairoTarget (NULL);
+	}
 }
 
 void
@@ -97,64 +167,75 @@ GLXContext::Push (Group extents)
 	surface->unref ();
 }
 
+cairo_t *
+GLXContext::Push (Cairo extents)
+{
+	Target      *target = Top ()->GetTarget ();
+	Target      *cairo = target->GetCairoTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
+	Rect        box;
+
+	Top ()->GetClip (&box);
+ 
+	box = box.Intersection (extents.r);
+ 
+	if (cairo) {
+		MoonSurface *ms;
+		Rect        r = cairo->GetData (&ms);
+		Region      *region = new Region (r.RoundOut ());
+ 
+		if (!region->RectIn (box)) {
+			ForceCurrent ();
+			FlushCache ();
+		}
+ 
+		ms->unref ();
+		delete region;
+	}
+
+	if (dst->GetGLXDrawable () && !target->GetCairoTarget ()) {
+		Rect       r = box.RoundOut ();
+		GLXSurface *surface = new GLXSurface (r.width, r.height);
+		Target     *cairo = new Target (surface, r);
+ 
+		target->SetCairoTarget (cairo);
+ 
+		cairo->unref ();
+		surface->unref ();
+ 	}
+
+	return Context::Push (extents);
+}
+
+Rect
+GLXContext::Pop (MoonSurface **ref)
+{
+	Context::Node *prev = (Context::Node *) Top ()->prev;
+
+	g_assert (prev);
+
+	if (Top ()->GetTarget () != prev->GetTarget ()) {
+		ForceCurrent ();
+		FlushCache ();
+	}
+ 
+	return GLContext::Pop (ref);
+}
+
 void
 GLXContext::SetFramebuffer ()
 {
-	Context::Target *target = Top ()->GetTarget ();
-	MoonSurface     *ms;
-	Rect            r = target->GetData (&ms);
-	GLXSurface      *dst = (GLXSurface *) ms;
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
 
-	if (dst->GetGLXDrawable ()) {
-		GLuint texture = dst->StealTexture ();
+	FlushCache ();
 
-		if (texture) {
-			GLuint program = GetProjectProgram (1.0);
-			double width = dst->Width ();
-			double height = dst->Height ();
-
-			SetViewport ();
-
-			glUseProgram (program);
-
-			SetupVertexData (NULL, 0, 0, width, height);
-
-			glVertexAttribPointer (0, 4,
-					       GL_FLOAT, GL_FALSE, 0,
-					       vertices);
-			glVertexAttribPointer (1, 4,
-					       GL_FLOAT, GL_FALSE, 0,
-					       texcoords);
-
-			glBindTexture (GL_TEXTURE_2D, texture);
-			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-					 GL_NEAREST);
-			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-					 GL_NEAREST);
-			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-					 GL_CLAMP_TO_EDGE);
-			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-					 GL_CLAMP_TO_EDGE);
-			glUniform1i (glGetUniformLocation (program, "sampler0"),
-				     0);
-
-			glEnableVertexAttribArray (0);
-			glEnableVertexAttribArray (1);
-
-			glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
-
-			glDisableVertexAttribArray (1);
-			glDisableVertexAttribArray (0);
-			
-			glBindTexture (GL_TEXTURE_2D, 0);
-			glDeleteTextures (1, &texture);
-		}
-
-		Top ()->Sync ();
-	}
-	else {
+	if (!dst->GetGLXDrawable ())
 		GLContext::SetFramebuffer ();
-	}
 
 	ms->unref ();
 }
@@ -162,11 +243,11 @@ GLXContext::SetFramebuffer ()
 void
 GLXContext::SetScissor ()
 {
-	Context::Target *target = Top ()->GetTarget ();
-	MoonSurface     *ms;
-	Rect            r = target->GetData (&ms);
-	GLXSurface      *dst = (GLXSurface *) ms;
-	Rect            clip;
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
+	Rect        clip;
 
 	Top ()->GetClip (&clip);
 
@@ -257,10 +338,9 @@ void
 GLXContext::Flush ()
 {
 	ForceCurrent ();
+	FlushCache ();
 
-	SetFramebuffer ();
 	GLContext::Flush ();
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
 bool
