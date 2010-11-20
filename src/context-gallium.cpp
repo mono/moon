@@ -30,21 +30,21 @@
 
 namespace Moonlight {
 
-GalliumContext::Surface::Surface (MoonSurface  *moon,
-				  Rect         extents,
-				  GalliumPipe  *pipe) :
-	Context::Surface::Surface (moon, extents)
+GalliumContext::Target::Target (MoonSurface  *moon,
+				Rect         extents,
+				GalliumPipe  *pipe) :
+	Context::Target::Target (moon, extents)
 {
 	gpipe = pipe->ref ();
 }
 
-GalliumContext::Surface::~Surface ()
+GalliumContext::Target::~Target ()
 {
 	gpipe->unref ();
 }
 
 cairo_surface_t *
-GalliumContext::Surface::Cairo ()
+GalliumContext::Target::Cairo ()
 {
 	if (!surface) {
 		surface = ((GalliumSurface *) native)->Cairo (gpipe);
@@ -72,16 +72,16 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	const uint           semantic_names[] = { TGSI_SEMANTIC_POSITION,
 						  TGSI_SEMANTIC_GENERIC };
 	const uint           semantic_indexes[] = { 0, 0 };
-	Surface              *cs;
+	Target               *target;
 	unsigned             i;
 
 	pipe  = screen->context_create (screen, NULL);
 	gpipe = new GalliumPipe (pipe);
 	cso   = cso_create_context (pipe);
 
-	cs = new Surface (surface, r, gpipe);
-	Stack::Push (new Context::Node (cs, &transform.m, NULL));
-	cs->unref ();
+	target = new Target (surface, r, gpipe);
+	Stack::Push (new Context::Node (target, &transform.m, NULL));
+	target->unref ();
 
 	constant_buffer = NULL;
 
@@ -239,9 +239,9 @@ void
 GalliumContext::SetFramebuffer ()
 {
 	struct pipe_framebuffer_state framebuffer;
-	Context::Surface              *cs = Top ()->GetSurface ();
+	Context::Target               *target = Top ()->GetTarget ();
 	MoonSurface                   *ms;
-	Rect                          r = cs->GetData (&ms);
+	Rect                          r = target->GetData (&ms);
 	GalliumSurface                *dst = (GalliumSurface *) ms;
 	struct pipe_resource          *texture = dst->Texture ();
 	struct pipe_surface           *surface;
@@ -267,8 +267,8 @@ void
 GalliumContext::SetScissor ()
 {
 	struct pipe_scissor_state scissor;
-	Context::Surface          *cs = Top ()->GetSurface ();
-	Rect                      r = cs->GetData (NULL);
+	Context::Target           *target = Top ()->GetTarget ();
+	Rect                      r = target->GetData (NULL);
 	Rect                      clip;
 
 	Top ()->GetClip (&clip);
@@ -301,8 +301,8 @@ void
 GalliumContext::SetViewport ()
 {
 	struct pipe_viewport_state viewport;
-	Context::Surface           *cs = Top ()->GetSurface ();
-	Rect                       r = cs->GetData (NULL);
+	Context::Target            *target = Top ()->GetTarget ();
+	Rect                       r = target->GetData (NULL);
 
 	memset (&viewport, 0, sizeof (viewport));
 	viewport.scale[0] = VIEWPORT_SCALE;
@@ -434,11 +434,11 @@ GalliumContext::Push (Group extents)
         GalliumSurface *surface = new GalliumSurface (gpipe,
 						      r.width,
 						      r.height);
-        Surface        *cs = new Surface (surface, extents.r, gpipe);
+        Target         *target = new Target (surface, extents.r, gpipe);
 
 	Top ()->GetMatrix (&matrix);
 
-	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
+	Stack::Push (new Context::Node (target, &matrix, &extents.r));
 
 	// memset is faster than using clear with softpipe
 	if (is_softpipe) {
@@ -458,7 +458,7 @@ GalliumContext::Push (Group extents)
 		Clear (&color);
 	}
 
-	cs->unref ();
+	target->unref ();
 	surface->unref ();
 }
 
@@ -466,12 +466,12 @@ void
 GalliumContext::Push (Group extents, MoonSurface *surface)
 {
 	cairo_matrix_t matrix;
-	Surface        *cs = new Surface (surface, extents.r, gpipe);
+	Target         *target = new Target (surface, extents.r, gpipe);
 
 	Top ()->GetMatrix (&matrix);
 
-	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
-	cs->unref ();
+	Stack::Push (new Context::Node (target, &matrix, &extents.r));
+	target->unref ();
 }
 
 void

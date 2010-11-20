@@ -70,12 +70,12 @@ GLContext::~GLContext ()
 void
 GLContext::SetFramebuffer ()
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	MoonSurface      *ms;
-	Rect             r = cs->GetData (&ms);
-	GLSurface        *dst = (GLSurface *) ms;
-	GLuint           texture = dst->Texture ();
-	GLenum           status;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLSurface       *dst = (GLSurface *) ms;
+	GLuint          texture = dst->Texture ();
+	GLenum          status;
 
 	if (!framebuffer)
 		glGenFramebuffers (1, &framebuffer);
@@ -97,9 +97,9 @@ GLContext::SetFramebuffer ()
 void
 GLContext::SetScissor ()
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	Rect             r = cs->GetData (NULL);
-	Rect             clip;
+	Context::Target *target = Top ()->GetTarget ();
+	Rect            r = target->GetData (NULL);
+	Rect            clip;
 
 	Top ()->GetClip (&clip);
 
@@ -115,10 +115,10 @@ GLContext::SetScissor ()
 void
 GLContext::SetViewport ()
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	MoonSurface      *ms;
-	Rect             r = cs->GetData (&ms);
-	GLSurface        *dst = (GLSurface *) ms;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLSurface       *dst = (GLSurface *) ms;
 
 	glViewport (0, 0, dst->Width (), dst->Height ());
 
@@ -168,14 +168,14 @@ GLContext::SetupVertexData (const double *matrix,
 			    double       width,
 			    double       height)
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	MoonSurface      *ms;
-	Rect             r = cs->GetData (&ms);
-	GLSurface        *dst = (GLSurface *) ms;
-	double           dx = 2.0 / dst->Width ();
-	double           dy = 2.0 / dst->Height ();
-	double           p[4][4];
-	int              i;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLSurface       *dst = (GLSurface *) ms;
+	double          dx = 2.0 / dst->Width ();
+	double          dy = 2.0 / dst->Height ();
+	double          p[4][4];
+	int             i;
 
 	p[0][0] = x;
 	p[0][1] = y;
@@ -227,11 +227,11 @@ GLContext::SetupVertexData (const double *matrix,
 void
 GLContext::InitMatrix (double *out)
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	Rect             r = cs->GetData (NULL);
-	cairo_matrix_t   ctm;
-	double           viewport[16];
-	double           m[16];
+	Context::Target *target = Top ()->GetTarget ();
+	Rect            r = target->GetData (NULL);
+	cairo_matrix_t  ctm;
+	double          viewport[16];
+	double          m[16];
 
 	Top ()->GetMatrix (&ctm);
 

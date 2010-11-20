@@ -58,10 +58,10 @@ GLXContext::SetupVertexData (const double *matrix,
 			     double       width,
 			     double       height)
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	MoonSurface      *ms;
-	Rect             r = cs->GetData (&ms);
-	GLXSurface       *dst = (GLXSurface *) ms;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLXSurface      *dst = (GLXSurface *) ms;
 
 	GLContext::SetupVertexData (matrix, x, y, width, height);
 
@@ -84,26 +84,26 @@ GLXContext::Push (Group extents)
 	cairo_matrix_t matrix;
 	Rect           r = extents.r.RoundOut ();
         GLXSurface     *surface = new GLXSurface (r.width, r.height);
-        Surface        *cs = new Surface (surface, extents.r);
+        Target         *target = new Target (surface, extents.r);
 
 	Top ()->GetMatrix (&matrix);
 
 	// clear surface
 	cairo_surface_destroy (surface->Cairo ());
 
-	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
+	Stack::Push (new Context::Node (target, &matrix, &extents.r));
 
-	cs->unref ();
+	target->unref ();
 	surface->unref ();
 }
 
 void
 GLXContext::SetFramebuffer ()
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	MoonSurface      *ms;
-	Rect             r = cs->GetData (&ms);
-	GLXSurface       *dst = (GLXSurface *) ms;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLXSurface      *dst = (GLXSurface *) ms;
 
 	if (dst->GetGLXDrawable ()) {
 		GLuint texture = dst->StealTexture ();
@@ -162,11 +162,11 @@ GLXContext::SetFramebuffer ()
 void
 GLXContext::SetScissor ()
 {
-	Context::Surface *cs = Top ()->GetSurface ();
-	MoonSurface      *ms;
-	Rect             r = cs->GetData (&ms);
-	GLXSurface       *dst = (GLXSurface *) ms;
-	Rect             clip;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLXSurface      *dst = (GLXSurface *) ms;
+	Rect            clip;
 
 	Top ()->GetClip (&clip);
 

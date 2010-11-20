@@ -21,22 +21,24 @@ CairoContext::CairoContext (CairoSurface *surface) : Context (surface)
 void
 CairoContext::Push (Group extents)
 {
-	cairo_surface_t *parent = Top ()->GetSurface ()->Cairo ();
+	cairo_surface_t *parent = Top ()->GetTarget ()->Cairo ();
 	Rect            r = extents.r.RoundOut ();
         cairo_surface_t *data =
-          cairo_surface_create_similar (parent,
-                                        CAIRO_CONTENT_COLOR_ALPHA,
-                                        r.width,
-                                        r.height);
+		cairo_surface_create_similar (parent,
+					      CAIRO_CONTENT_COLOR_ALPHA,
+					      r.width,
+					      r.height);
         MoonSurface     *surface = new CairoSurface (data);
-        Surface         *cs = new Surface (surface, extents.r);
+        Target          *target = new Target (surface, extents.r);
         cairo_matrix_t  matrix;
 
 	Top ()->GetMatrix (&matrix);
 
-	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
-	cs->unref ();
+	Stack::Push (new Context::Node (target, &matrix, &extents.r));
+
+	target->unref ();
 	surface->unref ();
+
 	cairo_surface_destroy (data);
 }
 

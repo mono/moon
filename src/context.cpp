@@ -24,7 +24,7 @@ Context::Cairo::Cairo ()
 	r = Rect (MIN_X, MIN_Y, MAX_W, MAX_H);
 }
 
-Context::Surface::Surface ()
+Context::Target::Target ()
 {
 	native        = NULL;
 	box           = Rect ();
@@ -32,8 +32,8 @@ Context::Surface::Surface ()
 	device_offset = Point ();
 }
 
-Context::Surface::Surface (MoonSurface *moon,
-			   Rect        extents)
+Context::Target::Target (MoonSurface *moon,
+			 Rect        extents)
 {
 	native        = moon->ref ();
 	box           = extents;
@@ -41,7 +41,7 @@ Context::Surface::Surface (MoonSurface *moon,
 	device_offset = Point ();
 }
 
-Context::Surface::~Surface ()
+Context::Target::~Target ()
 {
 	if (surface) {
 
@@ -58,7 +58,7 @@ Context::Surface::~Surface ()
 }
 
 Rect
-Context::Surface::GetData (MoonSurface **ref)
+Context::Target::GetData (MoonSurface **ref)
 {
 	if (ref)
 		*ref = native->ref ();
@@ -67,7 +67,7 @@ Context::Surface::GetData (MoonSurface **ref)
 }
 
 cairo_surface_t *
-Context::Surface::Cairo ()
+Context::Target::Cairo ()
 {
 	if (!surface) {
 		surface = native->Cairo ();
@@ -87,7 +87,7 @@ Context::Surface::Cairo ()
 }
 
 void
-Context::Surface::Sync ()
+Context::Target::Sync ()
 {
 	if (surface) {
 
@@ -103,11 +103,11 @@ Context::Surface::Sync ()
 
 }
 
-Context::Node::Node (Surface        *surface,
+Context::Node::Node (Target         *surface,
 		     cairo_matrix_t *matrix,
 		     const Rect     *clip)
 {
-	target    = (Surface *) surface->ref ();
+	target    = (Target *) surface->ref ();
 	box       = clip ? *clip : Rect (MIN_X, MIN_Y, MAX_W, MAX_H);
 	transform = *matrix;
 	context   = NULL;
@@ -125,7 +125,7 @@ Context::Node::~Node ()
 cairo_t *
 Context::Node::Cairo ()
 {
-	Surface *surface = GetSurface ();
+	Target *surface = GetTarget ();
 
 	if (!context) {
 		cairo_surface_t *dst = surface->Cairo ();
@@ -153,8 +153,8 @@ Context::Node::GetClip (Rect *clip)
 	*clip = box;
 }
 
-Context::Surface *
-Context::Node::GetSurface ()
+Context::Target *
+Context::Node::GetTarget ()
 {
 	return target;
 }
@@ -167,18 +167,18 @@ Context::Node::Sync ()
 		context = NULL;
 	}
 
-	GetSurface ()->Sync ();
+	GetTarget ()->Sync ();
 }
 
 Context::Context (MoonSurface *surface)
 {
 	AbsoluteTransform transform = AbsoluteTransform ();
 	Rect              r = Rect (0, 0, 32768, 32768);
-	Surface           *cs;
+	Target            *target;
 
-	cs = new Surface (surface, r);
-	Stack::Push (new Context::Node (cs, &transform.m, NULL));
-	cs->unref ();
+	target = new Target (surface, r);
+	Stack::Push (new Context::Node (target, &transform.m, NULL));
+	target->unref ();
 }
 
 void
@@ -192,7 +192,7 @@ Context::Push (Transform transform)
 
 	cairo_matrix_multiply (&matrix, &transform.m, &matrix);
 
-	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
+	Stack::Push (new Context::Node (Top ()->GetTarget (), &matrix, &box));
 }
 
 void
@@ -203,7 +203,7 @@ Context::Push (AbsoluteTransform transform)
 
 	Top ()->GetClip (&box);
 
-	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
+	Stack::Push (new Context::Node (Top ()->GetTarget (), &matrix, &box));
 }
 
 void
@@ -217,7 +217,7 @@ Context::Push (Clip clip)
 
 	box = box.Intersection (clip.r);
 
-	Stack::Push (new Context::Node (Top ()->GetSurface (), &matrix, &box));
+	Stack::Push (new Context::Node (Top ()->GetTarget (), &matrix, &box));
 }
 
 void
@@ -231,12 +231,12 @@ void
 Context::Push (Group extents, MoonSurface *surface)
 {
 	cairo_matrix_t matrix;
-	Surface        *cs = new Surface (surface, extents.r);
+	Target         *target = new Target (surface, extents.r);
 
 	Top ()->GetMatrix (&matrix);
 
-	Stack::Push (new Context::Node (cs, &matrix, &extents.r));
-	cs->unref ();
+	Stack::Push (new Context::Node (target, &matrix, &extents.r));
+	target->unref ();
 }
 
 cairo_t *
@@ -264,8 +264,8 @@ Context::Pop (MoonSurface **ref)
 	Node *node = (Node *) Stack::Pop ();
 	Rect r = Rect ();
 
-	if (Top ()->GetSurface () != node->GetSurface ())
-		r = node->GetSurface ()->GetData (ref);
+	if (Top ()->GetTarget () != node->GetTarget ())
+		r = node->GetTarget ()->GetData (ref);
 
 	delete node;
 

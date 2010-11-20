@@ -26,12 +26,12 @@ namespace Moonlight {
 
 class GalliumContext : public Context {
 public:
-	class Surface : public Context::Surface {
+	class Target : public Context::Target {
 	public:
-		Surface (MoonSurface  *moon,
-			 Rect         extents,
-			 GalliumPipe  *pipe);
-		virtual ~Surface ();
+		Target (MoonSurface  *moon,
+			Rect         extents,
+			GalliumPipe  *pipe);
+		virtual ~Target ();
 
 		cairo_surface_t *Cairo ();
 

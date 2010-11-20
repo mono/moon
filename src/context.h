@@ -63,12 +63,12 @@ public:
 		Rect r;
 	};
 
-	class Surface : public MoonSurface {
+	class Target : public MoonSurface {
 	public:
-		Surface ();
-		Surface (MoonSurface *moon,
-			 Rect        extents);
-		virtual ~Surface ();
+		Target ();
+		Target (MoonSurface *moon,
+			Rect        extents);
+		virtual ~Target ();
 
 		virtual cairo_surface_t *Cairo ();
 
@@ -84,7 +84,7 @@ public:
 
 	class Node : public List::Node {
 	public:
-		Node (Surface        *surface,
+		Node (Target         *surface,
 		      cairo_matrix_t *matrix,
 		      const Rect     *clip);
 		virtual ~Node ();
@@ -93,11 +93,11 @@ public:
 
 		void GetMatrix (cairo_matrix_t *matrix);
 		void GetClip (Rect *clip);
-		Surface *GetSurface ();
+		Target *GetTarget ();
 		void Sync ();
 
 	private:
-		Surface        *target;
+		Target         *target;
 		Rect           box;
 		cairo_matrix_t transform;
 		cairo_t        *context;
