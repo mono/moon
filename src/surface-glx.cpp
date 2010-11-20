@@ -76,41 +76,7 @@ GLXSurface::Reshape (int width, int height)
 cairo_surface_t *
 GLXSurface::Cairo ()
 {
-	if (window) {
-		const cairo_format_t format = CAIRO_FORMAT_ARGB32;
-		unsigned char        *tmp;
-		int                  stride = size[0] * 4;
-		int                  i;
-
-		if (surface)
-			return cairo_surface_reference (surface);
-
-		tmp  = (unsigned char *) g_malloc (stride * size[1]);
-		data = (unsigned char *) g_malloc (stride * size[1]);
-
-		glReadPixels (0,
-			      0,
-			      size[0],
-			      size[1],
-			      GL_BGRA,
-			      GL_UNSIGNED_BYTE,
-			      tmp);
-
-		for (i = 0; i < size[1]; i++)
-			memcpy (data + (size[1] - i - 1) * stride,
-				tmp + i * stride,
-				stride);
-
-		surface = cairo_image_surface_create_for_data (data,
-							       format,
-							       size[0],
-							       size[1],
-							       stride);
-
-		g_free (tmp);
-
-		return cairo_surface_reference (surface);
-	}
+	g_assert (window == 0);
 
 	return GLSurface::Cairo ();
 }
