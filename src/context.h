@@ -75,11 +75,15 @@ public:
 		Rect GetData (MoonSurface **surface);
 		void Sync ();
 
+		void SetCairoTarget (Target *target);
+		Target *GetCairoTarget ();
+
 	protected:
 		MoonSurface     *native;
 		Rect            box;
 		cairo_surface_t *surface;
 		Point           device_offset;
+		Target          *cairo;
 	};
 
 	class Node : public List::Node {

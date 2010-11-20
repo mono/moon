@@ -30,6 +30,7 @@ Context::Target::Target ()
 	box           = Rect ();
 	surface       = NULL;
 	device_offset = Point ();
+	cairo         = NULL;
 }
 
 Context::Target::Target (MoonSurface *moon,
@@ -39,6 +40,7 @@ Context::Target::Target (MoonSurface *moon,
 	box           = extents;
 	surface       = NULL;
 	device_offset = Point ();
+	cairo         = NULL;
 }
 
 Context::Target::~Target ()
@@ -55,6 +57,9 @@ Context::Target::~Target ()
 	}
 
 	native->unref ();
+
+	if (cairo)
+		cairo->unref ();
 }
 
 Rect
@@ -69,6 +74,9 @@ Context::Target::GetData (MoonSurface **ref)
 cairo_surface_t *
 Context::Target::Cairo ()
 {
+	if (cairo)
+		return cairo->Cairo ();
+	
 	if (!surface) {
 		surface = native->Cairo ();
 
@@ -89,6 +97,9 @@ Context::Target::Cairo ()
 void
 Context::Target::Sync ()
 {
+	if (cairo)
+		cairo->Sync ();
+
 	if (surface) {
 
 		/* restore device offset */
@@ -101,6 +112,26 @@ Context::Target::Sync ()
 		surface = NULL;
 	}
 
+}
+
+void
+Context::Target::SetCairoTarget (Target *target)
+{
+	Target *old = cairo;
+
+	if (target)
+		cairo = (Target *) target->ref ();
+	else
+		cairo = NULL;
+
+	if (old)
+		old->unref ();
+}
+
+Context::Target *
+Context::Target::GetCairoTarget ()
+{
+	return cairo;
 }
 
 Context::Node::Node (Target         *surface,
