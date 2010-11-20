@@ -33,7 +33,7 @@ public:
 	void SwapBuffers ();
 	void Reshape (int width, int height);
 	cairo_surface_t *Cairo ();
-	GLuint StealTexture ();
+	bool HasTexture ();
 
 private:
 	Display  *display;

@@ -115,16 +115,10 @@ GLXSurface::Cairo ()
 	return GLSurface::Cairo ();
 }
 
-GLuint
-GLXSurface::StealTexture ()
+bool
+GLXSurface::HasTexture ()
 {
-	GLuint name = texture;
-
-	if (surface)
-		name = Texture ();
-
-	texture = 0;
-	return name;
+	return texture != 0;
 }
 
 };
