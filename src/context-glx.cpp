@@ -104,7 +104,11 @@ GLXContext::FlushCache ()
 
 		glUseProgram (program);
 
-		SetupVertexData (NULL, rSrc.x, rSrc.y, width0, height0);
+		SetupVertexData (NULL,
+				 rSrc.x - rDst.x,
+				 rSrc.y - rDst.y,
+				 width0,
+				 height0);
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
