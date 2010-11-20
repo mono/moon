@@ -199,7 +199,10 @@ GLXContext::Push (Cairo extents)
 		delete region;
 	}
 
-	if (dst->GetGLXDrawable () && !target->GetCairoTarget ()) {
+	if (target->GetCairoTarget ())
+		return Context::Push (extents);
+
+	if (dst->GetGLXDrawable () || dst->HasTexture ()) {
 		Rect       r = box.RoundOut ();
 		GLXSurface *surface = new GLXSurface (r.width, r.height);
 		Target     *cairo = new Target (surface, r);
