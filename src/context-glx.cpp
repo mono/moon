@@ -186,7 +186,7 @@ GLXContext::Push (Cairo extents)
 		Rect        r = cairo->GetData (&ms);
 		Region      *region = new Region (r.RoundOut ());
  
-		if (!region->RectIn (box)) {
+		if (region->RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
 			ForceCurrent ();
 			FlushCache ();
 		}
