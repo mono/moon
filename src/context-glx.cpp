@@ -174,44 +174,44 @@ GLXContext::Push (Group extents)
 cairo_t *
 GLXContext::Push (Cairo extents)
 {
-	Target      *target = Top ()->GetTarget ();
-	Target      *cairo = target->GetCairoTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
-	Rect        box;
+	Target *target = Top ()->GetTarget ();
+	Target *cairo = target->GetCairoTarget ();
+	Rect   box;
 
 	Top ()->GetClip (&box);
  
-	box = box.Intersection (extents.r);
+	box = box.Intersection (extents.r).RoundOut ();
  
 	if (cairo) {
-		MoonSurface *ms;
-		Rect        r = cairo->GetData (&ms);
-		Region      *region = new Region (r.RoundOut ());
+		Rect   r = cairo->GetData (NULL);
+		Region *region = new Region (r);
  
 		if (region->RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
 			ForceCurrent ();
 			FlushCache ();
 		}
  
-		ms->unref ();
 		delete region;
 	}
 
-	if (target->GetCairoTarget ())
-		return Context::Push (extents);
+	if (!target->GetCairoTarget ()) {
+		MoonSurface *ms;
+		Rect        r = target->GetData (&ms);
+		GLXSurface  *dst = (GLXSurface *) ms;
 
-	if (dst->GetGLXDrawable () || dst->HasTexture ()) {
-		Rect       r = box.RoundOut ();
-		GLXSurface *surface = new GLXSurface (r.width, r.height);
-		Target     *cairo = new Target (surface, r);
- 
-		target->SetCairoTarget (cairo);
- 
-		cairo->unref ();
-		surface->unref ();
- 	}
+		if (dst->GetGLXDrawable () || dst->HasTexture ()) {
+			GLXSurface *surface = new GLXSurface (box.width,
+							      box.height);
+			Target     *cairo = new Target (surface, box);
+
+			target->SetCairoTarget (cairo);
+
+			cairo->unref ();
+			surface->unref ();
+		}
+
+		ms->unref ();
+	}
 
 	return Context::Push (extents);
 }
