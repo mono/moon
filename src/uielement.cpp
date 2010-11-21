@@ -1579,6 +1579,9 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		// push empty clip to prevent sub-tree rendering
 		ctx->Push (Context::Clip ());
 	}
+
+	// subtree bounds clipping
+	ctx->Push (Context::Clip (GetSubtreeExtents ().Transform (ctx)));
 }
 
 void
@@ -1589,6 +1592,9 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		while (UIElement *child = walker.Step ())
 			child->DoRender (ctx, region);
 	}
+
+	// subtree bounds clipping
+	ctx->Pop ();
 
 	if (flags & COMPOSITE_CACHE) {
 		MoonSurface *surface;
