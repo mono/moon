@@ -140,7 +140,7 @@ GLXContext::FlushCache ()
 
 		glDisableVertexAttribArray (1);
 		glDisableVertexAttribArray (0);
-			
+
 		glBindTexture (GL_TEXTURE_2D, 0);
 
 		glBindFramebuffer (GL_FRAMEBUFFER, 0);
