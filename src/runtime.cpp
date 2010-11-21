@@ -926,11 +926,8 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 
 		if (!render_list->IsEmpty ()) {
 			if (!copy->IsEmpty()) {
-				cairo_t *cr = ctx->Push (Context::Cairo ());
-
-				copy->Draw (cr);
-				PaintBackground (cr, transparent, clear_transparent);
-
+				ctx->Push (Context::Clip (copy->GetExtents ()));
+				ctx->Clear (background_color);
 				ctx->Pop ();
 			}
 
@@ -946,11 +943,8 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 	}
 
 	if (!did_occlusion_culling) {
-		cairo_t *cr = ctx->Push (Context::Cairo ());
-
-		region->Draw (cr);
-		PaintBackground (cr, transparent, clear_transparent);
-
+		ctx->Push (Context::Clip (region->GetExtents ()));
+		ctx->Clear (background_color);
 		ctx->Pop ();
 
 		for (int i = 0; i < layer_count; i ++) {
@@ -1009,51 +1003,6 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 	printf ("%d UIElements rendered using normal painter's algorithm for Surface::Paint (%p)\n", uielements_rendered_with_painters, this);
 #endif
 }
-
-void
-Surface::PaintBackground (cairo_t *ctx, bool transparent, bool clear_transparent)
-{
-	//
-	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost UIElement (a no-no),
-	//
-	// The flag "transparent" is here because I could not
-	// figure out what is painting the background with white now.
-	// The change that made the white painting implicit instead of
-	// explicit is patch 80632.   I would appreciate any help in tracking down
-	// the proper way of making the background white when not running in 
-	// "transparent" mode.    
-	//
-	// Either exposing surface_set_trans to turn the next code is a hack, 
-	// or it is normal to request all code that wants to paint to manually
-	// clear the background to white beforehand.    For now am going with
-	// making this an explicit surface API.
-	//
-	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-
-	if (transparent) {
-		if (clear_transparent) {
-			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-			cairo_fill_preserve (ctx);
-			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-		}
-
-		cairo_set_source_rgba (ctx,
-				       background_color->r,
-				       background_color->g,
-				       background_color->b,
-				       background_color->a);
-	}
-	else {
-		cairo_set_source_rgb (ctx,
-				      background_color->r,
-				      background_color->g,
-				      background_color->b);
-	}
-
-	cairo_fill_preserve (ctx);
-}
-
 
 //
 // This will resize the surface (merely a convenience function for

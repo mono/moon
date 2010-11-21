@@ -359,8 +359,6 @@ private:
 	// are we headed for death?
 	bool zombie;
 
-	void PaintBackground (cairo_t *ctx, bool transparent, bool clear_transparent);
-
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();
