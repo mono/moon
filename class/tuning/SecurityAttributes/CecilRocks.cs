@@ -18,7 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
 using Mono.Cecil;
 
 namespace Moonlight.SecurityModel {
@@ -28,47 +32,21 @@ namespace Moonlight.SecurityModel {
 		private const string SecurityCritical = "System.Security.SecurityCriticalAttribute";
 		private const string SecuritySafeCritical = "System.Security.SecuritySafeCriticalAttribute";
 
-		public static bool HasAttribute (this CustomAttributeCollection self, string attribute)
-		{
-			foreach (CustomAttribute ca in self) {
-				if (ca.Constructor.DeclaringType.FullName == attribute)
-					return true;
-			}
-			return false;
-		}
-
-		public static bool HasAttribute (this MethodDefinition self, string attribute)
+		public static bool HasAttribute (this ICustomAttributeProvider self, string attribute)
 		{
 			if (!self.HasCustomAttributes)
 				return false;
 
 			foreach (CustomAttribute ca in self.CustomAttributes) {
-				if (ca.Constructor.DeclaringType.FullName == attribute)
+				if (ca.AttributeType.FullName == attribute)
 					return true;
 			}
 			return false;
-		}
-
-		public static bool HasAttribute (this TypeDefinition self, string attribute)
-		{
-			if (!self.HasCustomAttributes)
-				return false;
-
-			foreach (CustomAttribute ca in self.CustomAttributes) {
-				if (ca.Constructor.DeclaringType.FullName == attribute)
-					return true;
-			}
-			return false;
-		}
-
-		public static bool IsSecurityCritical (this CustomAttributeCollection self)
-		{
-			return HasAttribute (self, SecurityCritical);
 		}
 
 		public static bool IsSecurityCritical (this MethodDefinition self)
 		{
-			if (self.HasCustomAttributes && HasAttribute (self.CustomAttributes, SecurityCritical))
+			if (self.HasCustomAttributes && HasAttribute (self, SecurityCritical))
 				return true;
 			return IsSecurityCritical (self.DeclaringType);
 		}
@@ -77,7 +55,7 @@ namespace Moonlight.SecurityModel {
 		{
 			bool result = false;
 			if (self.HasCustomAttributes)
-				result = HasAttribute (self.CustomAttributes, SecurityCritical);
+				result = HasAttribute (self, SecurityCritical);
 
 			if (result)
 				return true;
@@ -87,14 +65,9 @@ namespace Moonlight.SecurityModel {
 				return false;
 		}
 
-		public static bool IsSecuritySafeCritical (this CustomAttributeCollection self)
-		{
-			return HasAttribute (self, SecuritySafeCritical);
-		}
-
 		public static bool IsSecuritySafeCritical (this MethodDefinition self)
 		{
-			if (self.HasCustomAttributes && HasAttribute (self.CustomAttributes, SecuritySafeCritical))
+			if (self.HasCustomAttributes && HasAttribute (self, SecuritySafeCritical))
 				return true;
 			return IsSecuritySafeCritical (self.DeclaringType);
 		}
@@ -103,7 +76,7 @@ namespace Moonlight.SecurityModel {
 		{
 			bool result = false;
 			if (self.HasCustomAttributes)
-				result = HasAttribute (self.CustomAttributes, SecuritySafeCritical);
+				result = HasAttribute (self, SecuritySafeCritical);
 
 			if (result)
 				return true;
@@ -140,10 +113,8 @@ namespace Moonlight.SecurityModel {
 
 		public static string GetFullName (this MethodReference self)
 		{
-			int sentinel = self.GetSentinel ();
-
 			StringBuilder sb = new StringBuilder ();
-			sb.Append (self.ReturnType.ReturnType.FullName);
+			sb.Append (self.ReturnType.FullName);
 			sb.Append (" ");
 			sb.Append (self.DeclaringType.FullName);
 			sb.Append ("::");
@@ -163,7 +134,7 @@ namespace Moonlight.SecurityModel {
 					if (i > 0)
 						sb.Append (",");
 
-					if (i == sentinel)
+					if (self.Parameters [i].ParameterType is SentinelType)
 						sb.Append ("...,");
 
 					sb.Append (self.Parameters [i].ParameterType.FullName);
@@ -173,6 +144,31 @@ namespace Moonlight.SecurityModel {
 			return sb.ToString ();
 		}
 
+		public static IEnumerable<TypeDefinition> GetAllTypes (this ModuleDefinition self)
+		{
+			return self.Types.SelectMany (t => t.GetAllTypes ());
+		}
+
+		static IEnumerable<TypeDefinition> GetAllTypes (this TypeDefinition self)
+		{
+			yield return self;
+
+			if (!self.HasNestedTypes)
+				yield break;
+
+			foreach (var type in self.NestedTypes.SelectMany (t => t.GetAllTypes ()))
+				yield return type;
+		}
+
+		public static IEnumerable<MethodDefinition> GetMethods (this TypeDefinition self)
+		{
+			return self.Methods.Where (m => !m.IsConstructor);
+		}
+
+		public static IEnumerable<MethodDefinition> GetConstructors (this TypeDefinition self)
+		{
+			return self.Methods.Where (m => m.IsConstructor);
+		}
 	}
 }
 

@@ -94,22 +94,18 @@ class Program {
 
 	static void ProcessType (TypeDefinition type)
 	{
-		if (type.HasConstructors) {
-			foreach (MethodDefinition ctor in type.Constructors) {
-				ProcessMethod (ctor);
-			}
-		}
-		if (type.HasMethods) {
-			foreach (MethodDefinition method in type.Methods) {
-				ProcessMethod (method);
-			}
+		if (!type.HasMethods)
+			return;
+
+		foreach (MethodDefinition method in type.Methods) {
+			ProcessMethod (method);
 		}
 	}
 
 	static void ProcessAssembly (AssemblyDefinition assembly)
 	{
 		foreach (ModuleDefinition module in assembly.Modules) {
-			foreach (TypeDefinition type in module.Types) {
+			foreach (TypeDefinition type in module.GetAllTypes ()) {
 				ProcessType (type);
 			}
 		}
@@ -151,9 +147,12 @@ class Program {
 				continue;
 			}
 
-			AssemblyDefinition ad = AssemblyFactory.GetAssembly (fullpath);
+			var resolver = new DefaultAssemblyResolver ();
 			for (int i = 0; i < input; i++)
-				(ad.Resolver as BaseAssemblyResolver).AddSearchDirectory (args [i]);
+				resolver.AddSearchDirectory (args [i]);
+
+			AssemblyDefinition ad = AssemblyDefinition.ReadAssembly (fullpath, new ReaderParameters { AssemblyResolver = resolver });
+
 			methods.Add (ad, new List<string> ());
 		}
 

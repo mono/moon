@@ -20,7 +20,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -164,22 +166,7 @@ class Program {
 				sw.WriteLine (method.ImplAttributes);
 				// an icall (or pinvoke) can be audited but won't have any IL
 				if (method.HasBody) {
-					var reader = method.DeclaringType.Module.Image.GetReaderAtVirtualAddress (method.RVA);
-					sw.WriteLine (reader.ReadBytes (method.Body.CodeSize));
-					if (method.Body.HasExceptionHandlers) {
-						List<string> handlers = new List<string> ();
-						foreach (ExceptionHandler eh in method.Body.ExceptionHandlers) {
-							handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.Type, eh.CatchType,
-								GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
-								GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
-								GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
-						}
-						// we must preserve order else the hash will be different for the same handlers
-						if (handlers.Count > 1)
-							handlers.Sort (StringComparer.InvariantCulture);
-						foreach (string s in handlers)
-							sw.WriteLine (s);
-					}
+					HashBody (method.Body, sw);
 				}
 				sw.Flush ();
 				ms.Position = 0;
@@ -192,6 +179,63 @@ class Program {
 			sb.Append (b.ToString ("X2"));
 		}
 		return sb.ToString ();
+	}
+
+	static void HashBody (MethodBody body, StreamWriter sw)
+	{
+		foreach (Instruction instr in body.Instructions)
+			sw.WriteLine ("{0}#{1}#{2}", instr.Offset, instr.OpCode.Value, FormatOperand (instr));
+
+		if (!body.HasExceptionHandlers)
+			return;
+
+		List<string> handlers = new List<string> ();
+		foreach (ExceptionHandler eh in body.ExceptionHandlers) {
+			handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.HandlerType, eh.CatchType,
+				GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
+				GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
+				GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
+		}
+		// we must preserve order else the hash will be different for the same handlers
+		if (handlers.Count > 1)
+			handlers.Sort (StringComparer.InvariantCulture);
+		foreach (string s in handlers)
+			sw.WriteLine (s);
+	}
+
+	static string FormatOperand (Instruction instr)
+	{
+		switch (instr.OpCode.OperandType) {
+		case OperandType.InlineNone:
+			return string.Empty;
+		case OperandType.InlineBrTarget:
+		case OperandType.ShortInlineBrTarget:
+			return ((Instruction) instr.Operand).Offset.ToString ();
+		case OperandType.InlineSwitch:
+			return ((Instruction []) instr.Operand).Aggregate (" ", (s, i) => s + i.Offset.ToString ());
+		case OperandType.InlineField:
+		case OperandType.InlineMethod:
+		case OperandType.InlineTok:
+		case OperandType.InlineType:
+		case OperandType.InlineSig:
+			return ((IMetadataTokenProvider) instr.Operand).ToString ();
+		case OperandType.ShortInlineVar:
+		case OperandType.InlineVar:
+			return ((VariableDefinition) instr.Operand).Index.ToString ();
+		case OperandType.ShortInlineArg:
+		case OperandType.InlineArg:
+			return (((ParameterDefinition) instr.Operand).Index + 1).ToString ();
+		case OperandType.ShortInlineI:
+		case OperandType.ShortInlineR:
+		case OperandType.InlineI:
+		case OperandType.InlineI8:
+		case OperandType.InlineR:
+			return ((IFormattable) instr.Operand).ToString (null, CultureInfo.InvariantCulture);
+		case OperandType.InlineString:
+			return (string) instr.Operand;
+		default:
+			throw new NotImplementedException ();
+		}
 	}
 
 	static bool NeedReview (MethodDefinition method)
@@ -223,12 +267,9 @@ class Program {
 
 	static void ProcessAssembly (string assemblyName, int revision)
 	{
-		AssemblyDefinition ad = AssemblyFactory.GetAssembly (assemblyName);
+		AssemblyDefinition ad = AssemblyDefinition.ReadAssembly (assemblyName);
 		foreach (ModuleDefinition module in ad.Modules) {
-			foreach (TypeDefinition type in module.Types) {
-				foreach (MethodDefinition ctor in type.Constructors) {
-					ProcessMethod (ctor, revision);
-				}
+			foreach (TypeDefinition type in module.GetAllTypes ()) {
 				foreach (MethodDefinition method in type.Methods) {
 					ProcessMethod (method, revision);
 				}
