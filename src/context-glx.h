@@ -29,6 +29,11 @@ public:
 
 	void Clear (Color *color);
 
+	void Blend (MoonSurface *src,
+		    double      alpha,
+		    double      x,
+		    double      y);
+
 	void Project (MoonSurface  *src,
 		      const double *matrix,
 		      double       alpha,

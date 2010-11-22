@@ -298,6 +298,17 @@ GLXContext::Clear (Color *color)
 }
 
 void
+GLXContext::Blend (MoonSurface *src,
+		   double      alpha,
+		   double      x,
+		   double      y)
+{
+	ForceCurrent ();
+
+	GLContext::Blend (src, alpha, x, y);
+}
+
+void
 GLXContext::Project (MoonSurface  *src,
 		     const double *matrix,
 		     double       alpha,

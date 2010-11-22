@@ -329,6 +329,19 @@ GLContext::GetVertexShader ()
 	return vs;
 }
 
+void
+GLContext::Blend (MoonSurface *src,
+		  double      alpha,
+		  double      x,
+		  double      y)
+{
+	double m[16];
+
+	Matrix3D::Identity (m);
+
+	Project (src, m, alpha, x, y);
+}
+
 GLuint
 GLContext::GetProjectProgram (double opacity)
 {

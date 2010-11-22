@@ -493,6 +493,19 @@ GalliumContext::Clear (Color *color)
 	cso_restore_rasterizer (cso);
 }
 
+void
+GalliumContext::Blend (MoonSurface *src,
+		       double      alpha,
+		       double      x,
+		       double      y)
+{
+	double m[16];
+
+	Matrix3D::Identity (m);
+
+	Project (src, m, alpha, x, y);
+}
+
 void *
 GalliumContext::GetProjectShader (double opacity)
 {

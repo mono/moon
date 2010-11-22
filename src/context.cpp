@@ -334,6 +334,15 @@ Context::Clear (Color *color)
 }
 
 void
+Context::Blend (MoonSurface *src,
+		double      alpha,
+		double      x,
+		double      y)
+{
+	g_warning ("Context::Blend has been called. The derived class should have overridden it.");
+}
+
+void
 Context::Project (MoonSurface  *src,
 		  const double *matrix,
 		  double       alpha,

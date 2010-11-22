@@ -131,6 +131,11 @@ public:
 
 	virtual void Clear (Color *color);
 
+	virtual void Blend (MoonSurface *src,
+			    double      alpha,
+			    double      x,
+			    double      y);
+
 	virtual void Project (MoonSurface  *src,
 			      const double *matrix,
 			      double       alpha,
