@@ -31,6 +31,7 @@ Context::Target::Target ()
 	surface       = NULL;
 	device_offset = Point ();
 	cairo         = NULL;
+	clear         = false;
 }
 
 Context::Target::Target (MoonSurface *moon,
@@ -41,6 +42,7 @@ Context::Target::Target (MoonSurface *moon,
 	surface       = NULL;
 	device_offset = Point ();
 	cairo         = NULL;
+	clear         = false;
 }
 
 Context::Target::~Target ()
@@ -76,7 +78,7 @@ Context::Target::Cairo ()
 {
 	if (cairo)
 		return cairo->Cairo ();
-	
+
 	if (!surface) {
 		surface = native->Cairo ();
 
@@ -132,6 +134,18 @@ Context::Target *
 Context::Target::GetCairoTarget ()
 {
 	return cairo;
+}
+
+void
+Context::Target::SetClear (bool value)
+{
+	clear = value;
+}
+
+bool
+Context::Target::GetClear ()
+{
+	return clear;
 }
 
 Context::Node::Node (Target         *surface,

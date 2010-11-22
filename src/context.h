@@ -78,12 +78,16 @@ public:
 		void SetCairoTarget (Target *target);
 		Target *GetCairoTarget ();
 
+		void SetClear (bool value);
+		bool GetClear ();
+
 	protected:
 		MoonSurface     *native;
 		Rect            box;
 		cairo_surface_t *surface;
 		Point           device_offset;
 		Target          *cairo;
+		bool            clear;
 	};
 
 	class Node : public List::Node {

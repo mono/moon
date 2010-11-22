@@ -82,13 +82,24 @@ GLXContext::SetupVertexData (const double *matrix,
 void
 GLXContext::FlushCache ()
 {
-	Target *target = Top ()->GetTarget ();
-	Target *cairo = target->GetCairoTarget ();
+	Target      *target = Top ()->GetTarget ();
+	bool        clear = target->GetClear ();
+	Target      *cairo = target->GetCairoTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface  *) ms;
+
+	if (clear) {
+		if (!dst->GetGLXDrawable ())
+			GLContext::SetFramebuffer ();
+
+		glClearColor (0.0, 0.0, 0.0, 0.0);
+		glClear (GL_COLOR_BUFFER_BIT);
+
+		target->SetClear (false);
+	}
 
 	if (cairo) {
-		MoonSurface *mDst;
-		Rect        rDst = target->GetData (&mDst);
-		GLXSurface  *dst = (GLXSurface  *) mDst;
 		MoonSurface *mSrc;
 		Rect        rSrc = cairo->GetData (&mSrc);
 		GLXSurface  *src = (GLXSurface  *) mSrc;
@@ -105,8 +116,8 @@ GLXContext::FlushCache ()
 		glUseProgram (program);
 
 		SetupVertexData (NULL,
-				 rSrc.x - rDst.x,
-				 rSrc.y - rDst.y,
+				 rSrc.x - r.x,
+				 rSrc.y - r.y,
 				 width0,
 				 height0);
 
@@ -145,11 +156,12 @@ GLXContext::FlushCache ()
 
 		glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
-		mDst->unref ();
 		mSrc->unref ();
 
 		target->SetCairoTarget (NULL);
 	}
+
+	ms->unref ();
 }
 
 void
@@ -163,7 +175,7 @@ GLXContext::Push (Group extents)
 	Top ()->GetMatrix (&matrix);
 
 	// clear surface
-	cairo_surface_destroy (surface->Cairo ());
+	target->SetClear (true);
 
 	Stack::Push (new Context::Node (target, &matrix, &extents.r));
 
@@ -208,6 +220,9 @@ GLXContext::Push (Cairo extents)
 
 			cairo->unref ();
 			surface->unref ();
+		}
+		else {
+			target->SetClear (false);
 		}
 
 		ms->unref ();
