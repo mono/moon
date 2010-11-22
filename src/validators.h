@@ -54,6 +54,7 @@ public:
 	static ValueValidator NonNullOnlyDuringInitializationValidator;
 	static ValueValidator NullOrInDesignMode;
 	static ValueValidator UserInitiatedValidator;
+	static ValueValidator AssemblyPartSourceValidator;
 };
 
 };

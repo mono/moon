@@ -35,10 +35,10 @@ namespace Moonlight {
 
 typedef void (*EnsureManagedPeerCallback)(EventObject *forObj);
 
-/* @Namespace=System.Windows */
+/* @Namespace=System.Windows,CallInitialize */
 class AssemblyPart : public DependencyObject {
 public:
- 	/* @PropertyType=string,DefaultValue=\"\" */
+ 	/* @PropertyType=string,DefaultValue=\"\",Validator=AssemblyPartSourceValidator */
 	const static int SourceProperty;
 	
 protected:

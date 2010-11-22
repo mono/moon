@@ -31,13 +31,15 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Resources;
+using System.Threading;
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public partial class AssemblyPartTest {
+	public partial class AssemblyPartTest : SilverlightTest {
 
 		[TestMethod]
 		public void Defaults ()
@@ -306,6 +308,66 @@ namespace MoonTest.System.Windows {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Dispatched ()
+		{
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Application.Current.RootVisual.Dispatcher.BeginInvoke (() => {
+				try {
+					Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					AssemblyPart ap = new AssemblyPart ();
+					Assert.AreEqual (String.Empty, ap.Source, "Source");
+					Assert.IsNull (ap.Load (Stream.Null));
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UserThread ()
+		{
+			// created out of the thread
+			AssemblyPart ap = new AssemblyPart ();
+
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						new AssemblyPart ();
+					}, "ctor");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.AreEqual (String.Empty, ap.Source, "Source");
+					}, "Source");
+
+					Assert.IsNull (ap.Load (Stream.Null), "Load(Stream.Null)");
+
+					Assert.IsNotNull (ap.Load (GetLibraryStream ()), "Load");
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
 		}
 	}
 }

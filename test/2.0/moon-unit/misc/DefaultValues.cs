@@ -106,7 +106,6 @@ namespace MoonTest.System.Windows
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_SetStringValue_AssemblyPart ()
         {
             AssemblyPart widget = new AssemblyPart ();

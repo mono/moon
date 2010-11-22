@@ -484,4 +484,12 @@ Validators::UserInitiatedValidator (DependencyObject* instance, DependencyProper
 	return false;
 }
 
+bool
+Validators::AssemblyPartSourceValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!value || value->GetIsNull ())
+		*value = Value ("");
+	return true;
+}
+
 };

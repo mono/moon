@@ -44,8 +44,14 @@ namespace MS.Internal {
 
 namespace System.Windows {
 	partial class AssemblyPart {
-		public AssemblyPart () : base (SafeNativeMethods.assembly_part_new (), true) {}
-		internal AssemblyPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public AssemblyPart () : base (SafeNativeMethods.assembly_part_new (), true)
+		{
+			Initialize ();
+		}
+		internal AssemblyPart (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class AssemblyPartCollection {

@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008-2009 Novell, Inc.
+// Copyright 2008-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
+
 using System.IO;
 using System.Reflection;
 using Mono;
@@ -34,9 +34,10 @@ namespace System.Windows {
 
 	public sealed partial class AssemblyPart : DependencyObject {
 
-		static AssemblyPart ()
+		void Initialize ()
 		{
-			SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
+			if (!Helper.CheckAccess ())
+				throw new UnauthorizedAccessException ();
 		}
 
 		static Type MemoryStreamType = typeof (MemoryStream);
