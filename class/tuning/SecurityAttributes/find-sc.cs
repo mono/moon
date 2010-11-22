@@ -61,11 +61,6 @@ class Program {
 		if (type.HasAttribute (SecurityCritical))
 			types.Add (type.FullName);
 
-		if (type.HasConstructors) {
-			foreach (MethodDefinition ctor in type.Constructors) {
-				ProcessMethod (ctor);
-			}
-		}
 		if (type.HasMethods) {
 			foreach (MethodDefinition method in type.Methods) {
 				ProcessMethod (method);
@@ -76,7 +71,7 @@ class Program {
 	static void ProcessAssembly (AssemblyDefinition assembly)
 	{
 		foreach (ModuleDefinition module in assembly.Modules) {
-			foreach (TypeDefinition type in module.Types) {
+			foreach (TypeDefinition type in module.GetAllTypes ()) {
 				ProcessType (type);
 			}
 		}
@@ -101,7 +96,7 @@ class Program {
 				continue;
 			}
 
-			AssemblyDefinition ad = AssemblyFactory.GetAssembly (fullpath);
+			AssemblyDefinition ad = AssemblyDefinition.ReadAssembly (fullpath);
 			ProcessAssembly (ad);
 
 			// this will make it easier to diff in the future

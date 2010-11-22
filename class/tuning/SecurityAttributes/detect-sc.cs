@@ -87,7 +87,7 @@ class Program {
 			if (p1.ParameterType.FullName != p2.ParameterType.FullName)
 				return false;
 		}
-		return (m1.ReturnType.ReturnType.FullName == m2.ReturnType.ReturnType.FullName);
+		return (m1.ReturnType.FullName == m2.ReturnType.FullName);
 	}
 
 	static void ProcessMethod (MethodDefinition method)
@@ -122,7 +122,7 @@ class Program {
 
 		// skip signature check for visible API (we get them from find-sc)
 		if (!sc && !method.IsVisible ()) {
-			TypeReference rtype = method.ReturnType.ReturnType;
+			TypeReference rtype = method.ReturnType;
 			if (!CheckType (rtype)) {
 				sc = true;
 				comment = String.Format ("using '{0}' as return type", rtype.FullName);
@@ -137,7 +137,7 @@ class Program {
 				TypeDefinition td = intf.Resolve ();
 				if (td == null || !td.HasMethods)
 					continue;
-				foreach (MethodDefinition im in td.Methods) {
+				foreach (MethodDefinition im in td.GetMethods ()) {
 					if (im.IsSecurityCritical ()) {
 						if (Compare (method, im)) {
 							sc = true;
@@ -155,7 +155,7 @@ class Program {
 			if (tr != null) {
 				TypeDefinition td = tr.Resolve ();
 				if (td != null) {
-					foreach (MethodDefinition bm in td.Methods) {
+					foreach (MethodDefinition bm in td.GetMethods ()) {
 						if (Compare (method, bm)) {
 							if (!sc) {
 								if (bm.IsSecurityCritical ()) {
@@ -204,7 +204,7 @@ class Program {
 					TypeDefinition td = intf.Resolve ();
 					if (td == null || !td.HasMethods)
 						continue;
-					foreach (MethodDefinition im in td.Methods) {
+					foreach (MethodDefinition im in td.GetMethods ()) {
 						// note: in this case we don't care if the method is indirectly critical (e.g.via its type)
 						if (Compare (method, im) && !type.IsSecurityCritical ()) {
 							string ims = im.GetFullName ();
@@ -223,22 +223,18 @@ class Program {
 
 	static void ProcessType (TypeDefinition type)
 	{
-		if (type.HasConstructors) {
-			foreach (MethodDefinition ctor in type.Constructors) {
-				ProcessMethod (ctor);
-			}
-		}
-		if (type.HasMethods) {
-			foreach (MethodDefinition method in type.Methods) {
-				ProcessMethod (method);
-			}
+		if (!type.HasMethods)
+			return;
+
+		foreach (MethodDefinition method in type.Methods) {
+			ProcessMethod (method);
 		}
 	}
 
 	static void ProcessAssembly (AssemblyDefinition assembly)
 	{
 		foreach (ModuleDefinition module in assembly.Modules) {
-			foreach (TypeDefinition type in module.Types) {
+			foreach (TypeDefinition type in module.GetAllTypes ()) {
 				ProcessType (type);
 			}
 		}
@@ -280,8 +276,10 @@ class Program {
 				continue;
 			}
 
-			AssemblyDefinition ad = AssemblyFactory.GetAssembly (fullpath);
-			(ad.Resolver as BaseAssemblyResolver).AddSearchDirectory (args [0]);
+			var resolver = new DefaultAssemblyResolver ();
+			resolver.AddSearchDirectory (args [0]);
+
+			AssemblyDefinition ad = AssemblyDefinition.ReadAssembly (fullpath, new ReaderParameters { AssemblyResolver = resolver });
 			ProcessAssembly (ad);
 
 			string outfile = Path.Combine (output, assembly) + ".auto.sc";

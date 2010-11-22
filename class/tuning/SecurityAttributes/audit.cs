@@ -188,7 +188,7 @@ class Program {
 
 		List<string> handlers = new List<string> ();
 		foreach (ExceptionHandler eh in body.ExceptionHandlers) {
-			handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.Type, eh.CatchType,
+			handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.HandlerType, eh.CatchType,
 				GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
 				GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
 				GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
@@ -219,9 +219,9 @@ class Program {
 		case OperandType.ShortInlineVar:
 		case OperandType.InlineVar:
 			return ((VariableDefinition) instr.Operand).Index.ToString ();
-		case OperandType.ShortInlineParam:
-		case OperandType.InlineParam:
-			return ((ParameterDefinition) instr.Operand).Sequence.ToString ();
+		case OperandType.ShortInlineArg:
+		case OperandType.InlineArg:
+			return (((ParameterDefinition) instr.Operand).Index + 1).ToString ();
 		case OperandType.ShortInlineI:
 		case OperandType.ShortInlineR:
 		case OperandType.InlineI:
@@ -264,12 +264,9 @@ class Program {
 
 	static void ProcessAssembly (string assemblyName, int revision)
 	{
-		AssemblyDefinition ad = AssemblyFactory.GetAssembly (assemblyName);
+		AssemblyDefinition ad = AssemblyDefinition.ReadAssembly (assemblyName);
 		foreach (ModuleDefinition module in ad.Modules) {
-			foreach (TypeDefinition type in module.Types) {
-				foreach (MethodDefinition ctor in type.Constructors) {
-					ProcessMethod (ctor, revision);
-				}
+			foreach (TypeDefinition type in module.GetAllTypes ()) {
 				foreach (MethodDefinition method in type.Methods) {
 					ProcessMethod (method, revision);
 				}

@@ -83,16 +83,14 @@ class Program {
 
 	static void Check (string filename)
 	{
-		AssemblyDefinition assembly = AssemblyFactory.GetAssembly (filename);
-		BaseAssemblyResolver bar = (assembly.Resolver as BaseAssemblyResolver);
-		bar.AddSearchDirectory (RuntimePath);
-		bar.AddSearchDirectory (SdkClientPath);
+		var resolver = new DefaultAssemblyResolver ();
+		resolver.AddSearchDirectory (RuntimePath);
+		resolver.AddSearchDirectory (SdkClientPath);
+
+		AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly (filename, new ReaderParameters { AssemblyResolver = resolver });
 
 		foreach (ModuleDefinition module in assembly.Modules) {
-			foreach (TypeDefinition type in module.Types) {
-				foreach (MethodDefinition ctor in type.Constructors) {
-					Check (assembly, ctor);
-				}
+			foreach (TypeDefinition type in module.GetAllTypes ()) {
 				foreach (MethodDefinition md in type.Methods) {
 					Check (assembly, md);
 				}

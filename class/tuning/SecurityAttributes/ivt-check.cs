@@ -56,16 +56,16 @@ class Program {
 	static bool Check (string filename)
 	{
 		bool retval = true;
-		AssemblyDefinition assembly = AssemblyFactory.GetAssembly (filename);
+		AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly (filename);
 
 		string aname = assembly.Name.FullName;
 		Console.WriteLine (aname);
 
 		foreach (CustomAttribute ca in assembly.CustomAttributes) {
-			if (ca.Constructor.DeclaringType.FullName != InternalsVisibleTo)
+			if (ca.AttributeType.FullName != InternalsVisibleTo)
 				continue;
 
-			string fqn = ca.ConstructorParameters [0] as string;
+			string fqn = ca.ConstructorArguments [0].Value as string;
 			string name = fqn.Substring (0, fqn.IndexOf (','));
 			if (Array.IndexOf<string> (PlatformCode.Assemblies, name) >= 0)
 				continue;

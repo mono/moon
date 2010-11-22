@@ -39,10 +39,9 @@ class Program {
 		throw new NotImplementedException ("none found yet");
 	}
 
-	static MethodDefinition FindMethod (string name, bool ctor, TypeDefinition type)
+	static MethodDefinition FindMethod (string name, TypeDefinition type)
 	{
-		ICollection c = ctor ? (ICollection) type.Constructors : (ICollection) type.Methods;
-		foreach (MethodDefinition method in c) {
+		foreach (MethodDefinition method in type.Methods) {
 			if (method.ToString () == name)
 				return method;
 		}
@@ -64,14 +63,13 @@ class Program {
 		int s = value.IndexOf (' ') + 1;
 		int e = value.IndexOf ("::");
 		string type_name = value.Substring (s, e - s);
-		TypeDefinition type = assembly.MainModule.Types [type_name];
+		TypeDefinition type = assembly.MainModule.GetType (type_name);
 		if (type == null) {
 			string msg = String.Format ("MISSING [{0}] T: {1} -> M: {2}", assembly.Name.Name, type_name, value);
 			if (!errors.Contains (msg))
 				errors.Add (msg);
 		} else {
-			bool ctor = (value [e + 2] == '.');
-			MethodDefinition method = FindMethod (value, ctor, type);
+			MethodDefinition method = FindMethod (value, type);
 			if ((method == null) || !IsInternal (method)) {
 				string msg = String.Format ("MISSING [{0}] M: {1}", assembly.Name.Name, value);
 				if (!errors.Contains (msg))
@@ -82,7 +80,7 @@ class Program {
 
 	static void ProcessType (AssemblyDefinition assembly, string value)
 	{
-		TypeDefinition type = assembly.MainModule.Types [value];
+		TypeDefinition type = assembly.MainModule.GetType (value);
 		if ((type == null) || (!type.IsNotPublic && !type.IsNestedAssembly)) {
 			string msg = String.Format ("MISSING [{0}] T: {1}", assembly.Name.Name, value);
 			if (!errors.Contains (msg))
@@ -101,7 +99,7 @@ class Program {
 		AssemblyDefinition assembly;
 		if (!assemblies.TryGetValue (assembly_name, out assembly)) {
 			string full_path = Path.Combine (PlatformCode, assembly_name + ".dll");
-			assembly = AssemblyFactory.GetAssembly (full_path);
+			assembly = AssemblyDefinition.ReadAssembly (full_path);
 		}
 
 		string value = line.Substring (p + 5);
