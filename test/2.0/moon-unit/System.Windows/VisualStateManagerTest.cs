@@ -188,6 +188,45 @@ namespace MoonTest.System.Windows {
 			);
 		}
 
+		[TestMethod]
+		public void DontCreateDynamicTransitionsOnAnimatedProperties ()
+		{
+			var c = new ContentControl { Template = GetTemplate_MultipleTransitions () };
+			TestPanel.Children.Add (c);
+			c.ApplyTemplate ();
+			Assert.IsTrue (VisualStateManager.GoToState (c, "A", true), "#1");
+			Assert.IsTrue (VisualStateManager.GoToState (c, "B", true), "#2");
+		}
+
+		ControlTemplate GetTemplate_MultipleTransitions ()
+		{
+			return (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate
+	xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"">
+    <Grid x:Name=""rootGrid"" Background=""Red"">
+		<vsm:VisualStateManager.VisualStateGroups>
+            <vsm:VisualStateGroup x:Name=""States"">
+                <vsm:VisualStateGroup.Transitions>
+                    <vsm:VisualTransition GeneratedDuration=""00:00:00.1"" To=""A"" />
+                    <vsm:VisualTransition GeneratedDuration=""00:00:00.1"" To=""B"" />
+                </vsm:VisualStateGroup.Transitions>
+                <vsm:VisualState x:Name=""A"">
+                    <Storyboard>
+                        <ColorAnimation BeginTime=""0"" Storyboard.TargetName=""rootGrid"" Storyboard.TargetProperty=""(Grid.Background).(SolidColorBrush.Color)"" To=""White"" />
+                    </Storyboard>
+                </vsm:VisualState>
+                <vsm:VisualState x:Name=""B"">
+                    <Storyboard>
+                        <ColorAnimation BeginTime=""0"" Storyboard.TargetName=""rootGrid"" Storyboard.TargetProperty=""(Grid.Background).(SolidColorBrush.Color)"" To=""Gray"" />
+                    </Storyboard>
+                </vsm:VisualState>
+            </vsm:VisualStateGroup>
+        </vsm:VisualStateManager.VisualStateGroups>
+    </Grid>
+</ControlTemplate>");
+		}
 
 		Storyboard CreateWidthStoryboard (string targetName, double from, double to)
 		{

@@ -707,17 +707,28 @@ namespace System.Windows
         // specifies a token to uniquely identify a Timeline object
         private struct TimelineDataToken : IEquatable<TimelineDataToken>
         {
-            object property;
-            object target;
+            PropertyPath property;
+            object manualTarget;
+            string targetName;
+
             public TimelineDataToken(Timeline timeline)
             {
-                target = (object)timeline.ManualTarget ?? Storyboard.GetTargetName(timeline);
-                property = (object)Storyboard.GetTargetDependencyProperty (timeline) ?? Storyboard.GetTargetProperty(timeline);
+                manualTarget = Storyboard.GetTargetDependencyProperty (timeline);
+                targetName = Storyboard.GetTargetName(timeline);
+                property = Storyboard.GetTargetProperty(timeline);
             }
 
             public bool Equals(TimelineDataToken other)
             {
-                return object.Equals (other.property, property) && object.Equals (other.target, target);
+                if (targetName != other.targetName && manualTarget != other.manualTarget)
+                    return false;
+                if (property == null)
+                    return other.property == null;
+                if (other.property == null)
+                    return false;
+
+                return property.NativeDP == other.property.NativeDP
+                    && property.Path == other.property.Path;
             }
 
             public override bool Equals (object obj)
@@ -731,9 +742,9 @@ namespace System.Windows
             {
                 int hash = 0;
                 if (property != null)
-                    hash ^= property.GetHashCode ();
-                if (target != null)
-                    hash ^= target.GetHashCode ();
+                    hash ^= property.Path.GetHashCode ();
+                if (targetName != null)
+                    hash ^= targetName.GetHashCode ();
                 return hash;
             }
         }
