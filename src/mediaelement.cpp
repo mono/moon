@@ -1048,9 +1048,7 @@ MediaElement::SetProperties (Media *media)
 	Duration *natural_duration;
 	bool can_seek = true;
 	bool can_pause = true;
-	
-	LOG_MEDIAELEMENT ("MediaElement::SetProperties (%p)\n", media);
-	
+
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (playlist != NULL);
 	
@@ -1080,12 +1078,18 @@ MediaElement::SetProperties (Media *media)
 	SetCanPause (can_pause);
 	SetCanSeek (can_seek);
 	SetNaturalDuration (natural_duration);
-	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());
-	SetNaturalVideoWidth ((double) mplayer->GetVideoWidth ());
+	SetNaturalVideoHeight (mplayer->GetVideoHeight ());
+	SetNaturalVideoWidth (mplayer->GetVideoWidth ());
 	SetAudioStreamCount (mplayer->GetAudioStreamCount ());
 
 	mplayer->SetMuted (GetIsMuted ());
 	mplayer->SetVolume (GetVolume ());
+
+	LOG_MEDIAELEMENT ("MediaElement::SetProperties (%p) "
+		"CanPause: %i CanSeek: %i NaturalDuration: %" G_GUINT64_FORMAT "ms NaturalVideoHeight: %i "
+		"NaturalVideoWidth: %i AudioStreamCount: %i IsMuted: %i Volume: %f\n", media,
+		GetCanPause (), GetCanSeek (), MilliSeconds_FromPts (mplayer->GetDuration ()), GetNaturalVideoHeight (),
+		GetNaturalVideoWidth (), GetAudioStreamCount (), GetIsMuted (), GetVolume ());
 
 	UpdateBounds ();
 	InvalidateMeasure ();
