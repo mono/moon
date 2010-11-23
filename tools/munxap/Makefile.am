@@ -1,5 +1,7 @@
 moondir = $(pkglibdir)
 
+CECIL=$(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+
 bin_SCRIPTS = munxap
 
 moon_DATA = munxap.exe
@@ -46,7 +48,7 @@ munxap_resources = 			\
 ress= $(foreach res,$(munxap_resources), $(addprefix -resource:,$(res)),$(notdir $(res)))
 
 munxap.exe: $(munxap_exe_CS) 
-	gmcs -debug+ -out:$@ $(munxap_exe_CS) -r:System -r:System.Xml -pkg:gtk-sharp-2.0 -r:`pkg-config --variable=Libraries cecil` $(ress)
+	gmcs -debug+ -out:$@ $(munxap_exe_CS) -r:System -r:System.Xml -pkg:gtk-sharp-2.0 -r:$(CECIL) $(ress)
 
 munxap: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > munxap

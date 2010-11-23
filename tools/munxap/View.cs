@@ -202,7 +202,7 @@ class ViewResource : View {
 		// Load resources
 		EmbeddedResource embed = resource as EmbeddedResource;
 		if (embed != null) {
-			using (MemoryStream stream = new MemoryStream (embed.Data)) {
+			using (MemoryStream stream = new MemoryStream (embed.GetResourceData ())) {
 				using (ResourceReader reader = new ResourceReader (stream)) {
 					foreach (DictionaryEntry obj in reader) {
 						store.AppendValues (obj.Key.ToString (), obj.Value.GetType ().FullName, obj.Value);
@@ -347,12 +347,12 @@ class ViewAssembly : View {
 		// Load types
 		Gtk.TreeIter classes = store.AppendValues ("Classes");
 		foreach (TypeDefinition type in assembly.MainModule.Types) {
-			LoadType (type);
+			LoadType (type, classes);
 		}
 		return box;
 	}
 
-	static void LoadType (TypeDefinition type)
+	void LoadType (TypeDefinition type, Gtk.TreeIter classes)
 	{
 		Gtk.TreeIter cl = store.AppendValues (classes, type.FullName, "Type", "", type, classPixbuf);
 		List<MethodDefinition> shown_methods = new List<MethodDefinition> ();
@@ -387,14 +387,15 @@ class ViewAssembly : View {
 				continue;
 			store.AppendValues (cl, FormatMethod (method), "Method", "", method, methodPixbuf);
 		}
-		foreach (MethodDefinition method in type.Constructors.Where (m => m.IsConstructor)) {
+		foreach (MethodDefinition method in type.Methods.Where (m => m.IsConstructor)) {
 			store.AppendValues (cl, FormatMethod (method), "Constructor", "", method, methodPixbuf);
 		}
 		foreach (FieldDefinition field in type.Fields) {
 			store.AppendValues (cl, field.FieldType.Name + " " + field.Name, "Field", "", field, fieldPixbuf);
 		}
-		foreach (TypeDefinition nested in type.NestedTypes)
-			LoadType (nested);
+		foreach (TypeDefinition nested in type.NestedTypes) {
+			LoadType (nested, classes);
+		}
 	}
 
 	string FormatMethod (MethodDefinition method)
