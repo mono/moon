@@ -340,9 +340,9 @@ Media::Initialize ()
 	
 	// demuxers
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
+	Media::RegisterDemuxer (new Mp4DemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASXDemuxerInfo ());
-	Media::RegisterDemuxer (new Mp4DemuxerInfo ());
 
 	// converters
 	if (!(moonlight_flags & RUNTIME_INIT_FFMPEG_YUV_CONVERTER))
