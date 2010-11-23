@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Resources;
 using System.Text;
 
@@ -334,7 +335,7 @@ class ViewAssembly : View {
 		box.PackStart (scrolled_tree, true, true, 0);
 
 		if (assembly == null)
-			assembly = AssemblyFactory.GetAssembly (Content.UnzippedFilename);
+			assembly = AssemblyDefinition.ReadAssembly (Content.UnzippedFilename);
 				
 		// Load resources
 		// first get a list of resources in the assembly
@@ -346,54 +347,61 @@ class ViewAssembly : View {
 		// Load types
 		Gtk.TreeIter classes = store.AppendValues ("Classes");
 		foreach (TypeDefinition type in assembly.MainModule.Types) {
-			Gtk.TreeIter cl = store.AppendValues (classes, type.FullName, "Type", "", type, classPixbuf);
-			List<MethodDefinition> shown_methods = new List<MethodDefinition> ();
-			foreach (PropertyDefinition property in type.Properties) {
-				Gtk.TreeIter prop = store.AppendValues (cl, property.Name, "Property", "", property, propertyPixbuf);
-				if (property.GetMethod != null) {
-					store.AppendValues (prop, FormatMethod (property.GetMethod), "Getter", "", property.GetMethod, methodPixbuf);
-					shown_methods.Add (property.GetMethod);
-				}
-				if (property.SetMethod != null) {
-					store.AppendValues (prop, FormatMethod (property.SetMethod), "Setter", "", property.SetMethod, methodPixbuf);
-					shown_methods.Add (property.SetMethod);
-				}
-			}
-			foreach (EventDefinition ev in type.Events) {
-				Gtk.TreeIter evIter = store.AppendValues (cl, ev.Name, "Event", "", ev, eventPixbuf);
-				if (ev.AddMethod != null) {
-					store.AppendValues (evIter, FormatMethod (ev.AddMethod), "Adder", "", ev.AddMethod, methodPixbuf);
-					shown_methods.Add (ev.AddMethod);
-				}
-				if (ev.RemoveMethod != null) {
-					store.AppendValues (evIter, FormatMethod (ev.RemoveMethod), "Remover", "", ev.RemoveMethod, methodPixbuf);
-					shown_methods.Add (ev.RemoveMethod);
-				}
-				if (ev.InvokeMethod != null) {
-					store.AppendValues (evIter, FormatMethod (ev.InvokeMethod), "Invoker", "", ev.InvokeMethod, methodPixbuf);
-					shown_methods.Add (ev.InvokeMethod);
-				}
-			}
-			foreach (MethodDefinition method in type.Methods) {
-				if (shown_methods.Contains (method))
-					continue;
-				store.AppendValues (cl, FormatMethod (method), "Method", "", method, methodPixbuf);
-			}
-			foreach (MethodDefinition method in type.Constructors) {
-				store.AppendValues (cl, FormatMethod (method), "Constructor", "", method, methodPixbuf);
-			}
-			foreach (FieldDefinition field in type.Fields) {
-				store.AppendValues (cl, field.FieldType.Name + " " + field.Name, "Field", "", field, fieldPixbuf);
-			}
+			LoadType (type);
 		}
 		return box;
+	}
+
+	static void LoadType (TypeDefinition type)
+	{
+		Gtk.TreeIter cl = store.AppendValues (classes, type.FullName, "Type", "", type, classPixbuf);
+		List<MethodDefinition> shown_methods = new List<MethodDefinition> ();
+		foreach (PropertyDefinition property in type.Properties) {
+			Gtk.TreeIter prop = store.AppendValues (cl, property.Name, "Property", "", property, propertyPixbuf);
+			if (property.GetMethod != null) {
+				store.AppendValues (prop, FormatMethod (property.GetMethod), "Getter", "", property.GetMethod, methodPixbuf);
+				shown_methods.Add (property.GetMethod);
+			}
+			if (property.SetMethod != null) {
+				store.AppendValues (prop, FormatMethod (property.SetMethod), "Setter", "", property.SetMethod, methodPixbuf);
+				shown_methods.Add (property.SetMethod);
+			}
+		}
+		foreach (EventDefinition ev in type.Events) {
+			Gtk.TreeIter evIter = store.AppendValues (cl, ev.Name, "Event", "", ev, eventPixbuf);
+			if (ev.AddMethod != null) {
+				store.AppendValues (evIter, FormatMethod (ev.AddMethod), "Adder", "", ev.AddMethod, methodPixbuf);
+				shown_methods.Add (ev.AddMethod);
+			}
+			if (ev.RemoveMethod != null) {
+				store.AppendValues (evIter, FormatMethod (ev.RemoveMethod), "Remover", "", ev.RemoveMethod, methodPixbuf);
+				shown_methods.Add (ev.RemoveMethod);
+			}
+			if (ev.InvokeMethod != null) {
+				store.AppendValues (evIter, FormatMethod (ev.InvokeMethod), "Invoker", "", ev.InvokeMethod, methodPixbuf);
+				shown_methods.Add (ev.InvokeMethod);
+			}
+		}
+		foreach (MethodDefinition method in type.Methods.Where (m => !m.IsConstructor)) {
+			if (shown_methods.Contains (method))
+				continue;
+			store.AppendValues (cl, FormatMethod (method), "Method", "", method, methodPixbuf);
+		}
+		foreach (MethodDefinition method in type.Constructors.Where (m => m.IsConstructor)) {
+			store.AppendValues (cl, FormatMethod (method), "Constructor", "", method, methodPixbuf);
+		}
+		foreach (FieldDefinition field in type.Fields) {
+			store.AppendValues (cl, field.FieldType.Name + " " + field.Name, "Field", "", field, fieldPixbuf);
+		}
+		foreach (TypeDefinition nested in type.NestedTypes)
+			LoadType (nested);
 	}
 
 	string FormatMethod (MethodDefinition method)
 	{
 		StringBuilder result = new StringBuilder ();
 
-		result.Append (method.ReturnType.ReturnType.Name);
+		result.Append (method.ReturnType.Name);
 		result.Append (" ");
 		result.Append (method.Name);
 		result.Append ("(");
