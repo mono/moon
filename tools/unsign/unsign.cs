@@ -20,7 +20,7 @@ class unsign
 		if (args.Length > 1 && args [1] == "--resign")
 			resign = args [2]; // key file
 		
-		a = AssemblyFactory.GetAssembly (source);
+		a = AssemblyDefinition.ReadAssembly (source);
 		Console.WriteLine ("Assembly {0} successfully loaded from: {1}", a, source);		
 
 		if (resign == null)
@@ -65,7 +65,7 @@ class unsign
 			}
 		}
 
-		AssemblyFactory.SaveAssembly (a, destination);
+		a.Write (destination);
 		
 		if (resign != null) {
 			using (Process sn = new Process ())  {
