@@ -863,6 +863,12 @@ MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 }
 
 void
+MediaElement::EmitMediaEnded (EventObject *obj)
+{
+	((MediaElement *) obj)->Emit (MediaEndedEvent);
+}
+
+void
 MediaElement::EmitStateChangedAsync ()
 {
 	AddTickCall (EmitStateChanged);
@@ -1227,7 +1233,7 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 	CheckMarkers ();
 	paused_position = GetNaturalDuration ()->GetTimeSpan ();
 	SetState (MediaElementStatePaused);
-	Emit (MediaEndedEvent);
+	AddTickCall (EmitMediaEnded); /* MediaEnded must be emitted after the (async) CurrentState -> Paused event. #7003. */
 }
 
 void

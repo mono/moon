@@ -99,9 +99,9 @@ class MediaElement : public FrameworkElement {
 	// Does not change any state
 	void SetProperties (Media *media);
 	
-	void EmitMediaEnded ();
 	void EmitStateChangedAsync ();
 	static void EmitStateChanged (EventObject *obj);
+	static void EmitMediaEnded (EventObject *obj);
 	static void ReportErrorOccurredCallback (EventObject *obj);
 	
 	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
