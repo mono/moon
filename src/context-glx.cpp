@@ -83,20 +83,21 @@ void
 GLXContext::FlushCache ()
 {
 	Target      *target = Top ()->GetTarget ();
-	bool        clear = target->GetClear ();
 	Target      *cairo = target->GetCairoTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface  *) ms;
 
-	if (clear) {
+	// target contents need to be initialized
+	if (!target->GetInit ()) {
 		if (!dst->GetGLXDrawable ())
 			GLContext::SetFramebuffer ();
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
 		glClear (GL_COLOR_BUFFER_BIT);
 
-		target->SetClear (false);
+		// mark target contents as initialized with native surface
+		target->SetInit (ms);
 	}
 
 	if (cairo) {
@@ -174,8 +175,8 @@ GLXContext::Push (Group extents)
 
 	Top ()->GetMatrix (&matrix);
 
-	// clear surface
-	target->SetClear (true);
+	// mark target contents as uninitialized
+	target->SetInit (NULL);
 
 	Stack::Push (new Context::Node (target, &matrix, &extents.r));
 
@@ -222,7 +223,8 @@ GLXContext::Push (Cairo extents)
 			surface->unref ();
 		}
 		else {
-			target->SetClear (false);
+			// mark target contents as initialized
+			target->SetInit (ms);
 		}
 
 		ms->unref ();

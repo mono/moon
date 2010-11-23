@@ -31,7 +31,7 @@ Context::Target::Target ()
 	surface       = NULL;
 	device_offset = Point ();
 	cairo         = NULL;
-	clear         = false;
+	init          = NULL;
 }
 
 Context::Target::Target (MoonSurface *moon,
@@ -42,7 +42,7 @@ Context::Target::Target (MoonSurface *moon,
 	surface       = NULL;
 	device_offset = Point ();
 	cairo         = NULL;
-	clear         = false;
+	init          = moon->ref ();
 }
 
 Context::Target::~Target ()
@@ -62,6 +62,9 @@ Context::Target::~Target ()
 
 	if (cairo)
 		cairo->unref ();
+
+	if (init)
+		init->unref ();
 }
 
 Rect
@@ -137,15 +140,23 @@ Context::Target::GetCairoTarget ()
 }
 
 void
-Context::Target::SetClear (bool value)
+Context::Target::SetInit (MoonSurface *src)
 {
-	clear = value;
+	MoonSurface *old = init;
+
+	if (src)
+		init = src->ref ();
+	else
+		init = NULL;
+
+	if (old)
+		old->unref ();
 }
 
-bool
-Context::Target::GetClear ()
+MoonSurface *
+Context::Target::GetInit ()
 {
-	return clear;
+	return init;
 }
 
 Context::Node::Node (Target         *surface,
