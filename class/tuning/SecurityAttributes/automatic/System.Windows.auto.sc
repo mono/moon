@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 581 methods needs to be decorated.
+# 582 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1422,6 +1422,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::size_changed_event_args_get_prev_size(System.IntPtr,System.Windows.Size&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::storyboard_flatten_timelines(System.IntPtr,Mono.FlattenTimelinesCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_pause_with_error_(System.IntPtr,Mono.MoonError&)

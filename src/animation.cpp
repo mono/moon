@@ -538,6 +538,60 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 	return true;
 }
 
+void
+Storyboard::FlattenTimelines (FlattenTimelinesCallback callback)
+{
+	FlattenTimelines (callback, this, NULL, NULL);
+}
+
+void
+Storyboard::FlattenTimelines (FlattenTimelinesCallback callback, Timeline *timeline, DependencyObject *targetObject, PropertyPath *targetPropertyPath)
+{
+	// Walk all the children of the storyboard and invoke the supplied
+	// callback for every DO/DP pair which will be animated. In this
+	// case we ignore timelines which do not have both a valid DO and DP
+	DependencyObject *localTargetObject = NULL;
+	PropertyPath *localTargetPropertyPath = NULL;
+
+	/* get the target object at this level */
+	if (timeline->HasManualTarget ())
+		localTargetObject = timeline->GetManualTarget ();
+	else {
+		const char *targetName = Storyboard::GetTargetName (timeline);
+		if (targetName)
+			localTargetObject = timeline->FindName (targetName);
+	}
+
+	/* get the target property path at this level */
+	localTargetPropertyPath = Storyboard::GetTargetProperty (timeline);
+
+	/* override the object and property passed from our parent here */
+	if (localTargetObject != NULL)
+		targetObject = localTargetObject;
+
+	if (localTargetPropertyPath != NULL)
+		targetPropertyPath = localTargetPropertyPath;
+
+	if (timeline->Is (Type::TIMELINEGROUP)) {
+		TimelineCollection *children = ((TimelineGroup *) timeline)->GetChildren ();
+		int count = children->GetCount ();
+		for (int i = 0; i < count; i ++) {
+			FlattenTimelines (callback, children->GetValueAt (i)->AsTimeline (), targetObject, targetPropertyPath);
+		}
+	}
+	else {
+		if (targetPropertyPath && targetObject) {
+			// When resolving down to a DO and DP, we don't actually want to clone DOs like we do
+			// when starting a storyboard normally.
+			DependencyObject *realTargetObject = targetObject;
+			DependencyProperty *prop = resolve_property_path (&realTargetObject, targetPropertyPath, NULL);
+
+			if (prop && realTargetObject)
+				callback (timeline, realTargetObject, prop);
+		}
+	}
+}
+
 bool
 Storyboard::BeginWithError (MoonError *error)
 {

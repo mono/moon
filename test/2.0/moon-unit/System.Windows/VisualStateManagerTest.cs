@@ -198,6 +198,54 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (VisualStateManager.GoToState (c, "B", true), "#2");
 		}
 
+		[TestMethod]
+		public void TransitionPropertyMismatchesStateProperty ()
+		{
+			var c = new ContentControl { Template = GetTemplate_MismatchedTargetProperties () };
+			TestPanel.Children.Add (c);
+			c.ApplyTemplate ();
+			Assert.IsTrue (VisualStateManager.GoToState (c, "A", true), "#1");
+			Assert.IsTrue (VisualStateManager.GoToState (c, "B", true), "#2");
+			Assert.IsTrue (VisualStateManager.GoToState (c, "A", true), "#3");
+		}
+
+		ControlTemplate GetTemplate_MismatchedTargetProperties ()
+		{
+			return (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate
+	xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"">
+    <Grid x:Name=""rootGrid"" Background=""Red"">
+		<vsm:VisualStateManager.VisualStateGroups>
+            <vsm:VisualStateGroup x:Name=""States"">
+                <vsm:VisualStateGroup.Transitions>
+                    <vsm:VisualTransition GeneratedDuration=""00:00:00.1"" To=""A"" />
+
+                    <vsm:VisualTransition GeneratedDuration=""00:00:00.1"" To=""B"">
+						<Storyboard>
+							<DoubleAnimation Storyboard.TargetName=""rootGrid"" Storyboard.TargetProperty=""(FrameworkElement.Width)"" To=""50"" />
+						</Storyboard>
+					</vsm:VisualTransition>
+
+                </vsm:VisualStateGroup.Transitions>
+
+                <vsm:VisualState x:Name=""A"">
+                </vsm:VisualState>
+
+                <vsm:VisualState x:Name=""B"">
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName=""rootGrid"" Storyboard.TargetProperty=""Width"" To=""5"" />
+                    </Storyboard>
+                </vsm:VisualState>
+
+            </vsm:VisualStateGroup>
+
+        </vsm:VisualStateManager.VisualStateGroups>
+    </Grid>
+</ControlTemplate>");
+		}
+
 		ControlTemplate GetTemplate_MultipleTransitions ()
 		{
 			return (ControlTemplate) XamlReader.Load (@"

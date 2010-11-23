@@ -418,7 +418,9 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				if (!(new_lu = value->AsDependencyObject ()))
 					goto error;
 
-				if (!cloned && !g_hash_table_lookup (promoted_values, value) && !value->Is (lu->GetDeployment (), Type::UIELEMENT)) {
+				// Sometimes we want to parse a property path to a DP without animating, so only clone the values
+				// if promoted_values is non-null.
+				if (promoted_values && !cloned && !g_hash_table_lookup (promoted_values, value) && !value->Is (lu->GetDeployment (), Type::UIELEMENT)) {
 					// we need to clone the value here so that we deep copy any
 					// DO subclasses (such as brushes, etc) that we're promoting
 					// from a shared space (Styles, default values)

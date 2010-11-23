@@ -68,6 +68,7 @@ namespace Mono {
 	internal delegate Size ArrangeOverrideCallback (Size finalSize, ref MoonError error);
 	internal delegate void LoadedCallback (IntPtr fwe_ptr);
 
+	internal delegate void FlattenTimelinesCallback (IntPtr timeline, IntPtr dep_ob, IntPtr dp);
 	internal delegate void GetDefaultStyleCallback (IntPtr fwe_ptr, out IntPtr styles_array);
 	internal delegate IntPtr GetDefaultTemplateCallback (IntPtr fwe_ptr);
 	internal delegate void ConvertSetterValuesCallback (IntPtr style_ptr);

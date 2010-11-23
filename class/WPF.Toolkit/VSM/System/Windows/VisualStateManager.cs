@@ -689,46 +689,30 @@ namespace System.Windows
                 return;
             }
 
-            for (int index = 0; index < storyboard.Children.Count; ++index)
-            {
-                Timeline child = storyboard.Children[index];
-                Storyboard childStoryboard = child as Storyboard;
-                if (childStoryboard != null)
-                {
-                    FlattenTimelines(childStoryboard, result);
-                }
-                else
-                {
-                    result[new TimelineDataToken(child)] = child;
-                }
-            }
+            storyboard.FlattenTimelines ((timeline_ptr, do_ptr, dp_ptr) => {
+                var timeline = (Timeline) NativeDependencyObjectHelper.Lookup (timeline_ptr);
+                var dep_ob = (DependencyObject) NativeDependencyObjectHelper.Lookup (do_ptr);
+                var dp = (DependencyProperty) DependencyProperty.Lookup (dp_ptr);
+                result [new TimelineDataToken (dep_ob, dp)] = timeline;
+            });
         }
 
         // specifies a token to uniquely identify a Timeline object
         private struct TimelineDataToken : IEquatable<TimelineDataToken>
         {
-            PropertyPath property;
-            object manualTarget;
-            string targetName;
+            DependencyProperty property;
+            DependencyObject target;
 
-            public TimelineDataToken(Timeline timeline)
+            public TimelineDataToken(DependencyObject targetObject, DependencyProperty targetProperty)
             {
-                manualTarget = Storyboard.GetTargetDependencyProperty (timeline);
-                targetName = Storyboard.GetTargetName(timeline);
-                property = Storyboard.GetTargetProperty(timeline);
+                target = targetObject;
+                property = targetProperty;
             }
 
             public bool Equals(TimelineDataToken other)
             {
-                if (targetName != other.targetName && manualTarget != other.manualTarget)
-                    return false;
-                if (property == null)
-                    return other.property == null;
-                if (other.property == null)
-                    return false;
-
-                return property.NativeDP == other.property.NativeDP
-                    && property.Path == other.property.Path;
+                return property == other.property
+                    && target == other.target;
             }
 
             public override bool Equals (object obj)
@@ -740,12 +724,7 @@ namespace System.Windows
 
             public override int GetHashCode()
             {
-                int hash = 0;
-                if (property != null)
-                    hash ^= property.Path.GetHashCode ();
-                if (targetName != null)
-                    hash ^= targetName.GetHashCode ();
-                return hash;
+                return target.GetHashCode () ^ property.GetHashCode ();
             }
         }
 

@@ -29,6 +29,9 @@
 
 namespace Moonlight {
 
+/* @CBindingRequisite */
+typedef void (*FlattenTimelinesCallback)(const Timeline *timeline, const DependencyObject *dep_ob, const DependencyProperty *prop);
+
 // misc types
 /* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
@@ -998,6 +1001,10 @@ public:
 	
 	/* @GeneratePInvoke */
 	bool BeginWithError (MoonError *error);
+
+	/* @GeneratePInvoke */
+	void FlattenTimelines (FlattenTimelinesCallback callback);
+	static void FlattenTimelines (FlattenTimelinesCallback callback, Timeline *timeline, DependencyObject *targetObject, PropertyPath *targetPropertyPath);
 
 	/* @GeneratePInvoke */
 	void PauseWithError (MoonError *error);

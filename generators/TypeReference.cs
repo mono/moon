@@ -214,6 +214,9 @@ class TypeReference {
 			case "MoonWindowType":
 				managed_type = "MoonWindowType";
 				break;
+			case "FlattenTimelinesCallback":
+				managed_type = "Mono.FlattenTimelinesCallback";
+				break;
 			case "GetDefaultStyleCallback":
 				managed_type = "Mono.GetDefaultStyleCallback";
 				break;

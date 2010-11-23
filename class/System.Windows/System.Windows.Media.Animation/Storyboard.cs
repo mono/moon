@@ -56,6 +56,11 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_begin (native);
 		}
 
+		internal void FlattenTimelines (Mono.FlattenTimelinesCallback callback)
+		{
+			Mono.NativeMethods.storyboard_flatten_timelines (native, callback);
+		}
+
 		public void Pause ()
 		{
 			NativeMethods.storyboard_pause (native);

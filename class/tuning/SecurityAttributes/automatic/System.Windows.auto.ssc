@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 640 methods
+# 641 methods
 
 +SSC-M: System.Void Mono.EventHandlerList::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.EventHandlerList::Free()
@@ -488,6 +488,7 @@
 +SSC-M: System.Double System.Windows.Media.Animation.QuinticEase::EaseInCore(System.Double)
 +SSC-M: System.Double System.Windows.Media.Animation.SineEase::EaseInCore(System.Double)
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Begin()
++SSC-M: System.Void System.Windows.Media.Animation.Storyboard::FlattenTimelines(Mono.FlattenTimelinesCallback)
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Pause()
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Resume()
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Seek(System.TimeSpan)
