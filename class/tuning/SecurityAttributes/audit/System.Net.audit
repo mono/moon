@@ -8,12 +8,12 @@ System.Boolean System.Net.Sockets.Socket::get_NoDelay()
 
 !SSC-88D459C36EEB38EA61B60ED1D51F4D63
 System.Boolean System.Net.Sockets.Socket::ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Receive [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
 
 !SSC-B98A384948F449192286E57A4EF71A20
 System.Boolean System.Net.Sockets.Socket::SendAsync(System.Net.Sockets.SocketAsyncEventArgs)
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Send [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
 
 !SSC-20E9E3383FD6AA9DBF727A8894799126
@@ -42,7 +42,7 @@ System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
 
 !SSC-9BD28C1827D1EDA792DAD325D76B280C
 System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	20101019	spouliot - aad016f - warning cleanup (an always null variable, req, was removed)
 	20101013	spouliot - 936c28a - only call queue.Dequeue if queue.Count > 0
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on non-null 'sac' which represents the queued delegate returned by Socket/SocketAsyncResult::GetDelegate [SecurityCritical]

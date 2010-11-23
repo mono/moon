@@ -4,7 +4,7 @@ System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
 
 !SSC-845AFCBC4E572D26093C9603886A288A
 System.Boolean System.Windows.Browser.ScriptObject::AddNativeMapping(System.IntPtr,System.Windows.Browser.ScriptObject)
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	r153088		spouliot - add/track a new ScriptObjectToggleRef [SecurityCritical] (unexposed) based on the IntPtr and ScriptObject
 
 !SSC-AA01CB56446F085F6820FB9B15470056
@@ -74,7 +74,7 @@ System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.Str
 
 !SSC-993445498453E28CB6746883A155ABF0
 System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	20101013	spouliot - 7795670 - Dictionary changed from <int,IntPtr> to <object,WeakReference>
 	20101004	spouliot - d225a6f4 - cache ManagedObject / b320e418 - fix ToString registration (to make sure the parameter-less overload is used)
 	r153088		spouliot - create instances of inner-type EventOps [SecurityCritical] (unexposed)
@@ -89,7 +89,7 @@ System.Void System.Windows.Browser.ScriptObject::FreeNativeMapping(System.Window
 
 !SSC-4CF70A98A87316C819EC21DC88DD3755
 System.Void System.Windows.Browser.ScriptObject::set_Handle(System.IntPtr)
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	20100924	spouliot - 223d4b8 - FIXME (temporary, it leaks) pinvoke into html_object_retain using PluginHost.Handle and 'value'
 
 !SSC-2FB1C646D0D265BB1B8D2A5AB54568E5
@@ -115,7 +115,7 @@ System.Windows.Browser.ScriptObject System.Windows.Browser.HostServices::get_Jso
 
 !SSC-0C055B69DF9A63B78F1A827B8810FE4F
 System.Windows.Browser.ScriptObject System.Windows.Browser.ScriptObject::LookupScriptObject(System.IntPtr)
-	20111108	spouliot - no source change / compiler (lock related) change?
+	20101108	spouliot - no source change / compiler (lock related) change?
 	r157803		spouliot - signature changed (boolean parameter removed). ScriptObject are not created (here) anymore but are fetched from 'cachedObjects' if not found in 'toggleRefs'
 	r153088		spouliot - retrieve a ScriptObjectToggleRef [SecurityCritical] (unexposed) from an IntPtr, optionally creating a ScriptObject is not found
 
