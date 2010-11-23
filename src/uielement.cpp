@@ -1597,27 +1597,19 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	ctx->Pop ();
 
 	if (flags & COMPOSITE_CACHE) {
-		MoonSurface *surface;
+		MoonSurface *src;
 		Rect        r;
 
 		// pop empty clip
 		ctx->Pop ();
 
-		r = ctx->Pop (&surface);
-		ctx->Push (Context::Clip (r));
+		r = ctx->Pop (&src);
+		ctx->Push (Context::AbsoluteTransform ());
 
 		if (!r.IsEmpty ()) {
-			cairo_surface_t *src = surface->Cairo ();
-			cairo_t         *cr = ctx->Push (Context::Cairo ());
+			ctx->Blend (src, 1.0, r.x, r.y);
 
-			cairo_identity_matrix (cr);
-			cairo_set_source_surface (cr, src, r.x, r.y);
-			cairo_paint (cr);
-			cairo_surface_destroy (src);
-
-			ctx->Pop ();
-
-			surface->unref ();
+			src->unref ();
 		}
 
 		ctx->Pop ();
@@ -1658,24 +1650,15 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_OPACITY) {
-		MoonSurface *surface;
-		Rect        r = ctx->Pop (&surface);
+		MoonSurface *src;
+		Rect        r = ctx->Pop (&src);
 
-		ctx->Push (Context::Clip (r));
+		ctx->Push (Context::AbsoluteTransform ());
 
 		if (!r.IsEmpty ()) {
-			cairo_surface_t *src = surface->Cairo ();
-			cairo_t         *cr = ctx->Push (Context::Cairo ());
-			double          local_opacity = GetOpacity ();
+			ctx->Blend (src, GetOpacity (), r.x, r.y);
 
-			cairo_identity_matrix (cr);
-			cairo_set_source_surface (cr, src, r.x, r.y);
-			cairo_paint_with_alpha (cr, local_opacity);
-			cairo_surface_destroy (src);
-
-			ctx->Pop ();
-
-			surface->unref ();
+			src->unref ();
 		}
 
 		ctx->Pop ();
