@@ -21,7 +21,7 @@ Requirements
             git clone git://github.com/mono/mono.git mono
             cd mono && git reset --hard 3f96ed7 && cd ..
             git clone git://github.com/mono/mono-basic.git mono-basic
-            cd mono-basic && git reset --hard 22a7c88d && cd ..
+            cd mono-basic && git reset --hard b104419 && cd ..
 
 	To build pixel shader support, you need to get a specific
 	revision of the mesa repository.
