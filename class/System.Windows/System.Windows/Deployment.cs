@@ -30,6 +30,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Net.Browser;
 using System.Reflection;
 using System.Security;
 using System.Threading;
@@ -37,10 +38,16 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using Mono;
 using Mono.Xaml;
 
 namespace System.Windows {
+
+	enum ManifestAssemblyKind {
+		SourceAssembly,
+		ExternalAssembly
+	}
 
 	public sealed partial class Deployment : DependencyObject {
 		GlyphTypefaceCollection typefaces;
@@ -167,13 +174,7 @@ namespace System.Windows {
 	
 		public static void RegisterAssembly (Assembly assembly)
 		{
-			Current.AddAssembly (assembly);
-		}
-
-		void AddAssembly (Assembly asm)
-		{
-			if (!assemblies.Contains (asm))
-				assemblies.Add (asm);
+			Current.AssemblyRegister (assembly, ManifestAssemblyKind.SourceAssembly);
 		}
 		
 		public static void SetCurrentApplication (Application application)
@@ -210,7 +211,7 @@ namespace System.Windows {
 			}
 		}
 
-		internal List<Assembly> Assemblies {
+		internal IEnumerable<Assembly> Assemblies {
 			get {
 				return assemblies;
 			}
@@ -446,11 +447,8 @@ namespace System.Windows {
 
 				if (ext != null) {
 					try {
-						// TODO These ExternalPart assemblies should really be placed in
-						// a global long term cache but simply make sure we load them for now
-						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
-
-						DownloadAssembly (ext.Source, 2152);
+						// note: cache is handled by the browser (and indirectly by the server)
+						DownloadAssembly (ext.Source, ManifestAssemblyKind.ExternalAssembly);
 					} catch (Exception e) {
 						int error = (e is MethodAccessException) ? 4004 : 2152;
 						throw new MoonException (error, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
@@ -477,7 +475,7 @@ namespace System.Windows {
 
 						try {
 							Assembly asm = Assembly.LoadFrom (filename);
-							AssemblyRegister (asm);
+							AssemblyRegister (asm, ManifestAssemblyKind.SourceAssembly);
 						} catch (FileNotFoundException) {
 							try_downloading = true;
 						}
@@ -489,7 +487,7 @@ namespace System.Windows {
 					if (!try_downloading)
 						continue;
 
-					DownloadAssembly (new Uri (source, UriKind.RelativeOrAbsolute), 2105);
+					DownloadAssembly (new Uri (source, UriKind.RelativeOrAbsolute), ManifestAssemblyKind.SourceAssembly);
 				} catch (Exception e) {
 					int error = (e is MethodAccessException) ? 4004 : 2105;
 					throw new MoonException (error, string.Format ("Error while loading the '{0}' assembly : {1}", source, e.Message));
@@ -511,7 +509,7 @@ namespace System.Windows {
 			return true;
 		}
 
-		void DownloadAssembly (Uri uri, int errorCode)
+		void DownloadAssembly (Uri uri, ManifestAssemblyKind kind)
 		{
 			Uri xap = new Uri (NativeMethods.plugin_instance_get_source_location (PluginHost.Handle));
 			// WebClient deals with relative URI but HttpWebRequest does not
@@ -521,8 +519,12 @@ namespace System.Windows {
 			} else if (xap.Scheme != uri.Scheme) {
 				throw new SecurityException ("Cross scheme URI downloading " + uri.ToString ());
 			}
+#if NET_3_0
 			HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
-			req.BeginGetResponse (AssemblyGetResponse, new object[] { req, errorCode });
+#else
+			HttpWebRequest req = (HttpWebRequest) WebRequestCreator.BrowserHttp.Create (uri);
+#endif
+			req.BeginGetResponse (AssemblyGetResponse, new object[] { req, kind });
 			pending_downloads ++;
 		}
 
@@ -533,7 +535,8 @@ namespace System.Windows {
 			Assembly asm;
 			object[] tuple = (object []) result.AsyncState;
 			WebRequest wreq = (WebRequest) tuple [0];
-			int error_code = (int) tuple [1];
+			ManifestAssemblyKind kind = (ManifestAssemblyKind) tuple [1];
+			int error_code = (kind == ManifestAssemblyKind.ExternalAssembly) ? 2152 : 2105;
 			try {
 				HttpWebResponse wresp = (HttpWebResponse) wreq.EndGetResponse (result);
 
@@ -543,15 +546,14 @@ namespace System.Windows {
 					return;
 				}
 
-				if (wresp.ResponseUri != wreq.RequestUri) {
+				if ((kind != ManifestAssemblyKind.ExternalAssembly) && (wresp.ResponseUri != wreq.RequestUri)) {
 					wresp.Close ();
 					EmitError (error_code, "Redirection not allowed to download assemblies.");
 					return;
 				}
 
 				using (Stream responseStream = wresp.GetResponseStream ()) {
-					AssemblyPart a = new AssemblyPart ();
-					byte [] buffer = a.StreamToBuffer (responseStream);
+					byte [] buffer = AssemblyPart.StreamToBuffer (responseStream);
 
 					if (IsZip (buffer)) {
 						// unzip it.
@@ -573,14 +575,16 @@ namespace System.Windows {
 								for (int i = 0; ; i ++) {
 									if (!NativeMethods.managed_unzip_stream_to_stream_nth_file (ref source_cb, ref dest_cb, i))
 										break;
-									LoadAssemblyFromBuffer (a, dest.ToArray (), wreq);
+									if (Load (dest.ToArray (), kind) == null)
+										EmitError (2153, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
 									source.Position = 0;
 									dest.SetLength (0);
 								}
 							}
 						}
 					} else {
-						LoadAssemblyFromBuffer (a, buffer, wreq);
+						if (Load (buffer, kind) == null)
+							EmitError (2153, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
 					}
 				}
 				Dispatcher.BeginInvoke (AsyncDownloadComplete);
@@ -605,24 +609,30 @@ namespace System.Windows {
 			}
 		}
 
-		void LoadAssemblyFromBuffer (AssemblyPart a, byte[] buffer, WebRequest wreq)
+		internal Assembly Load (byte [] buffer, ManifestAssemblyKind kind)
 		{
-			var asm = a.Load (buffer);
-
-			if (asm != null) {
-				Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
-			} else {
-				EmitError (2153, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
+			try {
+				Assembly result = Assembly.Load (buffer);
+				Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), new object[] { result, kind });
+				return result;
+			}
+			catch {
+				return null;
 			}
 		}
 
-		internal delegate void AssemblyRegistration (Assembly asm);
+		internal delegate void AssemblyRegistration (Assembly asm, ManifestAssemblyKind kind);
 
 		// note: only access 'assemblies' from the main thread
-		void AssemblyRegister (Assembly assembly)
+		void AssemblyRegister (Assembly assembly, ManifestAssemblyKind kind)
 		{
-			assemblies.Add (assembly);
-			SetEntryAssembly (assembly);
+			if (!assemblies.Contains (assembly)) {
+				assemblies.Add (assembly);
+				if (kind == ManifestAssemblyKind.SourceAssembly) {
+					if (string.Equals (assembly.GetName ().Name, EntryPointAssembly, StringComparison.OrdinalIgnoreCase))
+						EntryAssembly = assembly;
+				}
+			}
 		}
 
 		// extracted since NativeMethods.surface_emit_error is security critical
@@ -637,13 +647,6 @@ namespace System.Windows {
 					EmitError (errorCode, message);
 				});
 			}
-		}
-
-		// extracted since Assembly.GetName is security critical
-		void SetEntryAssembly (Assembly asm)
-		{
-			if (string.Equals (asm.GetName ().Name, EntryPointAssembly, StringComparison.OrdinalIgnoreCase))
-				EntryAssembly = asm;
 		}
 
 		void TerminateCurrentApplication ()

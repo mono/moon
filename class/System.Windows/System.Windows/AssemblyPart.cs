@@ -42,7 +42,7 @@ namespace System.Windows {
 
 		static Type MemoryStreamType = typeof (MemoryStream);
 
-		internal byte[] StreamToBuffer (Stream assemblyStream)
+		internal static byte[] StreamToBuffer (Stream assemblyStream)
 		{
 			byte [] buffer;
 
@@ -77,20 +77,7 @@ namespace System.Windows {
 			if (assemblyStream.Length == 0)
 				return null;
 
-			return Load (StreamToBuffer (assemblyStream));
-		}
-
-		internal Assembly Load (byte [] buffer)
-		{
-			try {
-				Assembly result = Assembly.Load (buffer);
-				if (!Deployment.Current.Assemblies.Contains (result))
-					Deployment.Current.Assemblies.Add (result);	
-				return result;
-			}
-			catch {
-				return null;
-			}
+			return Deployment.Current.Load (StreamToBuffer (assemblyStream), ManifestAssemblyKind.SourceAssembly);
 		}
 	}
 }

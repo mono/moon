@@ -400,7 +400,7 @@
 +SSC-M: System.Boolean System.Windows.Application::get_IsCurrentSet()
 +SSC-M: System.Windows.Window System.Windows.Application::get_MainWindow()
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
-+SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.Byte[])
++SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
 +SSC-M: System.Boolean System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_UpdateAvailable()
 +SSC-M: System.Exception System.Windows.CheckAndDownloadUpdateCompletedEventArgs::get_Error()
 +SSC-M: System.Boolean System.Windows.Clipboard::ContainsText()

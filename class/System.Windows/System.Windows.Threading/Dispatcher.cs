@@ -124,7 +124,7 @@ namespace System.Windows.Threading {
 				((EventHandler)d) (args[0], (EventArgs)args[1]);
 			}
 			else if (d is Deployment.AssemblyRegistration) {
-				((Deployment.AssemblyRegistration)d) ((Assembly)args[0]);
+				((Deployment.AssemblyRegistration) d) ((Assembly) args [0], (ManifestAssemblyKind) args [1]);
 			}
 			else {
 #if DEBUG
