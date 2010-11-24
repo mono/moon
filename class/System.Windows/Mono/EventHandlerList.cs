@@ -53,14 +53,10 @@ namespace Mono {
 
 		public EventHandlerList (INativeEventObjectWrapper wrapper)
 		{
-			if (wrapper != null)
-				gc_handle = GCHandle.Alloc (this);
 		}
 
 		public void Free ()
 		{
-			if (gc_handle.IsAllocated)
-				gc_handle.Free ();
 		}
 
 		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
