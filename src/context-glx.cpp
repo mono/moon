@@ -88,7 +88,7 @@ GLXContext::FlushCache ()
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface  *) ms;
 
-	// target contents need to be initialized
+	// clear target contents
 	if (!target->GetInit ()) {
 		if (!dst->GetGLXDrawable ())
 			GLContext::SetFramebuffer ();
@@ -96,10 +96,62 @@ GLXContext::FlushCache ()
 		glClearColor (0.0, 0.0, 0.0, 0.0);
 		glClear (GL_COLOR_BUFFER_BIT);
 
-		// mark target contents as initialized with native surface
+		// mark target contents as initialized
 		target->SetInit (ms);
 	}
 
+	// initialize target contents with surface
+	if (target->GetInit () != ms) {
+		GLXSurface *src = (GLXSurface  *) target->GetInit ();
+		GLuint     texture0 = src->Texture ();
+		GLuint     program = GetProjectProgram (1.0);
+		GLsizei    width0 = src->Width ();
+		GLsizei    height0 = src->Height ();
+
+		if (!dst->GetGLXDrawable ())
+			GLContext::SetFramebuffer ();
+
+		SetViewport ();
+
+		glUseProgram (program);
+
+		SetupVertexData (NULL, 0, 0, width0, height0);
+
+		glVertexAttribPointer (0, 4,
+				       GL_FLOAT, GL_FALSE, 0,
+				       vertices);
+		glVertexAttribPointer (1, 4,
+				       GL_FLOAT, GL_FALSE, 0,
+				       texcoords);
+
+		glBindTexture (GL_TEXTURE_2D, texture0);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				 GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				 GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+				 GL_CLAMP_TO_EDGE);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+				 GL_CLAMP_TO_EDGE);
+		glUniform1i (glGetUniformLocation (program, "sampler0"), 0);
+
+		glEnableVertexAttribArray (0);
+		glEnableVertexAttribArray (1);
+
+		glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
+
+		glDisableVertexAttribArray (1);
+		glDisableVertexAttribArray (0);
+
+		glBindTexture (GL_TEXTURE_2D, 0);
+
+		glBindFramebuffer (GL_FRAMEBUFFER, 0);
+
+		// mark target contents as initialized
+		target->SetInit (ms);
+	}
+
+	// render any cairo contents onto target
 	if (cairo) {
 		MoonSurface *mSrc;
 		Rect        rSrc = cairo->GetData (&mSrc);
@@ -241,8 +293,27 @@ GLXContext::Pop (MoonSurface **ref)
 	g_assert (prev);
 
 	if (Top ()->GetTarget () != prev->GetTarget ()) {
+		Target      *target = Top ()->GetTarget ();
+		MoonSurface *init = target->GetInit ();
+		MoonSurface *ms;
+		Rect        r = target->GetData (&ms);
+		MoonSurface *data = init != ms ? init : NULL;
+
+		ms->unref ();
 		ForceCurrent ();
-		FlushCache ();
+
+		// return reference to initial state surface instead
+		// of the target surface itself
+		if (data) {
+			Node *node = (Node *) Stack::Pop ();
+
+			*ref = data->ref ();
+			delete node;
+			return r;
+		}
+		else {
+			FlushCache ();
+		}
 	}
  
 	return GLContext::Pop (ref);
@@ -305,7 +376,32 @@ GLXContext::Blend (MoonSurface *src,
 		   double      x,
 		   double      y)
 {
-	ForceCurrent ();
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *init = target->GetInit ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
+	bool        ewidth = ((GLXSurface *) src)->Width () == dst->Width ();
+	bool        eheight = ((GLXSurface *) src)->Height () == dst->Height ();
+
+	ms->unref ();
+ 	ForceCurrent ();
+ 
+	if (!init && ewidth && eheight && alpha >= 1.0 && r.x == x && r.y == y) {
+		cairo_matrix_t matrix;
+
+		Top ()->GetMatrix (&matrix);
+
+		// matching dimensions and no transformation allow us
+		// to set source as initial state of target surface when
+		// it is not already initialized.
+		if (matrix.xx == 1.0 && matrix.yx == 0.0 &&
+		    matrix.xy == 0.0 && matrix.yy == 1.0 &&
+		    matrix.x0 == 0.0 && matrix.y0 == 0.0) {
+			target->SetInit (src);
+			return;
+		}
+	}
 
 	GLContext::Blend (src, alpha, x, y);
 }
