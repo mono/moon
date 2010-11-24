@@ -241,6 +241,8 @@ Surface::ProcessDownDirtyElements ()
 		if (el->dirty_flags & DirtyRenderVisibility) {
 			el->dirty_flags &= ~DirtyRenderVisibility;
 
+			bool ovisible = el->GetRenderVisible ();
+
 			el->UpdateBounds ();
 
 			// Since we are not included in our parents subtree when we
@@ -254,7 +256,8 @@ Surface::ProcessDownDirtyElements ()
 			if (!el->GetRenderVisible ())
 				el->CacheInvalidateHint ();
 
-			AddDirtyElement (el, DirtyNewBounds);
+			if (ovisible != el->GetRenderVisible ())
+				AddDirtyElement (el, DirtyNewBounds);
 
 			PropagateDirtyFlagToChildren (el, DirtyRenderVisibility);
 		}
