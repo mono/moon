@@ -26,7 +26,7 @@
 +SC-M: System.IntPtr System.Net.Sockets.Socket::Socket_internal(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType,System.Int32&)
 
 # internal call
-+SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::RemoteEndPoint_internal(System.IntPtr,System.Int32&)
++SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::RemoteEndPoint_internal(System.IntPtr,System.Int32,System.Int32&)
 
 # p/invoke declaration
 +SC-M: System.Void System.Net.NetworkInformation.NetworkChange::moon_network_service_set_network_state_changed_callback(System.IntPtr,System.Net.NetworkInformation.NetworkChange/NetworkStateChangedCallback,System.IntPtr)

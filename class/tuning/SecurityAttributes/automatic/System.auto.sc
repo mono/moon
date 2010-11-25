@@ -98,10 +98,10 @@
 +SC-M: System.Net.IWebProxy System.Net.HttpWebRequest::get_Proxy()
 
 # internal call
-+SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::LocalEndPoint_internal(System.IntPtr,System.Int32&)
++SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::LocalEndPoint_internal(System.IntPtr,System.Int32,System.Int32&)
 
 # internal call
-+SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::RemoteEndPoint_internal(System.IntPtr,System.Int32&)
++SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::RemoteEndPoint_internal(System.IntPtr,System.Int32,System.Int32&)
 
 # overrides 'System.Net.WebHeaderCollection System.Net.WebRequest::get_Headers()'.
 +SC-M: System.Net.WebHeaderCollection System.Net.HttpWebRequest::get_Headers()
