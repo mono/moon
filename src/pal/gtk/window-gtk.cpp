@@ -560,7 +560,11 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 	}
 
 	if (glxtarget) {
-		Rect r = Rect (0, 0, width, height);
+		Rect r0 = Rect (0, 0, width, height);
+		Rect r = Rect (event->area.x,
+			       event->area.y,
+			       event->area.width,
+			       event->area.height);
 		Region *region = new Region (r);
 
 		glxtarget->Reshape (width, height);
@@ -571,7 +575,30 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 
 		ctx->Flush ();
 
-		glXSwapBuffers (dpy, win);
+		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
+			glXSwapBuffers (dpy, win);
+		}
+		else {
+			int y = height - (event->area.y + event->area.height);
+
+			glDrawBuffer (GL_FRONT);
+			glViewport (-1, -1, 2, 2);
+			glRasterPos2f (0, 0);
+			glViewport (0, 0, width, height);
+
+			glBitmap (0, 0, 0, 0,
+				  event->area.x,
+				  y,
+				  NULL);
+
+			glCopyPixels (event->area.x, y,
+				      event->area.width,
+				      event->area.height,
+				      GL_COLOR);
+
+			glDrawBuffer (GL_BACK);
+			glFlush ();
+		}
 
 		return true;
 	}
