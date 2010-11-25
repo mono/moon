@@ -1997,6 +1997,12 @@ PluginInstance::SourceStopped (HttpRequest *request, HttpRequestStoppedEventArgs
 	if (IsShuttingDown ())
 		return;
 
+	if (GetSurface ()->GetToplevel ()) {
+		DependencyObject *spinner = GetSurface ()->GetToplevel ()->FindName ("Throb");
+		if (spinner && spinner->Is (Type::STORYBOARD))
+			((Storyboard *)spinner)->StopWithError (NULL);
+	}
+
 	if (!args->IsSuccess ()) {
 		PluginClosure *pc = new PluginClosure (this);
 		GetSurface ()->GetTimeManager ()->AddTickCall (network_error_tickcall, pc);
