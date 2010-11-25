@@ -339,6 +339,13 @@ MultiScaleImage::MultiScaleImage ()
 
 MultiScaleImage::~MultiScaleImage ()
 {
+	if (fadein_sb)
+		fadein_sb->StopWithError (NULL);
+	if (zoom_sb)
+		zoom_sb->StopWithError (NULL);
+	if (pan_sb)
+		pan_sb->StopWithError (NULL);
+
 	MultiScaleTileSource *source = GetSource ();
 	
 	StopDownloading ();
