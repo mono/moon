@@ -145,6 +145,8 @@ GLXContext::FlushCache ()
 
 		glBindTexture (GL_TEXTURE_2D, 0);
 
+		glUseProgram (0);
+
 		glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
 		// mark target contents as initialized
@@ -206,6 +208,8 @@ GLXContext::FlushCache ()
 		glDisableVertexAttribArray (0);
 
 		glBindTexture (GL_TEXTURE_2D, 0);
+
+		glUseProgram (0);
 
 		glBindFramebuffer (GL_FRAMEBUFFER, 0);
 

@@ -443,6 +443,8 @@ GLContext::Project (MoonSurface  *src,
 
 	glBindTexture (GL_TEXTURE_2D, 0);
 
+	glUseProgram (0);
+
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
@@ -631,6 +633,8 @@ GLContext::Blur (MoonSurface *src,
 	glDisableVertexAttribArray (0);
 
 	glBindTexture (GL_TEXTURE_2D, 0);
+
+	glUseProgram (0);
 
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
@@ -848,6 +852,8 @@ GLContext::DropShadow (MoonSurface *src,
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, 0);
+
+	glUseProgram (0);
 
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
@@ -1532,6 +1538,8 @@ GLContext::ShaderEffect (MoonSurface *src,
 
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, 0);
+
+	glUseProgram (0);
 
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
