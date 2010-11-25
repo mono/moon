@@ -4871,6 +4871,7 @@ VideoStream::VideoStream (Media *media) : IMediaStream (Type::VIDEOSTREAM, media
 	initial_pts = 0;
 	height = 0;
 	width = 0;
+	bit_rate = 0;
 }
 
 VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size)
@@ -4880,6 +4881,7 @@ VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 hei
 	bits_per_sample = 0;
 	pts_per_frame = 0;
 	initial_pts = 0;
+	bit_rate = 0;
 	this->height = height;
 	this->width = width;
 	this->SetDuration (duration);
