@@ -67,6 +67,7 @@ namespace Moonlight {
 #define ESDS_4CC GETBETYPE('e', 's', 'd', 's')
 #define AVCC_4CC GETBETYPE('a', 'v', 'c', 'C')
 #define QT_4CC GETBETYPE('q', 't', ' ', ' ')
+#define ISOM_4CC GETBETYPE('i', 's', 'o', 'm')
 
 #define FORMAT_4CC "'%c%c%c%c'"
 #define VALUES_4CC(x) (char) ((x) >> 24), (char) (((x) >> 16) & 0xFF), (char) (((x) >> 8) & 0xFF), (char) ((x) & 0xFF)
@@ -621,6 +622,7 @@ Mp4Demuxer::IsCompatibleType (guint32 type)
 	case MP41_4CC:
 	case MP42_4CC:
 	case QT_4CC:
+	case ISOM_4CC:
 		return true;
 	default:
 		return false;
