@@ -76,26 +76,30 @@ GLSurface::Cairo ()
 	return cairo_surface_reference (surface);
 }
 
-void
-GLSurface::Sync ()
+GLuint
+GLSurface::Texture ()
 {
-	if (!texture)
-		return;
+	GLuint name = texture;
 
 	if (surface)
 		cairo_surface_flush (surface);
 
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexImage2D (GL_TEXTURE_2D,
-		      0,
-		      GL_RGBA,
-		      size[0],
-		      size[1],
-		      0,
-		      GL_BGRA,
-		      GL_UNSIGNED_BYTE,
-		      data);
-	glBindTexture (GL_TEXTURE_2D, 0);
+	if (!texture)
+		glGenTextures (1, &texture);
+
+	if (name != texture || data) {
+		glBindTexture (GL_TEXTURE_2D, texture);
+		glTexImage2D (GL_TEXTURE_2D,
+			      0,
+			      GL_RGBA,
+			      size[0],
+			      size[1],
+			      0,
+			      GL_BGRA,
+			      GL_UNSIGNED_BYTE,
+			      data);
+		glBindTexture (GL_TEXTURE_2D, 0);
+	}
 
 	if (surface) {
 		cairo_surface_destroy (surface);
@@ -106,15 +110,6 @@ GLSurface::Sync ()
 		g_free (data);
 		data = NULL;
 	}
-}
-
-GLuint
-GLSurface::Texture ()
-{
-	if (!texture)
-		glGenTextures (1, &texture);
-
-	Sync ();
 
 	return texture;
 }

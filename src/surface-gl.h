@@ -35,8 +35,6 @@ public:
 	GLsizei Height ();
 
 protected:
-	void Sync ();
-
 	GLsizei size[2];
 
 	GLuint texture;
