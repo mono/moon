@@ -1191,18 +1191,31 @@ timespan_mapping[] = {
 	{ "seconds", MoonId_Seconds }
 };
 
+bool
+MoonlightTimeSpan::HasValueSemantics ()
+{
+	return parent_obj->Is (Type::MEDIAELEMENT) && parent_property->GetId () == MediaElement::PositionProperty;
+}
+
 void
 MoonlightTimeSpan::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
 {
 	this->parent_obj = parent_obj;
 	this->parent_property = parent_property;
 	parent_obj->ref();
+	if (HasValueSemantics ())
+		value = ((MediaElement *) parent_obj)->GetPosition ();
 }
 
 TimeSpan
 MoonlightTimeSpan::GetValue()
 {
-	Value *v = parent_obj->GetValue (parent_property);
+	Value *v;
+
+	if (HasValueSemantics ())
+		return value;
+
+	v = parent_obj->GetValue (parent_property);
 	return v ? v->AsTimeSpan() : (TimeSpan)0;
 }
 
@@ -1230,12 +1243,16 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier name, const NPVariant *valu
 
 	case MoonId_Seconds:
 		if (NPVARIANT_IS_INT32 (*value)) {
-			parent_obj->SetValue (parent_property, Value(TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value)), Type::TIMESPAN));
+			this->value = TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value));
 		} else if (NPVARIANT_IS_DOUBLE (*value)) {
-			parent_obj->SetValue (parent_property, Value(TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value)), Type::TIMESPAN));
+			this->value = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
 		} else {
 			return false;
 		}
+
+		if (!HasValueSemantics ())
+			parent_obj->SetValue (parent_property, Value (this->value, Type::TIMESPAN));
+
 		return true;
 
 	default:

@@ -1,0 +1,155 @@
+<html>
+	<head>
+		<title>Moonlight Test Page</title>
+
+		<!--
+			This test tests that all timespan properties except MediaElement.Position have reference semantics.
+			This means:
+				var ts = obj.TimeSpanProperty;
+				ts.seconds++;
+			will change obj.TimeSpanProperty, and that 'ts' will change whenever obj.TimeSpanProperty does. Except
+			for MediaElement.Position, which is a value copy.
+		--->
+
+		<script type="text/xaml" id="xaml">
+			<?xml version="1.0"?>
+	
+			<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+				<!-- media element has the Position and BufferingTime timespan properties -->
+				<MediaElement x:Name="TestVideo1" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" Source="../media/video/timecode-short.wmv" AutoPlay="false" />
+
+				<!-- Timeline (Storyboard here since Timeline is abstract) has the BeginTime timespan property -->
+				<Canvas.Triggers>
+					<EventTrigger>
+						<BeginStoryboard>
+							<Storyboard x:Name="Timeline1" BeginTime="0:0:0">
+							</Storyboard>
+						</BeginStoryboard>
+					</EventTrigger>
+				</Canvas.Triggers>
+
+				<!-- TimelineMarker has the Time timespan property -->
+				<Grid x:Name="LayoutRoot" Background="White" ShowGridLines="False">
+					<Grid.Resources>
+						<TimelineMarker x:Name="tlm" />
+					</Grid.Resources>
+				</Grid>
+
+				<!-- DeepZoomImageTileSource has the TileBlendTime timespan property, but it is protected and not accessible from javascript -->
+				<!--
+				<MultiScaleImage  Canvas.Left="0" Canvas.Top="0"  x:Name="seadragonImage">
+					<MultiScaleImage.Source>
+						<DeepZoomImageTileSource x:Name="dzits" UriSource="foo.xml" TileBlendTime="0:0:0" ></DeepZoomImageTileSource>
+					</MultiScaleImage.Source>
+				</MultiScaleImage>
+				-->
+
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../js/js/utils.js"></script>
+		<script language="javascript" src="../js/js/testplugin.js"></script>
+		<script language="javascript">
+			var mediaelement = null;
+			var mediaelement_position = null;
+			var mediaelement_bufferingtime = null;
+			var timeline = null;
+			var timeline_begintime = null;
+			var timelinemarker = null;
+			var timelinemarker_time = null;
+			var ready = false;
+
+			function OnPluginLoaded (sender, args)
+			{
+				mediaelement = sender.findName ("TestVideo1");
+				timeline = sender.findName ("Timeline1");
+				timelinemarker = sender.findName ("tlm");
+				setTimeout ("Check();", 250);
+			}
+
+			function OnPluginError (sender, args)
+			{
+				TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+				TestHost.SignalShutdown (document.name);
+			}
+		
+			function Check ()
+			{
+				if (!ready) {
+					TestLogger.LogMessage ("Waiting for MediaElement.MediaOpened event...");
+					setTimeout ("Check ();", 250);
+					return;
+				}
+
+				try {
+					mediaelement_position = mediaelement.Position;
+					mediaelement_position.seconds = 20;
+					if (mediaelement.Position.seconds != 0) {
+						TestLogger.LogError ("MediaElement.Position test failed, it has reference semantics while it should have value semantics.");
+						TestLogger.LogResult (-1);
+					} else {
+						TestLogger.LogMessage ("MediaElement.Position test passed");
+					}
+
+					mediaelement_bufferingtime = mediaelement.BufferingTime;
+					mediaelement_bufferingtime.seconds = 20;
+					if (mediaelement.BufferingTime.seconds != 20) {
+						TestLogger.LogError ("MediaElement.BufferingTime test failed, it has value semantics while it should have reference semantics.");
+						TestLogger.LogResult (-1);
+					} else {
+						TestLogger.LogMessage ("MediaElement.BufferingTime test passed");
+					}
+
+					timeline_begintime = timeline.BeginTime;
+					timeline_begintime.seconds = 20;
+					if (timeline.BeginTime.seconds != 20) {
+						TestLogger.LogError ("Timeline.BeginTime test failed, it has value semantics while it should have reference semantics.");
+						TestLogger.LogResult (-1);
+					} else {
+						TestLogger.LogMessage ("Timeline.BeginTime  test passed");
+					}
+
+					timelinemarker_time = timelinemarker.Time;
+					timelinemarker_time.seconds = 20;
+					if (timelinemarker.Time.seconds != 20) {
+						TestLogger.LogError ("TimelineMarker.Time test failed, it has value semantics while it should have reference semantics.");
+						TestLogger.LogResult (-1);
+					} else {
+						TestLogger.LogMessage ("TimelineMarker.Time test passed");
+					}
+				} catch (e) {
+					TestLogger.LogError ("Exception while running test: " + e);
+					TestLogger.LogResult (-1);
+				}
+				TestHost.SignalShutdown (document.name);
+			}
+
+			function OnMediaOpened (obj, args)
+			{
+				TestLogger.LogMessage ("MediaOpened event raised");
+				ready = true;
+			}
+
+			function OnMediaFailed (obj, args)
+			{
+				TestLogger.LogError ("MediaFailed event raised");
+				TestLogger.LogResult (-1);
+				TestHost.SignalShutdown (document.name);
+			}
+		</script>
+	</head>
+
+	<body scroll="no" style='border-width: 0px'>
+		<div id="ML">
+			<embed type="application/x-silverlight"
+				width="200"
+				height="200"
+				id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+				style="position:absolute; left:0px; top:0px"
+				background="green" >
+			</embed>
+		</div>
+	</body>
+</html>
+
+

@@ -501,6 +501,7 @@ struct MoonlightTimeSpan : MoonlightObject {
 		moonlight_type = Type::TIMESPAN;
 		parent_property = NULL;
 		parent_obj = NULL;
+		value = 0;
 	}
 
 	virtual ~MoonlightTimeSpan ();
@@ -511,9 +512,11 @@ struct MoonlightTimeSpan : MoonlightObject {
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+	bool HasValueSemantics ();
 
 	DependencyProperty *parent_property;
 	DependencyObject *parent_obj;
+	TimeSpan value;
 };
 
 /*** MoonlightKeyTimeClass  ****************************************************************/
