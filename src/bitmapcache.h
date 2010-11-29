@@ -53,7 +53,7 @@ protected:
 	friend class MoonManagedFactory;
 
 public:
-	void GetTransform (cairo_matrix_t *transform);
+	virtual void GetTransform (cairo_matrix_t *transform);
 };
 
 };
