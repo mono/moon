@@ -613,7 +613,7 @@ namespace System.Windows {
 		{
 			try {
 				Assembly result = Assembly.Load (buffer);
-				Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), new object[] { result, kind });
+				Dispatcher.Invoke (new AssemblyRegistration (AssemblyRegister), new object[] { result, kind });
 				return result;
 			}
 			catch {
