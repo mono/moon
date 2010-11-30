@@ -46,21 +46,15 @@ GalliumContext::Target::~Target ()
 cairo_surface_t *
 GalliumContext::Target::Cairo ()
 {
-	if (!surface) {
-		surface = ((GalliumSurface *) native)->Cairo (gpipe);
+	cairo_surface_t *surface;
 
-		/* replace device offset */
-		if (!box.IsEmpty ()) {
-			cairo_surface_get_device_offset (surface,
-							 &device_offset.x,
-							 &device_offset.y);
-			cairo_surface_set_device_offset (surface,
-							 -box.x,
-							 -box.y);
-		}
-	}
+	surface = ((GalliumSurface *) native)->Cairo (gpipe);
 
-	return cairo_surface_reference (surface);
+	/* set device offset */
+	if (!box.IsEmpty ())
+		cairo_surface_set_device_offset (surface, -box.x, -box.y);
+
+	return surface;
 }
 	
 GalliumContext::GalliumContext (GalliumSurface *surface)

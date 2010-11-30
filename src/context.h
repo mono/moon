@@ -73,7 +73,6 @@ public:
 		virtual cairo_surface_t *Cairo ();
 
 		Rect GetData (MoonSurface **surface);
-		void Sync ();
 
 		void SetCairoTarget (Target *target);
 		Target *GetCairoTarget ();
@@ -82,12 +81,10 @@ public:
 		MoonSurface *GetInit ();
 
 	protected:
-		MoonSurface     *native;
-		Rect            box;
-		cairo_surface_t *surface;
-		Point           device_offset;
-		Target          *cairo;
-		MoonSurface     *init;
+		MoonSurface *native;
+		Rect        box;
+		Target      *cairo;
+		MoonSurface *init;
 	};
 
 	class Node : public List::Node {
@@ -102,7 +99,6 @@ public:
 		void GetMatrix (cairo_matrix_t *matrix);
 		void GetClip (Rect *clip);
 		Target *GetTarget ();
-		void Sync ();
 
 	private:
 		Target         *target;

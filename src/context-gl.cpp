@@ -89,8 +89,6 @@ GLContext::SetFramebuffer ()
 	status = glCheckFramebufferStatus (GL_FRAMEBUFFER);
 	g_assert (status == GL_FRAMEBUFFER_COMPLETE);
 
-	Top ()->Sync ();
-
 	ms->unref ();
 }
 

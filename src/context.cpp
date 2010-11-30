@@ -26,38 +26,23 @@ Context::Cairo::Cairo ()
 
 Context::Target::Target ()
 {
-	native        = NULL;
-	box           = Rect ();
-	surface       = NULL;
-	device_offset = Point ();
-	cairo         = NULL;
-	init          = NULL;
+	native = NULL;
+	box    = Rect ();
+	cairo  = NULL;
+	init   = NULL;
 }
 
 Context::Target::Target (MoonSurface *moon,
 			 Rect        extents)
 {
-	native        = moon->ref ();
-	box           = extents;
-	surface       = NULL;
-	device_offset = Point ();
-	cairo         = NULL;
-	init          = moon->ref ();
+	native = moon->ref ();
+	box    = extents;
+	cairo  = NULL;
+	init   = moon->ref ();
 }
 
 Context::Target::~Target ()
 {
-	if (surface) {
-
-		/* restore device offset */
-		if (!box.IsEmpty ())
-			cairo_surface_set_device_offset (surface,
-							 device_offset.x,
-							 device_offset.y);
-
-		cairo_surface_destroy (surface);
-	}
-
 	native->unref ();
 
 	if (cairo)
@@ -79,44 +64,18 @@ Context::Target::GetData (MoonSurface **ref)
 cairo_surface_t *
 Context::Target::Cairo ()
 {
+	cairo_surface_t *surface;
+
 	if (cairo)
 		return cairo->Cairo ();
 
-	if (!surface) {
-		surface = native->Cairo ();
+	surface = native->Cairo ();
 
-		/* replace device offset */
-		if (!box.IsEmpty ()) {
-			cairo_surface_get_device_offset (surface,
-							 &device_offset.x,
-							 &device_offset.y);
-			cairo_surface_set_device_offset (surface,
-							 -box.x,
-							 -box.y);
-		}
-	}
+	/* set device offset */
+	if (!box.IsEmpty ())
+		cairo_surface_set_device_offset (surface, -box.x, -box.y);
 
-	return cairo_surface_reference (surface);
-}
-
-void
-Context::Target::Sync ()
-{
-	if (cairo)
-		cairo->Sync ();
-
-	if (surface) {
-
-		/* restore device offset */
-		if (!box.IsEmpty ())
-			cairo_surface_set_device_offset (surface,
-							 device_offset.x,
-							 device_offset.y);
-
-		cairo_surface_destroy (surface);
-		surface = NULL;
-	}
-
+	return surface;
 }
 
 void
@@ -215,17 +174,6 @@ Context::Target *
 Context::Node::GetTarget ()
 {
 	return target;
-}
-
-void
-Context::Node::Sync ()
-{
-	if (context) {
-		cairo_destroy (context);
-		context = NULL;
-	}
-
-	GetTarget ()->Sync ();
 }
 
 Context::Context (MoonSurface *surface)
