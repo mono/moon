@@ -298,7 +298,6 @@ namespace System.Windows {
 		{
 			if (event_list != null)
 				event_list.Free ();
-			DetachAllExpressions ();
 
 			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
 
