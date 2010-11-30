@@ -45,6 +45,7 @@ namespace System.Windows {
 		IntPtr _native;
 		EventHandlerList event_list;
 		bool free_mapping;
+		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers = new List<UnmanagedPropertyChangeHandler> ();
 
 		internal EventHandlerList EventList {
 			get {
@@ -323,6 +324,25 @@ namespace System.Windows {
 		public object ReadLocalValue (DependencyProperty dp)
 		{
 			return ReadLocalValueImpl (dp);
+		}
+
+		internal void AddPropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
+		{
+			// Store the delegate in managed land to prevent it being GC'ed early
+			propertyChangedHandlers.Add (handler);
+			NativeMethods.dependency_object_add_property_change_handler (native, property.Native, handler, IntPtr.Zero);
+		}
+
+		internal void RemovePropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
+		{
+			// When removing a delegate from native, we have to ensure we pass the exact same object reference
+			// to native code, otherwise the native pointer will be different and we'll fail to remove it from
+			// the native list. To enforce this, use the delegate in the List when invoking the native code.
+			int index = propertyChangedHandlers.IndexOf (handler);
+			if (index != -1) {
+				NativeMethods.dependency_object_remove_property_change_handler (native, property.Native, propertyChangedHandlers [index]);
+				propertyChangedHandlers.RemoveAt (index);
+			}
 		}
 
 		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)

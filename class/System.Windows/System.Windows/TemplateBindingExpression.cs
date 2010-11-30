@@ -31,9 +31,9 @@ using System.Windows.Data;
 using System.Windows.Controls;
 
 namespace System.Windows {
-	public class TemplateBindingExpression : Expression {
+	public class TemplateBindingExpression : Expression, IListenPropertyChanged {
 
-		UnmanagedPropertyChangeHandler change_handler {
+		WeakPropertyChangedListener Listener {
 			get; set;
 		}
 
@@ -64,7 +64,7 @@ namespace System.Windows {
 		{
 		}
 
-		private void PropertyChanged (IntPtr dependency_object, IntPtr propertyChangeArgs, ref MoonError error, IntPtr unused)
+		void IListenPropertyChanged.OnPropertyChanged (IntPtr dependency_object, IntPtr propertyChangeArgs, ref MoonError error, IntPtr unused)
 		{
 			try {
 				// Type converting doesn't happen for TemplateBindings
@@ -96,8 +96,10 @@ namespace System.Windows {
 			base.OnAttached (element);
 
 			Target = (FrameworkElement) element;
-			if (change_handler == null)
-				change_handler = new UnmanagedPropertyChangeHandler (PropertyChanged);
+			if (Listener != null) {
+				Listener.Detach ();
+				Listener = null;
+			}
 
 			ContentControl c = Target as ContentControl;
 			if (TargetProperty == ContentControl.ContentProperty && c != null) {
@@ -108,24 +110,22 @@ namespace System.Windows {
 			// Note that Target.TemplateOwner is a weak reference - it can be GC'ed at any time
 			var source = Target.TemplateOwner;
 			if (source != null)
-				NativeMethods.dependency_object_add_property_change_handler (source.native, SourceProperty.Native, change_handler, IntPtr.Zero);
+				Listener = new WeakPropertyChangedListener (source, SourceProperty, this);
 		}
 
 		internal override void OnDetached (DependencyObject element)
 		{
 			base.OnDetached (element);
 
-			if (change_handler == null)
+			if (Listener == null)
 				return;
 
 			ContentControl c = Target as ContentControl;
 			if (c != null)
 				c.ContentSetsParent = SetsParent;
 
-			// Note that Target.TemplateOwner is a weak reference - it can be GC'ed at any time
-			var source = Target.TemplateOwner;
-			if (source != null)
-				NativeMethods.dependency_object_remove_property_change_handler (source.native, SourceProperty.Native, change_handler);
+			Listener.Detach ();
+			Listener = null;
 			Target = null;
 		}
 	}
