@@ -178,7 +178,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result,
 		if (!plugin)
 			plugin = ((MoonlightObject *) npobj)->GetPlugin ();
 		NPString string;
-		string.utf8characters = g_strdup_printf ("new Date(%lld)", (long long) v->AsDateTime());
+		string.utf8characters = g_strdup_printf ("new Date(%" G_GINT64_FORMAT ")", v->AsDateTime());
 		string.utf8length = strlen (string.utf8characters);
 		bool ret = MOON_NPN_Evaluate (plugin->GetInstance (), plugin->GetHost (), &string, result);
 #if DEBUG
