@@ -18,7 +18,7 @@ MCS_MDBS = $(MCS_ASSEMBLIES:%=%.mdb)
 
 endif
 
-EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
+EXTRA_DIST = mono.pub winfx3.pub mono.snk silverlight.pub
 
 # this is gross, but we have a circular dependency between System.Windows.dll and System.Windows.Browser.dll.
 #
