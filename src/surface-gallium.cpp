@@ -106,7 +106,6 @@ GalliumSurface::Transfer::Unmap ()
 GalliumSurface::GalliumSurface ()
 {
 	gpipe        = NULL;
-	mapped       = NULL;
 	resource     = NULL;
 	sampler_view = NULL;
 }
@@ -114,7 +113,6 @@ GalliumSurface::GalliumSurface ()
 GalliumSurface::GalliumSurface (pipe_resource *texture)
 {
 	gpipe        = NULL;
-	mapped       = NULL;
 	resource     = NULL;
 	sampler_view = NULL;
 
@@ -129,7 +127,6 @@ GalliumSurface::GalliumSurface (GalliumPipe *pipe,
 	struct pipe_screen   *screen = pipe->Pipe ()->screen;
 
 	gpipe        = pipe->ref ();
-	mapped       = NULL;
 	sampler_view = NULL;
 
 	memset (&pt, 0, sizeof (pt));
@@ -156,9 +153,6 @@ GalliumSurface::GalliumSurface (GalliumPipe *pipe,
 
 GalliumSurface::~GalliumSurface ()
 {
-	if (mapped)
-		cairo_surface_destroy (mapped);
-
 	pipe_sampler_view_reference (&sampler_view, NULL);
 	pipe_resource_reference (&resource, NULL);
 
@@ -181,25 +175,23 @@ GalliumSurface::Cairo (GalliumPipe *pipe)
 	static cairo_user_data_key_t key;
 	Transfer                     *transfer;
 	unsigned char                *data;
-
-	if (mapped)
-		return cairo_surface_reference (mapped);
+	cairo_surface_t              *surface;
 
 	transfer = new Transfer (pipe, resource);
 	data     = (unsigned char *) transfer->Map ();
 
-	mapped = cairo_image_surface_create_for_data (data,
-						      CAIRO_FORMAT_ARGB32,
-						      resource->width0,
-						      resource->height0,
-						      resource->width0 * 4);
+	surface = cairo_image_surface_create_for_data (data,
+						       CAIRO_FORMAT_ARGB32,
+						       resource->width0,
+						       resource->height0,
+						       resource->width0 * 4);
 
-	cairo_surface_set_user_data (mapped,
+	cairo_surface_set_user_data (surface,
 				     &key,
 				     (void *) transfer,
 				     CairoDestroy);
 
-	return cairo_surface_reference (mapped);
+	return surface;
 }
 
 cairo_surface_t *
@@ -215,22 +207,11 @@ GalliumSurface::Cairo ()
 	return Cairo (gpipe);
 }
 
-void
-GalliumSurface::Sync ()
-{
-	if (mapped) {
-		cairo_surface_destroy (mapped);
-		mapped = NULL;
-	}
-}
-
 struct pipe_sampler_view *
 GalliumSurface::SamplerView ()
 {
 	struct pipe_sampler_view templ;
 	struct pipe_context      *pipe = gpipe->Pipe ();
-
-	Sync ();
 
 	if (sampler_view)
 		return sampler_view;
@@ -244,8 +225,6 @@ GalliumSurface::SamplerView ()
 struct pipe_resource *
 GalliumSurface::Texture ()
 {
-	Sync ();
-
 	return resource;
 }
 

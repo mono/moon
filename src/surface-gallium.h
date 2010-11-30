@@ -67,12 +67,9 @@ public:
 protected:
 	static void CairoDestroy (void *data);
 
-	void Sync ();
-
 	GalliumPipe       *gpipe;
 	pipe_resource     *resource;
 	pipe_sampler_view *sampler_view;
-	cairo_surface_t   *mapped;
 };
 
 };

@@ -171,8 +171,10 @@ Context::Node::Node (Target         *surface,
 
 Context::Node::~Node ()
 {
-	if (context)
+	if (context) {
+		cairo_surface_flush (cairo_get_target (context));
 		cairo_destroy (context);
+	}
 
 	if (target)
 		target->unref ();

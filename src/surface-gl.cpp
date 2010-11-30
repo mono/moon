@@ -19,7 +19,6 @@ GLSurface::GLSurface ()
 	size[0] = 0;
 	size[1] = 0;
 	texture = 0;
-	surface = NULL;
 	data    = NULL;
 }
 
@@ -28,15 +27,11 @@ GLSurface::GLSurface (GLsizei width, GLsizei height)
 	size[0] = width;
 	size[1] = height;
 	texture = 0;
-	surface = NULL;
 	data    = NULL;
 }
 
 GLSurface::~GLSurface ()
 {
-	if (surface)
-		cairo_surface_destroy (surface);
-
 	if (data)
 		g_free (data);
 
@@ -49,40 +44,34 @@ GLSurface::Cairo ()
 {
 	int stride = size[0] * 4;
 
-	if (surface)
-		return cairo_surface_reference (surface);
+	if (!data) {
+		if (texture) {
+			data = (unsigned char *) g_malloc (stride * size[1]);
 
-	if (texture) {
-		data = (unsigned char *) g_malloc (stride * size[1]);
-
-		glBindTexture (GL_TEXTURE_2D, texture);
-		glGetTexImage (GL_TEXTURE_2D,
-			       0,
-			       GL_BGRA,
-			       GL_UNSIGNED_BYTE,
-			       data);
-		glBindTexture (GL_TEXTURE_2D, 0);
+			glBindTexture (GL_TEXTURE_2D, texture);
+			glGetTexImage (GL_TEXTURE_2D,
+				       0,
+				       GL_BGRA,
+				       GL_UNSIGNED_BYTE,
+				       data);
+			glBindTexture (GL_TEXTURE_2D, 0);
+		}
+		else {
+			data = (unsigned char *) g_malloc0 (stride * size[1]);
+		}
 	}
-	else {
-		data = (unsigned char *) g_malloc0 (stride * size[1]);
-	}
 
-	surface = cairo_image_surface_create_for_data (data,
-						       CAIRO_FORMAT_ARGB32,
-						       size[0],
-						       size[1],
-						       stride);
-
-	return cairo_surface_reference (surface);
+	return cairo_image_surface_create_for_data (data,
+						    CAIRO_FORMAT_ARGB32,
+						    size[0],
+						    size[1],
+						    stride);
 }
 
 GLuint
 GLSurface::Texture ()
 {
 	GLuint name = texture;
-
-	if (surface)
-		cairo_surface_flush (surface);
 
 	if (!texture)
 		glGenTextures (1, &texture);
@@ -99,11 +88,6 @@ GLSurface::Texture ()
 			      GL_UNSIGNED_BYTE,
 			      data);
 		glBindTexture (GL_TEXTURE_2D, 0);
-	}
-
-	if (surface) {
-		cairo_surface_destroy (surface);
-		surface = NULL;
 	}
 
 	if (data) {

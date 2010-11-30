@@ -62,11 +62,6 @@ GLXSurface::Reshape (int width, int height)
 		texture = 0;
 	}
 
-	if (surface) {
-		cairo_surface_destroy (surface);
-		surface = NULL;
-	}
-
 	if (data) {
 		g_free (data);
 		data = NULL;

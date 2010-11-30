@@ -39,8 +39,7 @@ protected:
 
 	GLuint texture;
 
-	cairo_surface_t *surface;
-	unsigned char   *data;
+	unsigned char *data;
 };
 
 };

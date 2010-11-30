@@ -27,7 +27,7 @@ CairoSurface::~CairoSurface ()
 cairo_surface_t *
 CairoSurface::Cairo ()
 {
-	return cairo_surface_reference (surface);
+	return cairo_surface_create_for_rectangle (surface, 0, 0, 65536, 65536);
 }
 
 };
