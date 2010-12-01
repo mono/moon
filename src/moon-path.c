@@ -896,3 +896,92 @@ moon_path_display (moon_path *path)
 {
 	cairo_path_display (&path->cairo);
 }
+
+static inline void
+_box_from_points (cairo_rectangle_t *box,
+		  cairo_path_data_t *p1,
+		  cairo_path_data_t *p2)
+{
+	if (p1->point.x <= p2->point.x) {
+		box->x = p1->point.x;
+		box->width = p2->point.x - p1->point.x;
+	}
+	else {
+		box->x = p2->point.x;
+		box->width = p1->point.x - p2->point.x;
+	}
+
+	if (p1->point.y <= p2->point.y) {
+		box->y = p1->point.y;
+		box->height = p2->point.y - p1->point.y;
+	}
+	else {
+		box->y = p2->point.y;
+		box->height = p1->point.y - p2->point.y;
+	}
+}
+
+/**
+ * cairo_path_is_rectangle:
+ * @path: a #cairo_path_t
+ * @rect: a pointer to a #cairo_rectangle_t
+ *
+ * Check if path is a rectangle.
+ **/
+gboolean
+cairo_path_is_rectangle (const cairo_path_t *path,
+			 cairo_rectangle_t  *rect)
+{
+	cairo_path_data_t *data = path->data;
+	int               num_data = path->num_data;
+
+	// correct amount of data?
+	if (num_data < 8 || num_data > 12)
+		return FALSE;
+
+	// correct header types?
+	if (data[0].header.type != CAIRO_PATH_MOVE_TO ||
+	    data[2].header.type != CAIRO_PATH_LINE_TO ||
+	    data[4].header.type != CAIRO_PATH_LINE_TO ||
+	    data[6].header.type != CAIRO_PATH_LINE_TO)
+		return FALSE;
+
+	if (num_data > 8) {
+
+		// last LINE_TO must connect to start point
+		if (data[8].header.type == CAIRO_PATH_LINE_TO) {
+			if (data[9].point.x != data[1].point.x ||
+			    data[9].point.y != data[1].point.y)
+				return FALSE;
+
+		}
+		else if (data[8].header.type != CAIRO_PATH_CLOSE_PATH) {
+			return FALSE;
+		}
+
+		/* only trailing CLOSE_PATH and MOVE_TO are allowed */
+		if (num_data > 10) {
+			if (data[10].header.type != CAIRO_PATH_MOVE_TO &&
+			    data[10].header.type != CAIRO_PATH_CLOSE_PATH)
+				return FALSE;
+		}
+	}
+
+	if (data[1].point.y == data[3].point.y &&
+	    data[3].point.x == data[5].point.x &&
+	    data[5].point.y == data[7].point.y &&
+	    data[7].point.x == data[1].point.x) {
+		_box_from_points (rect, &data[1], &data[5]);
+		return TRUE;
+	}
+
+	if (data[1].point.x == data[3].point.x &&
+	    data[3].point.y == data[5].point.y &&
+	    data[5].point.x == data[7].point.x &&
+	    data[7].point.y == data[1].point.y) {
+		_box_from_points (rect, &data[1], &data[5]);
+		return TRUE;
+	}
+
+	return FALSE;
+}

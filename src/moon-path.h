@@ -63,6 +63,7 @@ void		moon_rounded_rectangle (moon_path *path, double x, double y, double w, dou
 void		moon_close_path (moon_path *path);
 void		moon_get_origin (moon_path *path, double *ox, double *oy);
 void		moon_merge (moon_path *path, moon_path *subpath);
+gboolean        cairo_path_is_rectangle (const cairo_path_t *path, cairo_rectangle_t *rect);
 
 // for debugging purpose
 void		cairo_path_display (cairo_path_t *path);
