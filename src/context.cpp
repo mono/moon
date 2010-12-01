@@ -145,7 +145,12 @@ Context::Node::Cairo ()
 	Target *surface = GetTarget ();
 
 	if (!context) {
-		cairo_surface_t *dst = surface->Cairo ();
+		cairo_surface_t *dst;
+
+		if (box.IsEmpty ())
+			dst = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
+		else
+			dst = surface->Cairo ();
 
 		context = cairo_create (dst);
 		box.RoundOut ().Draw (context);
