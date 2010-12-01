@@ -1459,14 +1459,17 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Push (Context::Transform (render_xform));
 	}
 
-	// TODO: avoid using a cairo context to determine if rectangular
-	// clipping can be used as this can result in significant
-	// performance loss when using a hardware accelerated surface
-	// backend.
 	if (flags & COMPOSITE_CLIP) {
-		Rect r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
-		Rect bounds = GetClip ()->GetBounds ().Transform (ctx);
-		Rect box = Rect ();
+		Rect              r = GetSubtreeExtents ().Transform (ctx).GrowBy (effect_padding);
+		Geometry          *clip = GetClip ();
+		cairo_t           *cr = ctx->Push (Context::Cairo (Rect ()));
+		cairo_path_t      *path;
+		cairo_rectangle_t rect;
+
+		clip->Draw (cr);
+		cairo_identity_matrix (cr);
+		path = cairo_copy_path (cr);
+		ctx->Pop ();
 
 		// we need this check because ::PreRender can (and
 		// will) be called for elements with empty regions.
@@ -1477,48 +1480,24 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		if (!region->IsEmpty () && !skip_children)
 			r = r.Intersection (region->GetExtents ());
 
-		bounds = bounds.Intersection (r);
+		if (cairo_path_is_rectangle (path, &rect)) {
+			Rect box = Rect (rect.x,
+					 rect.y,
+					 rect.width,
+					 rect.height);
 
-		// clip to bounds (see ::PostRender for matching pop)
-		ctx->Push (Context::Clip (bounds));
+			ctx->Push (Context::Clip (box.Intersection (r)));
+		}
+		else {
+			Rect bounds = clip->GetBounds ().Transform (ctx).Intersection (r);
 
-		if (!bounds.IsEmpty ()) {
-			cairo_rectangle_list_t *list;
-			cairo_rectangle_t      *rect = NULL;
-			cairo_t                *cr = ctx->Push (Context::Cairo ());
-
-			RenderClipPath (cr);
-
-			cairo_save (cr);
-			cairo_identity_matrix (cr);
-			list = cairo_copy_clip_rectangle_list (cr);
-			cairo_restore (cr);
-
-			if (list->status == CAIRO_STATUS_SUCCESS) {
-
-				// use fast rectangular clipping
-				if (list->num_rectangles < 2)
-					bounds = Rect ();
-
-				if (list->num_rectangles == 1)
-					rect = list->rectangles;
-			}
-
-			if (rect)
-				box = r.Intersection (Rect (rect->x,
-							    rect->y,
-							    rect->width,
-							    rect->height));
-
-			cairo_rectangle_list_destroy (list);
-
-			ctx->Pop ();
+			if (bounds.IsEmpty ())
+				ctx->Push (Context::Clip ());
+			else
+				ctx->Push (Context::Group (bounds));
 		}
 
-		if (!bounds.IsEmpty ())
-			ctx->Push (Context::Group (bounds));
-		else
-			ctx->Push (Context::Clip (box));
+		cairo_path_destroy (path);
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
@@ -1696,9 +1675,6 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 			surface->unref ();
 		}
-
-		// clip to bounds (see ::PreRender for matching push)
-		ctx->Pop ();
 	}
 
 	if (flags & COMPOSITE_TRANSFORM) {
