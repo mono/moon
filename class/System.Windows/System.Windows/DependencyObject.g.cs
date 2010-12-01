@@ -262,6 +262,18 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	[ContentProperty ("Content")]
+	partial class ContentPresenter {
+		public ContentPresenter () : base (SafeNativeMethods.content_presenter_new (), true)
+		{
+			Initialize ();
+		}
+		internal ContentPresenter (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
+	}
+
 	partial class Control {
 		protected Control () : base (SafeNativeMethods.control_new (), true)
 		{

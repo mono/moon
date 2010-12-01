@@ -2235,7 +2235,11 @@ TextBoxBase::OnApplyTemplate ()
 	view->SetTextBox (this);
 	
 	// Insert our TextBoxView
-	if (contentElement->Is (Type::CONTENTCONTROL)) {
+	if (contentElement->Is (Type::CONTENTPRESENTER)) {
+		ContentPresenter *presenter = (ContentPresenter *) contentElement;
+		
+		presenter->SetValue (ContentPresenter::ContentProperty, Value (view));
+	} else if (contentElement->Is (Type::CONTENTCONTROL)) {
 		ContentControl *control = (ContentControl *) contentElement;
 		
 		control->SetValue (ContentControl::ContentProperty, Value (view));

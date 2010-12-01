@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 641 methods
+# 643 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -45,6 +45,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::composite_transform_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::content_changed_event_args_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::content_control_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::content_presenter_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::control_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::control_template_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::cubic_ease_new()
@@ -277,6 +278,7 @@
 +SSC-M: System.Boolean System.Windows.Automation.Peers.AutomationSingleton::get_AccessibilityEnabled()
 +SSC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::Initialize()
++SSC-M: System.Void System.Windows.Controls.ContentPresenter::Initialize()
 +SSC-M: System.Void System.Windows.Controls.ContentPresenter::ClearRoot()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Pause()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Play()

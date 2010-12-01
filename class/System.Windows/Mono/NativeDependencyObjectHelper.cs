@@ -418,6 +418,7 @@ namespace Mono {
 			case Kind.COLUMNDEFINITION: return new ColumnDefinition (raw, false);
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw, false);
 			case Kind.CONTENTCONTROL: return new ContentControl (raw, false);
+			case Kind.CONTENTPRESENTER: return new ContentPresenter (raw, false);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw, false);
 			case Kind.COMPOSITETRANSFORM: return new CompositeTransform (raw, false);
 			case Kind.CUBICEASE: return new CubicEase (raw, false);

@@ -26,6 +26,7 @@ libmoon_include_headers = 	\
 	collection.h		\
 	color.h			\
 	contentcontrol.h	\
+	contentpresenter.h	\
 	context.h		\
 	context-cairo.h		\
 	control.h		\
@@ -181,6 +182,7 @@ libmoon_la_SOURCES = 		\
 	collection.cpp		\
 	color.cpp		\
 	contentcontrol.cpp	\
+	contentpresenter.cpp	\
 	context.cpp		\
 	context-cairo.cpp	\
 	control.cpp		\

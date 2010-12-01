@@ -53,12 +53,11 @@ namespace System.Windows.Controls
 	/// to associate ContentControl.Content with ContentPresenter.Content (and
 	/// an other relevant properties like FontSize, VeriticalAlignment, etc.). 
 	/// </remarks> 
-	[ContentProperty ("Content")]
-	public class ContentPresenter : FrameworkElement
-	{ 
+	public partial class ContentPresenter : FrameworkElement {
+		static readonly UnmanagedEventHandler clear_root = Events.SafeDispatcher (ClearRoot);
 		internal UIElement _contentRoot;
 		UIElement _fallbackRoot;
-
+		
 		UIElement FallbackRoot {
 			get {
 				if (_fallbackRoot == null)
@@ -67,93 +66,9 @@ namespace System.Windows.Controls
 			}
 		}
 		
-#region Content
-		/// <summary> 
-		/// Gets or sets the data used to generate the contentPresenter elements of a 
-		/// ContentPresenter.
-		/// </summary> 
-		public object Content
+		private new void Initialize ()
 		{
-			get { return GetValue(ContentProperty); } 
-			set { SetValue(ContentProperty, value); }
-		}
- 
-		/// <summary> 
-		/// Identifies the Content dependency property.
-		/// </summary> 
-		public static readonly DependencyProperty ContentProperty =
-			DependencyProperty.RegisterCore(
-						    "Content", 
-						    typeof(object),
-						    typeof(ContentPresenter),
-						    new PropertyMetadata(OnContentPropertyChanged)); 
- 
-		/// <summary>
-		/// ContentProperty property changed handler. 
-		/// </summary>
-		/// <param name="d">ContentPresenter that changed its Content.</param>
-		/// <param name="e">DependencyPropertyChangedEventArgs.</param> 
-		private static void OnContentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			ContentPresenter source = d as ContentPresenter; 
-			Debug.Assert(source != null, 
-				     "The source is not an instance of ContentPresenter!");
-
-			object newValue = e.NewValue;
-			if (newValue is UIElement)
-				source.ClearValue (ContentPresenter.DataContextProperty);
-			else
-				source.DataContext = newValue;
-
-			// If the content is a UIElement, we have to clear the Template and wait for a re-render
-			// Otherwise we directly update the text in our textbox.
-			if (e.OldValue is UIElement || newValue is UIElement)
-				source.ClearRoot ();
-			source.InvalidateMeasure ();
-		}
-#endregion Content
- 
-#region ContentTemplate
-		/// <summary>
-		/// Gets or sets the data template used to display the content of the 
-		/// ContentPresenter. 
-		/// </summary>
-		public DataTemplate ContentTemplate 
-		{
-			get { return GetValue(ContentTemplateProperty) as DataTemplate; }
-			set { SetValue(ContentTemplateProperty, value); } 
-		}
-
-		/// <summary> 
-		/// Identifies the ContentTemplate dependency property. 
-		/// </summary>
-		public static readonly DependencyProperty ContentTemplateProperty = 
-			DependencyProperty.RegisterCore(
-						    "ContentTemplate",
-						    typeof(DataTemplate), 
-						    typeof(ContentPresenter),
-						    new PropertyMetadata(OnContentTemplatePropertyChanged));
- 
-		/// <summary> 
-		/// ContentTemplateProperty property changed handler.
-		/// </summary> 
-		/// <param name="d">ContentPresenter that changed its ContentTemplate.</param>
-		/// <param name="e">DependencyPropertyChangedEventArgs.</param>
-		private static void OnContentTemplatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
-		{
-			ContentPresenter source = d as ContentPresenter;
-			Debug.Assert(source != null, 
-				     "The source is not an instance of ContentPresenter!"); 
-			source.ClearRoot ();
-		} 
-#endregion ContentTemplate
-
-		/// <summary>
-		/// Initializes a new instance of the ContentPresenter class.
-		/// </summary> 
-		public ContentPresenter() 
-		{
-			
+			Events.AddHandler (this, EventIds.ContentPresenter_ContentPresenterClearRootEvent, clear_root);
 		}
 
 		void ClearRoot ()
@@ -161,9 +76,15 @@ namespace System.Windows.Controls
 			if (_contentRoot != null)
 				Mono.NativeMethods.uielement_element_removed (native, _contentRoot.native);
 			_contentRoot = null;
-			InvalidateMeasure ();
 		}
-
+		
+		static void ClearRoot (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			ContentPresenter presenter = (ContentPresenter) NativeDependencyObjectHelper.FromIntPtr (closure);
+			
+			presenter.ClearRoot ();
+		}
+		
 		internal override void InvokeLoaded ()
 		{
 			if (Content is UIElement)
