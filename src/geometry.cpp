@@ -488,8 +488,15 @@ RectangleGeometry::Build ()
 	
 	double radius_x = GetRadiusX ();
 	double radius_y = GetRadiusY ();
-	path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
-	moon_rounded_rectangle (path, rect->x, rect->y, rect->width, rect->height, radius_x, radius_y);
+
+	if (radius_x != 0.0 || radius_y != 0.0) {
+		path = moon_path_renew (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
+		moon_rounded_rectangle (path, rect->x, rect->y, rect->width, rect->height, radius_x, radius_y);
+	}
+	else {
+		path = moon_path_renew (path, MOON_PATH_RECTANGLE_LENGTH);
+		moon_rectangle (path, rect->x, rect->y, rect->width, rect->height);
+	}
 }
 
 Rect
