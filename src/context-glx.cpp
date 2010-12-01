@@ -250,6 +250,9 @@ GLXContext::Push (Cairo extents)
 	Top ()->GetClip (&box);
  
 	box = box.Intersection (extents.r).RoundOut ();
+
+	if (box.IsEmpty ())
+		return Context::Push (extents);
  
 	if (cairo) {
 		Rect   r = cairo->GetData (NULL);
