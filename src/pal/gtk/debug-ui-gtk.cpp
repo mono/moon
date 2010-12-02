@@ -1096,6 +1096,7 @@ struct debug_media_data {
 			MediaElement *element = elements [i];
 			if (element == NULL)
 				continue;
+			element->SetCurrentDeployment ();
 			PlaylistRoot *playlist = element->GetPlaylist ();
 			PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
 			Media *media = entry == NULL ? NULL : entry->GetMedia ();
@@ -1123,6 +1124,9 @@ struct debug_media_data {
 			if (copy)
 				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt, strlen (fmt) );
 			g_free (fmt);
+
+			if (demuxer)
+				demuxer->unref ();
 		}
 	}
 	
