@@ -116,7 +116,8 @@ A custom profiler is available which allows you to track which objects
 are being kept alive by strong GCHandles and also see the stacktrace
 for every gchandle that was not freed.
 
-This profiler can be enabled as follows:
+This profiler is only built if you pass --with-object-tracking=yes to
+autogen and then subsequently be enabled as follows:
 
 export MOON_PROFILER=gchandle
 
