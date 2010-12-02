@@ -1933,6 +1933,7 @@ flush_char_data (XamlParserInfo *p)
 
 	if (p->current_element->element_type == XamlElementInstance::ELEMENT) {
 		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
+			printf ("TrySetContentProperty to \"%s\" failed\n", p->cdata->str);
 			if (allow_value_from_str_in_flush (p, p->current_element->parent)) {
 				Value *v = NULL;
 				if (value_from_str (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
@@ -4203,9 +4204,9 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	const char* prop_name = info->GetContentProperty (p);
 
 	if (!prop_name) {
-		if (info->GetKind () == Type::ICON) {
+		if (info->GetKind () == Type::ICON)
 			prop_name = "Source";
-		} else
+		else
 			return false;
 	}
 
@@ -4217,10 +4218,10 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	// types, i should pull the property setting out of set_attributes
 	// and use that code
 
-	if (content && (content->GetPropertyType ()) == Type::STRING && value) {
+	if (content && content->GetPropertyType () == Type::STRING && value) {
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 		return true;
-	} else if (content && (content->GetPropertyType ()) == Type::URI && value) {
+	} else if (content && content->GetPropertyType () == Type::URI && value) {
 		Uri *uri = Uri::Create (g_strstrip (p->cdata->str));
 
 		if (uri == NULL)
@@ -4228,6 +4229,15 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 
 		item->SetValue (content, Value (uri));
 		delete uri;
+		return true;
+	} else if (content && content->GetPropertyType () == Type::COLOR && value) {
+		Color *color = color_from_str (g_strstrip (p->cdata->str));
+		
+		if (color == NULL)
+			return false;
+		
+		item->SetValue (content, Value (*color));
+		delete color;
 		return true;
 	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK) ||
 		   Type::IsSubclassOf (p->deployment, info->GetKind (), Type::SPAN) ||
@@ -5056,7 +5066,9 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 {
 	Value *v = NULL;
 	bool rv = true;
-
+	
+	printf ("trying to set %s to %s\n", prop->GetName(), value);
+	
 	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
 		return false;
 	
