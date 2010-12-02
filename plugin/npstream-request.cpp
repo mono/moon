@@ -44,7 +44,8 @@ NPStreamRequest::NewStream (NPStream *stream)
 		response->unref ();
 
 		NotifyFinalUri (stream->url);
-		NotifySize (stream->end);
+		if (stream->end > 0)
+			NotifySize (stream->end);
 	}
 }
 
