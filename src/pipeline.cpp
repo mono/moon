@@ -1453,6 +1453,7 @@ ManagedStreamSource::ReadAsyncInternal (MediaReadClosure *closure)
 	closure->SetData (src);
 	media->EnqueueWork (closure);
 	media->unref ();
+	src->unref ();
 }
 	
 /*
