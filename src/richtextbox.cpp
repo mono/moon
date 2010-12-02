@@ -1353,8 +1353,7 @@ RichTextBox::Undo ()
 	//RichTextBoxActionInsert *insert;
 	//RichTextBoxActionDelete *dele;
 	RichTextBoxAction *action;
-	int anchor = 0, cursor = 0;
-	
+
 	if (undo->IsEmpty ())
 		return;
 	
@@ -1382,8 +1381,7 @@ RichTextBox::Redo ()
 	//RichTextBoxActionInsert *insert;
 	//RichTextBoxActionDelete *dele;
 	RichTextBoxAction *action;
-	int anchor = 0, cursor = 0;
-	
+
 	if (redo->IsEmpty ())
 		return;
 	
@@ -1935,8 +1933,6 @@ RichTextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpo
 void
 RichTextBoxView::SetTextBox (RichTextBox *textbox)
 {
-	TextLayoutAttributes *attrs;
-	
 	if (this->textbox == textbox)
 		return;
 	
