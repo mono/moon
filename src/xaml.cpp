@@ -1933,7 +1933,6 @@ flush_char_data (XamlParserInfo *p)
 
 	if (p->current_element->element_type == XamlElementInstance::ELEMENT) {
 		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
-			printf ("TrySetContentProperty to \"%s\" failed\n", p->cdata->str);
 			if (allow_value_from_str_in_flush (p, p->current_element->parent)) {
 				Value *v = NULL;
 				if (value_from_str (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
@@ -5066,8 +5065,6 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 {
 	Value *v = NULL;
 	bool rv = true;
-	
-	printf ("trying to set %s to %s\n", prop->GetName(), value);
 	
 	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
 		return false;
