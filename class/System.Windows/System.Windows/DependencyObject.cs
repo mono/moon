@@ -303,6 +303,7 @@ namespace System.Windows {
 
 			if (free_mapping)
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			this._native = IntPtr.Zero;
 		}
 
 		~DependencyObject ()
