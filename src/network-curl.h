@@ -204,10 +204,13 @@ public:
 	ResponseClosure (CurlDownloaderResponse *value)
 		: res (value)
 	{
+		res->ref ();
 	}
 
-	virtual ~ResponseClosure () {}
-
+	virtual ~ResponseClosure ()
+	{
+		res->unref ();
+	}
 	CurlDownloaderResponse *res;
 };
 
