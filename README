@@ -110,6 +110,30 @@ Installing and Testing
 	both Firefox and Chrome pick it.
 
 
+Profiling
+=========
+A custom profiler is available which allows you to track which objects
+are being kept alive by strong GCHandles and also see the stacktrace
+for every gchandle that was not freed.
+
+This profiler can be enabled as follows:
+
+export MOON_PROFILER=gchandle
+
+On application shutdown, right before the appdomain is freed, a GCHandle
+'leak' report will be printed. This will show all the objects being
+retained in memory because they have a strong gchandle attached to them.
+If you want to see where the gchandles were allocated you just have to
+export the following variable. This example will print the stacktraces of
+all the unfreed strong gchandles for the Uri type:
+
+export GCHANDLES_FOR_TYPE=Uri
+
+If multiple strong handles are targetting the same CLR object, these
+will be grouped together. This makes it easy to see if 10,000 handles
+are targetting the same object or if its 10,000 different objects.
+
+
 Runtime Options
 ===============
 
