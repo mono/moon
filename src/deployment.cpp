@@ -53,7 +53,10 @@ extern gint64 provider_property_lookups;
  */
 
 
+#if OBJECT_TRACKING
 MonoProfiler *Deployment::profiler = NULL;
+#endif
+
 gboolean Deployment::initialized = FALSE;
 pthread_key_t Deployment::tls_key = 0;
 pthread_mutex_t Deployment::hash_mutex;
@@ -156,7 +159,9 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		if (profiler != NULL) {
 			printf ("Setting profiler to: %s\n", profiler);
 			if (!strcmp ("gchandle", profiler)) {
+#if OBJECT_TRACKING
 				Deployment::profiler = new MonoProfiler ();
+#endif
 			} else {
 				mono_profiler_load (profiler);
 			}
@@ -1344,10 +1349,10 @@ Deployment::Shutdown ()
 	if (types)
 		types->Dispose ();
 
+#if OBJECT_TRACKING
 	if (Deployment::profiler)
 		Deployment::profiler->DumpStrongGCHandles ();
 
-#if OBJECT_TRACKING
 	if (getenv ("MOONLIGHT_OBJECT_TRACK_IMMORTALS") != NULL) {
 		printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
 		if (objects_created != objects_destroyed)
@@ -2169,7 +2174,7 @@ IconCollection::~IconCollection ()
 
 };
 
-
+#if OBJECT_TRACKING
 _MonoProfiler::_MonoProfiler ()
 {
 	type_name = g_getenv ("GCHANDLES_FOR_TYPE");
@@ -2279,3 +2284,4 @@ MonoProfiler::DumpTracesByType ()
 		}
 	}
 }
+#endif /* OBJECT_TRACKING */

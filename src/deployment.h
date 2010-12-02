@@ -31,7 +31,7 @@ typedef struct _MonoObject MonoObject;
 typedef struct _MonoProperty MonoProperty;
 #endif
 
-
+#if OBJECT_TRACKING
 struct _MonoProfiler {
  public:
 	const char *type_name; // Stacktraces are stored only for elements of this type
@@ -49,7 +49,7 @@ struct _MonoProfiler {
 };
 
 typedef _MonoProfiler MonoProfiler;
-
+#endif /* OBJECT_TRACKING */
 
 namespace Moonlight {
 
@@ -489,7 +489,9 @@ protected:
 	virtual ~Deployment ();
 
 private:
+#if OBJECT_TRACKING
 	static MonoProfiler *profiler;
+#endif
 	GHashTable *interned_strings;
 	HttpHandler *http_handler;
 	HttpHandler *default_http_handler;
