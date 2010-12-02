@@ -31,6 +31,26 @@ typedef struct _MonoObject MonoObject;
 typedef struct _MonoProperty MonoProperty;
 #endif
 
+
+struct _MonoProfiler {
+ public:
+	const char *type_name; // Stacktraces are stored only for elements of this type
+	GPtrArray *gchandles;
+	GPtrArray *stacktraces;
+	Moonlight::Mutex locker;
+
+	_MonoProfiler ();
+
+	void DumpStrongGCHandles ();
+	void DumpTracesByType ();
+	static void profiler_shutdown (_MonoProfiler *prof);
+	static void track_gchandle (_MonoProfiler *prof, int op, int type, uintptr_t handle, MonoObject *obj);
+
+};
+
+typedef _MonoProfiler MonoProfiler;
+
+
 namespace Moonlight {
 
 typedef void (*EnsureManagedPeerCallback)(EventObject *forObj);
@@ -469,6 +489,7 @@ protected:
 	virtual ~Deployment ();
 
 private:
+	static MonoProfiler *profiler;
 	GHashTable *interned_strings;
 	HttpHandler *http_handler;
 	HttpHandler *default_http_handler;

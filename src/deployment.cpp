@@ -52,6 +52,8 @@ extern gint64 provider_property_lookups;
  * Deployment
  */
 
+
+MonoProfiler *Deployment::profiler = NULL;
 gboolean Deployment::initialized = FALSE;
 pthread_key_t Deployment::tls_key = 0;
 pthread_mutex_t Deployment::hash_mutex;
@@ -153,7 +155,11 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		profiler = g_getenv ("MOON_PROFILER");
 		if (profiler != NULL) {
 			printf ("Setting profiler to: %s\n", profiler);
-			mono_profiler_load (profiler);
+			if (!strcmp ("gchandle", profiler)) {
+				Deployment::profiler = new MonoProfiler ();
+			} else {
+				mono_profiler_load (profiler);
+			}
 		}
 
 		mono_set_signal_chaining (true);
@@ -1338,6 +1344,9 @@ Deployment::Shutdown ()
 	if (types)
 		types->Dispose ();
 
+	if (Deployment::profiler)
+		Deployment::profiler->DumpStrongGCHandles ();
+
 #if OBJECT_TRACKING
 	if (getenv ("MOONLIGHT_OBJECT_TRACK_IMMORTALS") != NULL) {
 		printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
@@ -2159,3 +2168,114 @@ IconCollection::~IconCollection ()
 }
 
 };
+
+
+_MonoProfiler::_MonoProfiler ()
+{
+	type_name = g_getenv ("GCHANDLES_FOR_TYPE");
+
+	gchandles = g_ptr_array_new ();
+	stacktraces = g_ptr_array_new_with_free_func (g_free);
+
+	mono_profiler_install (this, profiler_shutdown);
+	mono_profiler_install_gc_roots (track_gchandle, NULL);
+	mono_profiler_set_events (MONO_PROFILE_GC_ROOTS);
+}
+
+void
+MonoProfiler::profiler_shutdown (MonoProfiler *prof)
+{
+
+}
+
+void
+MonoProfiler::track_gchandle (MonoProfiler *prof, int op, int type, uintptr_t handle, MonoObject *obj)
+{
+	// Ignore anything that isn't a strong GC handle
+	if (type != 2)
+		return;
+
+	prof->locker.Lock ();
+
+	GPtrArray *gchandles = prof->gchandles;
+	GPtrArray *stacktraces = prof->stacktraces;
+
+	if (op == MONO_PROFILER_GC_HANDLE_CREATED) {
+		g_ptr_array_add (gchandles, (gpointer) handle);
+		if (prof->type_name && !strcmp (prof->type_name, mono_class_get_name (mono_object_get_class(obj))))
+			g_ptr_array_add (stacktraces, get_stack_trace ());
+		else
+			g_ptr_array_add (stacktraces, NULL);
+	} else if (op == MONO_PROFILER_GC_HANDLE_DESTROYED) {
+		for (int i = 0; i < (int)gchandles->len; i++) {
+			if (g_ptr_array_index (gchandles, i) == (gpointer) handle) {
+				g_ptr_array_remove_index_fast (gchandles, i);
+				g_ptr_array_remove_index_fast (stacktraces, i);
+				break;
+			}
+		}
+	}
+
+	prof->locker.Unlock ();
+}
+
+
+void
+accumulate_g_ptr_array_by_type (gpointer data, gpointer user_data)
+{
+	GHashTable *by_type = (GHashTable*) user_data;
+	MonoObject *ob = mono_gchandle_get_target (GPOINTER_TO_INT (data));
+	if (!ob)
+		return;
+
+	const char *name = mono_class_get_name (mono_object_get_class(ob));
+	int count = GPOINTER_TO_INT (g_hash_table_lookup (by_type, name)) + 1;
+	g_hash_table_insert (by_type, (void*) name, GINT_TO_POINTER (count));
+}
+
+
+void
+MonoProfiler::DumpStrongGCHandles ()
+{
+	GHashTable *by_type = g_hash_table_new (g_str_hash, g_str_equal);
+	GPtrArray *top_n_by_type = g_ptr_array_new ();
+
+	g_ptr_array_foreach (gchandles, accumulate_g_ptr_array_by_type, by_type);
+	g_hash_table_foreach (by_type, Moonlight::add_keys_to_array, top_n_by_type);
+	g_ptr_array_sort_with_data (top_n_by_type, Moonlight::ByTypeComparer, by_type);
+
+	for (int i = 0; i < (int) top_n_by_type->len; i++) {
+		printf ("\t%d instances GCHandled of type %s\n", GPOINTER_TO_INT (g_hash_table_lookup (by_type, top_n_by_type->pdata [i])), (char *) top_n_by_type->pdata [i]);
+	}
+
+	DumpTracesByType ();
+}
+
+void
+MonoProfiler::DumpTracesByType ()
+{
+	if (!type_name)
+		return;
+
+	// For all allocated handles, see if any of them are referencing objects of the type
+	// we care about. If they are, print out the allocation trace of all handles targetting
+	// that object
+	for (int i = 0; i < gchandles->len; i ++) {
+		MonoObject *obj = mono_gchandle_get_target (GPOINTER_TO_INT (g_ptr_array_index (gchandles, i)));
+		if (!obj)
+			continue;
+		const char *name = mono_class_get_name (mono_object_get_class(obj));
+		if (!strcmp (name, type_name)) {
+			printf ("Strong GCHandles allocated for object %p:\n", obj);
+			for (int j = i; j < gchandles->len; j++) {
+				if (mono_gchandle_get_target (GPOINTER_TO_INT (g_ptr_array_index (gchandles, j))) == obj) {
+					printf ("%s\n\n", (char *) g_ptr_array_index (stacktraces, j));
+					g_ptr_array_remove_index_fast (gchandles, j);
+					g_ptr_array_remove_index_fast (stacktraces, j);
+					j --;
+				}
+			}
+			i --;
+		}
+	}
+}
