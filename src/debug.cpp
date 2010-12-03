@@ -655,10 +655,8 @@ get_reftrace (void)
 	}
 	allframes->Clear (true);
 
-	trace = str->str;
 #endif
-	g_string_free (str, false);
-
+	trace = g_string_free (str, false);
 	return trace;
 }
 
