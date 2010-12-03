@@ -166,10 +166,9 @@ namespace Mono.Xaml
 				throw new Exception ("The surface where the xaml should be loaded is not set.");
 			
 			//Console.WriteLine ("ManagedXamlLoader::CreateNativeLoader (): surface: {0}", surface);
-			GCHandle? resource_base = UriHelper.ToGCHandle (resourceBase);
-			native_loader = NativeMethods.xaml_loader_new (UriHelper.ToNativeUri (resource_base), surface);
-			if (resource_base.HasValue)
-				resource_base.Value.Free (); /* xaml_loader_new will clone the uri */
+			IntPtr resource_base = UriHelper.ToNativeUri (resourceBase);
+			native_loader = NativeMethods.xaml_loader_new (resource_base, surface);
+			NativeMethods.uri_free (resource_base); /* xaml_loader_new will clone the uri */
 			
 			if (native_loader == IntPtr.Zero)
 				throw new Exception ("Unable to create native loader.");
