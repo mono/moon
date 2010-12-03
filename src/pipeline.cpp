@@ -1935,7 +1935,9 @@ gint32
 ProgressiveSource::CalculateDownloadSpeed ()
 {
 	TimeSpan now = get_now ();
-	double time = TimeSpan_ToSecondsFloat (now - first_reception);
+	double time = MAX (1.0, TimeSpan_ToSecondsFloat (now - first_reception));
+	LOG_PIPELINE ("ProgressiveSource::CalculateDownloadSpeed () now: %" G_GUINT64_FORMAT " first: %" G_GUINT64_FORMAT " diff: %.2fs bytes received: %" G_GUINT64_FORMAT " result: %i\n",
+		now, first_reception, time, bytes_received, (gint32) (bytes_received / time));
 	return (gint32) (bytes_received / time);
 }
 
