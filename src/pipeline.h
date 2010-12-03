@@ -39,8 +39,12 @@
 #define CODEC_WMAV2 0x161
 #define CODEC_WMAV3 0x162
 #define CODEC_PCM   0x1
-/* This I got from Windows' mmreg.h. There are other *_AAC values defined too, not sure which are needed */
+
+#define CODEC_MPEG_AAC		0x00FF
+#define CODEC_MPEG_ADTS_AAC	0x1600
 #define CODEC_MPEG_RAW_AAC	0x1601
+#define CODEC_MPEG_HEAAC	0x1610
+
 /* this is an internal codec id used by moonlight, the fourcc is invalid on purpose */
 #define CODEC_ASF_MARKER MAKE_CODEC_ID ('|', '@', '#', '%')
 
