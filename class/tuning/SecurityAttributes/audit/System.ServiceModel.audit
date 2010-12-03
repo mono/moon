@@ -1,4 +1,4 @@
-!SSC-3DC841DAB2CAA0AD989D07F07C4F96BC
+!SSC-0CE7017F7E25402E105B76DE1D3910B4
 System.Void System.ServiceModel.ClientBase`1::RunCompletedCallback(System.Threading.SendOrPostCallback,System.ServiceModel.ClientBase`1/InvokeAsyncCompletedEventArgs<TChannel>)
 	r142142		spouliot - use System.Windows.Threading.Dispatcher.Main.BeginInvoke (transparent) thru reflection
 

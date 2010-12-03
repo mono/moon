@@ -1,32 +1,32 @@
-!SSC-D74727FCF93E277CDDD99386CB70C362
+!SSC-434F9855702D163FB1142EF5D380D543
 System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
 	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
 
-!SSC-ED8892C55EFB24F857B86C0D32950CA4
+!SSC-A8C6BAEC7FEECECD78A42AD716BCAED1
 System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 	r140690		spouliot - typecast WebRequest parameter into HttpWebRequest which is [SecurityCritical] in System.dll
 
-!SSC-C3E68D4147F3461E91E2CE8424D86C08
+!SSC-A922CDF4ACCB5E08F2792A4C9AB876C2
 System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
 	r142142		spouliot, getter only, return same as SynchronizationContext.Current
 
-!SSC-40D1B1EEAE7A84592AC3EC8B8C73B26F
+!SSC-394639A326C07D0927997F588A405147
 System.Void Mono.Security.Protocol.Ntlm.Type1Message::.ctor()
 	r20676		spouliot - call Environment.UserDomainName and MachineName [SecurityCritical] properties (icalls)
 
-!SSC-8C87ADC798872C35A14D28F04183A2C1
+!SSC-963D9474F025C0DDC9D7DC78D5F761BE
 System.Void Mono.Security.Protocol.Ntlm.Type3Message::.ctor()
 	r20676		spouliot - call Environment.UserName, UserDomainName and MachineName [SecurityCritical] properties (icalls)
 
-!SSC-682D61BE78024CEEEC95A856BA2C5FE3
+!SSC-DC8C2DC933F5FB5D6AEBDE9EFA2F304F
 System.Void Mono.Security.Protocol.Tls.HttpsClientStream::.ctor(System.IO.Stream,System.Security.Cryptography.X509Certificates.X509CertificateCollection,System.Net.HttpWebRequest,System.Byte[])
 	r23764		spouliot - use HttpWebRequest which is [SecurityCritical] in System.dll and call ServicePointManager.CheckCertificateRevocationList [SecurityCritical]
 
-!SSC-558CD2F097BBC0CE0E19A8D556FB60CF
+!SSC-A3F927FD0A51B0F85A4AD203755A8B0D
 System.Void Mono.Security.Protocol.Tls.SslStreamBase::EndWrite(System.IAsyncResult)
 	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
 
-!SSC-9C35ABD067AE936A914F4D79CF9A5F74
+!SSC-59455E83C25494CA468EC35CE4EF26C3
 System.Void System.Net.Sockets.SocketException::.ctor()
 	r153971		spouliot - call WSAGetLastError_internal (icall) to set the error code
 
