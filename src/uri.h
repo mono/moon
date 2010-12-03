@@ -64,6 +64,7 @@ public:
 	Uri ();
 	/* @GeneratePInvoke */
 	Uri (GCHandle gc_handle);
+	/* @GeneratePInvoke */
 	~Uri ();
 
 	/* @GeneratePInvoke */

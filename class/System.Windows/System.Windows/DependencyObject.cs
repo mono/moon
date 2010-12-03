@@ -94,6 +94,7 @@ namespace System.Windows {
 			set {
 				IntPtr native_uri = UriHelper.ToNativeUri (value);
 				NativeMethods.dependency_object_set_resource_base (native, native_uri);
+				NativeMethods.uri_free (native_uri);
 			}
 		}
 
