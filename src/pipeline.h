@@ -147,7 +147,7 @@ public:
 	Ranges ();
 	~Ranges ();
 	void Add (guint64 offset, guint32 length);
-	bool Contains (guint64 offset, guint64 length, Range *partial);
+	bool Contains (guint64 offset, guint64 length);
 };
 
 /*

@@ -1667,14 +1667,12 @@ Ranges::Add (guint64 offset, guint32 length)
 }
 
 bool
-Ranges::Contains (guint64 offset, guint64 length, Range *partial)
+Ranges::Contains (guint64 offset, guint64 length)
 {
 	for (int i = 0; i < count; i++) {
 		if (ranges [i].Contains (offset, length)) {
 			LOG_PIPELINE_EX ("Ranges::Contains (%" G_GUINT64_FORMAT ",%" G_GUINT64_FORMAT "): YES\n", offset, length);
 			return true;
-		} else if (ranges [i].offset <= offset && ranges [i].offset + ranges [i].length >= offset) {
-			*partial = ranges [i];
 		}
 	}
 	LOG_PIPELINE_EX ("Ranges::Contains (%" G_GUINT64_FORMAT ",%" G_GUINT64_FORMAT "): NO\n", offset, length);
@@ -2182,7 +2180,6 @@ ProgressiveSource::CheckPendingReads ()
 	List pending_reads;
 	bool ready;
 	int c = 0;
-	Range partial;
 
 	/* This method is thread-safe */
 	LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () %i closures to check\n", read_closures.Length ());
@@ -2198,7 +2195,7 @@ ProgressiveSource::CheckPendingReads ()
 		if (complete && brr_enabled != 1 /* enabled */) {
 			ready = true;
 		} else {
-			ready = ranges.Contains (closure->GetOffset (), closure->GetCount (), &partial);
+			ready = ranges.Contains (closure->GetOffset (), closure->GetCount ());
 		}
 
 		LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () closure #%i: %i (complete: %i brr_enabled: %i offset: %" G_GINT64_FORMAT " count: %i)\n", ++c, ready, complete, brr_enabled, closure->GetOffset (), closure->GetCount ());
