@@ -660,7 +660,6 @@ public:
 	
 	void ReportOpenDemuxerCompleted (); // This method is called by the demuxer when it has opened.
 	void ReportOpenDecoderCompleted (IMediaDecoder *decoder); // This method is called by any of the decoders when it has opened.
-	void ReportOpenCompleted (); // Raise the OpenCompleted event.
 	
 	void ReportDownloadProgress (double progress);
 	void ReportBufferingProgress (double progress);
@@ -1296,7 +1295,6 @@ private:
 	void DownloadComplete ();
 	void DownloadFailed ();
 	void DataWrite (void *data, gint32 offset, gint32 n);
-	void SetTotalSize (gint64 size);
 	
 	void Read (MediaReadClosure *closure);
 	gint32 CalculateDownloadSpeed (); /* bps */

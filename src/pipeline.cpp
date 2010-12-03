@@ -525,14 +525,6 @@ Media::ReportSeekCompleted (guint64 pts)
 }
 
 void
-Media::ReportOpenCompleted ()
-{
-	LOG_PIPELINE ("Media::ReportOpenCompleted (), id: %i\n", GET_OBJ_ID (this));
-	
-	EmitSafe (OpenCompletedEvent);
-}
-
-void
 Media::ReportOpenDemuxerCompleted ()
 {
 	LOG_PIPELINE ("Media::ReportOpenDemuxerCompleted (), id: %i\n", GET_OBJ_ID (this));
