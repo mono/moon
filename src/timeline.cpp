@@ -42,14 +42,6 @@ Timeline::~Timeline ()
 {
 }
 
-void
-Timeline::Dispose ()
-{
-	//	printf ("timeline %s for clock '%s' being destroyed...\n", GetTypeName(), clock ? clock->GetName() : "null clock");
-	TeardownClock ();
-	DependencyObject::Dispose ();
-}
-
 Clock*
 Timeline::AllocateClock ()
 {
@@ -191,14 +183,14 @@ Timeline::OnClockCompleted ()
 }
 
 void
-Timeline::ClearClock (bool dispose)
+Timeline::ClearClock ()
 {
-	Clock *clock = this->clock;
-	this->clock = NULL;
-
-	if (dispose)
-		clock->Dispose ();
-	clock->unref_delayed (); /* We may recurse a lot, don't recurse more than necessary */
+	if (clock) {
+		DetachCompletedHandler ();
+		clock->unref (); /* We may recurse a lot, don't recurse more than necessary */
+		//clock->unref_delayed (); /* We may recurse a lot, don't recurse more than necessary */
+		clock = NULL;
+	}
 }
 
 void
@@ -210,16 +202,6 @@ Timeline::SetClock (Clock *value)
 #endif
 	clock = value;
 	clock->ref ();
-}
-
-void
-Timeline::TeardownClock ()
-{
-	if (clock) {
-		DetachCompletedHandler ();
-		clock->unref_delayed (); /* We may recurse a lot, don't recurse more than necessary */
-		clock = NULL;
-	}
 }
 
 /* timeline group */
@@ -234,15 +216,15 @@ TimelineGroup::~TimelineGroup ()
 }
 
 void
-TimelineGroup::ClearClock (bool dispose)
+TimelineGroup::ClearClock ()
 {
 	TimelineCollection *collection = GetChildren ();
 	int count = collection->GetCount ();
 
 	for (int i = 0; i < count; i++)
-		collection->GetValueAt (i)->AsTimeline ()->ClearClock (dispose);
+		collection->GetValueAt (i)->AsTimeline ()->ClearClock ();
 
-	Timeline::ClearClock (dispose);
+	Timeline::ClearClock ();
 }
 
 Clock *
@@ -424,6 +406,16 @@ TimelineMarker::~TimelineMarker ()
 {
 }
 
+void
+Timeline::Dispose ()
+{
+	DependencyObject::Dispose ();
+
+	if (clock)
+		clock->unref ();
+	clock = NULL;
+}
+
 DispatcherTimer::DispatcherTimer ()
 {
 	SetObjectType (Type::DISPATCHERTIMER);
@@ -473,7 +465,7 @@ DispatcherTimer::Stop ()
 	stopped = true;
 	started = false;
 	if (!ontick) {
-		Timeline::TeardownClock ();
+		ClearClock ();
 		GetDeployment ()->SetKeepAlive (this, false);
 	}
 }
@@ -510,7 +502,7 @@ DispatcherTimer::OnClockCompleted ()
 	if (!stopped && !started)
 		Restart ();
 	else if (stopped && !started) {
-		Timeline::TeardownClock ();
+		ClearClock ();
 		GetDeployment ()->SetKeepAlive (this, false);
 	}
 }
@@ -519,16 +511,6 @@ Duration
 DispatcherTimer::GetNaturalDurationCore (Clock *clock)
 {
 	return Duration::FromSeconds (0);
-}
-
-void
-DispatcherTimer::TeardownClock ()
-{
-	if (GetClock ()) {
-		Stop ();
-		Timeline::TeardownClock ();
-		GetDeployment ()->SetKeepAlive (this, false);
-	}
 }
 
 };

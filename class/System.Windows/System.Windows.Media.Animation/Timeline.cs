@@ -49,17 +49,17 @@ namespace System.Windows.Media.Animation {
 
 		internal override void AddStrongRef (IntPtr referent, string name)
 		{
-			if (name == "ManualTarget")
-				manualTarget = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
-			else
+			if (name == "ManualTarget") {
+				// Do Nothing!
+			} else
 				base.AddStrongRef (referent, name);
 		}
 
 		internal override void ClearStrongRef (IntPtr referent, string name)
 		{
-			if (name == "ManualTarget")
-				manualTarget = null;
-			else
+			if (name == "ManualTarget") {
+				// Do Nothing
+			} else
 				base.ClearStrongRef (referent, name);
 		}
 

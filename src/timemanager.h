@@ -35,6 +35,7 @@ public:
 	TimeSource *GetSource() { return source; }
 
 	void AddClock (Clock *clock);
+	void RemoveClock (Clock *clock);
 
 	virtual TimeSpan GetCurrentTime ()     { return current_global_time - start_time; }
 	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }

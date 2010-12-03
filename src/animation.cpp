@@ -26,6 +26,7 @@
 #include "color.h"
 #include "runtime.h"
 #include "utils.h"
+#include "clock.h"
 
 namespace Moonlight {
 
@@ -539,6 +540,29 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 }
 
 void
+Storyboard::ClearClock ()
+{
+	Clock *clock = GetClock ();
+	ParallelTimeline::ClearClock ();
+	if (clock)
+		Deployment::GetCurrent()->GetSurface()->GetTimeManager()->RemoveClock (clock);
+}
+
+
+void
+Storyboard::Dispose ()
+{
+	Clock *clock = GetClock ();
+	ParallelTimeline::Dispose ();
+	if (clock) {
+		Surface *s = Deployment::GetCurrent ()->GetSurface ();
+		if (s && s->GetTimeManager())
+			s->GetTimeManager()->RemoveClock (clock);
+	}
+}
+
+
+void
 Storyboard::FlattenTimelines (FlattenTimelinesCallback callback)
 {
 	FlattenTimelines (callback, this, NULL, NULL);
@@ -604,8 +628,7 @@ Storyboard::BeginWithError (MoonError *error)
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
 	if (GetClock ()) {
-		DetachCompletedHandler ();
-		ClearClock (true);
+		ClearClock ();
 	}
 
 	if (Validate (error) == false)
@@ -617,28 +640,33 @@ Storyboard::BeginWithError (MoonError *error)
 	Clock *clock = AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard %p, named '%s'", this, GetName());
 	clock->SetName (name);
-
-
+	clock->AddHandler (Clock::CurrentStateInvalidatedEvent, clock_statechanged, this);
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
 	GHashTable *promoted_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	List animated_properties;
 	if (!HookupAnimationsRecurse (clock, NULL, NULL, promoted_values, &animated_properties, error)) {
-		DetachCompletedHandler ();
-		ClearClock (true);
+		ClearClock ();
 		g_hash_table_destroy (promoted_values);
 		return false;
 	}
 	g_hash_table_destroy (promoted_values);
 
 	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (clock);
-
 	if (GetBeginTime() == 0)
 		clock->BeginOnTick ();
 
-	GetDeployment ()->SetKeepAlive (this, true);
 
+	GetDeployment ()->SetKeepAlive (this, true);
 	return true;
+}
+
+void
+Storyboard::clock_statechanged (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	Clock *clock = (Clock *) sender;
+	Storyboard *sb = (Storyboard *) closure;
+	sb->GetDeployment ()->SetKeepAlive (sb, clock->GetClockState () == Clock::Active);
 }
 
 void
@@ -717,10 +745,10 @@ Storyboard::StopWithError (MoonError *error)
 	}
 	clock = GetClock ();
 	if (clock) {
-		DetachCompletedHandler ();
 		clock->Stop ();
-		ClearClock (false);
+		ClearClock ();
 	}
+	printf ("Storyboard::StopWithError: %s SetKeepAlive (false)\n", GetName ());
 	GetDeployment ()->SetKeepAlive (this, false);
 }
 

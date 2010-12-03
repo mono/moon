@@ -37,8 +37,6 @@ public:
  	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Timeline ();
 
-	virtual void Dispose ();
-
 	void SetAutoReverse (bool autoreverse);
 	bool GetAutoReverse ();
 	
@@ -63,7 +61,7 @@ public:
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 	
 	virtual Clock *AllocateClock ();
-	virtual void ClearClock (bool dispose);
+	virtual void ClearClock ();
 	virtual bool Validate (MoonError *error);
 
 	Clock* GetClock ();
@@ -87,10 +85,9 @@ public:
 	// events
 	const static int CompletedEvent;
 
-	virtual void TeardownClock ();
-
 protected:
 	virtual ~Timeline ();
+	virtual void Dispose ();
 
 	void AttachCompletedHandler ();
 	void DetachCompletedHandler ();
@@ -138,7 +135,7 @@ public:
 	TimelineGroup ();
 	
 	virtual Clock *AllocateClock ();
-	virtual void ClearClock (bool dispose);
+	virtual void ClearClock ();
 	virtual bool Validate (MoonError *error);
 	
 	void AddChild (Timeline *child);
@@ -215,7 +212,6 @@ public:
 	void Restart ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
-	virtual void TeardownClock ();
 
 protected:
 	/* @GeneratePInvoke,MainThread */

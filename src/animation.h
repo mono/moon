@@ -1041,7 +1041,10 @@ public:
 protected:
 	/* @GeneratePInvoke */
 	Storyboard ();
-	
+
+	virtual void ClearClock ();
+	virtual void Dispose ();
+
 	virtual ~Storyboard ();
 
 	friend class MoonUnmanagedFactory;
@@ -1052,6 +1055,8 @@ private:
 				      GHashTable *promoted_values,
 				      List *animated_properties,
 				      MoonError *error);
+
+	static void clock_statechanged (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
 
 /* @Namespace=System.Windows.Media.Animation */

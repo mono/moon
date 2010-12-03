@@ -122,8 +122,6 @@ TimeManager::~TimeManager ()
 	source->unref ();
 	source = NULL;
 
-	root_clock->Dispose ();
-
 	timeline->unref ();
 	timeline = NULL;
 
@@ -464,6 +462,12 @@ TimeManager::AddClock (Clock *clock)
 		root_clock->Begin (GetCurrentTime());
 
 	NeedClockTick ();
+}
+
+void
+TimeManager::RemoveClock (Clock *clock)
+{
+	root_clock->RemoveChild (clock);
 }
 
 void

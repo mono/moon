@@ -3143,9 +3143,6 @@ DependencyObject::AttachAnimationStorage (DependencyProperty *prop, AnimationSto
 		attached_storage->Disable ();
 	}
 
-	if (addStrongRef)
-		addStrongRef (this, storage->GetTimeline(), "");
-
 	list->Append (new AnimationStorage::Node (prop, storage));
 	return attached_storage;
 }
@@ -3173,8 +3170,6 @@ DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationSto
 		List::Node *node = list->First ();
 		while (node) {
 			if (((AnimationStorage::Node*)node)->storage == storage) {
-				if (clearStrongRef)
-					clearStrongRef (this, storage->GetTimeline(), "");
 
 				List::Node *remove = node;
 				node = node->next;

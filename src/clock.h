@@ -242,8 +242,6 @@ public:
 	const static int CurrentStateInvalidatedEvent;
 	const static int CompletedEvent;
 
-	virtual void Dispose ();
-
 protected:
 	virtual ~Clock ();
 

@@ -108,16 +108,6 @@ Clock::~Clock ()
 }
 
 void
-Clock::Dispose ()
-{
-	if (!IsDisposed ()) {
-		if (GetTimeline ())
-			GetTimeline()->TeardownClock ();
-	}
-	EventObject::Dispose ();
-}
-
-void
 Clock::SetName (char *name)
 {
 	this->name = name;
@@ -694,6 +684,9 @@ ClockGroup::SetTimeManager (TimeManager *manager)
 void
 ClockGroup::RemoveChild (Clock *clock)
 {
+	if (!g_list_find (child_clocks, clock))
+		return;
+
 	child_clocks = g_list_remove (child_clocks, clock);
 	clock->SetTimeManager (NULL);
 	clock->SetParentClock (NULL);
@@ -821,7 +814,6 @@ ClockGroup::Dispose ()
 		Clock *clock = (Clock *)node->data;
 		clock->SetTimeManager (NULL);
 		clock->SetParentClock (NULL);
-		clock->Dispose ();
 		clock->unref ();
 		node = node->next;
 	}
