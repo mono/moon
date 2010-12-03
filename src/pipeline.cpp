@@ -2091,6 +2091,7 @@ void
 ProgressiveSource::SetRangeRequest (HttpRequest *value)
 {
 	HttpRequest *rr;
+	Media *media;
 
 	LOG_PIPELINE ("ProgressiveSource::SetRangeRequest (%p), range_request: %p\n", value, range_request);
 	VERIFY_MAIN_THREAD;
@@ -2116,6 +2117,12 @@ ProgressiveSource::SetRangeRequest (HttpRequest *value)
 	range_request->Open ("GET", uri, resource_base, MediaPolicy);
 	range_request->SetHeaderFormatted ("Range", g_strdup_printf ("bytes=%" G_GINT64_FORMAT "-", current_request), false);
 	range_request->Send ();
+
+	media = GetMediaReffed ();
+	if (media) {
+		media->ReportDownloadProgress (0.0, 0.0, true);
+		media->unref ();
+	}
 }
 
 void
