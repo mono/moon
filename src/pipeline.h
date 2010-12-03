@@ -935,7 +935,7 @@ private:
 	 * Set on main thread, read/reset on media thread: access needs mutex locked. 
 	 * When a seek is pending, indicates the position we should seek to. We specifically
 	 * do not enqueue the pts with the seek request - this would cause
-	 * multiple seeks with unpredictable ordeing when SeekAsync is called again before the
+	 * multiple seeks with unpredictable ordering when SeekAsync is called again before the
 	 * first seek has finished
 	 */
 	List seeks; /* The FIFO list of seeked-to pts. All threads may use, locking required. */
