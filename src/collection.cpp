@@ -216,17 +216,12 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 
 		delete added_copy;
 
-		if (addStrongRef && !GetDeployment ()->IsShuttingDown ()) {
-			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-				DependencyObject *added_obj = added->AsDependencyObject();
-				/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
-				 * contains UnmanagedStylusPoint objects. This means that UnmanagedStylusPoint's managed peer is not
-				 * reachable, so if it's unreffed here, it ends up getting gc'ed pretty quickly. DRTs: #TopXXScenarios5 and #TopXXScenarios6 */
-				if (added_obj && added_obj->hadManagedPeer && GetObjectType () != Type::STYLUSPOINT_COLLECTION) {
-					added->AsDependencyObject()->unref();
-					added->SetNeedUnref (false);
-				}
-			}
+		if (addStrongRef && added->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+			/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
+			* contains UnmanagedStylusPoint objects. This means that UnmanagedStylusPoint's managed peer is not
+			* reachable, so if it's unreffed here, it ends up getting gc'ed pretty quickly. DRTs: #TopXXScenarios5 and #TopXXScenarios6 */
+			if (GetObjectType () != Type::STYLUSPOINT_COLLECTION)
+				added->Weaken ();
 		}
 
 		return true;
@@ -352,14 +347,12 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 	
 		EmitChanged (CollectionChangedActionReplace, added, removed, index);
 
-		if (addStrongRef && !GetDeployment ()->IsShuttingDown ()) {
-			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-				DependencyObject *added_obj = added->AsDependencyObject();
-				if (added_obj && added_obj->hadManagedPeer) {
-					added->AsDependencyObject()->unref();
-					added->SetNeedUnref (false);
-				}
-			}
+		if (addStrongRef && added->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+			/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
+			* contains UnmanagedStylusPoint objects. This means that UnmanagedStylusPoint's managed peer is not
+			* reachable, so if it's unreffed here, it ends up getting gc'ed pretty quickly. DRTs: #TopXXScenarios5 and #TopXXScenarios6 */
+			if (GetObjectType () != Type::STYLUSPOINT_COLLECTION)
+				added->Weaken ();
 		}
 
 		delete removed;
