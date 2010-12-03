@@ -286,7 +286,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					  "\twidth: %d\n"
 					  "\theight: %d\n"
 					  "\tbits_per_sample: %d\n"
-					  "\tbit_rate: %d\n"
+					  "\tbit_rate: %u\n"
 					  "\tcodec_id: 0x%x\n"
 					  "\tpts_per_frame: %" G_GUINT64_FORMAT "\n"
 					  "\tduration: %" G_GUINT64_FORMAT "\n"
