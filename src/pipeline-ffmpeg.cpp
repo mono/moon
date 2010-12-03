@@ -976,7 +976,7 @@ FfmpegDemuxer::GetFrame (IMediaStream *stream)
 
 		MediaFrame *frame = new MediaFrame (GetStream (moon_stream_index));
 		frame->pts = PTS_PER_MILLISECOND * 1000ULL * packet.pts * av_stream->time_base.num / av_stream->time_base.den;
-		frame->duration = packet.duration;
+		frame->SetDuration (packet.duration);
 		if (!frame->FetchData (packet.size, packet.data)) {
 			frame->unref ();
 			av_free_packet (&packet);

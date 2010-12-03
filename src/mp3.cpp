@@ -572,7 +572,7 @@ Mp3FrameReader::ReadFrame ()
 	}
 	
 	frame->pts = cur_pts;
-	frame->duration = duration;
+	frame->SetDuration (duration);
 	
 	frame->AddState (MediaFrameDemuxed);
 	

@@ -775,6 +775,7 @@ private:
 	// decoder then uses and replaces with the decoded data.
 	guint8 *buffer;
 	guint32 buflen;
+	guint64 duration;
 
 	void Initialize ();
 	
@@ -801,7 +802,6 @@ public:
 	MediaMarker *marker;
 	void *decoder_specific_data; // data specific to the decoder
 	guint64 pts; // Set by the demuxer
-	guint64 duration; // Set by the demuxer
 	
 	guint16 state; // Current state of the frame
 	guint16 event; // special frame event if non-0
@@ -830,6 +830,9 @@ public:
 	bool FetchData (guint32 size, void *data);
 	/* Creates a new buffer which is 'size' bytes bigger, copies 'data' into it and then the previous buffer after that */
 	bool PrependData (guint32 size, void *data);
+
+	guint64 GetDuration () { return duration; }
+	void SetDuration (guint64 value) { duration = value; }
 	
 	/* @GenerateCBinding */
 	guint32 GetBufLen () { return buflen; }
