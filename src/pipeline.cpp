@@ -2100,7 +2100,7 @@ ProgressiveSource::SetRangeRequest (HttpRequest *value)
 	range_request->AddHandler (HttpRequest::StartedEvent, RangeStartedCallback, this);
 	range_request->AddHandler (HttpRequest::WriteEvent, RangeWriteCallback, this);
 	range_request->AddHandler (HttpRequest::StoppedEvent, RangeStoppedCallback, this);
-	range_request->Open ("GET", uri, /* I think a resource base is needed here */ NULL, MediaPolicy);
+	range_request->Open ("GET", uri, resource_base, MediaPolicy);
 	range_request->SetHeaderFormatted ("Range", g_strdup_printf ("bytes=%" G_GINT64_FORMAT "-", current_request), false);
 	range_request->Send ();
 }
