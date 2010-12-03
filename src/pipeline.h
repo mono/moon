@@ -466,6 +466,7 @@ private:
 	// 0-based index of the stream in the media
 	// set by the demuxer, until then its value must be -1
 	gint32 index; 
+	guint64 pts_per_frame; // Duration (in pts) of each frame. Set to 0 if unknown.
 
 protected:
 	virtual ~IMediaStream () {}
@@ -557,6 +558,9 @@ public:
 	/* @GenerateCBinding */
 	IMediaDemuxer *GetDemuxerReffed ();
 	
+	void SetPtsPerFrame (guint64 value) { pts_per_frame = value; }
+	guint64 GetPtsPerFrame () { return pts_per_frame; }
+
 	void ReportSeekCompleted ();
 #if DEBUG
 	void PrintBufferInformation ();
@@ -1418,7 +1422,6 @@ class VideoStream : public IMediaStream {
 private:
 	IImageConverter *converter;
 	guint32 bits_per_sample;
-	guint64 pts_per_frame; // Duration (in pts) of each frame. Set to 0 if unknown.
 	guint64 initial_pts;
 	guint32 height;
 	guint32 width;
@@ -1436,8 +1439,6 @@ public:
 
 	void SetBitsPerSample (guint32 value) { bits_per_sample = value; }
 	guint32 GetBitsPerSample () { return bits_per_sample; }
-	void SetPtsPerFrame (guint64 value) { pts_per_frame = value; }
-	guint64 GetPtsPerFrame () { return pts_per_frame; }
 	void SetInitialPts (guint64 value) { initial_pts = value; }
 	guint64 GetInitialPts () { return initial_pts; }
 	void SetWidth (guint32 value) { width = value; }

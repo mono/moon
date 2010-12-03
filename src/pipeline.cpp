@@ -2904,6 +2904,7 @@ IMediaStream::IMediaStream (Type::Kind kind, Media *media) : IMediaObject (kind,
 	extra_data = NULL;
 	
 	duration = 0;
+	pts_per_frame = 0;
 	
 	decoder = NULL;
 	codec_id = 0;
@@ -4878,7 +4879,6 @@ VideoStream::VideoStream (Media *media) : IMediaStream (Type::VIDEOSTREAM, media
 {
 	converter = NULL;
 	bits_per_sample = 0;
-	pts_per_frame = 0;
 	initial_pts = 0;
 	height = 0;
 	width = 0;
@@ -4890,7 +4890,6 @@ VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 hei
 {
 	converter = NULL;
 	bits_per_sample = 0;
-	pts_per_frame = 0;
 	initial_pts = 0;
 	bit_rate = 0;
 	this->height = height;
