@@ -20,6 +20,8 @@
 #include "effect.h"
 #include "region.h"
 
+#define IS_TRANSLUCENT(x) (x * 255 < 254.5)
+
 namespace Moonlight {
 
 GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
@@ -79,8 +81,25 @@ GLXContext::SetupVertexData (const double *matrix,
 	ms->unref ();
 }
 
+gboolean
+GLXContext::HasDrawable ()
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
+	gboolean    status = FALSE;
+
+	if (dst->GetGLXDrawable () || dst->HasTexture ())
+		status = TRUE;
+
+	ms->unref ();
+
+	return status;
+}
+
 void
-GLXContext::FlushCache ()
+GLXContext::SyncDrawable ()
 {
 	Target      *target = Top ()->GetTarget ();
 	Target      *cairo = target->GetCairoTarget ();
@@ -260,7 +279,7 @@ GLXContext::Push (Cairo extents)
  
 		if (region->RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
 			ForceCurrent ();
-			FlushCache ();
+			SyncDrawable ();
 		}
  
 		delete region;
@@ -269,9 +288,8 @@ GLXContext::Push (Cairo extents)
 	if (!target->GetCairoTarget ()) {
 		MoonSurface *ms;
 		Rect        r = target->GetData (&ms);
-		GLXSurface  *dst = (GLXSurface *) ms;
 
-		if (dst->GetGLXDrawable () || dst->HasTexture ()) {
+		if (HasDrawable ()) {
 			GLXSurface *surface = new GLXSurface (box.width,
 							      box.height);
 			Target     *cairo = new Target (surface, box);
@@ -319,7 +337,7 @@ GLXContext::Pop (MoonSurface **ref)
 			return r;
 		}
 		else {
-			FlushCache ();
+			SyncDrawable ();
 		}
 	}
  
@@ -334,7 +352,7 @@ GLXContext::SetFramebuffer ()
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface *) ms;
 
-	FlushCache ();
+	SyncDrawable ();
 
 	if (!dst->GetGLXDrawable ())
 		GLContext::SetFramebuffer ();
@@ -383,32 +401,36 @@ GLXContext::Blend (MoonSurface *src,
 		   double      x,
 		   double      y)
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *init = target->GetInit ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
-	bool        ewidth = ((GLXSurface *) src)->Width () == dst->Width ();
-	bool        eheight = ((GLXSurface *) src)->Height () == dst->Height ();
+	Target *target = Top ()->GetTarget ();
+	Rect   r = target->GetData (NULL);
+	Rect   clip;
 
-	ms->unref ();
- 	ForceCurrent ();
- 
-	if (!init && ewidth && eheight && alpha >= 1.0 && r.x == x && r.y == y) {
-		cairo_matrix_t matrix;
+	Top ()->GetClip (&clip);
 
-		Top ()->GetMatrix (&matrix);
+	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
+		double m[16];
+		int    x0, y0;
 
-		// matching dimensions and no transformation allow us
-		// to set source as initial state of target surface when
-		// it is not already initialized.
-		if (matrix.xx == 1.0 && matrix.yx == 0.0 &&
-		    matrix.xy == 0.0 && matrix.yy == 1.0 &&
-		    matrix.x0 == 0.0 && matrix.y0 == 0.0) {
-			target->SetInit (src);
-			return;
+		GetMatrix (m);
+
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			GLXSurface *surface = (GLXSurface *) src;
+			Rect       r = Rect (x + x0,
+					     y + y0,
+					     surface->Width (),
+					     surface->Height ());
+
+			// matching dimensions and no transformation allow us
+			// to set source as initial state of target surface when
+			// it is not already initialized.
+			if (r == clip) {
+				target->SetInit (src);
+				return;
+			}
 		}
 	}
+
+	ForceCurrent ();
 
 	GLContext::Blend (src, alpha, x, y);
 }
@@ -420,6 +442,40 @@ GLXContext::Project (MoonSurface  *src,
 		     double       x,
 		     double       y)
 {
+	GLXSurface *surface = (GLXSurface *) src;
+
+	if (!HasDrawable () && !surface->HasTexture ()) {
+		double m[16];
+		int    x0, y0;
+
+		GetMatrix (m);
+		Matrix3D::Multiply (m, matrix, m);
+
+		// avoid GL rendering to target without previously
+		// allocated hardware drawable
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			Target          *target = Top ()->GetTarget ();
+			Rect            r = Rect (x + x0,
+						  y + y0,
+						  surface->Width (),
+						  surface->Height ());
+			cairo_surface_t *cs = src->Cairo ();
+			cairo_t         *cr = Push (Cairo (r));
+
+			cairo_identity_matrix (cr);
+			cairo_translate (cr, x0, y0);
+			cairo_set_operator (cr, target->GetInit () ?
+					    CAIRO_OPERATOR_OVER :
+					    CAIRO_OPERATOR_SOURCE);
+			cairo_set_source_surface (cr, cs, x, y);
+			cairo_paint_with_alpha (cr, alpha);
+			cairo_surface_destroy (cs);
+
+			Context::Pop ();
+			return;
+		}
+	}
+
 	ForceCurrent ();
 
 	GLContext::Project (src, matrix, alpha, x, y);
@@ -476,7 +532,7 @@ void
 GLXContext::Flush ()
 {
 	ForceCurrent ();
-	FlushCache ();
+	SyncDrawable ();
 
 	GLContext::Flush ();
 }

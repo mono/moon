@@ -77,7 +77,8 @@ protected:
 	void SetFramebuffer ();
 	void SetScissor ();
 	void ForceCurrent ();
-	void FlushCache ();
+	gboolean HasDrawable ();
+	void SyncDrawable ();
 
 private:
 	Display       *dpy;
