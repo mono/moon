@@ -3490,7 +3490,7 @@ MmsPlaylistEntry::ParseHeader (MediaClosure *c)
 	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
 	
-	media->ReportDownloadProgress (1.0);
+	media->ReportDownloadProgress (1.0, 0.0, false);
 	
 	asf_demuxer = new ASFDemuxer (media, parent, buffer, this);
 	asf_demuxer->AddSafeHandler (IMediaDemuxer::OpenedEvent, closure->opened_handler, closure->opened_handler_obj, true);

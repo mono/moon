@@ -461,7 +461,7 @@ Media::ClearBufferingProgress ()
 	/* All streams have ended their output, buffering_progress won't change anymore. Emit the last 
 	 * BufferingProgressChanged event */
 	LOG_PIPELINE ("Media::ClearBufferingProgress (): All streams have ended, emit BufferingProgressChangedEvent (%.2f).\n", buffering_progress);
-	EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (buffering_progress));
+	EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (buffering_progress, 0.0));
 }
 
 void
@@ -476,18 +476,18 @@ Media::ReportBufferingProgress (double progress)
 	
 	if (progress < buffering_progress || progress > (buffering_progress + 0.005) || progress == 1.0 || progress == 0.0) {
 		buffering_progress = progress;
-		EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (progress));
+		EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (progress, 0.0));
 	}
 }
 
 void
-Media::ReportDownloadProgress (double progress)
+Media::ReportDownloadProgress (double progress, double offset, bool force)
 {
-	LOG_PIPELINE ("Media::ReportDownloadProgress (%.3f), download_progress: %.3f\n", progress, download_progress);
+	LOG_PIPELINE ("Media::ReportDownloadProgress (%.3f, %i), download_progress: %.3f\n", progress, force, download_progress);
 
 	progress = MAX (MIN (progress, 1.0), 0.0);
 	
-	if (progress <= download_progress) {
+	if (progress <= download_progress && !force) {
 		/*
 		 * Download progress percentage can actually go down - if the file size
 		 * goes up. Yes, the file size can go up.
@@ -497,7 +497,7 @@ Media::ReportDownloadProgress (double progress)
 
 	if (progress > (download_progress + 0.005) || progress == 1.0 || progress == 0.0) {
 		download_progress = progress;
-		EmitSafe (DownloadProgressChangedEvent, new ProgressEventArgs (progress));
+		EmitSafe (DownloadProgressChangedEvent, new ProgressEventArgs (progress, offset));
 	}
 }
 
@@ -1923,6 +1923,16 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 	}
 }
 
+double
+ProgressiveSource::GetDownloadProgressOffset ()
+{
+	double result = 0;
+	if (current_request != 0 && size != 0)
+		result = (double) current_request / (double) size;
+	LOG_PIPELINE ("ProgressiveSource::GetDownloadProgressOffset (): %f current_request: %" G_GUINT64_FORMAT " size: %" G_GUINT64_FORMAT "\n", result, current_request, size);
+	return result;
+}
+
 gint32
 ProgressiveSource::CalculateDownloadSpeed ()
 {
@@ -1994,8 +2004,19 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 
 cleanup:
 	if (media) {
-		if (size != -1 && offset != -1)
-			media->ReportDownloadProgress ((double) (offset + n) / (double) size);
+		if (size != -1 && offset != -1) {
+			if (current_request <= offset) {
+				double progress = (double) (offset + n) / (double) size;
+				double progress_offset = GetDownloadProgressOffset ();
+				LOG_PIPELINE ("ProgressiveSource::DataWrite () current_request: %" G_GUINT64_FORMAT " = %.4f offset: %i = %.2f n: %i size: %" G_GUINT64_FORMAT " about to report progress: %f\n",
+					current_request, progress_offset, offset, (double) offset / (double) size, n, size, (double) (offset + n) / (double) size);
+				media->ReportDownloadProgress (progress, progress_offset, false);
+			} else {
+				/* We got data from a request that is about to be cancelled */
+				LOG_PIPELINE ("ProgressiveSource::DataWrite () current_request: %" G_GUINT64_FORMAT " = %.4f offset: %i = %.2f n: %i size: %" G_GUINT64_FORMAT " not reporting progress (before latest brr request)\n",
+					current_request, (double) current_request / (double) size, offset, (double) offset / (double) size, n, size);
+			}
+		}
 		media->unref ();
 	}
 }
@@ -2263,7 +2284,7 @@ ProgressiveSource::DownloadComplete ()
 	CheckPendingReads ();
 
 	if (media) {
-		media->ReportDownloadProgress (1.0);
+		media->ReportDownloadProgress (1.0, GetDownloadProgressOffset (), false);
 		media->unref ();
 	}
 }

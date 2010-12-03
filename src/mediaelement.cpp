@@ -1240,6 +1240,7 @@ MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs 
 	g_return_if_fail (pea != NULL);
 	
 	SetDownloadProgress (pea->progress);
+	SetDownloadProgressOffset (pea->offset);
 	Emit (DownloadProgressChangedEvent);
 }
 

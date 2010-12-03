@@ -362,10 +362,12 @@ public:
 class ProgressEventArgs : public EventArgs {
 public:
 	double progress;
+	double offset;
 	
-	ProgressEventArgs (double progress)
+	ProgressEventArgs (double progress, double offset)
 	{
 		this->progress = progress;
+		this->offset = offset;
 	}
 };
 
@@ -661,7 +663,7 @@ public:
 	void ReportOpenDemuxerCompleted (); // This method is called by the demuxer when it has opened.
 	void ReportOpenDecoderCompleted (IMediaDecoder *decoder); // This method is called by any of the decoders when it has opened.
 	
-	void ReportDownloadProgress (double progress);
+	void ReportDownloadProgress (double progress, double offset, bool force);
 	void ReportBufferingProgress (double progress);
 	
 	// Media playback
@@ -1298,6 +1300,7 @@ private:
 	
 	void Read (MediaReadClosure *closure);
 	gint32 CalculateDownloadSpeed (); /* bps */
+	double GetDownloadProgressOffset ();
 	
 protected:
 	virtual ~ProgressiveSource ();
