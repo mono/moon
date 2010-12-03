@@ -276,6 +276,24 @@ public:
 };
 
 /*
+ * MediaReportDecodeFrameCompletedClosure
+ */
+class MediaReportDecodeFrameCompletedClosure : public MediaClosure {
+private:
+	MediaFrame *frame;
+
+protected:
+	virtual ~MediaReportDecodeFrameCompletedClosure () {}
+
+public:
+	MediaReportDecodeFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame);
+	virtual void Dispose ();
+	
+	MediaFrame *GetFrame () { return frame; }
+	IMediaDecoder *GetDecoder () { return (IMediaDecoder *) GetContext (); }
+};
+
+/*
  * MediaMarkerFoundClosure
  */
 class MediaMarkerFoundClosure : public MediaClosure {
@@ -1055,6 +1073,7 @@ private:
 		
 	static MediaResult DecodeFrameCallback (MediaClosure *closure);
 	static MediaResult ReportOpenDecoderCompletedCallback (MediaClosure *closure);
+	static MediaResult ReportDecodeFrameCompletedCallback (MediaClosure *closure);
 	
 	class FrameNode : public List::Node {
 	public:

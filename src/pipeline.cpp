@@ -2903,6 +2903,33 @@ MediaReportFrameCompletedClosure::Dispose ()
 }
 
 /*
+ * MediaReportDecodeFrameCompletedClosure
+ */
+
+MediaReportDecodeFrameCompletedClosure::MediaReportDecodeFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame)
+	: MediaClosure (Type::MEDIAREPORTDECODEFRAMECOMPLETEDCLOSURE, media, callback, context)
+{
+	this->frame = NULL;
+	
+	g_return_if_fail (context != NULL);
+	
+	this->frame = frame;
+	if (this->frame)
+		this->frame->ref ();
+}
+
+void
+MediaReportDecodeFrameCompletedClosure::Dispose ()
+{
+	if (frame) {
+		frame->unref ();
+		frame = NULL;
+	}
+
+	MediaClosure::Dispose ();
+}
+
+/*
  * IMediaStream
  */
 
@@ -4721,6 +4748,19 @@ IMediaDecoder::ReportInputEnded ()
 	}
 }
 
+MediaResult
+IMediaDecoder::ReportDecodeFrameCompletedCallback (MediaClosure *closure)
+{
+	MediaReportDecodeFrameCompletedClosure *c = (MediaReportDecodeFrameCompletedClosure *) closure;
+	
+	g_return_val_if_fail (c != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (c->GetDecoder () != NULL, MEDIA_FAIL);
+
+	c->GetDecoder ()->ReportDecodeFrameCompleted (c->GetFrame ());
+	
+	return MEDIA_SUCCESS;
+}
+
 void
 IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 {
@@ -4730,13 +4770,20 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	bool demuxer_size_failure = false;
 
 	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %" G_GUINT64_FORMAT " ms\n", frame, frame ? frame->stream->GetTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
-	VERIFY_MEDIA_THREAD; /* no current decoder will call this method on a non-media thread, if that ever changes, we'll need to marshal calls to a media thread like the rest of the Report* methods */
 	
 	g_return_if_fail (frame != NULL);
 	
 	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
 	
+	if (!Media::InMediaThread ()) {
+		LOG_PIPELINE ("IMediaDecoder::ReportOpenDecoderCompleted (): Not in media thread, marshalling...\n");
+		MediaClosure *closure = new MediaReportDecodeFrameCompletedClosure (media, ReportDecodeFrameCompletedCallback, this, frame);
+		media->EnqueueWork (closure);
+		closure->unref ();
+		goto cleanup;
+	}
+
 	stream = frame->stream;
 	if (stream == NULL)
 		goto cleanup;
