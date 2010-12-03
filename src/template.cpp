@@ -23,6 +23,7 @@ FrameworkTemplate::FrameworkTemplate ()
 {
 	SetObjectType (Type::FRAMEWORKTEMPLATE);
 
+	holdManagedRef = false;
 	xaml_buffer = NULL;
 	parse_template = NULL;
 	parse_template_data = NULL;
@@ -42,6 +43,10 @@ FrameworkTemplate::ClearXamlBuffer ()
 		g_free (xaml_buffer);
 		xaml_buffer = NULL;
 	}
+	if (holdManagedRef && clearStrongRef) {
+		// No need to strengthen the Value* because we're deleting it next
+		clearStrongRef (this, this->parse_template_data, "XamlContext");
+	}
 	parse_template = NULL;
 	delete parse_template_data;
 	parse_template_data = NULL;
@@ -49,11 +54,16 @@ FrameworkTemplate::ClearXamlBuffer ()
 }
 
 void
-FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *xaml_buffer)
+FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *xaml_buffer, bool holdManagedRef)
 {
+	this->holdManagedRef = holdManagedRef;
 	this->xaml_buffer = g_strdup (xaml_buffer);
 	this->parse_template = parse_template;
 	this->parse_template_data = new Value (*parse_template_data);
+	if (holdManagedRef && addStrongRef) {
+		addStrongRef (this, this->parse_template_data, "XamlContext");
+		this->parse_template_data->Weaken ();
+	}
 	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownEventCallback, this);
 }
 

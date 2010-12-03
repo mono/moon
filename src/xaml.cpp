@@ -2116,7 +2116,7 @@ end_element_handler (void *data, const char *el)
 					}
 
 					Value v = Value (context);
-					template_->SetXamlBuffer (parse_template, &v, buffer);
+					template_->SetXamlBuffer (parse_template, &v, buffer, false);
 					context->unref ();
 
 					if (p->current_element->parent)

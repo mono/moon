@@ -46,6 +46,26 @@ namespace System.Windows {
 			set;
 		}
 
+		object XamlContext {
+			get; set;
+		}
+
+		internal override void AddStrongRef (IntPtr referent, string name)
+		{
+			if (name == "XamlContext")
+				XamlContext = Value.ToObject (referent);
+			else
+				base.AddStrongRef (referent, name);
+		}
+
+		internal override void ClearStrongRef (IntPtr referent, string name)
+		{
+			if (name == "XamlContext")
+				XamlContext = null;
+			else
+				base.ClearStrongRef (referent, name);
+		}
+
 		internal DependencyObject GetVisualTree ()
 		{
 			return GetVisualTree (null);
@@ -67,7 +87,7 @@ namespace System.Windows {
 		{
 			Value v = Value.FromObject (context);
 			using (Value vv = v)
-				NativeMethods.framework_template_set_xaml_buffer (native, func, ref v, xaml);
+				NativeMethods.framework_template_set_xaml_buffer (native, func, ref v, xaml, true);
 		}
 	}
 }

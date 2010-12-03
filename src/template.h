@@ -34,7 +34,7 @@ public:
 	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 
 	/* @GeneratePInvoke */
-	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer);
+	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer, bool holdManagedRef);
 
 protected:
 	/* @GeneratePInvoke,ManagedAccess=Protected */
@@ -50,6 +50,7 @@ protected:
 	friend class MoonManagedFactory;
 
 private:
+	bool holdManagedRef;
 	EVENTHANDLER (FrameworkTemplate, ShuttingDownEvent, Deployment, EventArgs);
 	void ClearXamlBuffer ();
 };
