@@ -29,18 +29,6 @@ if INCLUDE_BROWSER_MANAGED_CODE
 endif
 	$(MAKE) -C System.Windows bootstrap
 
-$(MCS_PATH)/class/lib/basic/Mono.Cecil.dll:
-	$(MAKE) -C $(MCS_PATH)/class/Mono.Cecil PROFILE=basic
-
-$(MCS_PATH)/class/lib/basic/Mono.Cecil.Mdb.dll: $(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
-	$(MAKE) -C $(MCS_PATH)/class/Mono.Cecil.Mdb PROFILE=basic
-	
-$(MCS_PATH)/class/lib/basic/Mono.Tuner.dll: $(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
-	$(MAKE) -C $(MCS_PATH)/tools/tuner PROFILE=basic
-	
-$(MCS_PATH)/class/lib/basic/monolinker.exe: $(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
-	$(MAKE) -C $(MCS_PATH)/tools/linker PROFILE=basic
-
 make-lib-directories:
 	@mkdir -p lib/2.1
 	@mkdir -p lib/2.1_raw

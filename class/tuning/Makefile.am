@@ -99,7 +99,7 @@ TUNER_STEPS = \
 
 if HAVE_MONO_BASIC
 $(MONO_BASIC_DLLFILES): 
-	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune MCS_PATH=$(MCS_PATH)
+	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune MCS_PATH=$(MCS_PATH) CECIL_LOCATION=$(MCS_PATH)/class/lib/basic
 endif
 
 working.stamp: $(INPUT_FILES)

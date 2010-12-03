@@ -6,8 +6,13 @@ clean clean-local:
 	$(MAKE) -C $(MONO_PATH) moon-do-clean
 
 else
-all all-local clean clean-local:
+all all-local:
 	$(MAKE) -C $(MONO_PATH) $@
+	$(MAKE) -C $(MONO_PATH)/runtime moon-do-basic
+
+clean clean-local:
+	$(MAKE) -C $(MONO_PATH) $@
+	$(MAKE) -C $(MONO_PATH)/runtime moon-do-basic-clean
 
 endif
 
