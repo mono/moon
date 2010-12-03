@@ -71,6 +71,7 @@ class MediaMarkerFoundClosure;
 class Playlist;
 class MemoryBuffer;
 
+/* @CBindingRequisite */
 typedef gint32 MediaResult;
 
 #define MEDIA_SUCCESS ((MediaResult) 0)
@@ -98,6 +99,7 @@ typedef gint32 MediaResult;
 #define VERIFY_MEDIA_THREAD 
 #endif
 
+/* @CBindingRequisite */
 typedef MediaResult MediaCallback (MediaClosure *closure);
 
 };
@@ -163,6 +165,7 @@ protected:
 	MediaClosure (Type::Kind object_type, Media *media, MediaCallback *callback, EventObject *context);
 	
 public:
+	/* @GenerateCBinding */
 	MediaClosure (Media *media, MediaCallback *callback, EventObject *context, const char *description);
 	virtual void Dispose ();
 	
@@ -172,6 +175,7 @@ public:
 
 	MediaResult GetResult () { return result; }
 	Media *GetMedia () { return media; }
+	/* @GenerateCBinding */
 	EventObject *GetContext () { return context; }
 	const char *GetDescription () { return description != NULL ? description : GetTypeName (); }
 
@@ -537,11 +541,16 @@ public:
 	/* @GenerateCBinding */
 	void SetDuration (guint64 value) { duration = value; }
 
+	/* @GenerateCBinding */
 	bool GetInputEnded ();
+	/* @GenerateCBinding */
 	void SetInputEnded (bool value);
+	/* @GenerateCBinding */
 	bool GetOutputEnded ();
+	/* @GenerateCBinding */
 	void SetOutputEnded (bool value);
 	
+	/* @GenerateCBinding */
 	IMediaDemuxer *GetDemuxerReffed ();
 	
 	void ReportSeekCompleted ();
@@ -623,6 +632,7 @@ public:
 	virtual void Dispose ();
 	
 	static bool InMediaThread ();
+	/* @GenerateCBinding */
 	bool EnqueueWork (MediaClosure *closure);
 	
 	// Calls obj->Dispose on the media thread.
@@ -992,6 +1002,7 @@ public:
 	void ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue);
 	
 	guint64 GetBufferedSize ();
+	/* @GenerateCBinding */
 	void FillBuffers ();
 	void ClearBuffers ();
 	
@@ -1656,6 +1667,8 @@ public:
 	virtual bool HasDelayedFrame ();
 	
 	virtual const char *GetName () { return name; }
+	/* @GenerateCBinding */
+	void *GetInstance () { return instance; }
 };
 
 /*
