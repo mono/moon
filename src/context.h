@@ -28,14 +28,14 @@ public:
 	struct Clip {
 	public:
 		Clip () : r (0) {}
-		Clip (Rect clip) : r (clip) {}
+		Clip (Rect clip) : r (clip.RoundOut ()) {}
 
 		Rect r;
 	};
 
 	struct Group {
 	public:
-		Group (Rect group) : r (group) {}
+		Group (Rect group) : r (group.RoundOut ()) {}
 
 		Rect r;
 	};
@@ -58,7 +58,7 @@ public:
 	struct Cairo {
 	public:
 		Cairo ();
-		Cairo (Rect cairo) : r (cairo) {}
+		Cairo (Rect cairo) : r (cairo.RoundOut ()) {}
 
 		Rect r;
 	};
