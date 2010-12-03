@@ -633,6 +633,35 @@ struct Frames : List::Node {
 List *allframes = NULL;
 #endif
 
+char *
+get_reftrace (void)
+{
+	GString *str = g_string_new ("");
+	char *trace;
+#ifdef HAVE_UNWIND
+
+	print_reftrace ("", "", 0, true);
+	Frames *frames = (Frames*)allframes->First ();
+	while (frames != NULL) {
+		Frame *frame = (Frame*)frames->list->First ();
+		while (frame != NULL) {
+			char *s = frame->ToString ();
+			g_string_append (str, s);
+			g_string_append_c (str, '\n');
+			g_free(s);
+			frame = (Frame*)frame->next;
+		}
+		frames = (Frames*)frames->next;
+	}
+	allframes->Clear (true);
+
+	trace = str->str;
+#endif
+	g_string_free (str, false);
+
+	return trace;
+}
+
 void
 print_reftrace (const char * act, const char * typname, int refcount, bool keep)
 {

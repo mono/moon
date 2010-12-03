@@ -37,6 +37,7 @@ void show_reftrace (void *obj);
 
 G_BEGIN_DECLS
 
+char* get_reftrace (void);
 char* get_stack_trace (void);
 void print_stack_trace (void);
 void hexdump_addr (void *addr, size_t n);
