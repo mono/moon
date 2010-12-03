@@ -300,6 +300,7 @@ cat <<EOF
 	Object tracking: $with_object_tracking
 	Heap Visualization: $with_heap_visualization
 	Logging support with MOONLIGHT_DEBUG: $with_logging
+	libunwind available for logging: $with_unwind
 EOF
 
 # media info

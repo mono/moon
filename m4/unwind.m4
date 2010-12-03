@@ -1,27 +1,43 @@
 AC_DEFUN([MOONLIGHT_CHECK_UNWIND],
 [
-	AC_CHECK_HEADER(libunwind.h)
+	AC_ARG_WITH(unwind, AC_HELP_STRING([--with-unwind=no|yes],
+		            [Enable stacktraces using libunwind]),
+		            [], [with_unwind=no])
 
-	AC_MSG_CHECKING(for libunwind)
+    if test x$with_unwind = xyes; then
 
-	LDFLAGS_save="$LDFLAGS"
-	LIBS_save="$LIBS"
+		AC_CHECK_HEADER(libunwind.h)
 
-	LDFLAGS="$LDFLAGS -liberty -lunwind"
-	LIBS="$LIBS -liberty -lunwind"
+		AC_MSG_CHECKING(for libunwind)
 
-	AC_CHECK_LIB(unwind, backtrace, have_unwind_libs="yes", have_unwind_libs="no")
+		LDFLAGS_save="$LDFLAGS"
+		LIBS_save="$LIBS"
 
-	LDFLAGS="$LDFLAGS_save"
-	LIBS="$LIBS_save"
+		case "$host" in
+			x86_64-*-* | amd64-*-*)
+				IBERTY="iberty_pic" ;;
+			default )
+				IBERTY="iberty" ;;
+		esac
 
-	if test "$have_unwind_libs" = "no"; then
-		AC_MSG_RESULT([no])
-	else
-		AC_MSG_RESULT([yes])
-		if test "x$with_debug" = "xyes"; then
-			UNWIND_LIBS="-liberty -lunwind"
-			AC_DEFINE([HAVE_UNWIND], [1], [libunwind support])
+		UNWIND_LIBS="-l$IBERTY -lunwind"
+		LDFLAGS="$LDFLAGS $UNWIND_LIBS"
+		LIBS="$LIBS $UNWIND_LIBS"
+
+		AC_CHECK_LIB($IBERTY, cplus_demangle, have_iberty="yes", have_iberty="no")
+		AC_CHECK_LIB(unwind, backtrace, have_unwind="yes", have_unwind="no")
+
+		LDFLAGS="$LDFLAGS_save"
+		LIBS="$LIBS_save"
+
+		if test x$have_unwind = xyes -a x$have_iberty = xyes; then
+			AC_MSG_RESULT([yes])
+			if test "x$with_debug" = "xyes"; then
+				AC_DEFINE([HAVE_UNWIND], [1], [libunwind support])
+			fi
+		else
+			with_unwind=no
+			AC_MSG_RESULT([no])
 		fi
 	fi
 ])
