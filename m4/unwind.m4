@@ -15,7 +15,16 @@ AC_DEFUN([MOONLIGHT_CHECK_UNWIND],
 
 		case "$host" in
 			x86_64-*-* | amd64-*-*)
-				IBERTY="iberty_pic" ;;
+				IBERTY="iberty_pic"
+				LDFLAGS="$LDFLAGS -l$IBERTY"
+				LIBS="$LIBS -l$IBERTY"
+				AC_CHECK_LIB($IBERTY, cplus_demangle, have_iberty="yes", have_iberty="no")
+				if test x$have_iberty = xno; then
+					IBERTY="iberty"
+				fi
+				LDFLAGS="$LDFLAGS_save"
+				LIBS="$LIBS_save"
+				;;
 			default )
 				IBERTY="iberty" ;;
 		esac
@@ -24,7 +33,9 @@ AC_DEFUN([MOONLIGHT_CHECK_UNWIND],
 		LDFLAGS="$LDFLAGS $UNWIND_LIBS"
 		LIBS="$LIBS $UNWIND_LIBS"
 
-		AC_CHECK_LIB($IBERTY, cplus_demangle, have_iberty="yes", have_iberty="no")
+		if test x$have_iberty = xno; then
+			AC_CHECK_LIB($IBERTY, cplus_demangle, have_iberty="yes", have_iberty="no")
+		fi
 		AC_CHECK_LIB(unwind, backtrace, have_unwind="yes", have_unwind="no")
 
 		LDFLAGS="$LDFLAGS_save"
