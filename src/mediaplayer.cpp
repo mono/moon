@@ -229,9 +229,22 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		} else if (stream->IsVideo ()) {
 			vstream = (VideoStream *) stream;
 
-			if (video_stream != NULL && vstream->GetBitRate () < video_stream->GetBitRate ())
-				break;
+			if (video_stream != NULL) {
+				if (vstream->GetBitRate () == 0 && video_stream->GetBitRate () == 0) {
+					if (vstream->GetHeight () * vstream->GetWidth () < video_stream->GetHeight () * video_stream->GetWidth ()) {
+						LOG_MEDIAPLAYER ("MediaPlayer::Open (): discarded video stream #%i height*width: %ix%i=%i\n",
+								i, vstream->GetWidth (), vstream->GetHeight (), vstream->GetWidth () * vstream->GetHeight ());
+						break;
+					}
+				} else if (vstream->GetBitRate () < video_stream->GetBitRate ()) {
+						LOG_MEDIAPLAYER ("MediaPlayer::Open (): discarded video stream #%i bitrate: %i\n",
+								i, vstream->GetBitRate ());
+					break;
+				}
+			}
 
+			LOG_MEDIAPLAYER ("MediaPlayer::Open (): selected video stream #%i with height*width: %ix%i=%i and bitrate %i\n",
+				i, vstream->GetWidth (), vstream->GetHeight (), vstream->GetWidth () * vstream->GetHeight (), vstream->GetBitRate ());
 			video_stream = vstream;
 			
 			height = video_stream->GetHeight ();
