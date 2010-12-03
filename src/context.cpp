@@ -11,6 +11,7 @@
 #include <config.h>
 
 #include "context.h"
+#include "projection.h"
 
 namespace Moonlight {
 
@@ -291,6 +292,21 @@ Context::IsImmutable ()
 	Top ()->GetClip (&box);
 
 	return box.IsEmpty ();
+}
+
+void
+Context::GetMatrix (double *out)
+{
+	Context::Target *target = Top ()->GetTarget ();
+	Rect            r = target->GetData (NULL);
+	cairo_matrix_t  ctm;
+
+	Top ()->GetMatrix (&ctm);
+
+	Matrix3D::Affine (out,
+			  ctm.xx, ctm.xy,
+			  ctm.yx, ctm.yy,
+			  ctm.x0, ctm.y0);
 }
 
 void
