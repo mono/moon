@@ -991,7 +991,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		ctx = new GalliumContext (target);
 		target->unref ();
 #else
-		CairoSurface *target = new CairoSurface (native);
+		CairoSurface *target = new CairoSurface (native, width, height);
 		ctx = new CairoContext (target);
 		target->unref ();
 #endif
@@ -1022,7 +1022,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 #else
 	if (use_image) {
 		cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
-		MoonSurface *surface = new CairoSurface (image);
+		MoonSurface *surface = new CairoSurface (image, r.width, r.height);
 
 		ctx->Push (Context::Group (r), surface);
 		surface->unref ();
@@ -1052,6 +1052,11 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		cairo_surface_destroy (image);
 		src->unref ();
 	}
+
+#ifndef USE_GALLIUM
+	delete ctx;
+	ctx = NULL;
+#endif
 
 	delete region;
 

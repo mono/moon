@@ -90,9 +90,9 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 			return;
 	}
 
-        target = new CairoSurface (surface);
-
 	Rect bounds (0, 0, GetPixelWidth (), GetPixelHeight ());
+
+	target = new CairoSurface (surface, bounds.width, bounds.height);
 
 	cairo_matrix_t xform;
 	cairo_matrix_init_identity (&xform);

@@ -17,12 +17,16 @@ namespace Moonlight {
 
 class CairoSurface : public MoonSurface {
 public:
-	CairoSurface (cairo_surface_t *data);
+	CairoSurface (cairo_surface_t *data,
+		      int             width,
+		      int             height);
 	virtual ~CairoSurface ();
 
+	void Reshape (int width, int height);
 	cairo_surface_t *Cairo ();
 
 private:
+	int             size[2];
 	cairo_surface_t *surface;
 };
 

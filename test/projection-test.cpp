@@ -135,7 +135,7 @@ main (int argc, char **argv)
 		image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 						    width,
 						    height);
-		target = new CairoSurface (image);
+		target = new CairoSurface (image, width, height);
 		cairo_surface_destroy (image);
 		p.ctx = new CairoContext (target);
 		p.target = target;

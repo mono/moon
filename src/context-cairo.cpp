@@ -28,7 +28,7 @@ CairoContext::Push (Group extents)
 					      CAIRO_CONTENT_COLOR_ALPHA,
 					      r.width,
 					      r.height);
-        MoonSurface     *surface = new CairoSurface (data);
+        MoonSurface     *surface = new CairoSurface (data, r.width, r.height);
         Target          *target = new Target (surface, extents.r);
         cairo_matrix_t  matrix;
 
