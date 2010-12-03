@@ -376,6 +376,8 @@ public:
 
 	FontManager *GetFontManager ();
 	
+	bool VerifyDownload (const char *filename);
+
 	/* @GeneratePInvoke */
 	GlyphTypefaceCollection *GetSystemTypefaces ();
 	

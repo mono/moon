@@ -2079,6 +2079,40 @@ Deployment::SetUriFunctions (const UriFunctions *value)
 	memcpy (&uri_functions, value, sizeof (UriFunctions));
 }
 
+bool
+Deployment::VerifyDownload (const char *filename)
+{
+	static MonoMethod *moon_codec_integrity = NULL;
+
+	if (!moon_codec_integrity) {
+		MonoAssembly *sw = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
+		if (!sw)
+			return false;
+
+		MonoImage *image = mono_assembly_get_image (sw);
+		if (!image)
+			return false;
+
+		MonoClass *klass = mono_class_from_name (image, "Mono", "Helper");
+		if (!klass)
+			return false;
+
+		moon_codec_integrity = mono_class_get_method_from_name (klass, "CheckFileIntegrity", 1);
+		if (!moon_codec_integrity)
+			return false;
+	}
+
+	void *params [1];
+	params [0] = mono_string_new (mono_domain_get (), filename);
+	MonoObject *exc = NULL;
+
+	MonoObject *ret = mono_runtime_invoke (moon_codec_integrity, NULL, params, &exc);
+	if (exc)
+		return false;
+
+	return (bool) (*(MonoBoolean *) mono_object_unbox (ret));
+}
+
 /*
  * AssemblyPart
  */

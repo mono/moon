@@ -180,40 +180,6 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 	state = 6;
 }
 
-bool
-CodecDownloader::VerifyDownload (const char *filename)
-{
-	static MonoMethod *moon_codec_integrity = NULL;
-
-	if (!moon_codec_integrity) {
-		MonoAssembly *sw = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
-		if (!sw)
-			return false;
-
-		MonoImage *image = mono_assembly_get_image (sw);
-		if (!image)
-			return false;
-
-		MonoClass *klass = mono_class_from_name (image, "Mono", "Helper");
-		if (!klass)
-			return false;
-
-		moon_codec_integrity = mono_class_get_method_from_name (klass, "CheckFileIntegrity", 1);
-		if (!moon_codec_integrity)
-			return false;
-	}
-
-	void *params [1];
-	params [0] = mono_string_new (mono_domain_get (), filename);
-	MonoObject *exc = NULL;
-
-	MonoObject *ret = mono_runtime_invoke (moon_codec_integrity, NULL, params, &exc);
-	if (exc)
-		return false;
-
-	return (bool) (*(MonoBoolean *) mono_object_unbox (ret));
-}
-
 void
 CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 {
@@ -251,7 +217,7 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 
 		errno = 0;
 
-		if (!VerifyDownload (downloaded_file)) {
+		if (!GetDeployment ()->VerifyDownload (downloaded_file)) {
 			SetHeader ("An error occurred when installing the software");
 			SetMessage ("We could not verify the downloaded binary.  Please try again later.");
                 } else if (g_mkdir_with_parents (codec_dir, 0700) == -1 ||
