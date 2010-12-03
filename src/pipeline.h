@@ -53,8 +53,6 @@
 
 namespace Moonlight {
 
-typedef void (*register_codec) (int abi_version);
-
 class Media;
 class IMediaSource;
 class IMediaStream;
@@ -752,7 +750,7 @@ public:
 	static void RegisterDecoder (DecoderInfo *info);
 	static void RegisterConverter (ConverterInfo *info);
 	
-	static void RegisterMSCodecs ();
+	static void RegisterMSCodecs (); // Private implementation
 	static bool IsMSCodecsInstalled ();
 	static void InstallMSCodecs (bool is_user_initiated);
 	
@@ -1662,6 +1660,8 @@ typedef bool (* ExternalDecoder_HasDelayedFrameCallback) (void *instance);
 typedef void (* ExternalDecoder_DisposeCallback) (void *instance);
 /* @CBindingRequisite */
 typedef void (* ExternalDecoder_DtorCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_InputEndedCallback) (void *instance);
 
 class ExternalDecoder : public IMediaDecoder {
 private:
@@ -1674,6 +1674,7 @@ private:
 	ExternalDecoder_HasDelayedFrameCallback has_delayed_frame;
 	ExternalDecoder_DisposeCallback dispose;
 	ExternalDecoder_DtorCallback dtor;
+	ExternalDecoder_InputEndedCallback input_ended;
 	
 protected:
 	virtual ~ExternalDecoder ();
@@ -1691,7 +1692,8 @@ public:
 		ExternalDecoder_CleanStateCallback clean_state,
 		ExternalDecoder_HasDelayedFrameCallback has_delayed_frame,
 		ExternalDecoder_DisposeCallback dispose,
-		ExternalDecoder_DtorCallback dtor);
+		ExternalDecoder_DtorCallback dtor,
+		ExternalDecoder_InputEndedCallback input_ended);
 	
 	virtual void Dispose ();
 	

@@ -24,7 +24,6 @@
 #include "plugin-class.h"
 #include "browser-bridge.h"
 #include "downloader.h"
-#include "pipeline-ui.h"
 #include "plugin-downloader.h"
 #include "npstream-request.h"
 #include "xap.h"

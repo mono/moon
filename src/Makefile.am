@@ -28,7 +28,6 @@ libmoon_include_headers = 	\
 	capture.h		\
 	cbinding.h		\
 	clock.h			\
-	codec-url.h		\
 	collection.h		\
 	color.h			\
 	contentcontrol.h	\
@@ -101,6 +100,7 @@ libmoon_include_headers = 	\
 	pal/gtk/window-gtk.h	\
 	pal/gtk/nocodec-ui-gtk.h	\
 	pal/gtk/debug-ui-gtk.h	\
+	pal/gtk/nocodec-ui-gtk.h		\
 	pal/cocoa/MLEvent.h	\
 	pal/cocoa/MLTimer.h	\
 	pal/cocoa/MLView.h		\
@@ -118,8 +118,6 @@ libmoon_include_headers = 	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h		\
-	pipeline-ui.h		\
-	pipeline-nocodec-ui.h	\
 	pipeline-mp4.h		\
 	playlist.h		\
 	point.h			\
@@ -338,12 +336,8 @@ libmoon_la_SOURCES += \
 	pal/cocoa/debug-ui-cocoa.m
 endif
 
-
-
 if CODECS_SUPPORTED
-libmoon_la_SOURCES += pipeline-ui.cpp
-else
-libmoon_la_SOURCES += pipeline-nocodec-ui.cpp
+INCLUDES += -I$(CODECS_PATH)/libmoon
 endif
 
 if INCLUDE_FFMPEG

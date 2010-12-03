@@ -112,7 +112,7 @@ MONO_LIBS="-lmono-2.0 -L$MONO_PATH/mono/mini -L$MONO_PATH/mono/mini/.libs"
 MONO_STATIC_LIBS="$MONO_PATH/mono/mini/libmono-moon.la"
 MOON_CFLAGS="$GLIB_CFLAGS $CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS $DBUS_CFLAGS $CURL_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
-MOON_LIBS="$MOON_LIBS $GLIB_LIBS $FFMPEG_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS $UNWIND_LIBS $DBUS_LIBS $CURL_LIBS"
+MOON_LIBS="$MOON_LIBS $GLIB_LIBS $FFMPEG_LIBS $CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS $UNWIND_LIBS $DBUS_LIBS $CURL_LIBS $CODECS_LIBS"
 
 dnl For MOON_XPI_LIBS, only link against libs which will be on all systems
 MOON_XPI_LIBS="$CAIRO_LIBS $FREETYPE2_LIBS $FONTCONFIG_LIBS $GTK_LIBS $ZLIB $PTHREAD_LIBS $EXPAT_LIBS" 
@@ -168,7 +168,6 @@ Makefile
 m4/Makefile
 generators/Generator.cs
 src/Makefile
-src/codec-version.h
 runtime/Makefile
 gallium/Makefile
 class/Makefile
@@ -329,6 +328,22 @@ cat <<EOF
             Path to mono-basic tree: $with_mono_basic_path
 EOF
 fi
+
+# codec support
+cat <<EOF
+            Path to codecs: $codec_message
+EOF
+if test x$MOONLIGHT_CODEC_ARCH = xunknown; then
+cat << EOF
+                The codec pack has not been ported to this architecture yet
+EOF
+fi
+if test x$MOONLIGHT_CODEC_OSTYPE = xunknown; then
+cat << EOF
+                The codec pack has not been ported to this operating system yet
+EOF
+fi
+
 cat <<EOF
           Desktop application assemblies: $desktop_support $desktop_reason
 EOF

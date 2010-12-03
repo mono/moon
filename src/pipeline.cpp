@@ -15,15 +15,10 @@
 #include <config.h>
 
 #include <glib/gstdio.h>
-#include <fcntl.h>
 #include <errno.h>
-
-#include <dlfcn.h>
-#include <signal.h>
 
 #include "audio.h"
 #include "pipeline.h"
-#include "codec-version.h"
 #include "pipeline-ffmpeg.h"
 #include "mp3.h"
 #include "uri.h"
@@ -31,7 +26,6 @@
 #include "mediaelement.h"
 #include "yuv-converter.h"
 #include "runtime.h"
-#include "pipeline-ui.h"
 #include "pipeline-asf.h"
 #include "playlist.h"
 #include "deployment.h"
@@ -39,6 +33,9 @@
 #include "pipeline-mp4.h"
 #include "factory.h"
 
+#if CODECS_SUPPORTED
+#include "pipeline-ui.h"
+#endif
 
 extern const char moonlight_logo [];
 
@@ -174,73 +171,6 @@ Media::IsMSCodecsInstalled ()
 }
 
 void
-Media::RegisterMSCodecs (void)
-{
-	register_codec reg;
-	void *dl;
-	char *libmscodecs_path = NULL;
-	const char *functions [] = {"register_codec_pack", NULL};
-	const gchar *home = g_get_home_dir ();
-	registering_ms_codecs = true;
-
-	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS)) {
-		LOG_CODECS ("Moonlight: mscodecs haven't been enabled.\n");
-		return;
-	}
-
-	if (home != NULL)
-		libmscodecs_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", "moonlight", CODEC_LIBRARY_NAME, NULL);
-
-	if (!(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
-		if (libmscodecs_path)
-			g_free (libmscodecs_path);
-		libmscodecs_path = g_strdup (CODEC_LIBRARY_NAME);
-	}
-
-	dl = dlopen (libmscodecs_path, RTLD_LAZY);
-	if (dl != NULL) {
-		LOG_CODECS ("Moonlight: Loaded mscodecs from: %s.\n", libmscodecs_path);
-			
-		int pre_decoders = 0;
-		int post_decoders = 0;
-		
-		/* Count the number of current decoders */
-		MediaInfo *current;
-		current = registered_decoders;
-		while (current != NULL) {
-			pre_decoders++;
-			current = current->next;
-		}
-		
-		for (int i = 0; functions [i] != NULL; i++) {
-			reg = (register_codec) dlsym (dl, functions [i]);
-			if (reg != NULL) {
-				(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
-			} else {
-				LOG_CODECS ("Moonlight: Cannot find %s in %s.\n", functions [i], libmscodecs_path);
-			}
-		}		
-
-		/* Count the number of decoders after registering the ms codecs */
-		current = registered_decoders;
-		while (current != NULL) {
-			post_decoders++;
-			current = current->next;
-		}
-		
-		/* We could only load the codecs if the codec pack actually registered any decoders
-		 * This ensures that if the user has invalid codecs for whatever reason, we request
-		 * a new download. */
-		registered_ms_codecs = post_decoders > pre_decoders;
-	} else {
-		LOG_CODECS ("Moonlight: Cannot load %s: %s\n", libmscodecs_path, dlerror ());
-	}
-	g_free (libmscodecs_path);
-
-	registering_ms_codecs = false;
-}
-
-void
 Media::InstallMSCodecs (bool is_user_initiated)
 {
 #if CODECS_SUPPORTED
@@ -370,7 +300,9 @@ Media::Initialize ()
 	// decoders
 	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
 	if (moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS) {
+#if CODECS_SUPPORTED
 		RegisterMSCodecs ();
+#endif
 	}
 #ifdef INCLUDE_FFMPEG
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
@@ -5700,7 +5632,8 @@ ExternalDecoder::ExternalDecoder (Media *media, IMediaStream *stream, void *inst
 		ExternalDecoder_CleanStateCallback clean_state,
 		ExternalDecoder_HasDelayedFrameCallback has_delayed_frame,
 		ExternalDecoder_DisposeCallback dispose,
-		ExternalDecoder_DtorCallback dtor)
+		ExternalDecoder_DtorCallback dtor,
+		ExternalDecoder_InputEndedCallback input_ended)
 	: IMediaDecoder (Type::EXTERNALDECODER, media, stream)
 {
 	this->instance = instance;
@@ -5712,6 +5645,7 @@ ExternalDecoder::ExternalDecoder (Media *media, IMediaStream *stream, void *inst
 	this->has_delayed_frame = has_delayed_frame;
 	this->dispose = dispose;
 	this->dtor = dtor;
+	this->input_ended = input_ended;
 }
 	
 ExternalDecoder::~ExternalDecoder ()
@@ -5761,7 +5695,7 @@ ExternalDecoder::HasDelayedFrame ()
 void
 ExternalDecoder::InputEnded ()
 {
-	GetStream ()->SetOutputEnded (true);
+	input_ended (instance);
 }
 
 /*

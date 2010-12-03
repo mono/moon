@@ -2,48 +2,49 @@ AC_DEFUN([MOONLIGHT_CHECK_CODECS],
 [
 	dnl Do we know of a way to detect when the GCC ABI breaks? 
 	dnl will it ever again? we'll hardcode this for now
-	MOONLIGHT_CODEC_GCC_ABI_VERSION="1"
-	MOONLIGHT_CODEC_OSTYPE="unknown"
-	MOONLIGHT_CODEC_ARCH="unknown"
-	CODECS_SUPPORTED="no"
-	CODECS_ARCH_SUPPORTED="no"
-	CODECS_OS_SUPPORTED="no"
+	CODECS_SUPPORTED="yes"
+	CODECS_PATH=""
+	CODECS_LIBS=""
 
+	AC_ARG_WITH([codecs-path],
+		    [  --with-codecs-path=/path/to/codecs    Specify the path to the codecs],
+		[],
+		[with_codecs_path=$srcdir/../codecs2]
+	)
+
+	if test ! -d "$with_codecs_path"; then
+		codec_message="The codecs path was not found"
+		CODECS_SUPPORTED="no"
+	else
+		CODECS_PATH=$(cd "$with_codecs_path" && pwd)
+		codec_message=$CODECS_PATH
+	fi
+	
 	case "$host" in
 		i*86-*-*)
-			MOONLIGHT_CODEC_ARCH=x86
-			CODECS_ARCH_SUPPORTED="yes"
 			;;
 		x86_64-*-* | amd64-*-*)
-			MOONLIGHT_CODEC_ARCH=x64
-			CODECS_ARCH_SUPPORTED="yes"
+			;;
+		default)
+			CODECS_SUPPORTED="no"
 			;;
 	esac
 	
 	case "$host" in
 		*-*-*linux*)
-			MOONLIGHT_CODEC_OSTYPE=linux
-			CODECS_OS_SUPPORTED="yes"
+			;;
+		default)	
+			CODECS_SUPPORTED="no"
 			;;
 	esac
 
-	if test ${MOONLIGHT_CODEC_ARCH} = unknown; then
-		AC_WARN([The codecs have not been configured to build on this architecture yet])
-	fi
-	
-	if test ${MOONLIGHT_CODEC_OSTYPE} = unknown; then
-		AC_WARN([The codecs have not been configured to build on this operating system yet])
-	fi
-
-	if test x$CODECS_ARCH_SUPPORTED = xyes; then
-		if test x$CODECS_OS_SUPPORTED = xyes; then
-			CODECS_SUPPORTED="yes"
-		fi
+	if test x$CODECS_SUPPORTED = xyes; then
+		AC_DEFINE([CODECS_SUPPORTED], [1], [Enable codecs build])
+		CODECS_LIBS="$CODECS_PATH/libmoon/libmoon_private.la"
 	fi
 
 	AM_CONDITIONAL(CODECS_SUPPORTED, test x$CODECS_SUPPORTED = xyes)
 
-	AC_SUBST(MOONLIGHT_CODEC_OSTYPE)
-	AC_SUBST(MOONLIGHT_CODEC_ARCH)
-	AC_SUBST(MOONLIGHT_CODEC_GCC_ABI_VERSION)
+	AC_SUBST(CODECS_PATH)
+	AC_SUBST(CODECS_LIBS)
 ])
