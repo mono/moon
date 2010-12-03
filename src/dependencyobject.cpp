@@ -1735,7 +1735,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 		// clear out the current value from the managed side if there's a ref to it
 		if (current_value) {
-			if (clearStrongRef && current_value->HoldManagedRef ()) {
+			if (clearStrongRef && current_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 					current_value->Strengthen ();
 					clearStrongRef (this, current_value, property->GetName());
 			}
@@ -1743,7 +1743,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 		// replace it with the new value
 		if (new_value) {
-			if (addStrongRef && new_value->HoldManagedRef ()) {
+			if (addStrongRef && new_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 				addStrongRef (this, new_value, property->GetName());
 				new_value->Weaken ();
 			}

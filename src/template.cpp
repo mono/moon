@@ -43,7 +43,7 @@ FrameworkTemplate::ClearXamlBuffer ()
 		g_free (xaml_buffer);
 		xaml_buffer = NULL;
 	}
-	if (holdManagedRef && clearStrongRef) {
+	if (holdManagedRef && clearStrongRef && !GetDeployment ()->IsShuttingDown ()) {
 		// No need to strengthen the Value* because we're deleting it next
 		clearStrongRef (this, this->parse_template_data, "XamlContext");
 	}
@@ -60,7 +60,7 @@ FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *par
 	this->xaml_buffer = g_strdup (xaml_buffer);
 	this->parse_template = parse_template;
 	this->parse_template_data = new Value (*parse_template_data);
-	if (holdManagedRef && addStrongRef) {
+	if (holdManagedRef && addStrongRef && !GetDeployment ()->IsShuttingDown ()) {
 		addStrongRef (this, this->parse_template_data, "XamlContext");
 		this->parse_template_data->Weaken ();
 	}

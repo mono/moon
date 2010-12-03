@@ -598,7 +598,7 @@ CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error
 	this->error = error ? new MoonError (*error) : NULL;
 	this->source = source;
 	Value *v = new Value (source);
-	if (source)
+	if (source && !GetDeployment ()->IsShuttingDown ())
 		addStrongRef (this, v, "Source");
 	delete v;
 }
@@ -608,7 +608,7 @@ CaptureImageCompletedEventArgs::~CaptureImageCompletedEventArgs ()
 	delete error;
 	// FIXME: Store BitmapSource in a WeakRefManager
 	Value *v = new Value (source);
-	if (source)
+	if (source && !GetDeployment ()->IsShuttingDown ())
 		clearStrongRef (this, v, "Source");
 	delete v;
 }

@@ -257,7 +257,7 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 
 		delete v_copy;
 
-		if (addStrongRef && v->HoldManagedRef ()) {
+		if (addStrongRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 			addStrongRef (this, v, key);
 			v->Weaken ();
 		}
@@ -382,7 +382,7 @@ ResourceDictionary::Remove (const char *key)
 	// No need to strengthen orig_value before clearing
 	// because we copy it first.
 	Value *orig_copy = new Value (*orig_value);
-	if (clearStrongRef && orig_value->HoldManagedRef ())
+	if (clearStrongRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
 		clearStrongRef (this, orig_value, key);
 
 	g_hash_table_remove (hash, key);
@@ -412,10 +412,10 @@ ResourceDictionary::Set (const char *key, Value *value)
 	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
 	// No need to strengthen orig_value as it's deleted immediately
-	if (clearStrongRef && orig_value->HoldManagedRef ())
+	if (clearStrongRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
 		clearStrongRef (this, orig_value, key);
 	Collection::Add (v);
-	if (addStrongRef && v->HoldManagedRef ()) {
+	if (addStrongRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 		addStrongRef (this, v, key);
 		v->Weaken ();
 	}
@@ -549,7 +549,7 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		delete obj_value_copy;
 
-		if (addStrongRef && value->HoldManagedRef ()) {
+		if (addStrongRef && value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 			addStrongRef (this, value, key);
 			value->Weaken ();
 		}

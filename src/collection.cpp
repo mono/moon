@@ -216,7 +216,7 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 
 		delete added_copy;
 
-		if (addStrongRef) {
+		if (addStrongRef && !GetDeployment ()->IsShuttingDown ()) {
 			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *added_obj = added->AsDependencyObject();
 				/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
@@ -352,7 +352,7 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 	
 		EmitChanged (CollectionChangedActionReplace, added, removed, index);
 
-		if (addStrongRef) {
+		if (addStrongRef && !GetDeployment ()->IsShuttingDown ()) {
 			if (added->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *added_obj = added->AsDependencyObject();
 				if (added_obj && added_obj->hadManagedPeer) {
