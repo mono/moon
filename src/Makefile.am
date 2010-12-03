@@ -92,6 +92,7 @@ libmoon_include_headers = 	\
 	pal/gtk/pal-gtk.h	\
 	pal/gtk/pixbuf-gtk.h	\
 	pal/gtk/window-gtk.h	\
+	pal/gtk/nocodec-ui-gtk.h	\
 	pal/gtk/debug-ui-gtk.h	\
 	pal/cocoa/MLEvent.h	\
 	pal/cocoa/MLTimer.h	\
@@ -300,6 +301,7 @@ libmoon_la_SOURCES += \
 	pal/gtk/pal-gtk.cpp	\
 	pal/gtk/pixbuf-gtk.cpp	\
 	pal/gtk/window-gtk.cpp	\
+	pal/gtk/nocodec-ui-gtk.cpp	\
 	pal/gtk/debug-ui-gtk.cpp
 
 # FIXME: This should be individually guarded ot the pal backends, not lumped with GTK

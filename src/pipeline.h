@@ -710,6 +710,7 @@ public:
 	
 	static void RegisterMSCodecs ();
 	static bool IsMSCodecsInstalled ();
+	static void InstallMSCodecs (bool is_user_initiated);
 	
 	static void Initialize ();
 	static void Shutdown ();

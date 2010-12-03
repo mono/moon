@@ -19,14 +19,12 @@
 #include "runtime.h"
 #include "moonlightconfiguration.h"
 
-//FIXME: PAL THIS
-#if !defined(__APPLE__)
 #include <gtk/gtkwidget.h>
 #include <gtk/gtk.h>
 
 namespace Moonlight {
 
-class CodecDownloader : public EventObject {
+class GtkNoCodecsUI : public EventObject {
 private:
 	static bool running; // If there already is another CodecDownloader running
 	Surface *surface;
@@ -53,15 +51,14 @@ private:
 	void Show ();// Shows the codec installation ui and refs ourself
 	
 	/* @SkipFactories */
-	CodecDownloader (Surface *surface);
-	virtual ~CodecDownloader ();
+	GtkNoCodecsUI (Surface *surface);
+	virtual ~GtkNoCodecsUI ();
 
 
 public:
-	static void ShowUI (Surface *surface, bool is_user_initiated); 
+	static void ShowUI (bool is_user_initiated);
 };
 
 };
-#endif
 
 #endif /* __MOON_PIPELINE_UI_H__ */

@@ -49,6 +49,7 @@ public:
 
 	void UnregisterWindow (MoonWindow *window);
 
+	virtual void ShowCodecsUnavailableMessage ();
 private:
 	Color *system_colors[NumSystemColors];
 

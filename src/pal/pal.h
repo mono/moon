@@ -271,6 +271,8 @@ public:
 
 	virtual void RunMainLoop (MoonWindow *main_window = NULL, bool quit_on_window_close = true) = 0;
 
+	virtual void ShowCodecsUnavailableMessage () = 0;
+
 private:
 	MoonWindowlessCtor windowless_ctor;
 };

@@ -81,7 +81,8 @@ private:
 	void AcceptClicked ();
 	void Close (); // Closes the window and unrefs ourself
 	void Show ();// Shows the codec installation ui and refs ourself
-	
+
+	/* @SkipFactories */
 	CodecDownloader (Surface *surface, bool is_user_initiated);
 	virtual ~CodecDownloader ();
 

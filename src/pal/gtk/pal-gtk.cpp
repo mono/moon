@@ -9,6 +9,7 @@
 #include "install-dialog-gtk.h"
 #include "im-gtk.h"
 #include "debug.h"
+#include "nocodec-ui-gtk.h"
 
 #ifdef USE_GALLIUM
 #define __MOON_GALLIUM__
@@ -684,6 +685,11 @@ MoonWindowingSystemGtk::~MoonWindowingSystemGtk ()
 		delete system_colors[i];
 }
 
+void
+MoonWindowingSystemGtk::ShowCodecsUnavailableMessage ()
+{
+	GtkNoCodecsUI::ShowUI (false);
+}
 
 cairo_surface_t *
 MoonWindowingSystemGtk::CreateSurface ()

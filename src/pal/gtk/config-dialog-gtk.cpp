@@ -20,7 +20,6 @@
 #include "window-gtk.h"
 #include "openfile.h"
 #include "pipeline.h"
-#include "pipeline-ui.h"
 #include "timemanager.h"
 #include "debug-ui-gtk.h"
 #include "consent.h"
@@ -270,7 +269,7 @@ PlaybackConfigDialogPage::~PlaybackConfigDialogPage ()
 void
 PlaybackConfigDialogPage::install_media_pack (PlaybackConfigDialogPage *page)
 {
-	CodecDownloader::ShowUI (page->GetDialog()->GetSurface(), true);
+	Media::InstallMSCodecs (true);
 }
 
 GtkWidget*

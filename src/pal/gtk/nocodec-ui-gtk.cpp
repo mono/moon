@@ -16,19 +16,19 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#include "pipeline-nocodec-ui.h"
+#include "nocodec-ui-gtk.h"
 #include "downloader.h"
 #include "utils.h"
-#include "pipeline.h"
 #include "debug.h"
+#include "deployment.h"
 
 //FIXME: PAL THIS
 #if !defined(__APPLE__)
 namespace Moonlight {
 
-bool CodecDownloader::running = false;
+bool GtkNoCodecsUI::running = false;
 
-CodecDownloader::CodecDownloader (Surface *surf)
+GtkNoCodecsUI::GtkNoCodecsUI (Surface *surf)
 {
 	surface = surf;
 	state = 0;
@@ -41,13 +41,13 @@ CodecDownloader::CodecDownloader (Surface *surf)
 	dont_ask = NULL;
 }
 
-CodecDownloader::~CodecDownloader ()
+GtkNoCodecsUI::~GtkNoCodecsUI ()
 {
 	running = false;
 }
 
 void
-CodecDownloader::ShowUI (Surface *surface, bool is_user_initiated)
+GtkNoCodecsUI::ShowUI (bool is_user_initiated)
 {
 	if (running) {
 		return;
@@ -56,7 +56,7 @@ CodecDownloader::ShowUI (Surface *surface, bool is_user_initiated)
 	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS))
 		return;
 
-	CodecDownloader *cd = new CodecDownloader (surface);
+	GtkNoCodecsUI *cd = new GtkNoCodecsUI (Deployment::GetCurrent ()->GetSurface ());
 	cd->Show ();
 	cd->unref ();
 }
@@ -64,17 +64,17 @@ CodecDownloader::ShowUI (Surface *surface, bool is_user_initiated)
 // ----- Event Proxies -----
 
 void
-CodecDownloader::ResponseEventHandler (GtkDialog *dialog, gint response, gpointer data)
+GtkNoCodecsUI::ResponseEventHandler (GtkDialog *dialog, gint response, gpointer data)
 {
-	((CodecDownloader *) data)->ResponseEvent (dialog, (GtkResponseType)response);
+	((GtkNoCodecsUI *) data)->ResponseEvent (dialog, (GtkResponseType)response);
 }
 
 // ----- Event Handlers -----
 
 void
-CodecDownloader::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
+GtkNoCodecsUI::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 {
-	LOG_UI ("CodecDownloader::ResponseEvent (%d)\n", response);
+	LOG_UI ("GtkNoCodecsUI::ResponseEvent (%d)\n", response);
 	SetCurrentDeployment ();
 
 	switch (response) {
@@ -95,7 +95,7 @@ CodecDownloader::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 }
 
 void
-CodecDownloader::SetHeader (const gchar *message)
+GtkNoCodecsUI::SetHeader (const gchar *message)
 {
 	gchar *message_full = g_strdup_printf ("<big><b>%s</b></big>", message);
 	gtk_label_set_markup (GTK_LABEL (header_label), message_full);
@@ -103,20 +103,20 @@ CodecDownloader::SetHeader (const gchar *message)
 }
 
 void
-CodecDownloader::SetMessage (const gchar *message)
+GtkNoCodecsUI::SetMessage (const gchar *message)
 {
 	gtk_label_set_text (GTK_LABEL (message_label), message);
 	gtk_widget_show (message_label);
 }
 
 void
-CodecDownloader::HideMessage ()
+GtkNoCodecsUI::HideMessage ()
 {
 	gtk_widget_hide (message_label);
 }
 
 void
-CodecDownloader::AdaptToParentWindow ()
+GtkNoCodecsUI::AdaptToParentWindow ()
 {
 	// try to find a parent for our window
 	// there must be a better way of doing this though :|
@@ -147,7 +147,7 @@ CodecDownloader::AdaptToParentWindow ()
 // ----- Dialog Create/Destroy -----
 
 void
-CodecDownloader::Show ()
+GtkNoCodecsUI::Show ()
 {
 	if (configuration.GetBooleanValue ("Codecs", "DontWarnUnsupportedCodecs")) {
 		state = 1;
@@ -155,7 +155,7 @@ CodecDownloader::Show ()
 	}
 
 	if (state != 0) {
-		fprintf (stderr, "CodecDownloader::Show (): Can't call Show more than once.\n");
+		fprintf (stderr, "GtkNoCodecsUI::Show (): Can't call Show more than once.\n");
 		state = 2;
 		return;
 	}
@@ -221,9 +221,9 @@ CodecDownloader::Show ()
 }
 
 void
-CodecDownloader::Close ()
+GtkNoCodecsUI::Close ()
 {
-	LOG_UI ("CodecDownloader::Close ()\n");
+	LOG_UI ("GtkNoCodecsUI::Close ()\n");
 
 	gtk_widget_destroy (dialog);
 	unref ();

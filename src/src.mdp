@@ -146,8 +146,6 @@
     <File subtype="Code" buildaction="Nothing" name="alpha-premul-table.inc" />
     <File subtype="Code" buildaction="Compile" name="yuv-converter.cpp" />
     <File subtype="Code" buildaction="Nothing" name="yuv-converter.h" />
-    <File subtype="Code" buildaction="Compile" name="layout.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="layout.h" />
     <File subtype="Code" buildaction="Compile" name="type-generated.cpp" />
     <File subtype="Code" buildaction="Nothing" name="http-streaming.h" />
     <File subtype="Code" buildaction="Compile" name="http-streaming.cpp" />
@@ -294,8 +292,6 @@
     <File subtype="Code" buildaction="Nothing" name="projection.h" />
     <File subtype="Code" buildaction="Nothing" name="textoptions.h" />
     <File subtype="Code" buildaction="Nothing" name="xaml-to-header.cs" />
-    <File subtype="Code" buildaction="Compile" name="pal/gtk/debug-ui.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="pal/gtk/debug-ui.h" />
     <File subtype="Code" buildaction="Nothing" name="pipeline-mp4.h" />
     <File subtype="Code" buildaction="Compile" name="pipeline-mp4.cpp" />
     <File subtype="Code" buildaction="Compile" name="printing.cpp" />
@@ -315,8 +311,6 @@
     <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-capture.h" />
     <File subtype="Code" buildaction="Compile" name="pal/messaging/glib/pal-glib-msg.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/messaging/glib/pal-glib-msg.h" />
-    <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
     <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
     <File subtype="Code" buildaction="Nothing" name="inputmethod.h" />
     <File subtype="Code" buildaction="Nothing" name="inputscope.h" />
@@ -354,6 +348,8 @@
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/debug-ui-gtk.h" />
     <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog-gtk.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/nocodec-ui-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/nocodec-ui-gtk.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
