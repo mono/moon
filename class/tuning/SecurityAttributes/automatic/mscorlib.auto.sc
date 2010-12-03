@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 456 methods needs to be decorated.
+# 450 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -227,12 +227,6 @@
 +SC-M: System.Byte[] System.Reflection.MonoModule::ResolveSignature(System.Int32)
 
 # internal call
-+SC-M: System.Byte[] System.Threading.Thread::ByteArrayToCurrentDomain(System.Byte[])
-
-# internal call
-+SC-M: System.Byte[] System.Threading.Thread::ByteArrayToRootDomain(System.Byte[])
-
-# internal call
 +SC-M: System.Char System.IO.MonoIO::get_AltDirectorySeparatorChar()
 
 # internal call
@@ -288,12 +282,6 @@
 
 # internal call
 +SC-M: System.Double System.Threading.Interlocked::CompareExchange(System.Double&,System.Double,System.Double)
-
-# internal call
-+SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentCulture(System.Threading.InternalThread)
-
-# internal call
-+SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentUICulture(System.Threading.InternalThread)
 
 # overrides 'System.Guid System.Reflection.Module::get_ModuleVersionId()'.
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::get_ModuleVersionId()
@@ -1344,12 +1332,6 @@
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::ResetAbort_internal()
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::SetCachedCurrentCulture(System.Globalization.CultureInfo)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::SetCachedCurrentUICulture(System.Globalization.CultureInfo)
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::SetName_internal(System.Threading.InternalThread,System.String)

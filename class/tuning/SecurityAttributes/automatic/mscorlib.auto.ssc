@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 470 methods
+# 466 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -412,10 +412,6 @@
 +SSC-M: System.Threading.Thread System.Threading.Thread::get_CurrentThread()
 +SSC-M: System.Void System.Threading.Thread::Sleep(System.Int32)
 +SSC-M: System.Void System.Threading.Thread::Sleep(System.TimeSpan)
-+SSC-M: System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
-+SSC-M: System.Void System.Threading.Thread::set_CurrentCulture(System.Globalization.CultureInfo)
-+SSC-M: System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
-+SSC-M: System.Void System.Threading.Thread::set_CurrentUICulture(System.Globalization.CultureInfo)
 +SSC-M: System.Boolean System.Threading.Thread::get_IsAlive()
 +SSC-M: System.Boolean System.Threading.Thread::get_IsBackground()
 +SSC-M: System.Void System.Threading.Thread::set_IsBackground(System.Boolean)
