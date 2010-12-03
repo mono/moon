@@ -1217,7 +1217,7 @@
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::framework_template_set_xaml_buffer(System.IntPtr,Mono.Xaml.ParseTemplateFunc,Mono.Value&,System.String)
++SC-M: System.Void Mono.NativeMethods::framework_template_set_xaml_buffer(System.IntPtr,Mono.Xaml.ParseTemplateFunc,Mono.Value&,System.String,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::g_free_pinvoke(System.IntPtr)

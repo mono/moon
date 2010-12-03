@@ -51,7 +51,7 @@ typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_dat
 
 typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
 
-typedef void (* StrongRefCallback) (EventObject *referer, EventObject *referent, const char *name);
+typedef void (* StrongRefCallback) (EventObject *referer, Value *referent, const char *name);
 typedef void (* AttachCallback) (EventObject *object);
 typedef void (* MentorChangedCallback) (EventObject *object, EventObject *mentor);
 

@@ -76,7 +76,7 @@ namespace System.Windows {
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
 
-			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
+			strongRefs = new Dictionary<IntPtr,object> ();
 
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
@@ -954,14 +954,14 @@ namespace System.Windows {
 			set { NativeHandle = value; }
 		}
 
-		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
+		Dictionary<IntPtr,object> strongRefs;
 
 		void IRefContainer.AddStrongRef (IntPtr referent, string name)
 		{
 			if (strongRefs.ContainsKey (referent))
 				return;
 
-			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			var o = Value.ToObject (referent);
 			if (o != null) {
 #if DEBUG_REF
 				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
@@ -973,7 +973,7 @@ namespace System.Windows {
 		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
 		{
 #if DEBUG_REF
-			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			var o = Value.ToObject (referent);
 			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
 			Console.WriteLine (Environment.StackTrace);
 #endif
@@ -985,7 +985,8 @@ namespace System.Windows {
 		{
 			List<HeapRef> refs = new List<HeapRef> ();
 			foreach (IntPtr nativeref in strongRefs.Keys)
-				refs.Add (new HeapRef (strongRefs[nativeref]));
+				if (strongRefs[nativeref] is INativeEventObjectWrapper)
+					refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
 				
 			return refs;
 		}

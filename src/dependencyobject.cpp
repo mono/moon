@@ -1733,42 +1733,25 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		else
 			new_value = NULL;
 
-		bool current_value_needs_unref = false;
 		// clear out the current value from the managed side if there's a ref to it
 		if (current_value) {
-			if (clearStrongRef && current_value->Is (deployment, Type::EVENTOBJECT)) {
-				EventObject *eo = current_value->AsEventObject();
-				if (eo && eo->hadManagedPeer) {
-					current_value_needs_unref = true;
-					eo->ref ();
-					clearStrongRef (this, eo, property->GetName());
-				}
+			if (clearStrongRef && current_value->HoldManagedRef ()) {
+					current_value->Strengthen ();
+					clearStrongRef (this, current_value, property->GetName());
 			}
 		}
 
 		// replace it with the new value
 		if (new_value) {
-			if (addStrongRef && new_value->Is (deployment, Type::EVENTOBJECT)) {
-				EventObject *eo = new_value->AsEventObject();
-				if (eo && eo->hadManagedPeer) {
-					addStrongRef (this, eo, property->GetName());
-					if (new_value->GetNeedUnref ()) {
-						new_value->SetNeedUnref (false);
-						eo->unref ();
-					}
-				}
+			if (addStrongRef && new_value->HoldManagedRef ()) {
+				addStrongRef (this, new_value, property->GetName());
+				new_value->Weaken ();
 			}
 
 			providers.localvalue->SetValue (property, new_value);
 		}
-		
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, true, error);
 		
-		if (current_value_needs_unref) {
-			EventObject *eo = current_value->AsEventObject();
-			eo->unref ();
-		}
-
 		delete current_value;
 	}
 

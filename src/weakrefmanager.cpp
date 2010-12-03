@@ -47,21 +47,27 @@ WeakRefBase::Clear ()
 		return;
 
 	/* clear old field value */
-	if (field != NULL) {
-		field->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
+	if (field != NULL && field->AsEventObject ()) {
+		field->AsEventObject ()->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 		if (obj && obj->clearStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since clearStrongRef is a managed callback */
+			// Don't strengthen the Value* because we're going to delete it next.
 			obj->clearStrongRef (obj, field, name);
 		}
 	}
+	delete field;
 	field = NULL;
 }
 
 void
 WeakRefBase::Set (const EventObject *ptr)
 {
-	if (ptr == field)
+	if (field == NULL && ptr == NULL)
 		return;
+
+	if (field != NULL)
+		if (field->AsEventObject () == ptr)
+			return;
 
 #ifdef DEBUG_WEAKREF
 	printf ("WeakRefBase::Set () %p changing field '%s::%s' from %p = %i = %s to %p = %i = %s\n",
@@ -72,14 +78,18 @@ WeakRefBase::Set (const EventObject *ptr)
 
 	/* clear old field value */
 	Clear ();
-	field = (EventObject *) ptr;
+	field = ptr ? new Value ((EventObject *) ptr) : NULL;
+
 	/* set new field value */
 	if (field != NULL) {
+		field->AsEventObject ()->unref ();
+		field->SetNeedUnref (false);
+
 		if (obj && obj->addStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since addStrongRef is a managed callback */
 			obj->addStrongRef (obj, field, name);
 		}
-		field->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
+		field->AsEventObject ()->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 	}
 }
 

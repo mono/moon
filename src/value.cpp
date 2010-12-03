@@ -470,6 +470,50 @@ Value::Value (ManagedTypeInfo *type_info)
 	SetIsNull (false);
 }
 
+bool
+Value::HoldManagedRef ()
+{
+	if (GetIsManaged ())
+		return true;
+	if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT))
+		return u.dependency_object && u.dependency_object->hadManagedPeer;
+	return false;
+}
+
+void
+Value::Strengthen ()
+{
+	if (GetIsManaged ()) {
+		if (GCHandle (this->u.managed_object).IsWeak ()) {
+			Deployment *d = Deployment::GetCurrent ();
+			void *handle = this->u.managed_object;
+			u.managed_object = d->CreateGCHandle (d->GetGCHandleTarget (handle)).ToIntPtr ();
+			d->FreeGCHandle (handle);
+		}
+	} else if (!GetNeedUnref () && Is (Deployment::GetCurrent (), Type::EVENTOBJECT)) {
+		SetNeedUnref (true);
+		if (u.dependency_object)
+			u.dependency_object->ref ();
+	}
+}
+
+void
+Value::Weaken ()
+{
+	if (GetIsManaged ()) {
+		if (GCHandle (this->u.managed_object).IsNormal ()) {
+			Deployment *d = Deployment::GetCurrent ();
+			void *handle = this->u.managed_object;
+			u.managed_object = d->CreateWeakGCHandle (d->GetGCHandleTarget (handle)).ToIntPtr ();
+			d->FreeGCHandle (handle);
+		}
+	} else if (GetNeedUnref () && Is (Deployment::GetCurrent (), Type::EVENTOBJECT)) {
+		SetNeedUnref (false);
+		if (u.dependency_object)
+			u.dependency_object->unref ();
+	}
+}
+
 void
 Value::Copy (const Value& v)
 {

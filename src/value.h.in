@@ -75,7 +75,10 @@ class AnimationStorage;
 struct Value {
 public:
 	void Init ();
-
+	void Strengthen ();
+	void Weaken ();
+	bool HoldManagedRef ();
+	
 	Value ();
 	Value (const Value& v);
 	explicit Value (Type::Kind k);

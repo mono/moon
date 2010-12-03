@@ -257,10 +257,9 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 
 		delete v_copy;
 
-		if (addStrongRef && ob) {
-			addStrongRef (this, ob, key);
-			ob->unref();
-			v->SetNeedUnref (false);
+		if (addStrongRef && v->HoldManagedRef ()) {
+			addStrongRef (this, v, key);
+			v->Weaken ();
 		}
 
 		if (!strncmp (key, INTERNAL_TYPE_KEY_MAGIC_COOKIE, sizeof (INTERNAL_TYPE_KEY_MAGIC_COOKIE) - 1)
@@ -377,13 +376,14 @@ ResourceDictionary::Remove (const char *key)
 	from_resource_dictionary_api = false;
 
 	DependencyObject *ob = orig_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) ? orig_value->AsDependencyObject () : NULL;
-	if (ob) {
+	if (ob)
 		ob->SetMentor (NULL);
-		if (clearStrongRef)
-			clearStrongRef (this, ob, key);
-	}
 
+	// No need to strengthen orig_value before clearing
+	// because we copy it first.
 	Value *orig_copy = new Value (*orig_value);
+	if (clearStrongRef && orig_value->HoldManagedRef ())
+		clearStrongRef (this, orig_value, key);
 
 	g_hash_table_remove (hash, key);
 
@@ -411,11 +411,14 @@ ResourceDictionary::Set (const char *key, Value *value)
 
 	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
-	if (clearStrongRef && orig_value->Is (GetDeployment(), Type::DEPENDENCY_OBJECT))
-		clearStrongRef (this, orig_value->AsDependencyObject(), key);
+	// No need to strengthen orig_value as it's deleted immediately
+	if (clearStrongRef && orig_value->HoldManagedRef ())
+		clearStrongRef (this, orig_value, key);
 	Collection::Add (v);
-	if (addStrongRef && v->Is (GetDeployment(), Type::DEPENDENCY_OBJECT))
-		addStrongRef (this, v->AsDependencyObject(), key);
+	if (addStrongRef && v->HoldManagedRef ()) {
+		addStrongRef (this, v, key);
+		v->Weaken ();
+	}
 	from_resource_dictionary_api = false;
 
 	g_hash_table_replace (hash, g_strdup (key), v);
@@ -546,8 +549,10 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		delete obj_value_copy;
 
-		if (addStrongRef)
-			addStrongRef (this, obj, key);
+		if (addStrongRef && value->HoldManagedRef ()) {
+			addStrongRef (this, value, key);
+			value->Weaken ();
+		}
 	}
 
 cleanup:

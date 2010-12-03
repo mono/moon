@@ -112,8 +112,8 @@ namespace System.Windows {
 		{
 			native = raw;
 			expressions = new Dictionary<DependencyProperty, Expression> ();
-			strongRefs = new Dictionary<IntPtr,INativeEventObjectWrapper> ();
-			namedRefs = new Dictionary<string,INativeEventObjectWrapper> ();
+			strongRefs = new Dictionary<IntPtr,object> ();
+			namedRefs = new Dictionary<string,object> ();
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
 			NativeMethods.event_object_set_object_type (native, GetKind ());
@@ -123,8 +123,8 @@ namespace System.Windows {
 				NativeMethods.event_object_unref (native);
 		}
 
-		Dictionary<IntPtr,INativeEventObjectWrapper> strongRefs;
-		Dictionary<string,INativeEventObjectWrapper> namedRefs;
+		Dictionary<IntPtr,object> strongRefs;
+		Dictionary<string,object> namedRefs;
 
 		void IRefContainer.AddStrongRef (IntPtr referent, string name)
 		{
@@ -133,7 +133,7 @@ namespace System.Windows {
 
 		internal virtual void AddStrongRef (IntPtr referent, string name)
 		{
-			var o = NativeDependencyObjectHelper.FromIntPtr (referent);
+			var o = Value.ToObject (null, referent);
 
 			if (name == "TemplateOwner") {
 #if DEBUG_REF
@@ -227,10 +227,12 @@ namespace System.Windows {
 		internal virtual void AccumulateManagedRefs (List<HeapRef> refs)
 		{
 			foreach (IntPtr nativeref in strongRefs.Keys)
-				refs.Add (new HeapRef (strongRefs[nativeref]));
+				if (strongRefs[nativeref] is INativeEventObjectWrapper)
+					refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
 
 			foreach (string name in namedRefs.Keys)
-				refs.Add (new HeapRef (true, namedRefs[name], name));
+				if (namedRefs[name] is INativeEventObjectWrapper)
+					refs.Add (new HeapRef (true, (INativeEventObjectWrapper)namedRefs[name], name));
 
 			if (TemplateOwner != null)
 				refs.Add (new HeapRef (true,

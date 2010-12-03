@@ -78,7 +78,7 @@ namespace System.Windows {
 		internal override void AddStrongRef (IntPtr referent, string name)
 		{
 			if (name == "CurrentApplication")
-				current_app = NativeDependencyObjectHelper.FromIntPtr (referent) as Application;
+				current_app = Value.ToObject (referent) as Application;
 			else
 				base.AddStrongRef (referent, name);
 		}

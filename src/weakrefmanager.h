@@ -17,7 +17,7 @@ class EventObject;
 class WeakRefBase {
 protected:
 	EventObject *obj;
-	EventObject *field;
+	Value *field;
 	const char *name;
 	WeakRefBase ()
 	{
@@ -41,7 +41,7 @@ protected:
 	void Clear ();
 
 public:
-	EventObject *GetFieldValue () { return field; }
+	EventObject *GetFieldValue () { return field ? field->AsEventObject () : NULL; }
 };
 
 template<typename EO>
@@ -55,10 +55,10 @@ public:
 	{
 	}
 
-	operator EO* () const { return (EO *) field; }
+	operator EO* () const { return (EO *) (field ? field->AsEventObject () : NULL); }
 	void operator=(const EO *ptr) { Set (ptr); }
 
-	EO* operator->() const { return (EO *) field; }
+	EO* operator->() const { return (EO *) (field ? field->AsEventObject () : NULL); }
 
 private:
 	// Disallow the following operations

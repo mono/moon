@@ -410,6 +410,10 @@ namespace Mono {
 			throw new Exception (String.Format ("Do not know how to convert {0}  {1}. Managed type: {2}",
 			                                    value->k, (int) value->k, Deployment.Current.Types.KindToType (value->k)));
 		}
+		public static unsafe object ToObject (IntPtr value)
+		{
+			return ToObject (null, value);
+		}
 
 		public static unsafe object ToObject (Type type, IntPtr value)
 		{

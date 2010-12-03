@@ -180,9 +180,9 @@ namespace System.Windows {
 		internal override void AddStrongRef (IntPtr referent, string name)
 		{
 			if (name == "LogicalParent")
-				Parent = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+				Parent = Value.ToObject (referent) as DependencyObject;
 			else if (name == "SubtreeObject")
-				SubtreeObject = NativeDependencyObjectHelper.FromIntPtr (referent) as DependencyObject;
+				SubtreeObject = Value.ToObject (referent) as DependencyObject;
 			else
 				base.AddStrongRef (referent, name);
 		}

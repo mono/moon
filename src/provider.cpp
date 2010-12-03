@@ -947,15 +947,9 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 			   Type::Find (deployment, value->GetKind())->GetName());
 #endif
 
-	if (value->Is (deployment, Type::EVENTOBJECT)) {
-		EventObject *eo = value->AsEventObject ();
-		if (eo && eo->hadManagedPeer && obj->addStrongRef) {
-			obj->addStrongRef (obj, eo, property->GetName());
-			if (value->GetNeedUnref ()) {
-				value->SetNeedUnref (false);
-				eo->unref ();
-			}
-		}
+	if (obj->addStrongRef && value->HoldManagedRef ()) {
+		obj->addStrongRef (obj, value, property->GetName());
+		value->Weaken ();
 	}
 
 	g_hash_table_insert (auto_values, property, value);
