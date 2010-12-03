@@ -1027,7 +1027,7 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 void
 MediaPlayer::NotifySeek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT ", IsPlaying (): %i, seeks: %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying (), seeks);
+	LOG_MEDIAPLAYER ("MediaPlayer::NotifySeek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT ", IsPlaying (): %i, seeks: %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying (), seeks);
 	VERIFY_MAIN_THREAD;
 
 	seeks++;
@@ -1055,7 +1055,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	
 	media->SetTargetPts (target_pts);
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT " [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
+	LOG_MEDIAPLAYER ("MediaPlayer::NotifySeek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT " [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
 
 bool
