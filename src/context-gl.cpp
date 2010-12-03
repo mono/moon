@@ -223,32 +223,17 @@ GLContext::SetupVertexData (const double *matrix,
 }
 
 void
-GLContext::InitMatrix (double *out)
+GLContext::GetDeviceMatrix (double *out)
 {
 	Context::Target *target = Top ()->GetTarget ();
 	Rect            r = target->GetData (NULL);
-	cairo_matrix_t  ctm;
 	double          viewport[16];
 	double          m[16];
 
-	Top ()->GetMatrix (&ctm);
+	GetMatrix (m);
 
 	Matrix3D::Translate (viewport, -r.x, -r.y, 0.0);
-	Matrix3D::Affine (m,
-			  ctm.xx, ctm.xy,
-			  ctm.yx, ctm.yy,
-			  ctm.x0, ctm.y0);
 	Matrix3D::Multiply (out, m, viewport);
-}
-
-void
-GLContext::TransformMatrix (double *out, const double *matrix)
-{
-	double m[16];
-
-	InitMatrix (m);
-
-	Matrix3D::Multiply (out, matrix, m);
 }
 
 void
@@ -400,7 +385,8 @@ GLContext::Project (MoonSurface  *src,
 	GLint     alpha_location;
 	double    m[16];
 
-	TransformMatrix (m, matrix);
+	GetDeviceMatrix (m);
+	Matrix3D::Multiply (m, matrix, m);
 
 	SetFramebuffer ();
 	SetViewport ();
@@ -529,7 +515,7 @@ GLContext::Blur (MoonSurface *src,
 
 	program = GetConvolveProgram (size);
 
-	InitMatrix (m);
+	GetDeviceMatrix (m);
 
 	glGenTextures (1, &texture1);
 	glBindTexture (GL_TEXTURE_2D, texture1);
@@ -724,7 +710,7 @@ GLContext::DropShadow (MoonSurface *src,
 
 	program = GetConvolveProgram (size);
 
-	InitMatrix (m);
+	GetDeviceMatrix (m);
 
 	glGenTextures (1, &texture1);
 	glBindTexture (GL_TEXTURE_2D, texture1);
@@ -1404,7 +1390,7 @@ GLContext::ShaderEffect (MoonSurface *src,
 	g_assert (n_constant <= MAX_CONSTANTS);
 	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
 
-	InitMatrix (m);
+	GetDeviceMatrix (m);
 
 	SetFramebuffer ();
 	SetViewport ();

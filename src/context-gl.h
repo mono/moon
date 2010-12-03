@@ -77,8 +77,7 @@ protected:
 				      double       width,
 				      double       height);
 
-	void InitMatrix (double *out);
-	void TransformMatrix (double *out, const double *matrix);
+	void GetDeviceMatrix (double *out);
 	static GLuint CreateShader (GLenum       shaderType,
 				    GLsizei      count,
 				    const GLchar **str);
