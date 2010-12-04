@@ -475,8 +475,18 @@ Value::HoldManagedRef ()
 {
 	if (GetIsManaged ())
 		return true;
-	if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT))
+	if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT)) {
+		// These types are DOs in native and structs in managed,
+		// so it's impossible (currently) to hold a managed ref to them
+		// As they can't reference other objects, there's no chance of
+		// creating an immortal subtree, so it's simplest to just return
+		// false here so we don't weaken the Value* where we store them.
+		if (GetKind () == Type::UNMANAGEDMATRIX ||
+			GetKind () == Type::UNMANAGEDMATRIX3D ||
+			GetKind () == Type::UNMANAGEDSTYLUSPOINT)
+			return false;
 		return u.dependency_object && u.dependency_object->hadManagedPeer;
+	}
 	return false;
 }
 
