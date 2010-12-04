@@ -28,6 +28,8 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
@@ -41,5 +43,62 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (0, FontStyles.Normal.GetHashCode (), "Normal");
 			Assert.AreEqual (2, FontStyles.Italic.GetHashCode (), "Italic");
 		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void UintRDStorage_sl2 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ResourceDictionary>
+    <FontStyle x:Key=""fontStyle"">Italic</FontStyle>
+  </ResourceDictionary>
+</Canvas.Resources>
+</Canvas>");
+
+			object o = c.Resources["fontStyle"];
+
+			Assert.AreEqual (typeof (uint), o.GetType(), "#0");
+
+			c.Resources.Add ("fontStyle2", FontStyles.Italic);
+
+			o = c.Resources["fontStyle2"];
+
+			Assert.AreEqual (typeof (FontStyle), o.GetType(), "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void PropertySetter_sl2 ()
+		{
+			XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/client/2007"" FontStyle=""Italic"" />");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void UintRDStorage_sl3 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ResourceDictionary>
+    <FontStyle x:Key=""fontStyle"">Italic</FontStyle>
+  </ResourceDictionary>
+</Canvas.Resources>
+</Canvas>");
+
+			object o = c.Resources["fontStyle"];
+
+			Assert.AreEqual (typeof (FontStyle), o.GetType(), "#0");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void PropertySetter_sl3 ()
+		{
+			XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/client/2007"" FontStyle=""Italic"" />");
+		}
+
 	}
 }

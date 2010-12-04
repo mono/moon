@@ -28,6 +28,8 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
@@ -47,6 +49,62 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (6, FontStretches.SemiExpanded.GetHashCode (), "SemiExpanded");
 			Assert.AreEqual (1, FontStretches.UltraCondensed.GetHashCode (), "UltraCondensed");
 			Assert.AreEqual (9, FontStretches.UltraExpanded.GetHashCode (), "UltraExpanded");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void UintRDStorage_sl2 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ResourceDictionary>
+    <FontStretch x:Key=""fontStretch"">Normal</FontStretch>
+  </ResourceDictionary>
+</Canvas.Resources>
+</Canvas>");
+
+			object o = c.Resources["fontStretch"];
+
+			Assert.AreEqual (typeof (uint), o.GetType(), "#0");
+
+			c.Resources.Add ("fontStretch2", FontStretches.Normal);
+
+			o = c.Resources["fontStretch2"];
+
+			Assert.AreEqual (typeof (FontStretch), o.GetType(), "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void PropertySetter_sl2 ()
+		{
+			XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/client/2007"" FontStretch=""Normal"" />");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void UintRDStorage_sl3 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ResourceDictionary>
+    <FontStretch x:Key=""fontStretch"">Normal</FontStretch>
+  </ResourceDictionary>
+</Canvas.Resources>
+</Canvas>");
+
+			object o = c.Resources["fontStretch"];
+
+			Assert.AreEqual (typeof (FontStretch), o.GetType(), "#0");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void PropertySetter_sl3 ()
+		{
+			XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/client/2007"" FontStretch=""Normal"" />");
 		}
 	}
 }

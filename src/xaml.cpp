@@ -4083,10 +4083,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::FONTWEIGHT: {
 		int fw = enums_str_to_int ("FontWeight", s);
 		if (fw != -1) {
-			if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2')
-				*v = new Value ((guint32)fw);
-			else
-				*v = new Value (FontWeight ((FontWeights)fw));
+			*v = new Value (FontWeight ((FontWeights)fw));
 			*v_set = true;
 		}
 		break;
@@ -4094,10 +4091,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::FONTSTYLE: {
 		int fs = enums_str_to_int ("FontStyle", s);
 		if (fs != -1) {
-			if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2')
-				*v = new Value ((guint32)fs);
-			else
-				*v = new Value (FontStyle ((FontStyles)fs));
+			*v = new Value (FontStyle ((FontStyles)fs));
 			*v_set = true;
 		}
 		break;
@@ -4105,10 +4099,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::FONTSTRETCH: {
 		int fs = enums_str_to_int ("FontStretch", s);
 		if (fs != -1) {
-			if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2')
-				*v = new Value ((guint32)fs);
-			else
-				*v = new Value (FontStretch ((FontStretches)fs));
+			*v = new Value (FontStretch ((FontStretches)fs));
 			*v_set = true;
 		}
 		break;
@@ -4891,7 +4882,25 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 							     "Error adding child to ResourceDictionary");
 				}
 
+				bool delete_child_as_value = false;
+				if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2') {
+					if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTWEIGHT)) {
+						child_as_value = new Value (child_as_value->AsFontWeight()->weight, Type::UINT32);
+						delete_child_as_value = true;
+					}
+					else if (child_as_value->Is (Deployment::GetCurrent(),Type::FONTSTRETCH)) {
+						child_as_value = new Value (child_as_value->AsFontStretch()->stretch, Type::UINT32);
+						delete_child_as_value = true;
+					}
+					else if (child_as_value->Is (Deployment::GetCurrent(),Type::FONTSTYLE)) {
+						child_as_value = new Value (child_as_value->AsFontStyle()->style, Type::UINT32);
+						delete_child_as_value = true;
+					}
+				}
+
 				bool added = dict->AddWithError (key, child_as_value, &err);
+				if (delete_child_as_value)
+					delete child_as_value;
 				if (!added)
 					return parser_error (p, child->element_name, NULL, err.code, err.message);
 			}
@@ -4924,7 +4933,26 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		}
 
 		Value *child_as_value = child->GetAsValue ();
+
+		bool delete_child_as_value = false;
+		if (Deployment::GetCurrent()->GetRuntimeVersion()[0] == '2') {
+			if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTWEIGHT)) {
+				child_as_value = new Value (child_as_value->AsFontWeight()->weight, Type::UINT32);
+				delete_child_as_value = true;
+			}
+			else if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTSTRETCH)) {
+				child_as_value = new Value (child_as_value->AsFontStretch()->stretch, Type::UINT32);
+				delete_child_as_value = true;
+			}
+			else if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTSTYLE)) {
+				child_as_value = new Value (child_as_value->AsFontStyle()->style, Type::UINT32);
+				delete_child_as_value = true;
+			}
+		}
+
 		bool added = dict->AddWithError (key, child_as_value, &err);
+		if (delete_child_as_value)
+			delete child_as_value;
 		if (!added)
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 	}

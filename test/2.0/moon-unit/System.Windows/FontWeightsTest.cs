@@ -117,5 +117,62 @@ namespace MoonTest.System.Windows.Controls {
 					       FontWeight=""600"" />";
 			Assert.Throws<XamlParseException> (() => XamlReader.Load (bad_xaml));
 		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void UintRDStorage_sl2 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ResourceDictionary>
+    <FontWeight x:Key=""fontWeight"">Bold</FontWeight>
+  </ResourceDictionary>
+</Canvas.Resources>
+</Canvas>");
+
+			object o = c.Resources["fontWeight"];
+
+			Assert.AreEqual (typeof (uint), o.GetType(), "#0");
+
+			c.Resources.Add ("fontWeight2", FontWeights.Bold);
+
+			o = c.Resources["fontWeight2"];
+
+			Assert.AreEqual (typeof (FontWeight), o.GetType(), "#1");
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void PropertySetter_sl2 ()
+		{
+			XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/client/2007"" FontWeight=""Bold"" />");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void UintRDStorage_sl3 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ResourceDictionary>
+    <FontWeight x:Key=""fontWeight"">Bold</FontWeight>
+  </ResourceDictionary>
+</Canvas.Resources>
+</Canvas>");
+
+			object o = c.Resources["fontWeight"];
+
+			Assert.AreEqual (typeof (FontWeight), o.GetType(), "#0");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void PropertySetter_sl3 ()
+		{
+			XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/client/2007"" FontWeight=""Bold"" />");
+		}
+
 	}
 }
