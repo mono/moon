@@ -59,9 +59,24 @@
 +SC-T: Mono.ToggleRef
 +SC-T: Mono.EventObjectToggleRef
 +SC-T: Mono.UriHelper
++SC-T: Mono.WeakPropertyChangedListener
 +SC-T: System.IO.SimpleUnmanagedMemoryStream
 # don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
 # Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
+
+# 
++SC-M: System.Void Mono.IRefContainer::AddStrongRef(System.IntPtr,System.String)
++SC-M: System.Void Mono.NameScope::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
++SC-M: System.Void Mono.NativeDependencyObjectHelper::AddStrongRef(System.IntPtr,System.IntPtr,System.String)
++SC-M: System.Void Mono.Surface::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
++SC-M: System.Void System.Windows.Application::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
+#+SC-M: System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)
++SC-M: System.Void System.Windows.DependencyObject::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
+#+SC-M: System.Void System.Windows.Deployment::AddStrongRef(System.IntPtr,System.String)
++SC-M: System.Void System.Windows.FrameworkElement::AddStrongRef(System.IntPtr,System.String)
+#+SC-M: System.Void System.Windows.FrameworkTemplate::AddStrongRef(System.IntPtr,System.String)
+#+SC-M: System.Void System.Windows.Media.Animation.Timeline::AddStrongRef(System.IntPtr,System.String)
++SC-M: System.Void System.Windows.RoutedEventArgs::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
 
 # too many new helpers don't require to be critical so we'll be more precise with them
 +SC-M: System.ComponentModel.TypeConverter Mono.Helper::GetConverterFor(System.Reflection.ICustomAttributeProvider,System.Type)
@@ -196,7 +211,8 @@
 
 +SC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext,System.String)
 
-+SC-M: System.Void System.Windows.TemplateBindingExpression::PropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SC-M: System.Void Mono.IListenPropertyChanged::OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SC-M: System.Void System.Windows.TemplateBindingExpression::Mono.IListenPropertyChanged.OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
 # Can create a delegate on private/internal method" 
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()
