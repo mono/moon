@@ -408,8 +408,9 @@ System.Decimal System.Decimal::Subtract(System.Decimal,System.Decimal)
 System.Decimal System.Decimal::Truncate(System.Decimal)
 	r142142		spouliot - call decimalFloorAndTrunc (icall named mono_decimalFloorAndTrunc in decimal.c) with '0'
 
-!SSC-C37B1A9C072B835F1EB43331FC1BB60C
+!SSC-B1F8433211C18B9C5D8E5788ACBE473B
 System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean,System.Boolean)
+	20101203	spouliot - bcdbd24 - check 'allowClosed' parameter when checking args[0] (bug fix w/unit test)
 	20100908	spouliot - 85c097 - add a new (non-public) 'allowClosed' parameter to control the validation on overloads not using a 'firstArgument' parameter
 	r142142		spouliot - call CreateDelegate_internal (icall) with validated parameters
 
@@ -508,20 +509,6 @@ System.Double System.Math::Tan(System.Double)
 !SSC-C602D369D693D6B9EDF6EFAAB7BE1B60
 System.Double System.Math::Tanh(System.Double)
 	r144558		spouliot - visible icall (sysmath.c)
-
-!SSC-C1ACAA41B4789DFD876AFD5ADB896A4D
-System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
-	20101116	spouliot - no source change / compiler (lock) ?
-	20100924	spouliot - no source code change, likely a compiler-related change
-	r142661		spouliot - most logic is now around the InternalThread (Internal property)
-	r142142		spouliot - call GetCachedCurrentCulture (icall in threads.c), GetSerializedCurrentCulture (icall in threads.c) and SetCachedCurrentCulture (icall in threads.c)
-
-!SSC-60BE42DE2E2BC8B6AC81C12DAAF3EAD5
-System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
-	20101116	spouliot - no source change / compiler (lock) ?
-	20100924	spouliot - no source code change, likely a compiler-related change
-	r142661		spouliot - most logic is now around the InternalThread (Internal property)
-	r142142		spouliot - call GetCachedCurrentUICulture (icall in threads.c), GetSerializedCurrentUICulture (icall in threads.c) and SetCachedCurrentUICulture (icall in threads.c)
 
 !SSC-534A173AACEBFF8046989B5275A3BBBB
 System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_DateTimeFormat()
@@ -716,7 +703,6 @@ System.Int32 System.Reflection.MemberInfo::get_MetadataToken()
 
 !SSC-E06FDEDC7C198FCED00ECEF7ACAEC83E
 System.Int32 System.Reflection.MonoField::GetFieldOffset()
-	20101202	unaudited - modified - ICALL
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_MonoField_GetFieldOffset (icall.c)
 
 !SSC-CE2764938B903B776C9495DB64DA9786
@@ -1237,7 +1223,6 @@ System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
 
 !SSC-D805B06BC160265EA35BD39BDDD43352
 System.Reflection.Module[] System.Reflection.Assembly::GetModulesInternal()
-	20101202	unaudited - modified - ICALL
 	r155239		spouliot - non-visible instance icall. call ves_icall_System_Reflection_Assembly_GetModulesInternal (icall.c)
 
 !SSC-7B8BF7E5961AC212948E0EECDE5C1D40
@@ -1680,7 +1665,6 @@ System.Type System.Reflection.Emit.TypeBuilder::CreateType()
 
 !SSC-54C5460D1C44B91A39ACED0BC3B5705F
 System.Type System.Reflection.Module::GetGlobalType()
-	20101202	unaudited - modified - ICALL
 	r155239		spouliot - non-visible instance icall. call ves_icall_System_Reflection_Module_GetGlobalType (icall.c)
 
 !SSC-19E256D1B94E07DBA31D68641A181A4A
@@ -1769,7 +1753,6 @@ System.Type[] System.MonoType::GetNestedTypes(System.Reflection.BindingFlags)
 
 !SSC-0D510E951A734AA86752C401A7EA4503
 System.Type[] System.Reflection.Assembly::GetTypes(System.Boolean)
-	20101202	unaudited - modified - ICALL
 	r155239		spouliot - internal icall. call ves_icall_System_Reflection_Assembly_GetTypes (icall.c) with boolean 'exportedOnly' parameter
 
 !SSC-FC6461C4057C1A65EAE165002C8EB6E4
@@ -2128,8 +2111,9 @@ System.Void System.Reflection.AssemblyName::.ctor(System.String)
 System.Void System.Reflection.CustomAttributeData::ResolveArguments()
 	20100826	spouliot - 2913acfc - lazy revolve - calls ResolveArgumentsInternal (icall) using parameters acquired by the internal ctor
 
-!SSC-ECD91463D7A8E2D7DA284C0876DB9BC5
+!SSC-74D7B977EE89A5E7C818A32D115628CB
 System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
+	20101203	spouliot - 80e7e4d - validate that null is not provided for ValueType
 	r142142		spouliot - validate all parameters then call GetBlob [SecurityCritical] using them
 
 !SSC-DEE05B275305C3D7BA57F4CF0C8F1725
@@ -2334,16 +2318,6 @@ System.Void System.Threading.Thread::MemoryBarrier()
 !SSC-73DD2C64A4CAE1467B68961901029030
 System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exception)
 	r142142		spouliot - use reflection to call System.Windows.Application.OnUnhandledException (System.Windows.dll) with the unhandled 'exception'
-
-!SSC-5E202792A9FF2B4EBC98766CEE235922
-System.Void System.Threading.Thread::set_CurrentCulture(System.Globalization.CultureInfo)
-	r145215		spouliot - call GetCachedCurrentCulture (icall in threads.c), SetCachedCurrentCulture (icall in threads.c) on non-null value and SetSerializedCurrentCulture (icall in threads.c)
-	r142661		spouliot - most logic is now around the InternalThread (Internal property)
-
-!SSC-E1ACCD68041B5E102C1833A1460F91E6
-System.Void System.Threading.Thread::set_CurrentUICulture(System.Globalization.CultureInfo)
-	r142661		spouliot - most logic is now around the InternalThread (Internal property)
-	r142142		spouliot - fixed in_currentculture flag. call GetCachedCurrentUICulture (icall in threads.c), SetCachedCurrentUICulture (icall in threads.c) on non-null value and SetSerializedCurrentUICulture (icall in threads.c)
 
 !SSC-CABCD97E4C08BD450F1D9AB1DA576CCA
 System.Void System.Threading.Thread::set_IsBackground(System.Boolean)

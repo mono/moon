@@ -28,8 +28,9 @@ System.Int32 System.Net.Sockets.Socket::get_ReceiveBufferSize()
 System.Int32 System.Net.Sockets.Socket::get_SendBufferSize()
 	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-700F2F37A684448CCEEF3618E18FAF69
+!SSC-4675134D0FE0CC4145F066994356C9AF
 System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
+	20101203	spouliot - ba9d007 - the 'address_family' field is now passed to the call to the RemoteEndPoint_internal icall
 	r142142		spouliot - calls into RemoteEndPoint_internal (icall) to retrieve a SocketAddress
 
 !SSC-FBFD299C422117A5412003A781D5B5A7
