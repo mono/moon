@@ -677,15 +677,8 @@ Value::Copy (const Value& v)
 		break;
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
-
-			if (v.GetNeedUnref ()) {
-				LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
-				u.dependency_object->ref ();
-			}
-			else {
-				SetNeedUnref (false);
-			}
-
+			u.dependency_object->ref ();
+			SetNeedUnref (true);
 			u.dependency_object->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
 		}
 		break;
