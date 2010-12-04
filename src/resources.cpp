@@ -538,9 +538,6 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		Value *obj_value = new Value (obj);
 
-		obj->unref ();
-		obj_value->SetNeedUnref (false);
-
 		g_hash_table_insert (hash, g_strdup (key), obj_value);
 
 		Value *obj_value_copy = new Value (*obj_value);
@@ -549,9 +546,9 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		delete obj_value_copy;
 
-		if (addStrongRef && value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+		if (addStrongRef && obj_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 			addStrongRef (this, value, key);
-			value->Weaken ();
+			obj_value->Weaken ();
 		}
 	}
 
