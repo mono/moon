@@ -4888,12 +4888,17 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 						child_as_value = new Value (child_as_value->AsFontWeight()->weight, Type::UINT32);
 						delete_child_as_value = true;
 					}
-					else if (child_as_value->Is (Deployment::GetCurrent(),Type::FONTSTRETCH)) {
+					else if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTSTRETCH)) {
 						child_as_value = new Value (child_as_value->AsFontStretch()->stretch, Type::UINT32);
 						delete_child_as_value = true;
 					}
-					else if (child_as_value->Is (Deployment::GetCurrent(),Type::FONTSTYLE)) {
+					else if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTSTYLE)) {
 						child_as_value = new Value (child_as_value->AsFontStyle()->style, Type::UINT32);
+						delete_child_as_value = true;
+					}
+					else if (child_as_value->Is (Deployment::GetCurrent(), Type::ENUM) &&
+						 child->info->xmlns == NULL) {
+						child_as_value = new Value ((guint32)child_as_value->AsEnum(), Type::UINT32);
 						delete_child_as_value = true;
 					}
 				}
@@ -4946,6 +4951,11 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			}
 			else if (child_as_value->Is (Deployment::GetCurrent(), Type::FONTSTYLE)) {
 				child_as_value = new Value (child_as_value->AsFontStyle()->style, Type::UINT32);
+				delete_child_as_value = true;
+			}
+			else if (child_as_value->Is (Deployment::GetCurrent(), Type::ENUM) &&
+				 child->info->xmlns == NULL) {
+				child_as_value = new Value ((guint32)child_as_value->AsEnum(), Type::UINT32);
 				delete_child_as_value = true;
 			}
 		}

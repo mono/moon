@@ -81,6 +81,49 @@ namespace MoonTest.Misc
 			Assert.IsNotNull (c.Resources ["alpha"], "1");
 			Assert.AreEqual (Alpha.A | Alpha.B | Alpha.C, c.Resources ["alpha"]);
 		}
+
+
+		[TestMethod]
+		[MaxRuntimeVersion(2)]
+		public void ParseEnum_uint32_sl2 ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary>
+    <FlowDirection x:Key=""flowDirection"">LeftToRight</FlowDirection>
+    <HorizontalAlignment x:Key=""horizontalAlignment"">Left</HorizontalAlignment>
+    <Visibility x:Key=""visibility"">Collapsed</Visibility>
+  </ResourceDictionary>
+</Grid.Resources>
+</Grid>");
+
+			Assert.AreEqual (typeof(uint), c.Resources["flowDirection"].GetType(), "1");
+			Assert.AreEqual (typeof(uint), c.Resources["horizontalAlignment"].GetType(), "2");
+			Assert.AreEqual (typeof(uint), c.Resources["visibility"].GetType(), "3");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(3)]
+		public void ParseEnum_uint32_sl3 ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary>
+    <FlowDirection x:Key=""flowDirection"">LeftToRight</FlowDirection>
+    <HorizontalAlignment x:Key=""horizontalAlignment"">Left</HorizontalAlignment>
+    <Visibility x:Key=""visibility"">Collapsed</Visibility>
+  </ResourceDictionary>
+</Grid.Resources>
+</Grid>");
+
+			Assert.AreEqual (typeof(FlowDirection), c.Resources["flowDirection"].GetType(), "1");
+			Assert.AreEqual (typeof(HorizontalAlignment), c.Resources["horizontalAlignment"].GetType(), "2");
+			Assert.AreEqual (typeof(Visibility), c.Resources["visibility"].GetType(), "3");
+		}
+
+
 	}
 }
 
