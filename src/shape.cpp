@@ -910,7 +910,7 @@ Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 void
 Shape::InvalidateStretch ()
 {
-	extents = Rect (0, 0, -INFINITY, -INFINITY);
+	extents = Rect ();
         extents_with_children = extents;
 	cairo_matrix_init_identity (&stretch_transform);
 	InvalidatePathCache ();
@@ -942,7 +942,7 @@ Shape::InvalidateFillBounds ()
 void
 Shape::InvalidateNaturalBounds ()
 {
-	natural_bounds = Rect (0, 0, -INFINITY, -INFINITY);
+	natural_bounds = Rect ();
 	InvalidateStretch ();
 }
 
