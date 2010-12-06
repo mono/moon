@@ -77,6 +77,7 @@ UIElement::Init ()
 	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
 	bitmap_cache = NULL;
+	bitmap_cache_size = 0;
 
 	dirty_flags = DirtyMeasure;
 	PropagateFlagUp (DIRTY_MEASURE_HINT);
@@ -1116,8 +1117,10 @@ void
 UIElement::InvalidateBitmapCache ()
 {
 	if (bitmap_cache) {
+		GetDeployment ()->GetSurface ()->RemoveGPUSurface (bitmap_cache_size);
 		bitmap_cache->unref ();
 		bitmap_cache = NULL;
+		bitmap_cache_size = 0;
 	}
 }
 
@@ -1540,6 +1543,8 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 		Rect r = GetSubtreeExtents ().Transform (&cache_xform);
 
 		if (!bitmap_cache) {
+			Surface *surface = GetDeployment ()->GetSurface ();
+
 			ctx->Push (Context::Group (r));
 			ctx->Push (Context::AbsoluteTransform (cache_xform));
 
@@ -1551,6 +1556,9 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 
 			ctx->Pop ();
 			ctx->Pop (&bitmap_cache);
+
+			bitmap_cache_size = r.RoundOut ().Area () * 4;
+			surface->AddGPUSurface (bitmap_cache_size);
 		}
  
 		ctx->Push (Context::Group (r), bitmap_cache);
