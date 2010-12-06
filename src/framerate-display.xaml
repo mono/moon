@@ -5,14 +5,24 @@
 	x:Name="IncompleteSupportMessage"
 	Visibility="Visible"
 	Opacity="1"
+	CacheMode="BitmapCache"
 	>
-	<Border HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="8" Padding="10" MaxWidth="458">
-		<Border.Background>
-			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-				<GradientStop Color="#FF242323" Offset="0"/>
-				<GradientStop Color="#FF515151" Offset="1"/>
-			</LinearGradientBrush>
-		</Border.Background>
-		<TextBlock TextAlignment="Left" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="framerate"/>
+	<Grid.ColumnDefinitions>
+		<ColumnDefinition Width="32"/>
+		<ColumnDefinition Width="56"/>
+		<ColumnDefinition Width="32"/>
+		<ColumnDefinition Width="32"/>
+	</Grid.ColumnDefinitions>
+	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="0">
+		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000" x:Name="framerate"/>
+	</Border>
+	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="1">
+		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000000" x:Name="videomemoryused"/>
+	</Border>
+	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="2">
+		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000" x:Name="gpuenabledsurfaces"/>
+	</Border>
+	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="3">
+		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000" x:Name="intermediatesurfaces"/>
 	</Border>
 </Grid>

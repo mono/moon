@@ -398,9 +398,14 @@ Surface::Surface (MoonWindow *window)
 
 	framerate_counter_display = NULL;
 	framerate_textblock = NULL;
+	videomemoryused_textblock = NULL;
+	gpuenabledsurfaces_textblock = NULL;
+	intermediatesurfaces_textblock = NULL;
 	frames = 0;
 	fps_nframes = 0;
 	fps_start = 0;
+	vmem_used = 0;
+	gpu_surfaces = 0;
 
 	cache_report = cache_report_default;
 	cache_data = NULL;
@@ -1378,6 +1383,14 @@ Surface::ShowFrameRateCounter ()
 	DependencyObject* fps_textblock_object = framerate_counter_display->FindName ("framerate");
 	framerate_textblock = (fps_textblock_object != NULL && fps_textblock_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) fps_textblock_object : NULL;
 
+	DependencyObject* vmu_textblock_object = framerate_counter_display->FindName ("videomemoryused");
+	videomemoryused_textblock = (vmu_textblock_object != NULL && vmu_textblock_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) vmu_textblock_object : NULL;
+
+	DependencyObject* ges_textblock_object = framerate_counter_display->FindName ("gpuenabledsurfaces");
+	gpuenabledsurfaces_textblock = (ges_textblock_object != NULL && ges_textblock_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) ges_textblock_object : NULL;
+
+	DependencyObject* is_textblock_object = framerate_counter_display->FindName ("intermediatesurfaces");
+	intermediatesurfaces_textblock = (is_textblock_object != NULL && is_textblock_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) is_textblock_object : NULL;
 	
 	// make the message take up the full width of the window
 	display->SetValue (FrameworkElement::WidthProperty, Value ((double)active_window->GetWidth()));
@@ -1391,6 +1404,9 @@ Surface::HideFrameRateCounter ()
 		framerate_counter_display->unref ();
 		framerate_counter_display = NULL;
 		framerate_textblock = NULL;
+		videomemoryused_textblock = NULL;
+		gpuenabledsurfaces_textblock = NULL;
+		intermediatesurfaces_textblock = NULL;
 	}
 }
 
@@ -1401,17 +1417,47 @@ Surface::UpdateFrameRateCounter (gint64 now)
 		return;
 	if (!framerate_textblock)
 		return;
+	if (!videomemoryused_textblock)
+		return;
+	if (!gpuenabledsurfaces_textblock)
+		return;
+	if (!intermediatesurfaces_textblock)
+		return;
 
 	float nsecs = (now - fps_start) / TIMESPANTICKS_IN_SECOND_FLOAT;
 
-	char *msg = g_strdup_printf ("%.3f FPS", fps_nframes / nsecs);
-
+	char *msg = g_strdup_printf ("%.3d", (int) (fps_nframes / nsecs + 0.5));
 	framerate_textblock->SetText (msg);
+	g_free (msg);
 
+	msg = g_strdup_printf ("%.6d", (int) (vmem_used / 1024));
+	videomemoryused_textblock->SetText (msg);
+	g_free (msg);
+
+	msg = g_strdup_printf ("%.3d", gpu_surfaces);
+	gpuenabledsurfaces_textblock->SetText (msg);
+	g_free (msg);
+
+	msg = g_strdup_printf ("%.3d", 0);
+	intermediatesurfaces_textblock->SetText (msg);
 	g_free (msg);
 
 	fps_nframes = 0;
 	fps_start = now;
+}
+
+void
+Surface::AddGPUSurface (gint64 size)
+{
+	gpu_surfaces++;
+	vmem_used += size;
+}
+
+void
+Surface::RemoveGPUSurface (gint64 size)
+{
+	gpu_surfaces--;
+	vmem_used -= size;
 }
 
 bool

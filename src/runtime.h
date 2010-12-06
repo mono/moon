@@ -347,6 +347,9 @@ public:
 	void SetRuntimeOption (RuntimeInitFlag flag, bool value);
 	bool GetRuntimeOption (RuntimeInitFlag flag);
 
+	void AddGPUSurface (gint64 size);
+	void RemoveGPUSurface (gint64 size);
+
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;
@@ -435,9 +438,14 @@ private:
 	// Variables for reporting FPS
 	Panel *framerate_counter_display;
 	TextBlock *framerate_textblock;
+	TextBlock *videomemoryused_textblock;
+	TextBlock *gpuenabledsurfaces_textblock;
+	TextBlock *intermediatesurfaces_textblock;
 	bool enable_fps_counter;
 	gint64 fps_start;
 	int fps_nframes;
+	gint64 vmem_used;
+	int gpu_surfaces;
 	
 	// Variables for reporting cache size
 	MoonlightCacheReportFunc cache_report;
