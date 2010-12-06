@@ -474,10 +474,7 @@ namespace System.Windows {
 
 			Kind k;
 			IntPtr o = NativeMethods.dependency_object_find_name (native, name, out k);
-			if (o == IntPtr.Zero)
-				return null;
-
-			return NativeDependencyObjectHelper.Lookup (k, o) as DependencyObject;
+			return (DependencyObject) NativeDependencyObjectHelper.Lookup (o);
 		}
 
 		internal bool SetNameOnScope (string name, NameScope scope)

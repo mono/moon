@@ -58,7 +58,7 @@ namespace MS.Internal {
 				IntPtr rv;
 				
 				rv = NativeMethods.internal_transform_get_inverse (native);
-				inverse = (GeneralTransform) NativeDependencyObjectHelper.Lookup (Kind.INTERNALTRANSFORM, rv);
+				inverse = (GeneralTransform) NativeDependencyObjectHelper.Lookup (rv);
 				NativeMethods.event_object_unref (rv);
 				
 				return inverse;

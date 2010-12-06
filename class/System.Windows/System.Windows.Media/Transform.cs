@@ -54,7 +54,7 @@ namespace System.Windows.Media {
 				IntPtr rv;
 				
 				rv = NativeMethods.transform_get_inverse (native);
-				inverse = (GeneralTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, rv);
+				inverse = (GeneralTransform) NativeDependencyObjectHelper.Lookup (rv);
 				NativeMethods.event_object_unref (rv);
 				
 				return inverse;

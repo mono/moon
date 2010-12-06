@@ -383,7 +383,7 @@ namespace Mono {
 			}
 
 			case Kind.MEDIAATTRIBUTE_COLLECTION: {
-				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
+				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->u.p);
 				return attrs.AsDictionary ();
 			}
 
@@ -404,7 +404,7 @@ namespace Mono {
 				if (value->u.p == IntPtr.Zero)
 					return null;
 					
-				return NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
+				return NativeDependencyObjectHelper.Lookup (value->u.p);
 			}
 
 			throw new Exception (String.Format ("Do not know how to convert {0}  {1}. Managed type: {2}",
