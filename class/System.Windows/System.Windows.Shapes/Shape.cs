@@ -34,7 +34,10 @@ namespace System.Windows.Shapes {
 	public abstract partial class Shape : FrameworkElement {
 		public virtual Transform GeometryTransform {
 			get {
-				return (Transform) NativeDependencyObjectHelper.FromIntPtr (NativeMethods.shape_get_geometry_transform (native), true);
+				var ptr = NativeMethods.shape_get_geometry_transform (native);
+				var ret = (Transform) NativeDependencyObjectHelper.Lookup (ptr);
+				NativeMethods.event_object_unref (ptr);
+				return ret;
 			}
 		}
 	}

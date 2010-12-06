@@ -35,7 +35,9 @@ namespace System.Windows.Input
 		internal static StylusInfo FromIntPtr (IntPtr native)
 		{
 			IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (native);
-			return (StylusInfo) NativeDependencyObjectHelper.Lookup (Kind.STYLUSINFO, retval);
+			var ret = (StylusInfo) NativeDependencyObjectHelper.Lookup (retval);
+			NativeMethods.event_object_unref (retval);
+			return ret;
 		}
 	}
 }

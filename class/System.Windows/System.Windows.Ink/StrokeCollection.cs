@@ -46,10 +46,9 @@ namespace System.Windows.Ink
 				throw new ArgumentException ("stylusPointCollection");
 
 			IntPtr col = NativeMethods.stroke_collection_hit_test (native, stylusPointCollection.native);
-			if (col == IntPtr.Zero)
-				return null;
-
-			return (StrokeCollection)NativeDependencyObjectHelper.Lookup (Kind.STROKE_COLLECTION, col);
+			var ret = (StrokeCollection) NativeDependencyObjectHelper.Lookup (col);
+			NativeMethods.event_object_unref (col);
+			return ret;
 		}
 	}
 }

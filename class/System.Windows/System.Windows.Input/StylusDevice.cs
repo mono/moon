@@ -59,10 +59,9 @@ namespace System.Windows.Input
 		public StylusPointCollection GetStylusPoints (UIElement relativeTo)
 		{
 			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.NativeHandle, relativeTo == null ? IntPtr.Zero : relativeTo.native);
-			if (col == IntPtr.Zero)
-				return null;
-
-			return (StylusPointCollection) NativeDependencyObjectHelper.Lookup (Kind.STYLUSPOINT_COLLECTION, col);
+			var ret = (StylusPointCollection) NativeDependencyObjectHelper.Lookup (col);
+			NativeMethods.event_object_unref (col);
+			return ret;
 		}
 	}
 }
