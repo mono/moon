@@ -177,11 +177,13 @@ namespace Mono {
 			if (value == null || value->IsNull) {
 				return null;
 			}
+
 			if (value->IsGCHandle) {
 				IntPtr managed_object = value->u.p;
 				GCHandle handle = GCHandle.FromIntPtr (managed_object);
 				return handle.Target;
 			}
+
 			switch (value->k) {
 			case Kind.INVALID:
 				return null;
@@ -304,7 +306,7 @@ namespace Mono {
 				Point *point = (Point*)value->u.p;
 				return (point == null) ? new Point (0,0) : *point;
 			}
-				
+
 			case Kind.RECT: {
 				Rect *rect = (Rect*)value->u.p;
 				return (rect == null) ? new Rect (0,0,0,0) : *rect;
@@ -334,7 +336,7 @@ namespace Mono {
 				Thickness *thickness = (Thickness*)value->u.p;
 				return (thickness == null) ? new Thickness (0) : *thickness;
 			}
-					
+
 			case Kind.COLOR: {
 				UnmanagedColor *color = (UnmanagedColor*)value->u.p;
 				if (color == null)
@@ -366,7 +368,7 @@ namespace Mono {
 				Duration* duration = (Duration*)value->u.p;
 				return (duration == null) ? Duration.Automatic : *duration;
 			}
-					
+
 			case Kind.KEYTIME: {
 				KeyTime* keytime = (KeyTime*)value->u.p;
 				return (keytime == null) ? KeyTime.FromTimeSpan (TimeSpan.Zero) : *keytime;
@@ -376,15 +378,15 @@ namespace Mono {
 				GridLength* gridlength = (GridLength*)value->u.p;
 				return (gridlength == null) ? new GridLength () : *gridlength;
 			}
-					
+
 			case Kind.REPEATBEHAVIOR: {
 				RepeatBehavior *repeat = (RepeatBehavior*)value->u.p;
 				return (repeat == null) ? new RepeatBehavior () : *repeat;
 			}
 
 			case Kind.MEDIAATTRIBUTE_COLLECTION: {
-				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->u.p);
-				return attrs.AsDictionary ();
+				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
+				return attrs != null ? attrs.AsDictionary () : null;
 			}
 
 			case Kind.MANAGEDTYPEINFO: {
@@ -410,6 +412,7 @@ namespace Mono {
 			throw new Exception (String.Format ("Do not know how to convert {0}  {1}. Managed type: {2}",
 			                                    value->k, (int) value->k, Deployment.Current.Types.KindToType (value->k)));
 		}
+		
 		public static unsafe object ToObject (IntPtr value)
 		{
 			return ToObject (null, value);
