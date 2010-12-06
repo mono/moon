@@ -975,6 +975,7 @@ InkPresenter::ComputeBounds ()
 		return;
 
 	Rect stroke_bounds = strokes->GetBounds ();
+	extents = extents.Union (stroke_bounds);
 	extents_with_children = extents_with_children.Union (stroke_bounds);
 	stroke_bounds = stroke_bounds.GrowBy (effect_padding).Transform (&absolute_xform);
 	bounds_with_children = bounds_with_children.Union (stroke_bounds);
