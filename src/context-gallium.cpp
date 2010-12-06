@@ -424,7 +424,7 @@ void
 GalliumContext::Push (Group extents)
 {
 	cairo_matrix_t matrix;
-	Rect           r = extents.r.RoundOut ();
+	Rect           r = extents.r;
         GalliumSurface *surface = new GalliumSurface (gpipe,
 						      r.width,
 						      r.height);

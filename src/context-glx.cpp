@@ -244,7 +244,7 @@ void
 GLXContext::Push (Group extents)
 {
 	cairo_matrix_t matrix;
-	Rect           r = extents.r.RoundOut ();
+	Rect           r = extents.r;
         GLXSurface     *surface = new GLXSurface (r.width, r.height);
         Target         *target = new Target (surface, extents.r);
 
@@ -268,7 +268,7 @@ GLXContext::Push (Cairo extents)
 
 	Top ()->GetClip (&box);
  
-	box = box.Intersection (extents.r).RoundOut ();
+	box = box.Intersection (extents.r);
 
 	if (box.IsEmpty ())
 		return Context::Push (extents);

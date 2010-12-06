@@ -154,7 +154,7 @@ Context::Node::Cairo ()
 			dst = surface->Cairo ();
 
 		context = cairo_create (dst);
-		box.RoundOut ().Draw (context);
+		box.Draw (context);
 		cairo_clip (context);
 		cairo_set_matrix (context, &transform);
 
