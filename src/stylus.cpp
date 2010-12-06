@@ -21,6 +21,7 @@
 #include "moon-path.h"
 #include "error.h"
 #include "runtime.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -734,7 +735,7 @@ StrokeCollection::GetBounds ()
 StrokeCollection *
 StrokeCollection::HitTest (StylusPointCollection *stylusPoints)
 {
-	StrokeCollection *result = new StrokeCollection ();
+	StrokeCollection *result = MoonUnmanagedFactory::CreateStrokeCollection ();
 	
 	if (stylusPoints->GetCount () == 0)
 		return result;

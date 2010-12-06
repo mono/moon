@@ -20,6 +20,7 @@
 #include "timeline.h"
 #include "deployment.h"
 #include "writeablebitmap.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -354,7 +355,7 @@ MouseEventArgs::GetStylusInfo ()
 
 	GetEvent()->GetStylusInfo (&type, &is_inverted);
 
-	StylusInfo *info = new StylusInfo ();
+	StylusInfo *info = MoonUnmanagedFactory::CreateStylusInfo ();
 
 	info->SetDeviceType (type);
 	info->SetIsInverted (is_inverted);
@@ -365,7 +366,7 @@ MouseEventArgs::GetStylusInfo ()
 StylusPointCollection*
 MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 {
-	StylusPointCollection *points = new StylusPointCollection ();
+	StylusPointCollection *points = MoonUnmanagedFactory::CreateStylusPointCollection ();
 	double pressure;
 	double x, y;
 	

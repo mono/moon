@@ -22,6 +22,7 @@
 #include "debug.h"
 #include "media.h"
 #include "mediaplayer.h"
+#include "factory.h"
 
 namespace Moonlight {
 
@@ -739,7 +740,7 @@ PlaylistEntry::PopulateMediaAttributes ()
 	g_return_if_fail (element != NULL);
 	
 	if (!(attributes = element->GetAttributes ())) {
-		attributes = new MediaAttributeCollection ();
+		attributes = MoonUnmanagedFactory::CreateMediaAttributeCollection ();
 		element->SetAttributes (attributes);
 	} else {
 		attributes->Clear ();
