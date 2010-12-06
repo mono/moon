@@ -241,6 +241,11 @@ struct Rect {
 		return Point (x + width, y + height);
 	}
 
+	double Area () const
+	{
+		return width * height;
+	}
+
 	//
 	// FromStr
 	//   Parses @s and return a new rect in @r.  Returns true if
