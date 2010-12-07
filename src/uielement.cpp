@@ -1117,7 +1117,8 @@ void
 UIElement::InvalidateBitmapCache ()
 {
 	if (bitmap_cache) {
-		GetDeployment ()->GetSurface ()->RemoveGPUSurface (bitmap_cache_size);
+		if (!GetDeployment ()->IsShuttingDown ())
+			GetDeployment ()->GetSurface ()->RemoveGPUSurface (bitmap_cache_size);
 		bitmap_cache->unref ();
 		bitmap_cache = NULL;
 		bitmap_cache_size = 0;
