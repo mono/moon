@@ -69,6 +69,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Helper.PublicKey.cs					\
 	$(srcdir)/Mono/Hosting.cs						\
+	$(srcdir)/Mono/IListenLayoutUpdated.cs					\
 	$(srcdir)/Mono/IListenPropertyChanged.cs			\
 	$(srcdir)/Mono/IListExtensions.cs					\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
@@ -97,6 +98,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/UriHelper.cs				\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/WeakCollectionChangedListener.cs				\
+	$(srcdir)/Mono/WeakLayoutUpdatedListener.cs				\
 	$(srcdir)/Mono/WeakPropertyChangedListener.cs				\
 	$(srcdir)/Mono.Xaml/ManagedXamlLoader.cs				\
 	$(srcdir)/Mono.Xaml/MarkupExpressionParser.cs				\

@@ -38,7 +38,7 @@ using System.Windows.Automation;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows {
-	public abstract partial class FrameworkElement : UIElement {
+	public abstract partial class FrameworkElement : UIElement, IListenLayoutUpdated {
 				static UnmanagedEventHandler template_applied = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
 			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ());
@@ -60,8 +60,18 @@ namespace System.Windows {
 		}
 
 		public event EventHandler LayoutUpdated {
-			add { Deployment.Current.LayoutUpdated += value; }
-			remove { Deployment.Current.LayoutUpdated -= value; }
+			add {
+				if (layoutUpdatedListener == null)
+					layoutUpdatedListener = new WeakLayoutUpdatedListener (Deployment.Current, this);
+				layoutUpdated += value;
+			}
+			remove {
+				layoutUpdated -= value;
+				if (layoutUpdated == null && layoutUpdatedListener != null) {
+					layoutUpdatedListener.Detach ();
+					layoutUpdatedListener = null;
+				}
+			}
 		}
 
 		/* 
@@ -72,6 +82,8 @@ namespace System.Windows {
 		internal ArrangeOverrideCallback arrange_cb;
 		internal GetDefaultTemplateCallback get_default_template_cb;
 		internal LoadedCallback loaded_hook_cb;
+		EventHandler layoutUpdated;
+		IWeakListener layoutUpdatedListener;
 
 		private static bool UseNativeLayoutMethod (Type type)
 		{
@@ -289,6 +301,14 @@ namespace System.Windows {
 		{
 			// according to doc this is not fully implemented since SL templates applies
 			// to Control/ContentPresenter and is defined here for WPF compatibility
+		}
+
+		void IListenLayoutUpdated.OnLayoutUpdated (object sender, EventArgs e)
+		{
+			// Explicitly use null as the sender in this event, as per docs
+			var h = layoutUpdated;
+			if (h != null)
+				h (null, EventArgs.Empty);
 		}
 
 		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)
