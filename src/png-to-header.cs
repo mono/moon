@@ -7,8 +7,6 @@ using System.Text;
 class convert {
 	static int Main (string [] args)
 	{
-		Console.WriteLine ("hi!");
-
 		try {
 			string sourcefile = args [0];
 			string destfile = args [1];
@@ -41,7 +39,6 @@ class convert {
 			}
 
 			dest.Add ("};");
-			Console.WriteLine ("writing to {0}", destfile);
 			File.WriteAllLines (destfile, dest.ToArray ());
 
 			return 0;
