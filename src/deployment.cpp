@@ -2299,14 +2299,14 @@ MonoProfiler::DumpTracesByType ()
 	// For all allocated handles, see if any of them are referencing objects of the type
 	// we care about. If they are, print out the allocation trace of all handles targetting
 	// that object
-	for (int i = 0; i < gchandles->len; i ++) {
+	for (int i = 0; i < (int) gchandles->len; i ++) {
 		MonoObject *obj = mono_gchandle_get_target (GPOINTER_TO_INT (g_ptr_array_index (gchandles, i)));
 		if (!obj)
 			continue;
 		const char *name = mono_class_get_name (mono_object_get_class(obj));
 		if (!strcmp (name, type_name)) {
 			printf ("Strong GCHandles allocated for object %p:\n", obj);
-			for (int j = i; j < gchandles->len; j++) {
+			for (int j = i; j < (int) gchandles->len; j++) {
 				if (mono_gchandle_get_target (GPOINTER_TO_INT (g_ptr_array_index (gchandles, j))) == obj) {
 					printf ("%s\n\n", (char *) g_ptr_array_index (stacktraces, j));
 					g_ptr_array_remove_index_fast (gchandles, j);
