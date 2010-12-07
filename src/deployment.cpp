@@ -191,6 +191,7 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 
 		Deployment::desktop_deployment = new Deployment (root_domain);
 		Deployment::SetCurrent (Deployment::desktop_deployment);
+		Deployment::desktop_deployment->EnsureManagedPeer ();
 
 		Application *desktop_app = MoonUnmanagedFactory::CreateApplication ();
 		desktop_deployment->SetCurrentApplication (desktop_app);
@@ -582,20 +583,18 @@ Deployment::EnsureManagedPeer ()
 void
 Deployment::EnsureManagedPeer (EventObject *forObj)
 {
+	Type::Kind kind = forObj->GetObjectType ();
 	if (ensure_managed_peer) {
-		ensure_managed_peer (forObj);
+		ensure_managed_peer (forObj, kind);
 	}
 	else if (moon_ensure_managed_peer) {
 		MonoObject *exc = NULL;
-	
-		if (moon_ensure_managed_peer == NULL)
-			return;
-
-		void *params [1];
+		void *params [2];
 
 		Deployment::SetCurrent (this);
 
 		params [0] = &forObj;
+		params [1] = &kind;
 		mono_runtime_invoke (moon_ensure_managed_peer, NULL, params, &exc);
 
 		if (exc)

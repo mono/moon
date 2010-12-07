@@ -164,7 +164,7 @@ namespace System.Windows {
 		public static Deployment Current {
 			get {
 				IntPtr dep = NativeMethods.deployment_get_current ();
-				return NativeDependencyObjectHelper.Lookup (Kind.DEPLOYMENT, dep) as Deployment;
+				return (Deployment) (NativeDependencyObjectHelper.Lookup (dep) ?? NativeDependencyObjectHelper.CreateObject (Kind.DEPLOYMENT, dep));
 			}
 
 			internal set {
@@ -749,29 +749,6 @@ namespace System.Windows {
 			return string.Empty;
 		}
 
-		private static EnsureManagedPeerCallback ensure_managed_peer = new EnsureManagedPeerCallback(EnsureManagedPeer);
-		/// <summary>
-		///   Ensures that a managed peer has been created for a given native dependencyobject.
-		/// </summary>
-		private static void EnsureManagedPeer (IntPtr forDO)
-		{
-			try {
-				var o = NativeDependencyObjectHelper.Lookup (forDO);
-				if (o == null) {
-					o = NativeDependencyObjectHelper.FromIntPtr (forDO);
-#if DEBUG_REF
-					Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
-#endif
-					// this next line is just to keep mcs from giving us a warning about "o" being unused
-					GC.KeepAlive (o);
-				}
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Deployment.EnsureManagedPeer: {0}", ex);
-				} catch {
-				}
-			}
-		}
-		
+		private static EnsureManagedPeerCallback ensure_managed_peer = new EnsureManagedPeerCallback(ApplicationLauncher.EnsureManagedPeer);
 	}
 }

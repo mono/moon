@@ -690,7 +690,7 @@ namespace System.Windows {
 		public static Application Current {
 			get {
 				IntPtr app = NativeMethods.application_get_current ();
-				return NativeDependencyObjectHelper.Lookup (Kind.APPLICATION, app) as Application;
+				return NativeDependencyObjectHelper.Lookup (app) as Application;
 			}
 
 			private set {

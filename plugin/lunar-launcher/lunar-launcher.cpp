@@ -217,6 +217,7 @@ create_window (Deployment *deployment, const char *app_id)
 	/* create the moonlight widget */
 	moon_window = winsys->CreateWindow (MoonWindowType_Desktop, 0, 0);
 	surface = new Surface (moon_window);
+	surface->EnsureManagedPeer ();
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 

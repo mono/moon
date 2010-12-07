@@ -788,6 +788,7 @@ PluginInstance::CreateWindow ()
 	}
 
 	surface = new Surface (moon_window);
+	surface->EnsureManagedPeer ();
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 	if (bridge)
@@ -1140,7 +1141,6 @@ PluginInstance::LoadXAML ()
 		return false;
 	}
 
-	deployment->EnsureManagedPeer (surface);
 	deployment->SetSurface (surface);
 
 	xaml_loader->LoadVM ();
@@ -1194,7 +1194,6 @@ PluginInstance::LoadXAP (const Uri *url, const char *fname)
 
 	bool rv = GetDeployment ()->InitializeManagedDeployment (this, culture, uiCulture);
 
-	deployment->EnsureManagedPeer (surface);
 	deployment->SetSurface (surface);
 
 	return rv;

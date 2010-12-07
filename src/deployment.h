@@ -53,7 +53,7 @@ typedef _MonoProfiler MonoProfiler;
 
 namespace Moonlight {
 
-typedef void (*EnsureManagedPeerCallback)(EventObject *forObj);
+typedef void (*EnsureManagedPeerCallback)(EventObject *forObj, Type::Kind kind);
 
 /* @Namespace=System.Windows,CallInitialize */
 class AssemblyPart : public DependencyObject {

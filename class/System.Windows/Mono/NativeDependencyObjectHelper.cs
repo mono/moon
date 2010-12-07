@@ -326,56 +326,9 @@ namespace Mono {
 			GC.SuppressFinalize (wrapper);
 		}
 
-		//
-		// This is mostly copied from Gtk#'s Object.GetObject
-		// we need to take into account in the future:
-		//    WeakReferences
-		//    ToggleReferences (talk to Mike)
-		//
-		// Thread-safe.
-		internal static INativeEventObjectWrapper Lookup (Kind k, IntPtr ptr)
-		{
-			if (ptr == IntPtr.Zero)
-				return null;
-
-			GCHandle handle;
-			lock (objects) {
-				if (objects.TryGetValue (ptr, out handle))
-					return (INativeEventObjectWrapper) handle.Target;
-			}
-			
-			// don't change this to a cast (as opposed to
-			// using 'as') since we can lose important
-			// info if you do.
-			INativeEventObjectWrapper wrapper = CreateObject (k, ptr) as INativeEventObjectWrapper;
-			if (wrapper == null){
-				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
-				Report.Warning (Environment.StackTrace);
-			}
-
-			return wrapper;
-		}
-
 		internal static INativeEventObjectWrapper FromIntPtr (IntPtr data)
 		{
-			return FromIntPtr (data, false);
-		}
-
-		internal static INativeEventObjectWrapper FromIntPtr (IntPtr ptr, bool unref)
-		{
-			INativeEventObjectWrapper result;
-
-			if (ptr == IntPtr.Zero)
-				return null;
-
-			Kind k = NativeMethods.event_object_get_object_type (ptr);
-
-			result = Lookup (k, ptr);
-
-			if (unref)
-				NativeMethods.event_object_unref (ptr);
-
-			return result;
+			return Lookup (data);
 		}
 
 		//
@@ -395,7 +348,7 @@ namespace Mono {
 			return null;
 		}
 
-		static object CreateObject (Kind k, IntPtr raw)
+		internal static object CreateObject (Kind k, IntPtr raw)
 		{
 			switch (k){
 			case Kind.ARCSEGMENT: return new ArcSegment (raw, false);
