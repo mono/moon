@@ -748,7 +748,7 @@ Storyboard::StopWithError (MoonError *error)
 		clock->Stop ();
 		ClearClock ();
 	}
-	printf ("Storyboard::StopWithError: %s SetKeepAlive (false)\n", GetName ());
+
 	GetDeployment ()->SetKeepAlive (this, false);
 }
 
