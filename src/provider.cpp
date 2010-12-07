@@ -803,8 +803,8 @@ InheritedPropertyValueProvider::MaybePropagateInheritedValue (Types *types, Depe
 	DependencyProperty *sourceProperty =
 		types->GetProperty (InheritablePropertyToPropertyId (types, prop, source->GetObjectType()));
 	Value *value = source->GetValue (sourceProperty);
-
-	element->PropagateInheritedValue (prop, source, value);
+	if (value)
+		element->PropagateInheritedValue (prop, source, value);
 }
 
 void
