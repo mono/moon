@@ -777,9 +777,6 @@ Deployment::InitializeAppDomain (const char *system_windows_fullname)
 		fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find assembly '%s'.\n", system_windows_fullname);
 	}
 
-	if (result)
-		EnsureManagedPeer ();
-
 #if DEBUG
 	printf ("Moonlight: Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
 #endif
@@ -787,6 +784,9 @@ Deployment::InitializeAppDomain (const char *system_windows_fullname)
 completed:
 	appdomain_initialization_result = result;
 	appdomain_initialized = true;
+
+	if (result)
+		EnsureManagedPeer ();
 
 	return result;
 }
