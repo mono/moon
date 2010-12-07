@@ -4,16 +4,14 @@ AC_DEFUN([MOONLIGHT_CHECK_GLX],
 		[If you want to enable support for glx]),
 		[], [with_glx=no])
 
-	GLX_CFLAGS=
-	GLX_LIBS=
-
 	if test x$with_glx = xyes; then
-		GLX_LIBS="-lGL"
-		AC_DEFINE(USE_GLX, 1, [Include glx support])
+		if pkg-config --exists gl x11; then
+			AC_DEFINE(USE_GLX, 1, [Include glx support])
+			PKG_CHECK_MODULES(GLX, gl x11)
+		else
+			with_glx=no
+		fi
 	fi
-
-	AC_SUBST(GLX_CFLAGS)
-	AC_SUBST(GLX_LIBS)
 
 	AM_CONDITIONAL(HAVE_GLX, [test x$with_glx != xno])
 ])
