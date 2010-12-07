@@ -387,6 +387,7 @@ EXTRA_DIST = \
 	framerate-display.xaml \
 	drm.xaml \
 	xaml-to-header.cs \
+	png-to-header.cs \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
@@ -403,7 +404,7 @@ libmoon_static_la_SOURCES = $(libmoon_la_SOURCES)
 libmoon_static_la_LDFLAGS = -static 
 libmoon_static_la_LIBADD = $(MOON_LIBS)
 
-runtime.lo: fullscreen.h incomplete-support.h drm.h framerate-display.h
+runtime.lo: fullscreen.h incomplete-support.h drm.h framerate-display.h icon128.h
 
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
 	$(SYSTEM_MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
@@ -417,5 +418,11 @@ framerate-display.h: framerate-display.xaml xaml-to-header.exe
 drm.h: drm.xaml xaml-to-header.exe
 	$(SYSTEM_MONO) xaml-to-header.exe drm.xaml DRM_MESSAGE
 
+icon128.h: $(srcdir)/../icons/icon128.png png-to-header.exe
+	$(SYSTEM_MONO) png-to-header.exe $(srcdir)/../icons/icon128.png icon128.h ICON_128
+
 xaml-to-header.exe: xaml-to-header.cs
 	gmcs xaml-to-header.cs
+
+png-to-header.exe: png-to-header.cs
+	gmcs png-to-header.cs

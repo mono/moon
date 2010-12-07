@@ -8,7 +8,7 @@ mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 
 novell_moonlight_xpi_CONTENTS =		\
 				$(srcdir)/install.rdf \
-				$(srcdir)/icon32.png \
+				$(srcdir)/../../icons/icon32.png \
 				$(srcdir)/chrome.manifest \
 				$(srcdir)/moonlight.xul \
 				$(srcdir)/moonlight.js	\
@@ -72,7 +72,7 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	cp -L $(srcdir)/install.rdf .xpinstall/
 	cp -L $(srcdir)/chrome.manifest .xpinstall/
 	mkdir -p .xpinstall/skin/
-	cp -L $(srcdir)/icon32.png .xpinstall/skin/
+	cp -L $(srcdir)/../../icons/icon32.png .xpinstall/skin/
 	mkdir -p .xpinstall/content/
 	cp -L $(srcdir)/moonlight.xul .xpinstall/content/
 	cp -L $(srcdir)/application.js .xpinstall/content/
@@ -120,8 +120,8 @@ novell-moonlight.crx: $(novell_moonlight_xpi_CONTENTS) Makefile
 	rm -rf $(CRXDIR)
 	mkdir -p $(CRXDIR)/moonlight/
 	cp -L $(srcdir)/manifest.json $(CRXDIR)/
-	cp -L $(srcdir)/icon48.png $(CRXDIR)/
-	cp -L $(srcdir)/icon128.png $(CRXDIR)/
+	cp -L $(srcdir)/../../icons/icon48.png $(CRXDIR)/
+	cp -L $(srcdir)/../../icons/icon128.png $(CRXDIR)/
 	cp -L ../.libs/libmoonloaderxpi.so $(CRXDIR)/
 	cp -L ../.libs/libmoonpluginxpi.so $(CRXDIR)/moonlight/
 	cp -L ../lunar-launcher/.libs/lunar-launcher $(CRXDIR)/moonlight/
@@ -150,5 +150,5 @@ clean-local:
 	-rm -f *.crx
 	-rm -rf tmp*
 
-EXTRA_DIST = install.rdf.in manifest.json.in icon32.png icon48.png icon128.png chrome.manifest check_xpi.sh moonlight.xul moonlight.js application.js
+EXTRA_DIST = install.rdf.in manifest.json.in chrome.manifest check_xpi.sh moonlight.xul moonlight.js application.js
 DISTCLEANFILES = novell-moonlight.xpi

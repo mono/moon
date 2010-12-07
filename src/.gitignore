@@ -22,3 +22,5 @@ incomplete-support.h
 framerate-display.h
 drm.h
 xaml-to-header.exe
+icon128.h
+png-to-header.exe

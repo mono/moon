@@ -91,3 +91,8 @@ endif
 
 reset-mono:
 	cd $(MONO_PATH) && git fetch && git reset --hard `grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}'`
+
+dist-hook:
+	mkdir $(distdir)/icons
+	cp -p $(srcdir)/icons/icon32.png $(srcdir)/icons/icon48.png $(srcdir)/icons/icon128.png $(distdir)/icons
+

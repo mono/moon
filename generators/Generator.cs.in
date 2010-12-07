@@ -3171,6 +3171,7 @@ class Generator {
 
 	static void RemoveExcludedSrcFiles (string srcdir, string plugindir, string paldir, string pal@PAL@dir, List<string> files)
 	{
+		files.Remove (Path.Combine (srcdir, "icon128.h"));
 		files.Remove (Path.Combine (srcdir, "authors.h"));
 		files.Remove (Path.Combine (srcdir, "cbinding.h"));
 		files.Remove (Path.Combine (srcdir, "factory.h"));

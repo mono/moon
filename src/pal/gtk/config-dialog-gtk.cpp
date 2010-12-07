@@ -23,6 +23,7 @@
 #include "timemanager.h"
 #include "debug-ui-gtk.h"
 #include "consent.h"
+#include "icon128.h"
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 
@@ -196,7 +197,16 @@ AboutConfigDialogPage::GetContentWidget ()
 	GtkWidget *label, *linkbutton, *vbox, *align, *image, *button;
 	GtkTable *table = GTK_TABLE (gtk_table_new (3, 3, false));
 
-	image = gtk_label_new ("IMAGEIMAGE\nIMAGEIMAGE\nIMAGEIMAGE\nIMAGEIMAGE\nIMAGEIMAGE");
+	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+
+	gdk_pixbuf_loader_write (loader, ICON_128, sizeof (ICON_128), NULL);
+
+	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+
+	image = gtk_image_new_from_pixbuf (pixbuf);
+
+	gdk_pixbuf_loader_close (loader, NULL);
+	g_object_unref (G_OBJECT (loader));
 
 	align = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (align), image);
