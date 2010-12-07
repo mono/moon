@@ -350,6 +350,34 @@
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog-gtk.h" />
     <File subtype="Code" buildaction="Compile" name="pal/gtk/nocodec-ui-gtk.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/nocodec-ui-gtk.h" />
+    <File subtype="Code" buildaction="Nothing" name="contentpresenter.h" />
+    <File subtype="Code" buildaction="Nothing" name="context-cairo.h" />
+    <File subtype="Code" buildaction="Nothing" name="context-gallium.h" />
+    <File subtype="Code" buildaction="Nothing" name="context-gl.h" />
+    <File subtype="Code" buildaction="Nothing" name="context-glx.h" />
+    <File subtype="Code" buildaction="Nothing" name="gchandle.h" />
+    <File subtype="Code" buildaction="Nothing" name="richtextlayout.h" />
+    <File subtype="Code" buildaction="Nothing" name="surface-gallium.h" />
+    <File subtype="Code" buildaction="Nothing" name="surface-gallium-egl.h" />
+    <File subtype="Code" buildaction="Nothing" name="surface-gl.h" />
+    <File subtype="Code" buildaction="Nothing" name="surface-glx.h" />
+    <File subtype="Code" buildaction="Nothing" name="textlayout.h" />
+    <File subtype="Code" buildaction="Nothing" name="textpointer.h" />
+    <File subtype="Code" buildaction="Nothing" name="textselection.h" />
+    <File subtype="Code" buildaction="Compile" name="contentpresenter.cpp" />
+    <File subtype="Code" buildaction="Compile" name="context-cairo.cpp" />
+    <File subtype="Code" buildaction="Compile" name="context-gallium.cpp" />
+    <File subtype="Code" buildaction="Compile" name="context-gl.cpp" />
+    <File subtype="Code" buildaction="Compile" name="context-glx.cpp" />
+    <File subtype="Code" buildaction="Compile" name="gchandle.cpp" />
+    <File subtype="Code" buildaction="Compile" name="richtextlayout.cpp" />
+    <File subtype="Code" buildaction="Compile" name="surface-gallium.cpp" />
+    <File subtype="Code" buildaction="Compile" name="surface-gallium-egl.cpp" />
+    <File subtype="Code" buildaction="Compile" name="surface-gl.cpp" />
+    <File subtype="Code" buildaction="Compile" name="surface-glx.cpp" />
+    <File subtype="Code" buildaction="Compile" name="textlayout.cpp" />
+    <File subtype="Code" buildaction="Compile" name="textpointer.cpp" />
+    <File subtype="Code" buildaction="Compile" name="textselection.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
