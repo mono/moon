@@ -92,8 +92,8 @@ Consent::PromptUserFor (MoonConsentType consent)
 		detail = "If you allow this, the application can copy data to and from the Clipboard as long as the application is running.";
 		break;
 	case MOON_CONSENT_FULLSCREEN_PINNING:
-		question = "[fullscreen question here]"; // FIXME
-		detail = "[fullscreen detail here]"; // FIXME
+		question = "Do you want to allow this application to stay in full-screen mode?";
+		detail = "If you you choose No, the application will still enter full-screen mode, but will exit full-screen mode when it loses focus";
 		break;
 	case MOON_CONSENT_CAPTURE:
 		question = "Do you want to allow this application to access your webcam and microphone?";

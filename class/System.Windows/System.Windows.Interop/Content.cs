@@ -66,15 +66,12 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		[MonoTODO ()]
 		public FullScreenOptions FullScreenOptions {
 			get {
-				Console.WriteLine ("NIEX: System.Windows.Interop.Content.get_FullScreenOptions");
-				throw new NotImplementedException ();
+				return NativeMethods.surface_get_full_screen_options (Deployment.Current.Surface.Native);
 			}
 			set {
-				Console.WriteLine ("NIEX: System.Windows.Interop.Content.set_FullScreenOptions => {0}", value);
-				// throw new NotImplementedException ();
+				NativeMethods.surface_set_full_screen_options (Deployment.Current.Surface.Native, value);
 			}
 		}
 

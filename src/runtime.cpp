@@ -32,7 +32,6 @@
 #include "frameworkelement.h"
 #include "textblock.h"
 #include "media.h"
-#include "stylus.h"
 #include "rect.h"
 #include "panel.h"
 #include "value.h"
@@ -47,10 +46,8 @@
 #include "timemanager.h"
 #include "factory.h"
 
-#include "contentcontrol.h"
-#include "usercontrol.h"
+#include "consent.h"
 #include "deployment.h"
-#include "grid.h"
 #include "cbinding.h"
 #include "tabnavigationwalker.h"
 #include "window.h"
@@ -1076,6 +1073,16 @@ Surface::SetFullScreen (bool value)
 	}
 	
 	UpdateFullScreen (value);
+}
+
+void
+Surface::SetFullScreenOptions (FullScreenOptions options)
+{
+	if (options != FullScreenOptionsNone)
+		if (!Consent::PromptUserFor (MOON_CONSENT_FULLSCREEN_PINNING))
+			return;
+
+	full_screen_options = options;
 }
 
 void

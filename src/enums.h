@@ -615,6 +615,13 @@ enum ReceiverNameScope {
 
 };
 
+/* @IncludeInKinds */
+/* @Namespace=System.Windows.Interop */
+enum FullScreenOptions {
+	FullScreenOptionsNone,
+	FullScreenOptionsStaysFullScreenWhenUnfocused
+};
+
 G_BEGIN_DECLS
 
 int enums_str_to_int (const char *prop_name, const char *str);

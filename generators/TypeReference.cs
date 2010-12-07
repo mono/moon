@@ -433,6 +433,7 @@ class TypeReference {
 			case "SetPropertyDelegate":
 			case "GetPropertyDelegate":
 			case "DownloaderAccessPolicy":
+			case "FullScreenOptions":
 				managed_type = Value;
 				break;
 			case "GCHandle":

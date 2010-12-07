@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 642 methods
+# 644 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -354,6 +354,8 @@
 +SSC-M: System.Double System.Windows.Interop.Content::get_ActualWidth()
 +SSC-M: System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
 +SSC-M: System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
++SSC-M: System.Windows.Interop.FullScreenOptions System.Windows.Interop.Content::get_FullScreenOptions()
++SSC-M: System.Void System.Windows.Interop.Content::set_FullScreenOptions(System.Windows.Interop.FullScreenOptions)
 +SSC-M: System.Double System.Windows.Interop.Content::get_ZoomFactor()
 +SSC-M: System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
 +SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableFrameRateCounter()

@@ -262,6 +262,11 @@ public:
 	bool GetFullScreen () { return full_screen; }
 	/* @GeneratePInvoke */
 	void SetFullScreen (bool value);
+
+	/* @GeneratePInvoke */
+	FullScreenOptions GetFullScreenOptions () { return full_screen_options; }
+	/* @GeneratePInvoke */
+	void SetFullScreenOptions (FullScreenOptions options);
 	
 	/* @GeneratePInvoke */
 	double GetZoomFactor () { return zoom_factor; }
@@ -404,6 +409,7 @@ private:
 
 	// Fullscreen support
 	bool full_screen;
+	FullScreenOptions full_screen_options;
 	Panel *full_screen_message;
 	Uri *source_location;
 	
