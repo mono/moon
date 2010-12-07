@@ -750,11 +750,6 @@ namespace System.Windows.Media {
 		internal MediaAttribute (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
-	partial class MediaAttributeCollection {
-		public MediaAttributeCollection () : base (SafeNativeMethods.media_attribute_collection_new (), true) {}
-		internal MediaAttributeCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
-	}
-
 	partial class MultiScaleTileSource {
 		internal MultiScaleTileSource () : base (SafeNativeMethods.multi_scale_tile_source_new (), true)
 		{

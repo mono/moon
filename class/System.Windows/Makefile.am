@@ -656,7 +656,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/MatrixTransform.cs			\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\
-	$(srcdir)/System.Windows.Media/MediaAttributeCollection.cs		\
 	$(srcdir)/System.Windows.Media/MediaElementState.cs			\
 	$(srcdir)/System.Windows.Media/MediaLicense.cs				\
 	$(srcdir)/System.Windows.Media/MediaSampleAttributeKeys.cs		\

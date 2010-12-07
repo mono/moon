@@ -402,7 +402,6 @@
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightValueConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ToggleRef.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaAttribute.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaAttributeCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PixelFormat.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PixelFormatKind.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PixelFormats.cs" />

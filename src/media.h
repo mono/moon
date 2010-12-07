@@ -43,19 +43,19 @@ class MediaAttribute : public DependencyObject {
 	void SetValue (const char *value);
 };
 
-
-/* @Namespace=System.Windows.Media */
+/* @Namespace=None */
+/* @GenerateCBindingCtor=true */
 class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
 
  public:
- 	/* @GeneratePInvoke */
+	/* @SkipFactories */
+	/* @GeneratePInvoke */
 	MediaAttributeCollection () { SetObjectType (Type::MEDIAATTRIBUTE_COLLECTION); }
 	
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 	
-	/* @GeneratePInvoke */
 	MediaAttribute *GetItemByName (const char *name);
 };
 

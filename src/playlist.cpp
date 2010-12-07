@@ -740,7 +740,7 @@ PlaylistEntry::PopulateMediaAttributes ()
 	g_return_if_fail (element != NULL);
 	
 	if (!(attributes = element->GetAttributes ())) {
-		attributes = MoonUnmanagedFactory::CreateMediaAttributeCollection ();
+		attributes = new MediaAttributeCollection ();
 		element->SetAttributes (attributes);
 	} else {
 		attributes->Clear ();

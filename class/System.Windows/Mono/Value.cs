@@ -36,6 +36,7 @@ using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Mono {
 
@@ -385,8 +386,17 @@ namespace Mono {
 			}
 
 			case Kind.MEDIAATTRIBUTE_COLLECTION: {
-				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
-				return attrs != null ? attrs.AsDictionary () : null;
+				IntPtr p = value->u.p;
+				if (p == IntPtr.Zero)
+					return null;
+
+				int count = NativeMethods.collection_get_count (p);
+				var dict = new Dictionary<string, string> ();
+				for (int i = 0; i < count; i ++) {
+					var attr = (MediaAttribute) Value.ToObject (NativeMethods.collection_get_value_at (p, i));
+					dict.Add (attr.Name, attr.Value);
+				}
+				return dict;
 			}
 
 			case Kind.MANAGEDTYPEINFO: {

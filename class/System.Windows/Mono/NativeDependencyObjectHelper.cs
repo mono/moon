@@ -482,7 +482,6 @@ namespace Mono {
 			case Kind.MATRIX3DPROJECTION: return new Matrix3DProjection (raw, false);
 			case Kind.TIMELINEMARKERROUTEDEVENTARGS : return new TimelineMarkerRoutedEventArgs (raw, false);
 			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw, false);
-			case Kind.MEDIAATTRIBUTE_COLLECTION: return new MediaAttributeCollection (raw, false);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
 			case Kind.MOUSEEVENTARGS: return new MouseEventArgs (raw);
 			case Kind.MOUSEBUTTONEVENTARGS: return new MouseButtonEventArgs (raw);
