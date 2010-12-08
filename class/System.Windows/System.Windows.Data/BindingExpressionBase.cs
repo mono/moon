@@ -312,23 +312,11 @@ namespace System.Windows.Data {
 		void OnNativeMentorDataContextChangedSafe (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
 		{
 			try {
-				OnNativeMentorDataContextChanged (dependency_object, propertyChangedEventArgs, ref error, closure);
+				MentorDataContextChanged ();
 			} catch (Exception ex) {
 				try {
 					error = new MoonError (ex);
 				} catch {
-				}
-			}
-		}
-		void OnNativeMentorDataContextChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
-		{
-			try {
-				MentorDataContextChanged ();
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.OnNativeMentorDataContextChanged: {0}", ex);
-				} catch {
-					// Ignore
 				}
 			}
 		}
@@ -361,6 +349,9 @@ namespace System.Windows.Data {
 
 		TypeConverter GetConverterFrom ()
 		{
+			if (PropertyPathWalker.IsPathBroken)
+				return null;
+
 			var sourceType = Property.PropertyType;
 			var destType = PropertyPathWalker.FinalNode.ValueType;
 			if (destType.IsAssignableFrom (sourceType)) {
@@ -372,6 +363,9 @@ namespace System.Windows.Data {
 
 		TypeConverter GetConverterTo ()
 		{
+			if (PropertyPathWalker.IsPathBroken)
+				return null;
+
 			var sourceType = PropertyPathWalker.FinalNode.ValueType;
 			var destType = Property.PropertyType;
 			if (destType.IsAssignableFrom (sourceType))
