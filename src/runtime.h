@@ -85,6 +85,7 @@ enum RuntimeInitFlag {
 	RUNTIME_INIT_CURL_BRIDGE	   = 1 << 27,
 	RUNTIME_INIT_ENABLE_TOGGLEREFS	   = 1 << 28,
 	RUNTIME_INIT_OOB_LAUNCHER_FIREFOX  = 1 << 29,
+	RUNTIME_INIT_HW_ACCELERATION       = 1 << 30,
 };
 
 struct MoonlightRuntimeOption {

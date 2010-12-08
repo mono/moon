@@ -134,6 +134,11 @@ static MoonlightRuntimeOption options [] = {
 	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Prefer Curl bridge" },
 	{ RUNTIME_INIT_ENABLE_TOGGLEREFS,     "togglerefs",        "yes",        "no" },
 	{ RUNTIME_INIT_OOB_LAUNCHER_FIREFOX,  "ooblauncher",       "firefox",    "default" , true,          "Use firefox to execute out-of-browser applications" },
+
+#ifdef USE_GLX
+	{ RUNTIME_INIT_HW_ACCELERATION,       "hwaccel",            "yes",       "no",     true,            "Use hardware acceleration" },
+#endif
+
 	{ (RuntimeInitFlag)0 }
 
 };

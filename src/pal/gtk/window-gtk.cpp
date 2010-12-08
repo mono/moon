@@ -543,7 +543,7 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 
 	gdk_drawable_get_size (w->window, &width, &height);
 
-	if (!ctx && g_getenv ("MOONLIGHT_GLX")) {
+	if (!ctx && (moonlight_flags & RUNTIME_INIT_HW_ACCELERATION)) {
 		GLXContext *context;
 
 		glxtarget = new GLXSurface (dpy, win);
