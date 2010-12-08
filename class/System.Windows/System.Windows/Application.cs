@@ -98,6 +98,15 @@ namespace System.Windows {
 
 			lifetime_objects = new ApplicationLifetimeObjectsCollection ();
 
+			// once installed the default quota for isolated storage is augmented to 25MB (instead of 1MB)
+			// note: this applies only to the browser (not desktop) assemblies (it won't compile otherwise)
+#if !NET_3_0
+			if (IsRunningOutOfBrowser) {
+				long OutOfBrowserQuota = 25 * IsolatedStorage.DefaultQuota;
+				if (IsolatedStorage.Quota < OutOfBrowserQuota)
+					IsolatedStorage.Quota = OutOfBrowserQuota;
+			}
+#endif
 			var handler = UIANewApplication;
 			if (handler != null)
 				handler (this, EventArgs.Empty);
@@ -207,17 +216,7 @@ namespace System.Windows {
 		bool Install (bool unattended)
 		{
 			// note: user-initiated check is done in unmanaged code
-			if (!NativeMethods.application_install (NativeHandle, false, unattended))
-				return false;
-
-			// once installed the default quota for isolated storage is augmented to 25MB (instead of 1MB)
-			// note: this applies only to the browser (not desktop) assemblies (it won't compile otherwise)
-#if !NET_3_0
-			long OutOfBrowserQuota = 25 * IsolatedStorage.DefaultQuota;
-			if (IsolatedStorage.Quota < OutOfBrowserQuota)
-				IsolatedStorage.Quota = OutOfBrowserQuota;
-#endif
-			return true;
+			return NativeMethods.application_install (NativeHandle, false, unattended);
 		}
 
 		public IList ApplicationLifetimeObjects {
