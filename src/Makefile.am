@@ -1,3 +1,9 @@
+
+# we need to define this so that explicit dependencies on source files in subdirectories work.
+# e.g. look at the config-dialog-gtk.lo dep on icon128.h at the bottom of the file
+VPATH=pal/gtk
+
+
 libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
@@ -418,6 +424,8 @@ framerate-display.h: framerate-display.xaml xaml-to-header.exe
 
 drm.h: drm.xaml xaml-to-header.exe
 	$(SYSTEM_MONO) xaml-to-header.exe drm.xaml DRM_MESSAGE
+
+config-dialog-gtk.lo: icon128.h
 
 icon128.h: $(srcdir)/../icons/icon128.png png-to-header.exe
 	$(SYSTEM_MONO) png-to-header.exe $(srcdir)/../icons/icon128.png icon128.h ICON_128
