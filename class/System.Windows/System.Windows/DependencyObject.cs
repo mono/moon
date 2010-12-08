@@ -529,11 +529,17 @@ namespace System.Windows {
 
 			invalidatingLocalBindings = true;
 
-			foreach (var keypair in expressions) {
-				if (keypair.Value is BindingExpressionBase) {
-					BindingExpressionBase beb = (BindingExpressionBase) keypair.Value;
+			DependencyProperty[] keys = new DependencyProperty [expressions.Keys.Count];
+			Expression[] values = new Expression [expressions.Values.Count];
+
+			expressions.Keys.CopyTo (keys, 0);
+			expressions.Values.CopyTo (values, 0);
+
+			for (int i = 0; i < keys.Length; i ++) {
+				if (values[i] is BindingExpressionBase) {
+					BindingExpressionBase beb = (BindingExpressionBase) values[i];
 					beb.Invalidate ();
-					SetValue (keypair.Key, beb);
+					SetValue (keys[i], beb);
 				}
 			}
 
