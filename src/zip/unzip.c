@@ -303,10 +303,25 @@ local int strcmpcasenosensitive_internal (fileName1,fileName2)
 
 */
 extern int ZEXPORT unzStringFileNameCompare (fileName1,fileName2,iCaseSensitivity)
-    const char* fileName1;
-    const char* fileName2;
+     char* fileName1;
+     char* fileName2;
     int iCaseSensitivity;
 {
+    char *p, *n;
+
+    // we need to match, e.g. Resources/file.png with Resources\\file.png
+    p = fileName1;
+    while (n = strchr (p, '\\')) {
+        *n = '/';
+	p = n+1;
+    }
+
+    p = fileName2;
+    while (n = strchr (p, '\\')) {
+        *n = '/';
+        p = n+1;
+    }
+
     if (iCaseSensitivity==0)
         iCaseSensitivity=CASESENSITIVITYDEFAULTVALUE;
 
@@ -839,7 +854,7 @@ extern int ZEXPORT unzLocateFile (file, szFileName, iCaseSensitivity)
     unz_file_info_internal cur_file_info_internalSaved;
     uLong num_fileSaved;
     uLong pos_in_central_dirSaved;
-
+    char *localszFileName;
 
     if (file==NULL)
         return UNZ_PARAMERROR;
@@ -859,6 +874,8 @@ extern int ZEXPORT unzLocateFile (file, szFileName, iCaseSensitivity)
 
     err = unzGoToFirstFile(file);
 
+    localszFileName = strdup (szFileName);
+    
     while (err == UNZ_OK)
     {
         char szCurrentFileName[UNZ_MAXFILENAMEINZIP+1];
@@ -868,11 +885,13 @@ extern int ZEXPORT unzLocateFile (file, szFileName, iCaseSensitivity)
         if (err == UNZ_OK)
         {
             if (unzStringFileNameCompare(szCurrentFileName,
-                                            szFileName,iCaseSensitivity)==0)
+					 localszFileName,iCaseSensitivity)==0)
                 return UNZ_OK;
             err = unzGoToNextFile(file);
         }
     }
+
+    free (localszFileName);
 
     /* We failed, so restore the state of the 'current file' to where we
      * were.
