@@ -58,6 +58,7 @@ libmoon_include_headers = 	\
 	glyphs.h		\
 	grid.h			\
 	http-streaming.h	\
+	icon128.h		\
 	imagesource.h		\
 	inputmethod.h		\
 	inputscope.h		\
@@ -404,7 +405,7 @@ libmoon_static_la_SOURCES = $(libmoon_la_SOURCES)
 libmoon_static_la_LDFLAGS = -static 
 libmoon_static_la_LIBADD = $(MOON_LIBS)
 
-runtime.lo: fullscreen.h incomplete-support.h drm.h framerate-display.h icon128.h
+runtime.lo: fullscreen.h incomplete-support.h drm.h framerate-display.h
 
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
 	$(SYSTEM_MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
