@@ -1276,6 +1276,11 @@ RichTextLayout::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
 		}
 	}
 
+	if (line == NULL) {
+		g_warning ("RichTextLayout::GetCharacterRect line is null");
+		return Rect::ManagedEmpty;
+	}
+
 	RichTextLayoutInline *inline_ = NULL;
 
 	for (guint i = 0; i < line->inlines->len; i ++) {
