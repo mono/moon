@@ -247,10 +247,14 @@ CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration
 
 		source->Invalidate (); // causes the BitmapSource to create its image_surface
 
-		Emit (CaptureSource::CaptureImageCompletedEvent,
-		      new CaptureImageCompletedEventArgs (NULL, source));
+		CaptureImageCompletedEventArgs *args = new CaptureImageCompletedEventArgs (NULL);
+		args->EnsureManagedPeer ();
+
+		args->SetSource (source);
 
 		source->unref ();
+
+		Emit (CaptureSource::CaptureImageCompletedEvent, args);
 	}
 
 	// if we started the pal device strictly for an image capture

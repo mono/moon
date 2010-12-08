@@ -120,5 +120,16 @@ namespace System.Windows.Media {
 			return Deployment.Current.Types.TypeToKind (GetType ());
 		}
 #endregion
+
+		internal static Exception GetExceptionFromUnmanaged (IntPtr calldata)
+		{
+			try {
+				NativeMethods.capture_image_completed_event_args_get_error (calldata);
+				return null;
+			}
+			catch (Exception e) {
+				return e;
+			}
+		}
 	}
 }

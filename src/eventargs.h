@@ -554,8 +554,7 @@ private:
 /* @Namespace=None,ManagedDependencyProperties=None */
 class CaptureImageCompletedEventArgs : public EventArgs {
 public:
-	CaptureImageCompletedEventArgs (MoonError *error,
-					BitmapSource *source);
+	CaptureImageCompletedEventArgs (MoonError *error);
 
 	/* @GeneratePInvoke */
 	void GetError (MoonError *error) {
@@ -570,12 +569,14 @@ public:
 	/* @GeneratePInvoke */
 	BitmapSource *GetSource () { return source; }
 
+	void SetSource (BitmapSource *source);
+
 protected:
 	virtual ~CaptureImageCompletedEventArgs ();
 
 private:
 	MoonError *error;
-	BitmapSource *source;
+	WeakRef<BitmapSource> source;
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */

@@ -414,6 +414,7 @@ namespace Mono {
 			case Kind.BOUNCEEASE: return new BounceEase (raw, false);
 			case Kind.BORDER: return new Border (raw, false);
 			case Kind.CANVAS: return new Canvas (raw, false);
+			case Kind.CAPTUREIMAGECOMPLETEDEVENTARGS: return new CaptureImageCompletedEventArgs (raw, CaptureImageCompletedEventArgs.GetExceptionFromUnmanaged (raw), false);
 			case Kind.CIRCLEEASE: return new CircleEase (raw, false);
 			case Kind.COLLECTIONCHANGEDEVENTARGS: return new InternalCollectionChangedEventArgs (raw, false);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw, false);

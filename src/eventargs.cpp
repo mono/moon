@@ -590,28 +590,22 @@ SendCompletedEventArgs::~SendCompletedEventArgs ()
 // CaptureImageCompletedEventArgs
 //
 
-CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error,
-								BitmapSource *source)
-
-	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS)
+CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error)
+	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS),
+	  source (this, "Source")
 {
-	// FIXME: Store BitmapSource in a WeakRefManager
 	this->error = error ? new MoonError (*error) : NULL;
-	this->source = source;
-	Value *v = new Value (source);
-	if (source && !GetDeployment ()->IsShuttingDown ())
-		addStrongRef (this, v, "Source");
-	delete v;
 }
 
 CaptureImageCompletedEventArgs::~CaptureImageCompletedEventArgs ()
 {
 	delete error;
-	// FIXME: Store BitmapSource in a WeakRefManager
-	Value *v = new Value (source);
-	if (source && !GetDeployment ()->IsShuttingDown ())
-		clearStrongRef (this, v, "Source");
-	delete v;
+}
+
+void
+CaptureImageCompletedEventArgs::SetSource (BitmapSource *source)
+{
+	this->source = source;
 }
 
 //
