@@ -1249,7 +1249,7 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
-	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f state: %s\n", pea ? pea->progress : -1.0, GetStateName (state));
+	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f state: %s BufferingProgress: %f\n", pea ? pea->progress : -1.0, GetStateName (state), GetBufferingProgress ());
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (pea != NULL);

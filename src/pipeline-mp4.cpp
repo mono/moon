@@ -1958,7 +1958,7 @@ Mp4Demuxer::ReadStss (guint32 type, guint64 start, guint64 size, StblBox *stbl)
 	}
 
 	stss->parsed = true;
-	LOG_MP4 ("Mp4Demuxer::ReadStts (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ") [Done]\n", start, size);
+	LOG_MP4 ("Mp4Demuxer::ReadStss (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ") [Done]\n", start, size);
 
 	/* Skip whatever data is left */
 	source->SeekSet (start + size);
