@@ -928,11 +928,8 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 		}
 
 		if (!render_list->IsEmpty ()) {
-			if (!copy->IsEmpty()) {
-				ctx->Push (Context::Clip (copy->GetExtents ()));
-				ctx->Clear (background_color);
-				ctx->Pop ();
-			}
+			if (!copy->IsEmpty())
+				PaintBackground (ctx, copy, transparent, clear_transparent);
 
 			while (RenderNode *node = (RenderNode*)render_list->First()) {
 				node->Render (ctx);
@@ -946,9 +943,7 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 	}
 
 	if (!did_occlusion_culling) {
-		ctx->Push (Context::Clip (region->GetExtents ()));
-		ctx->Clear (background_color);
-		ctx->Pop ();
+		PaintBackground (ctx, region, transparent, clear_transparent);
 
 		for (int i = 0; i < layer_count; i ++) {
 			UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
@@ -1006,6 +1001,60 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 	printf ("%d UIElements rendered using normal painter's algorithm for Surface::Paint (%p)\n", uielements_rendered_with_painters, this);
 #endif
 }
+
+void
+Surface::PaintBackground (Context *ctx, Region *region, bool transparent, bool clear_transparent)
+{
+	//
+	// These are temporary while we change this to paint at the offset position
+	// instead of using the old approach of modifying the topmost UIElement (a no-no),
+	//
+	// The flag "transparent" is here because I could not
+	// figure out what is painting the background with white now.
+	// The change that made the white painting implicit instead of
+	// explicit is patch 80632.   I would appreciate any help in tracking down
+	// the proper way of making the background white when not running in 
+	// "transparent" mode.    
+	//
+	// Either exposing surface_set_trans to turn the next code is a hack, 
+	// or it is normal to request all code that wants to paint to manually
+	// clear the background to white beforehand.    For now am going with
+	// making this an explicit surface API.
+	//
+
+	ctx->Push (Context::Clip (region->GetExtents ()));
+	
+	if (transparent) {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+
+		if (clear_transparent) {
+			cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+			cairo_fill_preserve (cr);
+			cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+		}
+
+		region->Draw (cr);
+		cairo_set_source_rgba (cr,
+				       background_color->r,
+				       background_color->g,
+				       background_color->b,
+				       background_color->a);
+		cairo_fill_preserve (cr);
+
+		ctx->Pop ();
+	}	
+	else {
+		Color bg = Color (background_color->r,
+				  background_color->g,
+				  background_color->b,
+				  1.0);
+
+		ctx->Clear (&bg);
+	}
+
+	ctx->Pop ();
+}
+
 
 //
 // This will resize the surface (merely a convenience function for

@@ -366,6 +366,8 @@ private:
 	// are we headed for death?
 	bool zombie;
 
+	void PaintBackground (Context *ctx, Region *region, bool transparent, bool clear_transparent);
+
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();
