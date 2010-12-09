@@ -88,7 +88,7 @@ libmoonpluginxpi_la_LIBADD = $(top_builddir)/src/libmoon-static.la $(PLUGIN_XPI_
 libmoonpluginxpi_la_SOURCES = $(libmoonplugin_la_SOURCES)
 
 # custom install rule
-test-plugin: libmoonloader.la libmoonplugin.la
+install-test-plugin test-plugin: libmoonloader.la libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/libmoonloader.so
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
