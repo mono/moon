@@ -1126,6 +1126,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				 reg[k].writemask & 0x4 ? "z" : "",
 				 reg[k].writemask & 0x8 ? "w" : "");
 
+			ERROR_IF (reg[k].writemask == 0);
 			ERROR_IF (reg[k].dstmod == D3DSPD_SATURATE);
 
 			switch (reg[k].dstmod) {
