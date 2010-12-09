@@ -46,8 +46,6 @@ namespace System.Windows.Data {
 		static readonly Type [] simpleParseParams = new Type [] { typeof (string) };
 
 		FrameworkElement mentor;
-		UnmanagedPropertyChangeHandler mentorDataContextChangedCallback;
-
 		internal bool cached;
 		object cachedValue;
 		
@@ -169,8 +167,6 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
-			mentorDataContextChangedCallback = OnNativeMentorDataContextChangedSafe;
-
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
 			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView);
 			if (Binding.Mode != BindingMode.OneTime)
@@ -235,13 +231,13 @@ namespace System.Windows.Data {
 		void AttachDataContextHandlers (FrameworkElement mentor)
 		{
 			if (mentor != null)
-				NativeMethods.dependency_object_add_property_change_handler (mentor.native, FrameworkElement.DataContextProperty.Native, mentorDataContextChangedCallback, IntPtr.Zero);
+				mentor.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, OnNativeMentorDataContextChangedSafe);
 		}
 
 		void DetachDataContextHandlers (FrameworkElement mentor)
 		{
 			if (mentor != null)
-				NativeMethods.dependency_object_remove_property_change_handler (mentor.native, FrameworkElement.DataContextProperty.Native, mentorDataContextChangedCallback);
+				mentor.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, OnNativeMentorDataContextChangedSafe);
 		}
 
 		void AttachToNotifyError (INotifyDataErrorInfo element)
