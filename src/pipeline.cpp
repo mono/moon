@@ -2035,6 +2035,14 @@ ProgressiveSource::CheckReadRequests ()
 	gint64 write_pos;
 	VERIFY_MAIN_THREAD;
 
+	LOG_PIPELINE ("ProgressiveSource::CheckReadRequests (): brr_enabled: %i size: %" G_GINT64_FORMAT "\n", brr_enabled, size);
+
+	if (size == -1) {
+		/* We can't do byte-range-requests if we don't have a size */
+		printf ("ProgressiveSource::CheckReadRequests (): can't do brr because size is not known\n");
+		return;
+	}
+
 	if (brr_enabled == 0) {
 		/* Check if we should do byte rante requests (if the server sent a 'Accept-Ranges: bytes' header) */
 		if (cancellable != NULL && cancellable->GetRequest () != NULL && cancellable->GetRequest ()->GetResponse () != NULL) {
