@@ -48,19 +48,18 @@ namespace Mono {
 		/// </summary>
 		public static void EnsureManagedPeer (IntPtr forDO, Kind kind)
 		{
-			if (!deployment_initialized) {
-				deployment_initialized = true;
-				if (forDO == Deployment.Current.native) {
-					Console.WriteLine ("Returning");
-					return;
-				}
-			}
-
 			try {
-					NativeDependencyObjectHelper.CreateObject (kind, forDO);
+				if (!deployment_initialized) {
+					deployment_initialized = true;
+					if (forDO == Deployment.Current.native)
+						return;
+				}
+
+				var o = NativeDependencyObjectHelper.CreateObject (kind, forDO);
 #if DEBUG_REF
-					Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
+				Console.WriteLine ("Creating managed peer {0}/{1} for {2:X}", o.GetHashCode(), o.GetType(), forDO);
 #endif
+				GC.KeepAlive (o);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in ApplicationLauncher.EnsureManagedPeer: {0}", ex);

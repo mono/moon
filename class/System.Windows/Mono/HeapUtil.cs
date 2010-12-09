@@ -87,7 +87,7 @@ namespace Mono {
 
 				lock (NativeDependencyObjectHelper.objects) {
 					foreach (IntPtr nativeref in NativeDependencyObjectHelper.objects.Keys) {
-						Foo targetInfo;
+						Foo targetInfo = new Foo ();
 						GCHandle handle = NativeDependencyObjectHelper.objects[nativeref];
 
 						if (handle.Target == null)
@@ -151,7 +151,7 @@ namespace Mono {
 				else if (href.Name != "")
 					edge_label = href.Name;
 
-				Foo targetInfo;
+				Foo targetInfo = new Foo ();
 
 				targetInfo.obj = href.Referent;
 
