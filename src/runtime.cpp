@@ -2233,15 +2233,20 @@ Surface::HandleUIButtonPress (MoonButtonEvent *event)
 gboolean
 Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 {
+	Deployment *deployment = Deployment::GetCurrent ();
+	const char *rv = deployment->GetRuntimeVersion ();
+	
 	time_manager->InvokeTickCalls();
-
+	
+	if (!strncmp (rv, "1.", 2) || !strncmp (rv, "2.", 2)) {
+		// 2.0 and earlier don't support MouseWheel events
+		return false;
+	}
+	
 	delete mouse_event;
 	mouse_event = (MoonMouseEvent*)event->Clone();
 
-	bool handled = false;
-
-	handled = HandleMouseEvent (UIElement::MouseWheelEvent, true, true, true, mouse_event);
-
+	bool handled = HandleMouseEvent (UIElement::MouseWheelEvent, true, true, true, mouse_event);
 	UpdateCursorFromInputList ();
 
 	return handled;
