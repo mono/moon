@@ -82,10 +82,6 @@ namespace System.Windows {
 			get; set;
 		}
 
-		internal DependencyObject Parent {
-			get; set;
-		}
-
 		internal Uri ResourceBase {
 			get {
 				IntPtr native_uri = NativeMethods.dependency_object_get_resource_base (native);
@@ -143,13 +139,6 @@ namespace System.Windows {
 				TemplateOwner = o as DependencyObject;
 				return;
 			}
-			else if (name == "Parent") {
-#if DEBUG_REF
-				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
-#endif
-				Parent = o as DependencyObject;
-				return;
-			}
 
 			if (name == "" && strongRefs.ContainsKey (referent))
 				return;
@@ -188,14 +177,6 @@ namespace System.Windows {
 				Console.WriteLine ("Clearing ref named `{3}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
 #endif
 				TemplateOwner = null;
-				return;
-			}
-			else if (name == "Parent") {
-#if DEBUG_REF
-				var o = NativeDependencyObjectHelper.FromIntPtr (referent);
-				Console.WriteLine ("Clearing ref named `{3}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
-#endif
-				Parent = null;
 				return;
 			}
 
@@ -239,11 +220,6 @@ namespace System.Windows {
 				refs.Add (new HeapRef (true,
 						       TemplateOwner,
 						       "TemplateOwner"));
-
-			if (Parent != null)
-				refs.Add (new HeapRef (true,
-						       Parent,
-						       "Parent"));
 		}
 #endif
 	

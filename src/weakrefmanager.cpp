@@ -49,7 +49,7 @@ WeakRefBase::Clear ()
 	/* clear old field value */
 	if (field != NULL && field->AsEventObject ()) {
 		field->AsEventObject ()->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
-		if (obj && obj->clearStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
+		if (storeInManaged && obj && obj->clearStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since clearStrongRef is a managed callback */
 			// Don't strengthen the Value* because we're going to delete it next.
 			obj->clearStrongRef (obj, field, name);
@@ -85,7 +85,7 @@ WeakRefBase::Set (const EventObject *ptr)
 		field->AsEventObject ()->unref ();
 		field->SetNeedUnref (false);
 
-		if (obj && obj->addStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
+		if (storeInManaged && obj && obj->addStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since addStrongRef is a managed callback */
 			obj->addStrongRef (obj, field, name);
 		}

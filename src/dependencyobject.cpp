@@ -2525,21 +2525,21 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 
 DependencyObject::DependencyObject ()
 	: EventObject (Type::DEPENDENCY_OBJECT),
-	mentor (this, "Mentor"), parent (this, "Parent"), template_owner (this, "TemplateOwner")
+	mentor (this, "Mentor", false), parent (this, "Parent", false), template_owner (this, "TemplateOwner")
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
 	: EventObject (deployment, object_type),
-	mentor (this, "Mentor"), parent (this, "Parent"), template_owner (this, "TemplateOwner")
+	mentor (this, "Mentor", false), parent (this, "Parent", false), template_owner (this, "TemplateOwner")
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Type::Kind object_type)
 	: EventObject (object_type),
-	mentor (this, "Mentor"), parent (this, "Parent"), template_owner (this, "TemplateOwner")
+	mentor (this, "Mentor", false), parent (this, "Parent", false), template_owner (this, "TemplateOwner")
 {
 	Initialize ();
 }
