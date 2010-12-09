@@ -227,31 +227,62 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 	}
 	case ButtonPress:
 	case ButtonRelease: {
-		GdkEventButton button;
-
-		button.type = xev->type == ButtonPress ? GDK_BUTTON_PRESS : GDK_BUTTON_RELEASE;
-		button.window = NULL;
-		button.send_event = xev->xbutton.send_event;
-		button.time = xev->xbutton.time;
-		button.x = xev->xbutton.x;
-		button.y = xev->xbutton.y;
-		button.x_root = xev->xbutton.x_root;
-		button.y_root = xev->xbutton.y_root;
-		button.state = xev->xbutton.state;
-		button.button = xev->xbutton.button;
-		button.axes = NULL;
-		button.device = NULL;
-
-		if (xev->type == ButtonPress)
-			handled = MoonWindowGtk::container_button_press_callback (NULL, &button, this);
-		if (!handled) {
-			MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&button);
-			if (xev->type == ButtonPress)
-				handled = surface->HandleUIButtonPress (mevent);
-			else
-				handled = surface->HandleUIButtonRelease (mevent);
-
+		if (xev->xbutton.button == 4 || xev->xbutton.button == 5 || xev->xbutton.button == 6 || xev->xbutton.button == 7) {
+			GdkEventScroll scroll;
+			
+			if (xev->type == ButtonRelease)
+				break;
+			
+			scroll.type = GDK_SCROLL;
+			
+			switch (xev->xbutton.button) {
+			case 4: scroll.direction = GDK_SCROLL_UP; break;
+			case 5: scroll.direction = GDK_SCROLL_DOWN; break;
+			case 6: scroll.direction = GDK_SCROLL_LEFT; break;
+			case 7: scroll.direction = GDK_SCROLL_RIGHT; break;
+			}
+			
+			scroll.window = NULL;
+			scroll.send_event = xev->xbutton.send_event;
+			scroll.time = xev->xbutton.time;
+			scroll.x = xev->xbutton.x;
+			scroll.y = xev->xbutton.y;
+			scroll.x_root = xev->xbutton.x_root;
+			scroll.y_root = xev->xbutton.y_root;
+			scroll.state = xev->xbutton.state;
+			scroll.device = NULL; // XXX
+			
+			MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent *) runtime_get_windowing_system()->CreateEventFromPlatformEvent (&scroll);
+			handled = surface->HandleUIScroll (mevent);
 			delete mevent;
+			break;
+		} else {
+			GdkEventButton button;
+			
+			button.type = xev->type == ButtonPress ? GDK_BUTTON_PRESS : GDK_BUTTON_RELEASE;
+			button.window = NULL;
+			button.send_event = xev->xbutton.send_event;
+			button.time = xev->xbutton.time;
+			button.x = xev->xbutton.x;
+			button.y = xev->xbutton.y;
+			button.x_root = xev->xbutton.x_root;
+			button.y_root = xev->xbutton.y_root;
+			button.state = xev->xbutton.state;
+			button.button = xev->xbutton.button;
+			button.axes = NULL;
+			button.device = NULL;
+			
+			if (xev->type == ButtonPress)
+				handled = MoonWindowGtk::container_button_press_callback (NULL, &button, this);
+			if (!handled) {
+				MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&button);
+				if (xev->type == ButtonPress)
+					handled = surface->HandleUIButtonPress (mevent);
+				else
+					handled = surface->HandleUIButtonRelease (mevent);
+				
+				delete mevent;
+			}
 		}
 		break;
 	}
