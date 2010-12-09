@@ -1107,6 +1107,8 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		char                        dst[8][64];
 		char                        src[8][64];
 		char                        cast[8][64];
+		char                        mod[8][64];
+		char                        rvalue[64];
 		int                         j = i;
 
 		if (op.type == D3DSIO_COMMENT) {
@@ -1195,7 +1197,6 @@ GLContext::GetEffectProgram (PixelShader *ps)
 
 		switch (op.type) {
 			case D3DSIO_NOP:
-				g_string_sprintfa (s, ";\n");
 				break;
 				// case D3DSIO_BREAK: break;
 				// case D3DSIO_BREAKC: break;
@@ -1213,61 +1214,61 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_ELSE: break;
 				// case D3DSIO_ENDIF: break;
 			case D3DSIO_MOV:
-				g_string_sprintfa (s, "%s = %s(%s);\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "%s", src[0]);
 				break;
 			case D3DSIO_ADD:
-				g_string_sprintfa (s, "%s = %s(%s + %s);\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "%s + %s", src[0], src[1]);
 				break;
 			case D3DSIO_SUB:
-				g_string_sprintfa (s, "%s = %s(%s - %s);\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "%s - %s", src[0], src[1]);
 				break;
 			case D3DSIO_MAD:
-				g_string_sprintfa (s, "%s = %s(%s * %s + %s);\n", dst[0], cast[0], src[0], src[1], src[2]);
+				sprintf (rvalue, "%s * %s + %s", src[0], src[1], src[2]);
 				break;
 			case D3DSIO_MUL:
-				g_string_sprintfa (s, "%s = %s(%s * %s);\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "%s * %s", src[0], src[1]);
 				break;
 			case D3DSIO_RCP:
-				g_string_sprintfa (s, "%s = %s(1 / %s);\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "1 / %s", src[0]);
 				break;
 			case D3DSIO_RSQ:
-				g_string_sprintfa (s, "%s = %s(inversesqrt(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "inversesqrt(%s)", src[0]);
 				break;
 			case D3DSIO_DP3:
-				g_string_sprintfa (s, "%s = %s(dot3(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "dot3(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_DP4:
-				g_string_sprintfa (s, "%s = %s(dot(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "dot(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_MIN:
-				g_string_sprintfa (s, "%s = %s(min(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "min(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_MAX:
-				g_string_sprintfa (s, "%s = %s(max(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "max(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_SLT:
-				g_string_sprintfa (s, "%s = %s(slt(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "slt(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_SGE:
-				g_string_sprintfa (s, "%s = %s(sgt(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "sgt(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_EXP:
-				g_string_sprintfa (s, "%s = %s(exp(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "exp(%s)", src[0]);
 				break;
 			case D3DSIO_LOG:
-				g_string_sprintfa (s, "%s = %s(log(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "log(%s)", src[0]);
 				break;
 			case D3DSIO_LIT:
-				g_string_sprintfa (s, "%s = %s(lit(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "lit(%s)", src[0]);
 				break;
 			case D3DSIO_DST:
-				g_string_sprintfa (s, "%s = %s(dst(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "dst(%s, %s)", src[0], src[1]);
 				break;
 			case D3DSIO_LRP:
-				g_string_sprintfa (s, "%s = %s(mix(%s, %s, %s));\n", dst[0], cast[0], src[2], src[1], src[0]);
+				sprintf (rvalue, "mix(%s, %s, %s)", src[2], src[1], src[0]);
 				break;
 			case D3DSIO_FRC:
-				g_string_sprintfa (s, "%s = %s(fract(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "fract(%s)", src[0]);
 				break;
 				// case D3DSIO_M4x4: break;
 				// case D3DSIO_M4x3: break;
@@ -1275,24 +1276,24 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_M3x3: break;
 				// case D3DSIO_M3x2: break;
 			case D3DSIO_POW:
-				g_string_sprintfa (s, "%s = %s(pow(%s, %s));\n", dst[0], cast[0], src[0], src[1]);
+				sprintf (rvalue, "pow(%s, %s)", src[0], src[1]);
 				break;
 				// case D3DSIO_CRS: break;
 				// case D3DSIO_SGN: break;
 			case D3DSIO_ABS:
-				g_string_sprintfa (s, "%s = %s(abs(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "abs(%s)", src[0]);
 				break;
 			case D3DSIO_NRM:
-				g_string_sprintfa (s, "%s = %s(nrm(%s));\n", dst[0], cast[0], src[0]);
+				sprintf (rvalue, "nrm(%s)", src[0]);
 				break;
 			case D3DSIO_SINCOS:
-				g_string_sprintfa (s, "%s = %s(sincos(%s, %s, %s));\n", dst[0], cast[0], src[0], src[1], src[2]);
+				sprintf (rvalue, "sincos(%s, %s, %s)", src[0], src[1], src[2]);
 				break;
 				// case D3DSIO_MOVA: break;
 				// case D3DSIO_TEXCOORD: break;
 				// case D3DSIO_TEXKILL: break;
 			case D3DSIO_TEX:
-				g_string_sprintfa (s, "%s = %s(texture2D(%s, vec2(%s)));\n", dst[0], cast[0], src[1], src[0]);
+				sprintf (rvalue, "texture2D(%s, vec2(%s))", src[1], src[0]);
 				break;
 				// case D3DSIO_TEXBEM: break;
 				// case D3DSIO_TEXBEML: break;
@@ -1308,7 +1309,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_EXPP: break;
 				// case D3DSIO_LOGP: break;
 			case D3DSIO_CND:
-				g_string_sprintfa (s, "%s = %s(cnd(%s, %s, %s));\n", dst[0], cast[0], src[0], src[1], src[2]);
+				sprintf (rvalue, "cnd(%s, %s, %s)", src[0], src[1], src[2]);
 				break;
 				// case D3DSIO_TEXREG2RGB: break;
 				// case D3DSIO_TEXDP3TEX: break;
@@ -1318,11 +1319,11 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_TEXDEPTH: break;
 			case D3DSIO_CMP:
 				/* direct3d does src0 >= 0 */
-				g_string_sprintfa (s, "%s = %s(cmp(%s, %s, %s));\n", dst[0], cast[0], src[0], src[2], src[1]);
+				sprintf (rvalue, "cmp(%s, %s, %s)", src[0], src[2], src[1]);
 				break;
 				// case D3DSIO_BEM: break;
 			case D3DSIO_DP2ADD:
-				g_string_sprintfa (s, "%s = %s(dp2a(%s, %s, %s));\n", dst[0], cast[0], src[0], src[1], src[2]);
+				sprintf (rvalue, "dp2a(%s, %s, %s)", src[0], src[1], src[2]);
 				break;
 				// case D3DSIO_DSX: break;
 				// case D3DSIO_DSY: break;
@@ -1357,6 +1358,11 @@ GLContext::GetEffectProgram (PixelShader *ps)
 			default:
 				break;
 		}
+
+		for (unsigned k = 0; k < op.meta.ndstparam; k++)
+			g_string_sprintfa (s,
+					   "%s = %s(%s(%s));\n",
+					   dst[k], cast[k], mod[k], rvalue);
 	}
 	
 	g_string_free (s, 1);
