@@ -925,8 +925,11 @@ GLContext::GetEffectProgram (PixelShader *ps)
 					 def.reg.regtype,
 					 def.reg.regnum);
 
+				// TODO: pass constants to shader through a
+				// constant buffer instead of converting them
+				// to strings and possibly losing precision
 				g_string_sprintfa (s,
-						   "const vec4 %s = vec4(%.g, %.g, %.g, %.g);\n",
+						   "const vec4 %s = vec4(%.22f, %.22f, %.22f, %.22f);\n",
 						   src_reg[def.reg.regtype][def.reg.regnum],
 						   def.v[0], def.v[1], def.v[2], def.v[3]);
 			} break;
