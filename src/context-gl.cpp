@@ -867,6 +867,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 	int           last_constant = -1;
 	int           n_sincos = 0;
 	int           n_cmp = 0;
+	int           n_dp2a = 0;
 	int           n = 0;
 
 	// TODO: release effect shaders when destroyed
@@ -1030,8 +1031,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 					  op.type == D3DSIO_LIT ||
 					  op.type == D3DSIO_DST ||
 					  op.type == D3DSIO_NRM ||
-					  op.type == D3DSIO_CND ||
-					  op.type == D3DSIO_DP2ADD);
+					  op.type == D3DSIO_CND);
 
 				switch (op.type) {
 					case D3DSIO_SINCOS:
@@ -1039,6 +1039,10 @@ GLContext::GetEffectProgram (PixelShader *ps)
 						break;
 					case D3DSIO_CMP:
 						n_cmp++;
+						break;
+					case D3DSIO_DP2ADD:
+						n_dp2a++;
+						break;
 					default:
 						break;
 				}
@@ -1093,6 +1097,16 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		g_string_sprintfa (s, "bvec4 b;\n");
 		g_string_sprintfa (s, "b = lessThan(src0, zero);\n");
 		g_string_sprintfa (s, "return mix(src2, src1, vec4 (b));\n");
+		g_string_sprintfa (s, "}\n");
+	}
+
+	if (n_dp2a) {
+		g_string_sprintfa (s, "vec4 dp2a(in vec4 src0, "
+				   "in vec4 src1, in vec4 src2)\n");
+		g_string_sprintfa (s, "{\n");
+		g_string_sprintfa (s, "float v;");
+		g_string_sprintfa (s, "v = src0.x * src1.x + src0.y * src1.y;\n");
+		g_string_sprintfa (s, "return vec4(v + src2.x);\n");
 		g_string_sprintfa (s, "}\n");
 	}
 
