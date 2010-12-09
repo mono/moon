@@ -1183,6 +1183,10 @@ Deployment::GetPropertyChangedEventArgs ()
 void
 Deployment::ReleasePropertyChangedEventArgs (PropertyChangedEventArgs *args)
 {
+	args->SetProperty (NULL);
+	args->SetId (0);
+	args->SetOldValue (NULL);
+	args->SetNewValue (NULL);
 	num_outstanding_changes --;
 }
 #endif
