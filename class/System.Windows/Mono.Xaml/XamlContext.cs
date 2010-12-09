@@ -136,15 +136,6 @@ namespace Mono.Xaml
 
 			return null;
 		}
-
-		~XamlContext ()
-		{
-			Free ();
-		}
-
-		internal void Free ()
-		{
-		}
 	}
 }
 
