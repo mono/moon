@@ -605,7 +605,7 @@ FrameworkElement::MeasureWithError (Size availableSize, MoonError *error)
 	size = ApplySizeConstraints (size);
 
 	if (measure_cb)
-		size = (*measure_cb)(size, error);
+		size = (*measure_cb)(this, size, error);
 	else
 		size = MeasureOverrideWithError (size, error);
 
@@ -742,7 +742,7 @@ FrameworkElement::ArrangeWithError (Rect finalRect, MoonError *error)
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
 
 	if (arrange_cb)
-		response = (*arrange_cb)(offer, error);
+		response = (*arrange_cb)(this,offer, error);
 	else
 		response = ArrangeOverrideWithError (offer, error);
 

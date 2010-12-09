@@ -74,14 +74,10 @@ namespace System.Windows {
 			}
 		}
 
-		/* 
-		 * XXX these are marked internal because making them private seems
-		 * to cause the GC to collect them
-		 */
-		internal MeasureOverrideCallback measure_cb;
-		internal ArrangeOverrideCallback arrange_cb;
-		internal GetDefaultTemplateCallback get_default_template_cb;
-		internal LoadedCallback loaded_hook_cb;
+		static MeasureOverrideCallback measure_cb = InvokeMeasureOverride;
+		static ArrangeOverrideCallback arrange_cb = InvokeArrangeOverride;
+		static GetDefaultTemplateCallback get_default_template_cb = InvokeGetDefaultTemplate;
+		static LoadedCallback loaded_hook_cb = InvokeLoadedHook;
 		EventHandler layoutUpdated;
 		IWeakListener layoutUpdatedListener;
 
@@ -132,14 +128,20 @@ namespace System.Windows {
 			// been instantiated as a visual tree.
 			Events.AddHandler (this, EventIds.FrameworkElement_TemplateAppliedEvent, template_applied);
 
+			MeasureOverrideCallback measure = null;
+			ArrangeOverrideCallback arrange = null;
+			GetDefaultTemplateCallback getTemplate = null;
+			LoadedCallback loaded = null;
+
 			if (OverridesLayoutMethod ("MeasureOverride"))
-				measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
+				measure = FrameworkElement.measure_cb;
 			if (OverridesLayoutMethod ("ArrangeOverride"))
-				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
+				arrange = FrameworkElement.arrange_cb;
 			if (OverridesGetDefaultTemplate ())
-				get_default_template_cb = InvokeGetDefaultTemplate;
-			loaded_hook_cb = InvokeLoadedHook;
-			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, get_default_template_cb, loaded_hook_cb);
+				getTemplate = FrameworkElement.get_default_template_cb;
+			loaded = FrameworkElement.loaded_hook_cb;
+
+			NativeMethods.framework_element_register_managed_overrides (native, measure, arrange, getTemplate, loaded);
 		}
 
 		internal void ApplyDefaultStyle ()
@@ -221,13 +223,16 @@ namespace System.Windows {
 
 		}
 
-		private Size InvokeMeasureOverride (Size availableSize, ref MoonError error)
+		static Size InvokeMeasureOverride (IntPtr fwe_ptr, Size availableSize, ref MoonError error)
 		{
+			FrameworkElement fe = null;
 			try {
-				return MeasureOverride (availableSize);
+				fe = (FrameworkElement) NativeDependencyObjectHelper.Lookup (fwe_ptr);
+				return fe.MeasureOverride (availableSize);
 			} catch (Exception ex) {
 				try {
-					LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
+					if (fe != null)
+						LayoutInformation.SetLayoutExceptionElement (Deployment.Current.Dispatcher, fe);
 					error = new MoonError (ex);
 				} catch (Exception ex2) {
 					try {
@@ -240,13 +245,16 @@ namespace System.Windows {
 			return new Size (); 
 		}
 
-		private Size InvokeArrangeOverride (Size finalSize, ref MoonError error)
+		static Size InvokeArrangeOverride (IntPtr fwe_ptr, Size finalSize, ref MoonError error)
 		{
+			FrameworkElement fe = null;
 			try {
-				return ArrangeOverride (finalSize);
+				fe = (FrameworkElement) NativeDependencyObjectHelper.Lookup (fwe_ptr);
+				return fe.ArrangeOverride (finalSize);
 			} catch (Exception ex) {
 				try {
-					LayoutInformation.SetLayoutExceptionElement (Dispatcher, this);
+					if (fe != null)
+						LayoutInformation.SetLayoutExceptionElement (Deployment.Current.Dispatcher, fe);
 					error = new MoonError (ex);
 				} catch (Exception ex2) {
 					try {

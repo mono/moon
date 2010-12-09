@@ -20,9 +20,9 @@
 namespace Moonlight {
 
 /* @CBindingRequisite */
-typedef Size (*MeasureOverrideCallback)(Size availableSize, MoonError *error);
+typedef Size (*MeasureOverrideCallback)(FrameworkElement *fwe, Size availableSize, MoonError *error);
 /* @CBindingRequisite */
-typedef Size (*ArrangeOverrideCallback)(Size finalSize, MoonError *error);
+typedef Size (*ArrangeOverrideCallback)(FrameworkElement *fwe, Size finalSize, MoonError *error);
 /* @CBindingRequisite */
 typedef UIElement *(*GetDefaultTemplateCallback)(FrameworkElement *element);
 /* @CBindingRequisite */
