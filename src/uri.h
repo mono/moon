@@ -47,6 +47,7 @@ struct UriFunctions {
 	System_Uri_GetInt32Property get_port;
 	System_Uri_GetStringProperty get_fragment;
 	System_Uri_GetStringProperty get_path;
+	System_Uri_GetStringProperty get_unescaped_path;
 	System_Uri_GetStringProperty get_query;
 	System_Uri_GetStringProperty get_original_string;
 	System_Uri_GetBooleanProperty get_is_absolute;
@@ -104,6 +105,7 @@ public:
 	const char *GetHost () const;
 	const char *GetFragment () const;
 	const char *GetPath () const;
+	const char *GetUnescapedPath () const;
 	const char *GetQuery () const;
 	const char *GetOriginalString () const;
 	int GetPort () const;
@@ -115,6 +117,7 @@ private:
 	mutable char *scheme;
 	mutable char *host;
 	mutable char *path;
+	mutable char *unescaped_path;
 	mutable char *query;
 	mutable char *fragment;
 	mutable char *original_string;
@@ -126,6 +129,7 @@ private:
 	mutable bool scheme_fetched:1;
 	mutable bool host_fetched:1;
 	mutable bool path_fetched:1;
+	mutable bool unescaped_path_fetched:1;
 	mutable bool query_fetched:1;
 	mutable bool fragment_fetched:1;
 	mutable bool original_string_fetched:1;

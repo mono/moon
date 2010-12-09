@@ -157,6 +157,7 @@ namespace Mono {
 		public System_Uri_GetInt32Property get_port;
 		public System_Uri_GetStringProperty get_fragment;
 		public System_Uri_GetStringProperty get_path;
+		public System_Uri_GetStringProperty get_unescaped_path;
 		public System_Uri_GetStringProperty get_query;
 		public System_Uri_GetStringProperty get_original_string;
 		public System_Uri_GetBooleanProperty get_is_absolute;

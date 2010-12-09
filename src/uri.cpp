@@ -38,6 +38,7 @@ Uri::~Uri ()
 	g_free (scheme); scheme = NULL;
 	g_free (host); host = NULL;
 	g_free (path); path = NULL;
+	g_free (unescaped_path); unescaped_path = NULL;
 	g_free (query); query = NULL;
 	g_free (fragment); fragment = NULL;
 	g_free (original_string); original_string = NULL;
@@ -56,6 +57,7 @@ Uri::Init ()
 	host = NULL;
 	port = 0;
 	path = NULL;
+	unescaped_path = NULL;
 	query = NULL;
 	fragment = NULL;
 	original_string = NULL;
@@ -66,6 +68,7 @@ Uri::Init ()
 	scheme_fetched = false;
 	host_fetched = false;
 	path_fetched = false;
+	unescaped_path_fetched = false;
 	query_fetched = false;
 	fragment_fetched = false;
 	original_string_fetched = false;
@@ -255,6 +258,16 @@ Uri::GetPath () const
 		path_fetched = true;
 	}
 	return path;
+}
+
+const char *
+Uri::GetUnescapedPath () const
+{
+	if (!unescaped_path_fetched && gchandle.IsAllocated ()) {
+		unescaped_path = deployment->GetUriFunctions ()->get_unescaped_path (gchandle.ToIntPtr ());
+		unescaped_path_fetched = true;
+	}
+	return unescaped_path;
 }
 
 const char *

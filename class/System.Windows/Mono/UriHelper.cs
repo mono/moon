@@ -192,6 +192,38 @@ namespace Mono
 			}
 		}
 
+		private static string GetPath (Uri uri)
+		{
+			if (!uri.IsAbsoluteUri) {
+				/* Can't get the path of relative uris with the managed Uri class */
+				return uri.OriginalString;
+			}
+
+			return uri.AbsolutePath;
+		}
+
+		private static IntPtr GetUnescapedPath (IntPtr instance)
+		{
+			try {
+				Uri uri;
+
+				if (instance == IntPtr.Zero)
+					return IntPtr.Zero;
+
+				uri = FromGCHandle (instance);
+
+				return Value.StringToIntPtr (Uri.UnescapeDataString (GetPath (uri)));
+			} catch (Exception ex) {
+#if DEBUG
+				try {
+					Console.WriteLine ("UriHelper.GetUnescapedPath ({1}): {0}", ex.Message, FromGCHandle (instance).ToString ());
+				} catch {
+				}
+#endif
+				return IntPtr.Zero;
+			}
+		}
+
 		private static IntPtr GetPath (IntPtr instance)
 		{
 			try {
@@ -202,12 +234,7 @@ namespace Mono
 
 				uri = FromGCHandle (instance);
 
-				if (!uri.IsAbsoluteUri) {
-					/* Can't get the path of relative uris with the managed Uri class */
-					return Value.StringToIntPtr (uri.OriginalString);
-				}
-
-				return Value.StringToIntPtr (uri.AbsolutePath);
+				return Value.StringToIntPtr (GetPath (uri));
 			} catch (Exception ex) {
 #if DEBUG
 				try {
@@ -398,6 +425,7 @@ namespace Mono
 			functions.get_port = GetPort;
 			functions.get_fragment = GetFragment;
 			functions.get_path = GetPath;
+			functions.get_unescaped_path = GetUnescapedPath;
 			functions.get_query = GetQuery;
 			functions.get_original_string = GetOriginalString;
 			functions.get_is_absolute = GetIsAbsolute;

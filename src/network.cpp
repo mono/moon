@@ -212,7 +212,7 @@ HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, Downlo
 	}
 
 	if (request_uri->IsScheme ("file")) {
-		local_file = g_strdup (request_uri->GetPath ());
+		local_file = g_strdup (request_uri->GetUnescapedPath ());
 		NotifyFinalUri (this->request_uri->ToString ());
 	}
 
