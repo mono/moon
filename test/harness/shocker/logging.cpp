@@ -295,24 +295,36 @@ void TestLogger_LogWarning (const char *message)
 
 void TestLogger_GetTestDefinition (bool isJson, gunichar2 **result)
 {
-	char *utf8 = LogProvider::GetInstance ()->GetTestDefinition (isJson);
+	char *utf8;
+	static gunichar2 *utf16 = NULL;
+
+	g_free (utf16);
+	utf16 = NULL;
+
+	utf8 = LogProvider::GetInstance ()->GetTestDefinition (isJson);
 	if (utf8 != NULL) {
-		*result = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
-	} else {
-		*result = NULL;
+		utf16 = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
+		g_free (utf8);
 	}
-	g_free (utf8);
+
+	*result = utf16;
 }
 
 void TestLogger_GetRuntimePropertyValue (const char *propertyName, gunichar2 **value)
 {
-	char *utf8 = Harness::GetRuntimePropertyValue (propertyName);
+	char *utf8;
+	static gunichar2 *last_result = NULL;
+
+	g_free (last_result);
+	last_result = NULL;
+
+	utf8 = Harness::GetRuntimePropertyValue (propertyName);
 	if (utf8 != NULL) {
-		*value = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
-	} else {
-		*value = NULL;
+		last_result = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
 	}
 	g_free (utf8);
+
+	*value = last_result;
 }
 
 void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *value)
@@ -322,12 +334,17 @@ void TestLogger_SetRuntimePropertyValue (const char *propertyName, const char *v
 
 void TestHost_GetTestDirectory (gunichar2 **result)
 {
-	const char *utf8 = LogProvider::GetInstance ()->GetTestDirectory ();
-	if (utf8 != NULL) {
-			*result = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
-	} else {
-			*result = NULL;
+	const char *utf8;
+	static gunichar2 *utf16 = NULL;
+
+	if (utf16 == NULL) {
+		utf8 = LogProvider::GetInstance ()->GetTestDirectory ();
+		if (utf8 != NULL) {
+			utf16 = g_utf8_to_utf16 (utf8, -1, NULL, NULL, NULL);
+		}
 	}
+
+	*result = utf16;
 }
 
 
