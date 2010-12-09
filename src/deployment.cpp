@@ -1501,7 +1501,16 @@ Deployment::ShutdownManaged ()
 		
 		/* Unload the domain */
 		mono_domain_try_unload (domain, (MonoObject **) &exc);
-		
+
+		if (exc) {
+			shutdown_state = ShutdownFailed;
+			MonoObject *msg = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
+			char *message = mono_string_to_utf8 ((MonoString *) msg);
+			fprintf (stderr, "Moonlight: Exception while unloading appdomain: %s\n", message);
+			g_free (message);
+			break;
+		}
+
 		/* Set back to our current domain while emitting AppDomainUnloadedEvent */
 		mono_domain_set (domain, TRUE);
 		appdomain_unloaded = true;
@@ -1519,12 +1528,6 @@ Deployment::ShutdownManaged ()
 		/* CHECK: do we need to call mono_domain_free? */
 		//domain = NULL;
 
-		if (exc) {
-			shutdown_state = ShutdownFailed;
-			fprintf (stderr, "Moonlight: Exception while unloading appdomain.\n"); // TODO: print exception message/details
-			break;
-		}
-		
 		/* AppDomain successfully unloaded */
 		LOG_DEPLOYMENT ("Deployment::ShutdownManaged (): appdomain successfully unloaded.\n");
 		
