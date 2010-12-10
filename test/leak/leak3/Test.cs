@@ -16,16 +16,23 @@ namespace Leak
 {
 	public partial class Page
 	{
+		class SelfReferencingControl : ContentControl
+		{
+			public void AttachToLayoutUpdated ()
+			{
+				LayoutUpdated += delegate { Console.WriteLine (this); };
+			}
+		}
+		
 		void RunTest ()
 		{
-			var c = new ContentControl ();
+			var c = new SelfReferencingControl ();
 			WeakControl = c;
-			WeakControl.LayoutUpdated += delegate { GC.KeepAlive (c); };
-
+			c.AttachToLayoutUpdated ();
 			
 			GCAndInvoke (() => {
 				if (WeakControl != null)
-					Fail ("FailureReason");
+					Fail ("Control should be GC'ed");
 				else
 					Succeed ();
 			});
