@@ -1358,9 +1358,9 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_SETP: break;
 				// case D3DSIO_TEXLDL: break;
 			case D3DSIO_END:
-				g_string_sprintfa (s, "}\n");
+				g_string_sprintfa (s, "}");
 
-				g_warning ("shader: %s", s->str);
+				g_warning ("GLSL shader:\n%s", s->str);
 
 				fs = CreateShader (GL_FRAGMENT_SHADER,
 						   1,
