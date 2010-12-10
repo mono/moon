@@ -264,29 +264,27 @@ GLContext::CreateShader (GLenum       shaderType,
 {
 	GLuint shader;
 	GLint  status;
+	GLint  infoLen = 0;
 
 	shader = glCreateShader (shaderType);
 	glShaderSource (shader, count, str, NULL);
 	glCompileShader (shader);
 	glGetShaderiv (shader, GL_COMPILE_STATUS, &status);
-	if (!status) {
-		GLint infoLen = 0;
+	glGetShaderiv (shader, GL_INFO_LOG_LENGTH, &infoLen);
+	if (infoLen > 1) {
+		char *infoLog = (char *) g_malloc (infoLen);
 
-		glGetShaderiv (shader, GL_INFO_LOG_LENGTH, &infoLen);
-		if (infoLen > 1) {
-			char *infoLog = (char *) g_malloc (infoLen);
+		glGetShaderInfoLog (shader, infoLen, NULL, infoLog);
+		g_warning ("glCompileShader:\n%s\n", infoLog);
 
-			glGetShaderInfoLog (shader, infoLen, NULL, infoLog);
-			g_warning ("Error compiling shader:\n%s\n", infoLog);
-
-			g_free (infoLog);
-		}
-
-		glDeleteShader (shader);
-		return 0;
+		g_free (infoLog);
 	}
 
-	return shader;
+	if (status)
+		return shader;
+
+	glDeleteShader (shader);
+	return 0;
 }
 
 GLuint
