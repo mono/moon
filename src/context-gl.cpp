@@ -1104,7 +1104,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		g_string_sprintfa (s, "vec4 dp2a(in vec4 src0, "
 				   "in vec4 src1, in vec4 src2)\n");
 		g_string_sprintfa (s, "{\n");
-		g_string_sprintfa (s, "float v;");
+		g_string_sprintfa (s, "float v;\n");
 		g_string_sprintfa (s, "v = src0.x * src1.x + src0.y * src1.y;\n");
 		g_string_sprintfa (s, "return vec4(v + src2.x);\n");
 		g_string_sprintfa (s, "}\n");
