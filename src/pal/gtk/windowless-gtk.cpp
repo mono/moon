@@ -148,8 +148,8 @@ MoonWindowlessGtk::ProcessUpdates ()
 gboolean
 MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 {
+	MoonEventStatus handled = MoonEventNotHandled;
 	XEvent *xev = (XEvent*)platformEvent;
-	gboolean handled = FALSE;
 	
 	SetCurrentDeployment ();
 
@@ -192,7 +192,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 
 				PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), false);
 
-				handled = TRUE;
+				handled = MoonEventHandled;
 
 				gdk_region_destroy (expose.region);
 			} else {
@@ -272,9 +272,9 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 			button.axes = NULL;
 			button.device = NULL;
 			
-			if (xev->type == ButtonPress)
-				handled = MoonWindowGtk::container_button_press_callback (NULL, &button, this);
-			if (!handled) {
+			if (xev->type == ButtonPress && MoonWindowGtk::container_button_press_callback (NULL, &button, this))
+				handled = MoonEventHandled;
+			if (handled == MoonEventNotHandled) {
 				MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&button);
 				if (xev->type == ButtonPress)
 					handled = surface->HandleUIButtonPress (mevent);
@@ -368,7 +368,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		break;
 	}
 
-	return handled;
+	return handled == MoonEventHandled;
 }
 
 void

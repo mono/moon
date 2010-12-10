@@ -2140,7 +2140,7 @@ Surface::FullScreenKeyHandled (MoonKeyEvent *key)
 {
 	if (!GetFullScreen ())
 		return false;
-		
+	
 	// If we're in fullscreen mode no key events are passed through.
 	// We only handle Esc, to exit fullscreen mode.
 
@@ -2167,11 +2167,11 @@ Surface::FullScreenKeyHandled (MoonKeyEvent *key)
 	}
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUIFocusIn (MoonFocusEvent *event)
 {
 	if (IsZombie ())
-		return false;
+		return MoonEventNotHandled;
 
 	time_manager->InvokeTickCalls();
 
@@ -2181,14 +2181,14 @@ Surface::HandleUIFocusIn (MoonFocusEvent *event)
 		delete focus_to_root;
 	}
 
-	return false;
+	return MoonEventNotHandled;
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUIFocusOut (MoonFocusEvent *event)
 {
 	if (IsZombie ())
-		return false;
+		return MoonEventNotHandled;
 
 	time_manager->InvokeTickCalls();
 
@@ -2198,16 +2198,16 @@ Surface::HandleUIFocusOut (MoonFocusEvent *event)
 		delete focus_to_root;
 	}
 
-	return false;
+	return MoonEventNotHandled;
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
 	if (event->GetButton() != 1 && event->GetButton() != 3)
-		return false;
+		return MoonEventNotHandled;
 
 	SetUserInitiatedEvent (true);
 	
@@ -2226,11 +2226,13 @@ Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 	// XXX MS appears to do this here, which is completely stupid.
 	if (captured)
 		PerformReleaseCapture ();
-
-	return !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->GetButton () == 3);
+	
+	bool handled = !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->GetButton () == 3);
+	
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUIButtonPress (MoonButtonEvent *event)
 {
 	bool handled;
@@ -2241,7 +2243,7 @@ Surface::HandleUIButtonPress (MoonButtonEvent *event)
 	time_manager->InvokeTickCalls();
 	
 	if (event->GetButton () != 1 && event->GetButton() != 3)
-		return false;
+		return MoonEventNotHandled;
 
 	SetUserInitiatedEvent (true);
 
@@ -2254,7 +2256,7 @@ Surface::HandleUIButtonPress (MoonButtonEvent *event)
 	case 2:
 		if (event->GetButton() != 1) {
 			SetUserInitiatedEvent (false);
-			return false;
+			return MoonEventNotHandled;
 		}
 		
 		handled = HandleMouseEvent (UIElement::MouseLeftButtonMultiClickEvent, false, false, true, mouse_event);
@@ -2276,10 +2278,10 @@ Surface::HandleUIButtonPress (MoonButtonEvent *event)
 	UpdateCursorFromInputList ();
 	SetUserInitiatedEvent (false);
 
-	return handled;
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 {
 	Deployment *deployment = Deployment::GetCurrent ();
@@ -2289,7 +2291,7 @@ Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 	
 	if (!strncmp (rv, "1.", 2) || !strncmp (rv, "2.", 2)) {
 		// 2.0 and earlier don't support MouseWheel events
-		return false;
+		return MoonEventNotSupported;
 	}
 	
 	delete mouse_event;
@@ -2298,10 +2300,10 @@ Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 	bool handled = HandleMouseEvent (UIElement::MouseWheelEvent, true, true, true, mouse_event);
 	UpdateCursorFromInputList ();
 
-	return handled;
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUIMotion (MoonMotionEvent *event)
 {
 	time_manager->InvokeTickCalls();
@@ -2312,10 +2314,10 @@ Surface::HandleUIMotion (MoonMotionEvent *event)
 	bool handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, mouse_event);
 	UpdateCursorFromInputList ();
 
-	return handled;
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
-gboolean
+MoonEventStatus
 Surface::HandleUICrossing (MoonCrossingEvent *event)
 {
 	bool handled;
@@ -2340,7 +2342,6 @@ Surface::HandleUICrossing (MoonCrossingEvent *event)
 		handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, mouse_event);
 
 		UpdateCursorFromInputList ();
-	
 	} else {
 		// forceably emit MouseLeave on the current input
 		// list..  the "new" list computed by HandleMouseEvent
@@ -2361,7 +2362,7 @@ Surface::HandleUICrossing (MoonCrossingEvent *event)
 		}
 	}
 
-	return handled;
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
 void
@@ -2411,7 +2412,7 @@ Surface::ElementPathToRoot (UIElement *source)
 	return list;
 }
 
-gboolean 
+MoonEventStatus
 Surface::HandleUIKeyPress (MoonKeyEvent *event)
 {
 	time_manager->InvokeTickCalls();
@@ -2422,9 +2423,9 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 		// If we are running an SL 1.0 application, then key repeats are dropped
 		Deployment *deployment = Deployment::GetCurrent ();
 		if (!deployment->IsLoadedFromXap ())
-			return true;
+			return MoonEventHandled;
 	} else if (FullScreenKeyHandled (event)) {
-		return true;
+		return MoonEventHandled;
 	}
 	
 #if DEBUG_MARKER_KEY
@@ -2435,7 +2436,7 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 		else
 			printf ("<--- DEBUG MARKER KEY OUT (%f) --->\n", get_now () / 10000000.0);
 		debug_marker_key_in = ! debug_marker_key_in;
-		return true;
+		return MoonEventHandled;
 	}
 #endif
 	
@@ -2457,17 +2458,17 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 
 	SetUserInitiatedEvent (false);
 	
-	return handled;
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
-gboolean 
+MoonEventStatus
 Surface::HandleUIKeyRelease (MoonKeyEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
 	if (FullScreenKeyHandled (event))
-		return true;
-
+		return MoonEventHandled;
+	
 	SetUserInitiatedEvent (true);
 	bool handled = false;
 
@@ -2487,7 +2488,7 @@ Surface::HandleUIKeyRelease (MoonKeyEvent *event)
 	
 	SetUserInitiatedEvent (false);
 	
-	return handled;
+	return handled ? MoonEventHandled : MoonEventNotHandled;
 }
 
 void

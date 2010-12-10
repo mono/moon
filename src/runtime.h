@@ -176,6 +176,12 @@ typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float ns
 typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *user_data);
 typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, void *user_data);
 
+enum MoonEventStatus {
+	MoonEventNotSupported = -1,
+	MoonEventNotHandled,
+	MoonEventHandled
+};
+
 /* @Namespace=None,ManagedEvents=Manual */
 class Surface : public EventObject {
 public:
@@ -318,15 +324,16 @@ public:
 	UIElement *debug_selected_element;
 #endif
 
-	gboolean HandleUIMotion (MoonMotionEvent *event);
-	gboolean HandleUICrossing (MoonCrossingEvent *event);
-	gboolean HandleUIKeyPress (MoonKeyEvent *event);
-	gboolean HandleUIKeyRelease (MoonKeyEvent *event);
-	gboolean HandleUIButtonRelease (MoonButtonEvent *event);
-	gboolean HandleUIButtonPress (MoonButtonEvent *event);
-	gboolean HandleUIScroll (MoonScrollWheelEvent *event);
-	gboolean HandleUIFocusIn (MoonFocusEvent *event);
-	gboolean HandleUIFocusOut (MoonFocusEvent *event);
+	MoonEventStatus HandleUIMotion (MoonMotionEvent *event);
+	MoonEventStatus HandleUICrossing (MoonCrossingEvent *event);
+	MoonEventStatus HandleUIKeyPress (MoonKeyEvent *event);
+	MoonEventStatus HandleUIKeyRelease (MoonKeyEvent *event);
+	MoonEventStatus HandleUIButtonRelease (MoonButtonEvent *event);
+	MoonEventStatus HandleUIButtonPress (MoonButtonEvent *event);
+	MoonEventStatus HandleUIScroll (MoonScrollWheelEvent *event);
+	MoonEventStatus HandleUIFocusIn (MoonFocusEvent *event);
+	MoonEventStatus HandleUIFocusOut (MoonFocusEvent *event);
+	
 	void HandleUIWindowAllocation (bool emit_resize);
 	void HandleUIWindowAvailable ();
 	void HandleUIWindowUnavailable ();

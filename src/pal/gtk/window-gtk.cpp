@@ -708,17 +708,18 @@ gboolean
 MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
-
+	MoonEventStatus status = MoonEventNotHandled;
+	
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
 		MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIScroll (mevent);
+		status = window->surface->HandleUIScroll (mevent);
 		delete mevent;
 	}
-	// ignore HandleUIScroll's return value, and always
-	// return true here, or it gets bubbled up to firefox.
-	return true;
+	// HandleUIScroll's return value is a special case: if it
+	// returns NotSupported, then we need to bubble up to firefox.
+	return status != MoonEventNotSupported;
 }
 
 gboolean
