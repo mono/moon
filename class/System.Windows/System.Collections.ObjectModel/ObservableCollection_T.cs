@@ -38,6 +38,8 @@ namespace System.Collections.ObjectModel {
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		protected event PropertyChangedEventHandler PropertyChanged;
 
+		bool in_handler;
+
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
 			add { PropertyChanged += value; }
 			remove { PropertyChanged -= value; }
@@ -61,20 +63,35 @@ namespace System.Collections.ObjectModel {
 
 		protected override void ClearItems ()
 		{
+			if (in_handler)
+				throw new InvalidOperationException ("You cannot modify an ObservableCollection in a change handler");
+
+			in_handler = true;
+
 			base.ClearItems ();
+
 			RaiseCountChanged ();
 			RaiseItemsChanged ();
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+
+			in_handler = false;
 		}
 
 		protected override void InsertItem (int index, T item)
 		{
+			if (in_handler)
+				throw new InvalidOperationException ("You cannot modify an ObservableCollection in a change handler");
+
+			in_handler = true;
+
 			base.InsertItem (index, item);
 			RaiseCountChanged ();
 			RaiseItemsChanged ();
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add,
 										   item,
 										   index));
+
+			in_handler = false;
 		}
 
 		protected virtual void OnCollectionChanged (NotifyCollectionChangedEventArgs e)
@@ -90,6 +107,11 @@ namespace System.Collections.ObjectModel {
 
 		protected override void RemoveItem (int index)
 		{
+			if (in_handler)
+				throw new InvalidOperationException ("You cannot modify an ObservableCollection in a change handler");
+
+			in_handler = true;
+
 			T old_item = this[index];
 			base.RemoveItem (index);
 			RaiseCountChanged ();
@@ -97,10 +119,17 @@ namespace System.Collections.ObjectModel {
 			OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Remove,
 										   old_item,
 										   index));
+
+			in_handler = false;
 		}
 
 		protected override void SetItem (int index, T item)
 		{
+			if (in_handler)
+				throw new InvalidOperationException ("You cannot modify an ObservableCollection in a change handler");
+
+			in_handler = true;
+
 			T old_item = this[index];
 			base.SetItem (index, item);
 
@@ -109,6 +138,8 @@ namespace System.Collections.ObjectModel {
 										   item,
 										   old_item,
 										   index));
+
+			in_handler = false;
 		}
 
 		void RaiseCountChanged ()
