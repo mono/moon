@@ -1123,6 +1123,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		d3d_source_parameter_t      source[8];
 		char                        dstreg[64];
 		char                        dstmod[64];
+		char                        dstmodend[64];
 		char                        writemask[64];
 		char                        srcreg[8][64];
 		char                        srcmod[8][64];
@@ -1154,10 +1155,11 @@ GLContext::GetEffectProgram (PixelShader *ps)
 
 			switch (reg.dstmod) {
 				case D3DSPD_SATURATE:
-					sprintf (dstmod, "saturate");
+					sprintf (dstmod, "clamp(");
+					sprintf (dstmodend, ", 0.0, 1.0)");
 					break;
 				default:
-					dstmod[0] = '\0';
+					dstmod[0] = dstmodend[0] = '\0';
 			}
 		}
 
@@ -1388,9 +1390,9 @@ GLContext::GetEffectProgram (PixelShader *ps)
 
 		if (op.meta.ndstparam)
 			g_string_sprintfa (s,
-					   "%s.%s = %s(%s);\n",
+					   "%s.%s = %s%s%s;\n",
 					   dstreg, writemask,
-					   dstmod, rvalue);
+					   dstmod, rvalue, dstmodend);
 	}
 	
 	g_string_free (s, 1);
