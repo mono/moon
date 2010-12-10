@@ -148,6 +148,8 @@ public:
 	~Ranges ();
 	void Add (guint64 offset, guint32 length);
 	bool Contains (guint64 offset, guint64 length);
+	/* returns the first value not in the range, or G_MAXUINT64 if not found */
+	guint64 GetFirstNotInRange (guint64 offset, guint64 length);
 };
 
 /*
@@ -210,6 +212,7 @@ public:
 	MemoryBuffer *GetData () { return data; }
 	bool IsCancelled () { return cancelled; }
 	void Cancel () { cancelled = true; } /* Media-thread only */
+	void SetCount (guint32 value) { count = value; }
 };
 
 /*

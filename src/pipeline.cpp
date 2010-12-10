@@ -1679,6 +1679,25 @@ Ranges::Contains (guint64 offset, guint64 length)
 	return false;
 }
 
+guint64
+Ranges::GetFirstNotInRange (guint64 offset, guint64 length)
+{
+	for (int i = 0; i < count; i++) {
+		/* We know that the list of ranges is sorted and it does not have overlapping ranges */
+		if (!ranges [i].Contains (offset, length)) {
+			if (ranges [i].offset > offset) {
+				/* We want a position before the first we have */
+				return offset;
+			} else {
+				/* We want a length bigger than what we have */
+				return ranges [i].offset + ranges [i].length;
+			}
+		}
+	}
+
+	return G_MAXUINT64;
+}
+
 /*
  * ProgressiveSource
  */
@@ -1961,8 +1980,11 @@ ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 	
 	g_return_if_fail (write_fd != NULL);
 	
-	if (first_reception == 0)
+	if (first_reception == 0) {
 		first_reception = get_now ();
+		/* Ensure brr_enabled is set */
+		AddTickCall (CheckReadRequestsCallback);
+	}
 	bytes_received += n;
 
 	media = GetMediaReffed ();
@@ -2090,8 +2112,12 @@ ProgressiveSource::CheckReadRequests ()
 		current_request_received = 0;
 		HttpRequest *r;
 		r = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableFileStorage | HttpRequest::DisableCache | HttpRequest::DisableAsyncSend));
-		SetRangeRequest (r);
-		r->unref ();
+		if (r != NULL) {
+			SetRangeRequest (r);
+			r->unref ();
+		} else {
+			fprintf (stderr, "Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
+		}
 	}
 }
 
@@ -2101,13 +2127,14 @@ ProgressiveSource::SetRangeRequest (HttpRequest *value)
 	HttpRequest *rr;
 	Media *media;
 
-	LOG_PIPELINE ("ProgressiveSource::SetRangeRequest (%p), range_request: %p\n", value, range_request);
+	LOG_PIPELINE ("ProgressiveSource::SetRangeRequest (%p), range_request: %p current_request: %" G_GUINT64_FORMAT "\n", value, range_request, current_request);
 	VERIFY_MAIN_THREAD;
 
 	rr = range_request;
 	range_request = NULL;
 	if (rr != NULL) {
 		rr->RemoveAllHandlers (this);
+		rr->Abort ();
 		rr->unref ();
 		rr = NULL;
 	}
@@ -2164,7 +2191,7 @@ ProgressiveSource::RangeStartedHandler (HttpRequest *sender, EventArgs *args)
 void
 ProgressiveSource::RangeWriteHandler (HttpRequest *sender, HttpRequestWriteEventArgs *args)
 {
-	LOG_PIPELINE ("ProgressiveSource::RangeWriteHandler (%p, %p)\n", sender, args);
+	LOG_PIPELINE ("ProgressiveSource::RangeWriteHandler (%p, %p) is_current: %i current_request: %" G_GUINT64_FORMAT " received: %" G_GUINT64_FORMAT " count: %i\n", sender, args, range_request == sender, current_request, current_request_received, args->GetCount ());
 
 	if (range_request == sender) {
 		DataWrite (args->GetData (), current_request + current_request_received, args->GetCount ());
@@ -2175,10 +2202,35 @@ ProgressiveSource::RangeWriteHandler (HttpRequest *sender, HttpRequestWriteEvent
 void
 ProgressiveSource::RangeStoppedHandler (HttpRequest *sender, HttpRequestStoppedEventArgs *args)
 {
-	LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p) success: %i error: %s\n", sender, args, args->IsSuccess (), args->GetErrorMessage ());
+	LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p) success: %i error: %s range_request: %p\n", sender, args, args->IsSuccess (), args->GetErrorMessage (), range_request);
 
-	if (range_request == sender)
+	if (range_request == sender) {
 		SetRangeRequest (NULL);
+		/* Start up a new request from the latest position we don't have */
+		if (size > 0) {
+			guint64 start = ranges.GetFirstNotInRange (0, size);
+			if (start != G_MAXUINT64) {
+				/* There are parts we haven't downloaded yet */
+				LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p): there are parts we haven't downloaded yet, requesting a brr at offset %" G_GUINT64_FORMAT " = %.4f\n",
+					sender, args, start, (double) start / (double) size);
+
+				current_request = start;
+				current_request_received = 0;
+				HttpRequest *r;
+				r = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableFileStorage | HttpRequest::DisableCache | HttpRequest::DisableAsyncSend));
+				if (r != NULL) {
+					SetRangeRequest (r);
+					r->unref ();
+				} else {
+					fprintf (stderr, "Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
+				}
+			} else {
+				LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p): entire file downloaded!\n", sender, args);
+			}
+		} else {
+			LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p): no size! %" G_GUINT64_FORMAT "\n", sender, args, size);
+		}
+	}
 }
 
 MediaResult
@@ -2209,6 +2261,13 @@ ProgressiveSource::CheckPendingReads ()
 		MediaReadClosure *closure = node->GetClosure ();
 		next = (MediaReadClosureNode *) node->next;
 		
+		if (size > 0 && closure->GetOffset () + closure->GetCount () > size) {
+			/* Requested data after the ended of the file, fixup the count so that it matches the end of the file */
+			LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () invalid request (offset %" G_GUINT64_FORMAT " + count %u > size %" G_GUINT64_FORMAT"): "
+				"fixing count to %" G_GUINT64_FORMAT "\n", closure->GetOffset (), closure->GetCount (), size, size - closure->GetOffset ());
+			closure->SetCount (size - closure->GetOffset ());
+		}
+
 		if (complete && brr_enabled != 1 /* enabled */) {
 			ready = true;
 		} else {
