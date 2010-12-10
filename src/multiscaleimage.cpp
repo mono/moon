@@ -339,12 +339,14 @@ MultiScaleImage::MultiScaleImage ()
 
 MultiScaleImage::~MultiScaleImage ()
 {
+	// Note that the storyboard may live longer than the MSI, so we must
+	// remove the completed handler before we unref it in the DOPtr dtor.
 	if (fadein_sb)
-		fadein_sb->StopWithError (NULL);
+		fadein_sb->RemoveHandler (Storyboard::CompletedEvent, fade_finished, this);
 	if (zoom_sb)
-		zoom_sb->StopWithError (NULL);
+		zoom_sb->RemoveHandler (Storyboard::CompletedEvent, zoom_finished, this);
 	if (pan_sb)
-		pan_sb->StopWithError (NULL);
+		pan_sb->RemoveHandler (Storyboard::CompletedEvent, pan_finished, this);
 
 	MultiScaleTileSource *source = GetSource ();
 	
