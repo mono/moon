@@ -405,6 +405,7 @@ namespace System.Windows.Data {
 				cachedValue = ConvertToType (dp, cachedValue);
 			} catch {
 				cachedValue  = dp.GetDefaultValue (Target);
+				throw;
 			}
 			
 			return cachedValue;
