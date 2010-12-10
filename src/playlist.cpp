@@ -176,6 +176,8 @@ PlaylistEntry::Initialize (Media *media)
 	media->AddSafeHandler (Media::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
 	media->AddSafeHandler (Media::MediaErrorEvent, MediaErrorCallback, this);
 		
+	media->SetStartTime (start_time);
+
 	this->media = media;
 	this->media->ref ();
 }
