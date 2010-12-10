@@ -1022,8 +1022,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 					return 0;
 				}
 
-				ERROR_IF (op.type == D3DSIO_DP3 ||
-					  op.type == D3DSIO_SLT ||
+				ERROR_IF (op.type == D3DSIO_SLT ||
 					  op.type == D3DSIO_SGE ||
 					  op.type == D3DSIO_LIT ||
 					  op.type == D3DSIO_DST ||
@@ -1230,7 +1229,11 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				sprintf (rvalue, "inversesqrt(%s)", src[0]);
 				break;
 			case D3DSIO_DP3:
-				sprintf (rvalue, "dot3(%s, %s)", src[0], src[1]);
+				sprintf (rvalue, "dot(%s(%s.%c%c%c), %s(%s.%c%c%c))",
+					 srcmod[0], srcreg[0],
+					 swizzle[0][0], swizzle[0][1], swizzle[0][2],
+					 srcmod[1], srcreg[1],
+					 swizzle[1][0], swizzle[1][1], swizzle[1][2]);
 				break;
 			case D3DSIO_DP4:
 				sprintf (rvalue, "dot(%s, %s)", src[0], src[1]);
