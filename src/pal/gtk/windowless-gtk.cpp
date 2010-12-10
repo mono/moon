@@ -227,7 +227,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 	}
 	case ButtonPress:
 	case ButtonRelease: {
-		if (xev->xbutton.button == 4 || xev->xbutton.button == 5 || xev->xbutton.button == 6 || xev->xbutton.button == 7) {
+		if (xev->xbutton.button >= 4 && xev->xbutton.button <= 7) {
 			GdkEventScroll scroll;
 			
 			if (xev->type == ButtonRelease)
