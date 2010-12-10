@@ -15,6 +15,6 @@ all-local: $(XAPS)
 %/Leak.xap: $(BUILD_FILES) %/Test.cs
 	@echo "Making $@"
 	@rm -f $*/Leak.*
-	@cp $(BUILD_FILES) $*
-	@(cd $* && $(SYSTEM_MONO) ../../../tools/mxap/mxap.exe --application-name=Leak --generate-html=no)
-	@cp Leak.html $*
+	cp $(BUILD_FILES) $*
+	-(cd $* && $(SYSTEM_MONO) ../../../tools/mxap/mxap.exe --application-name=Leak --generate-html=no)
+	cp Leak.html $*
