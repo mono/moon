@@ -26,15 +26,12 @@ namespace Leak
 			var template = Control.Template;
 			Control.Template = null;
 			Control.Template = template;
-			ApplyTemplate (Control);
 
 			GCAndInvoke (() => {
-				GCAndInvoke (() => {
-					if (WeakSubtree != null)
-						Fail ("Subtree should be collected");
-					else
-						Succeed ();
-				});
+				if (WeakSubtree != null)
+					Fail ("Subtree should be collected");
+				else
+					Succeed ();
 			});
 		}
 	}
