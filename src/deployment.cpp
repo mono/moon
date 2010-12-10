@@ -1530,7 +1530,7 @@ Deployment::ShutdownManaged ()
 		
 		/* Clear out the domain ptr to detect any illegal uses asap */
 		/* CHECK: do we need to call mono_domain_free? */
-		//domain = NULL;
+		domain = NULL;
 
 		/* AppDomain successfully unloaded */
 		LOG_DEPLOYMENT ("Deployment::ShutdownManaged (): appdomain successfully unloaded.\n");
