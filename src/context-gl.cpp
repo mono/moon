@@ -860,6 +860,8 @@ GLContext::GetEffectProgram (PixelShader *ps)
 	d3d_version_t version;
 	d3d_op_t      op;
 	int           index;
+	GLfloat       imm[64][4];
+	int           n_imm = 0;
 	char          src_reg[D3DSPR_LAST][MAX_CONSTANTS][64];
 	char          dst_reg[D3DSPR_LAST][MAX_CONSTANTS][64];
 	int           last_constant = -1;
@@ -911,6 +913,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_DEFI:
 			case D3DSIO_DEF: {
 				d3d_def_instruction_t def;
+				int                   j;
 
 				i = ps->GetInstruction (i, &def);
 
@@ -919,17 +922,12 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				ERROR_IF (def.reg.regnum >= MAX_CONSTANTS);
 
 				sprintf (src_reg[def.reg.regtype][def.reg.regnum],
-					 "imm%d_%d",
-					 def.reg.regtype,
-					 def.reg.regnum);
+					 "imm[%d]", n_imm);
 
-				// TODO: pass constants to shader through a
-				// constant buffer instead of converting them
-				// to strings and possibly losing precision
-				g_string_sprintfa (s,
-						   "const vec4 %s = vec4(%.22f, %.22f, %.22f, %.22f);\n",
-						   src_reg[def.reg.regtype][def.reg.regnum],
-						   def.v[0], def.v[1], def.v[2], def.v[3]);
+				for (j = 0; j < 4; j++)
+					imm[n_imm][j] = def.v[j];
+
+				n_imm++;
 			} break;
 			case D3DSIO_DCL: {
 				d3d_dcl_instruction_t dcl;
@@ -1044,6 +1042,9 @@ GLContext::GetEffectProgram (PixelShader *ps)
 			} break;
 		}
 	}
+
+	if (n_imm)
+		g_string_sprintfa (s, "uniform vec4 imm[%d];\n", n_imm);
 
 	if (n_sincos) {
 		g_string_sprintfa (s, "vec4 sincos(in vec4 src0, "
@@ -1362,8 +1363,14 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				glBindAttribLocation (program, 0, "InVertex");
 				glBindAttribLocation (program, 1, "InTexCoord0");
 				glLinkProgram (program);
-
 				glDeleteShader (fs);
+
+				if (n_imm) {
+					glUseProgram (program);
+					glUniform4fv (glGetUniformLocation (program, "imm"),
+						      n_imm, (const GLfloat *) imm);
+					glUseProgram (0);
+				}
 
 				g_hash_table_insert (effect_program,
 						     ps,
