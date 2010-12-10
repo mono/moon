@@ -1087,14 +1087,17 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		char *xaml = args->GetNewValue()->AsString();
 		Type::Kind element_type;
 		MoonError error;
+		Value *objv = NULL;
 
-		printf ("setting xaml to %s\n", xaml);
+		if (xaml) {
+			printf ("setting xaml to %s\n", xaml);
 
-		SL4XamlLoader *loader = new SL4XamlLoader (GetDeployment()->GetSurface());
-		Value *objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, &error);
-		if (element_type != Type::SECTION) {
-			g_warning ("awww, crap");
-			return;
+			SL4XamlLoader *loader = new SL4XamlLoader (GetDeployment()->GetSurface()); // XXX we're leaking this
+			objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, &error);
+			if (element_type != Type::SECTION) {
+				g_warning ("awww, crap");
+				return;
+			}
 		}
 
 		// FIXME: we need to figure out if this is done before
@@ -1103,13 +1106,15 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		// existing blocks?  right now our code won't)
 		GetBlocks()->Clear();
 
-		Section *s = objv->AsSection();
-		BlockCollection *sblocks = s->GetBlocks();
-		int count = sblocks->GetCount();
-		for (int i = 0; i < count; i ++) {
-			Block *b = sblocks->GetValueAt (0)->AsBlock();
-			sblocks->RemoveAt (0);
-			GetBlocks()->Add (Value(b));
+		if (objv) {
+			Section *s = objv->AsSection();
+			BlockCollection *sblocks = s->GetBlocks();
+			int count = sblocks->GetCount();
+			for (int i = 0; i < count; i ++) {
+				Block *b = sblocks->GetValueAt (0)->AsBlock();
+				sblocks->RemoveAt (0);
+				GetBlocks()->Add (Value(b));
+			}
 		}
 	}
 	
