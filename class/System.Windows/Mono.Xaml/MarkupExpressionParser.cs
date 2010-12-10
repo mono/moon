@@ -295,7 +295,7 @@ namespace Mono.Xaml {
 			parsingBinding  = true;
 			char next;
 
-			if (expression [0] == '}')
+			if (expression == "}")
 				return binding;
 
 			string remaining = expression;
