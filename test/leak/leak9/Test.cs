@@ -16,10 +16,6 @@ namespace Leak
 {
 	public partial class Page
 	{
-		class Wrapper {
-			public object Value { get; set; }
-		}
-
 		void RunTest ()
 		{
 			// Hold the storyboard and target with weak refs and ensure that the

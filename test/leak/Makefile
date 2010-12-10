@@ -19,3 +19,6 @@ clean:
 			rm -f ${subdir}/${f}; \
 		) \
 	)
+	
+install:
+

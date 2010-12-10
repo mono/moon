@@ -16,10 +16,6 @@ namespace Leak
 {
 	public partial class Page
 	{
-		class Wrapper {
-			public object Value { get; set; }
-		}
-
 		void RunTest ()
 		{
 			// This is special because its style defines a ControlTemplate inside

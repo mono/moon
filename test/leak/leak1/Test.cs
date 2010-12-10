@@ -18,16 +18,11 @@ namespace Leak
 	{
 		void RunTest ()
 		{
-			WeakControl = new Button ();
-			Children.Add (WeakControl);
-			WeakControl.UpdateLayout ();
-			Children.Remove (WeakControl);
+			WeakControl = ApplyTemplate (new Button ());
 			
+			// Work around a FrameworkTemplate issue which keeps the button alive.
 			for (int i = 0; i < 10; i ++) {
-				var b = new Button ();
-				Children.Add (b);
-				b.UpdateLayout ();
-				Children.Remove (b);
+				ApplyTemplate (new Button ());
 			}
 			
 			GCAndInvoke (() => {
