@@ -1119,13 +1119,13 @@ GLContext::GetEffectProgram (PixelShader *ps)
 	g_string_sprintfa (s, "{\n");
 
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
-		d3d_destination_parameter_t reg[8];
+		d3d_destination_parameter_t reg;
 		d3d_source_parameter_t      source[8];
-		char                        dst[8][64];
-		char                        src[8][64];
-		char                        cast[8][64];
-		char                        mod[8][64];
+		char                        dst[64];
+		char                        cast[64];
+		char                        mod[64];
 		char                        rvalue[64];
+		char                        src[8][64];
 		int                         j = i;
 
 		if (op.type == D3DSIO_COMMENT) {
@@ -1133,49 +1133,51 @@ GLContext::GetEffectProgram (PixelShader *ps)
 			continue;
 		}
 
-		for (unsigned k = 0; k < op.meta.ndstparam; k++) {
-			j = ps->GetDestinationParameter (j, &reg[k]);
+		ERROR_IF (op.meta.ndstparam > 1);
 
-			sprintf (dst[k], "%s.%s%s%s%s",
-				 dst_reg[reg[k].regtype][reg[k].regnum],
-				 reg[k].writemask & 0x1 ? "x" : "",
-				 reg[k].writemask & 0x2 ? "y" : "",
-				 reg[k].writemask & 0x4 ? "z" : "",
-				 reg[k].writemask & 0x8 ? "w" : "");
+		if (op.meta.ndstparam) {
+			j = ps->GetDestinationParameter (j, &reg);
 
-			ERROR_IF (reg[k].writemask == 0);
+			sprintf (dst, "%s.%s%s%s%s",
+				 dst_reg[reg.regtype][reg.regnum],
+				 reg.writemask & 0x1 ? "x" : "",
+				 reg.writemask & 0x2 ? "y" : "",
+				 reg.writemask & 0x4 ? "z" : "",
+				 reg.writemask & 0x8 ? "w" : "");
 
-			switch (reg[k].dstmod) {
+			ERROR_IF (reg.writemask == 0);
+
+			switch (reg.dstmod) {
 				case D3DSPD_SATURATE:
-					sprintf (mod[k], "saturate");
+					sprintf (mod, "saturate");
 					break;
 				default:
-					mod[k][0] = '\0';
+					mod[0] = '\0';
 			}
 
 			int bits = 0;
 
-			if (reg[k].writemask & 0x1)
+			if (reg.writemask & 0x1)
 				bits++;
-			if (reg[k].writemask & 0x2)
+			if (reg.writemask & 0x2)
 				bits++;
-			if (reg[k].writemask & 0x4)
+			if (reg.writemask & 0x4)
 				bits++;
-			if (reg[k].writemask & 0x8)
+			if (reg.writemask & 0x8)
 				bits++;
 			
 			switch (bits) {
 				case 1:
-					sprintf (cast[k], "float");
+					sprintf (cast, "float");
 					break;
 				case 2:
-					sprintf (cast[k], "vec2");
+					sprintf (cast, "vec2");
 					break;
 				case 3:
-					sprintf (cast[k], "vec3");
+					sprintf (cast, "vec3");
 					break;
 				case 4:
-					sprintf (cast[k], "vec4");
+					sprintf (cast, "vec4");
 					break;
 			}
 		}
@@ -1379,10 +1381,10 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				break;
 		}
 
-		for (unsigned k = 0; k < op.meta.ndstparam; k++)
+		if (op.meta.ndstparam)
 			g_string_sprintfa (s,
 					   "%s = %s(%s(%s));\n",
-					   dst[k], cast[k], mod[k], rvalue);
+					   dst, cast, mod, rvalue);
 	}
 	
 	g_string_free (s, 1);
