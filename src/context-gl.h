@@ -86,6 +86,7 @@ protected:
 	GLuint GetConvolveProgram (unsigned size);
 	GLuint GetDropShadowProgram (unsigned size);
 	GLuint GetEffectProgram (PixelShader *ps);
+	static const char *WritemaskToType (const char *writemask);
 
 	float vertices[4][4];
 	float texcoords[4][4];

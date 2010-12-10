@@ -16,6 +16,8 @@
 #include "effect.h"
 #include "context-gl.h"
 
+#include <string.h>
+
 namespace Moonlight {
 
 GLContext::GLContext (MoonSurface *surface) : Context (surface)
@@ -850,6 +852,19 @@ GLContext::DropShadow (MoonSurface *src,
 			g_string_free (s, 1); return 0; }		\
 	} while (0)
 
+const char *
+GLContext::WritemaskToType (const char *writemask)
+{
+	switch (strlen (writemask)) {
+		case 1: return "float";
+		case 2: return "vec2";
+		case 3: return "vec3";
+		case 4: return "vec4";
+		default:
+			g_assert (0);
+	}
+}
+
 GLuint
 GLContext::GetEffectProgram (PixelShader *ps)
 {
@@ -866,7 +881,6 @@ GLContext::GetEffectProgram (PixelShader *ps)
 	char          dst_reg[D3DSPR_LAST][MAX_CONSTANTS][64];
 	int           last_constant = -1;
 	int           n_sincos = 0;
-	int           n_cmp = 0;
 	int           n = 0;
 
 	// TODO: release effect shaders when destroyed
@@ -1031,9 +1045,6 @@ GLContext::GetEffectProgram (PixelShader *ps)
 					case D3DSIO_SINCOS:
 						n_sincos++;
 						break;
-					case D3DSIO_CMP:
-						n_cmp++;
-						break;
 					default:
 						break;
 				}
@@ -1080,17 +1091,6 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		g_string_sprintfa (s, "v.x = float(v3.z) - float(v);\n");
 
 		g_string_sprintfa (s, "return v;\n");
-		g_string_sprintfa (s, "}\n");
-	}
-
-	if (n_cmp) {
-		g_string_sprintfa (s, "vec4 cmp(in vec4 src0, "
-				   "in vec4 src1, in vec4 src2)\n");
-		g_string_sprintfa (s, "{\n");
-		g_string_sprintfa (s, "const vec4 zero = vec4(0.0);\n");
-		g_string_sprintfa (s, "bvec4 b;\n");
-		g_string_sprintfa (s, "b = lessThan(src0, zero);\n");
-		g_string_sprintfa (s, "return mix(src2, src1, vec4(b));\n");
 		g_string_sprintfa (s, "}\n");
 	}
 
@@ -1328,11 +1328,11 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_TEXDEPTH: break;
 			case D3DSIO_CMP:
 				/* direct3d does src0 >= 0 */
-				sprintf (rvalue, "(cmp(%s(%s.%s), %s(%s.%s), %s(%s.%s))).%s",
-					 srcmod[0], srcreg[0], swizzle[0],
-					 srcmod[2], srcreg[2], swizzle[2],
-					 srcmod[1], srcreg[1], swizzle[1],
-					 writemask);
+				sprintf (rvalue, "mix(%s, %s, %s(lessThan(%s, %s(0.0))));\n",
+					 src[1], src[2],
+					 WritemaskToType (writemask),
+					 src[0],
+					 WritemaskToType (writemask));
 				break;
 				// case D3DSIO_BEM: break;
 			case D3DSIO_DP2ADD:
