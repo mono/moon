@@ -623,6 +623,7 @@ private:
 	bool http_retried;
 	double download_progress;
 	double buffering_progress;
+	TimeSpan start_time;
 	
 	PlaylistRoot *playlist;
 
@@ -710,6 +711,9 @@ public:
 	const char *GetFile () { return file; }
 	const Uri *GetUri () { return uri; }
 	void SetFileOrUrl (const char *value);
+
+	void SetStartTime (TimeSpan value); // main thread only, before Initialize has been called
+	TimeSpan GetStartTime () { return start_time; }
 	
 	// A list of MediaMarker::Node.
 	// This is the list of markers found in the metadata/headers (not as a separate stream).

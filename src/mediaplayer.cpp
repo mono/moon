@@ -325,13 +325,11 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	if (entry != NULL && !entry->GetRoot ()->GetIsDynamic ()) {
 		start_pts =  TimeSpan_ToPts (entry->GetStartTime ());
 		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %" G_GUINT64_FORMAT " (%" G_GUINT64_FORMAT " ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
-		// note that we might be re-opening a media which is not at position 0,
-		// so it is not possible to optimize away the case where start_pts = 0.
-		element->Seek (start_pts, true);
 
 		if (entry->GetIsLive ())		
 			SetBit (IsLive);
 	}
+	seeks = 1; /* the pipeline automatically does an initial seek */
 	
 	duration = demuxer->GetDuration ();
 
@@ -573,9 +571,6 @@ MediaPlayer::AdvanceFrame ()
 	RemoveBit (LoadFramePending);
 	
 	if (IsPaused ())
-		return;
-	
-	if (IsSeeking ())
 		return;
 	
 	if (GetBit (VideoEnded))
@@ -851,9 +846,6 @@ MediaPlayer::Play ()
 	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state_unlocked, IsPlaying (), IsSeeking ());
 	VERIFY_MAIN_THREAD;
 	
-	if (IsSeeking ())
-		return;
-	
 	SetState (Playing);
 	RemoveBit (BufferUnderflow);
 	start_time = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
@@ -1028,12 +1020,9 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	seeks--;
-	if (seeks != 0)
-		return;
 
 	if (HasVideo ()) {
 		SetBit (LoadFramePending);
-		LoadVideoFrame ();
 	}
 }
 

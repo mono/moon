@@ -80,6 +80,7 @@ Media::Media (PlaylistRoot *root)
 	download_progress = 0.0;
 	buffering_progress = 0.0;
 	target_pts = 0;
+	start_time = 0;
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -156,6 +157,14 @@ Media::Dispose ()
 	IMediaObject::Dispose ();
 
 	GetDeployment ()->UnregisterMedia (this);
+}
+
+void
+Media::SetStartTime (TimeSpan value)
+{
+	VERIFY_MAIN_THREAD;
+	g_return_if_fail (!initialized);
+	start_time = value;
 }
 
 bool
@@ -594,6 +603,9 @@ Media::StopAsync ()
 	MediaClosure *closure = new MediaClosure (this, StopCallback, this, "Media::StopAsync");
 	EnqueueWork (closure);
 	closure->unref ();
+
+	// seek to the beginning
+	SeekAsync (start_time);
 }
 
 MediaResult
@@ -876,6 +888,8 @@ Media::OpenInternal ()
 	LOG_PIPELINE ("Media::OpenInteral (): opened successfully.\n");
 	
 	EmitSafe (OpenCompletedEvent);
+
+	SeekAsync (start_time);
 
 cleanup:
 	in_open_internal = false;
@@ -3902,7 +3916,7 @@ void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
 	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
-	VERIFY_MAIN_THREAD;
+	// Can be called both on main and media thread
 
 	if (IsDisposed ())
 		return;
