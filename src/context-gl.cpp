@@ -1096,7 +1096,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		g_string_sprintfa (s, "const vec4 zero = vec4(0.0);\n");
 		g_string_sprintfa (s, "bvec4 b;\n");
 		g_string_sprintfa (s, "b = lessThan(src0, zero);\n");
-		g_string_sprintfa (s, "return mix(src2, src1, vec4 (b));\n");
+		g_string_sprintfa (s, "return mix(src2, src1, vec4(b));\n");
 		g_string_sprintfa (s, "}\n");
 	}
 
@@ -1240,7 +1240,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				sprintf (rvalue, "%s * %s", src[0], src[1]);
 				break;
 			case D3DSIO_RCP:
-				sprintf (rvalue, "1 / %s", src[0]);
+				sprintf (rvalue, "1.0 / %s", src[0]);
 				break;
 			case D3DSIO_RSQ:
 				sprintf (rvalue, "inversesqrt(%s)", src[0]);
