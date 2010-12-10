@@ -1,1 +1,7 @@
-leak*
+leak*/*.g.*
+leak*/*.dll*
+leak*/*.xap
+leak*/*.html
+leak*/AppManifest.xaml
+leak*/App.xaml*
+leak*/Page.xaml*

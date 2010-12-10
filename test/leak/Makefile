@@ -1,20 +1,21 @@
 BUILD_FILES = App.xaml App.xaml.cs Page.xaml Page.xaml.cs
 CLEAN_FILES = ${BUILD_FILES} AppManifest.xaml  App.xaml.g.cs  Page.xaml.g.cs Leak* xdb.*
-SUB_DIRS = ${shell find -mindepth 1 -type d -print}
+SUBDIRS := $(wildcard */)
+OBJECTS := $(addsuffix Leak.dll,$(SUBDIRS))
 
-all: clean
-	$(foreach subdir,$(SUB_DIRS), \
-		$(foreach f,$(BUILD_FILES), \
-			cp ${f} ${subdir}; \
-		) \
-		cd ${subdir}; \
-		mxap --application-name=Leak; \
-		cd ..; \
-		cp Leak.html ${subdir}; \
+all: $(OBJECTS)
+
+$(OBJECTS): %Leak.dll : %Test.cs $(BUILD_FILES)
+	@echo "Making $@"
+	@-rm -f $(patsubst %,$*%,$(CLEAN_FILES))
+	@$(foreach f,$(BUILD_FILES), \
+		cp ${f} $*; \
 	)
+	@(cd $* && mxap --application-name=Leak)
+	@cp Leak.html $*
 
 clean:
-	$(foreach subdir,$(SUB_DIRS), \
+	@$(foreach subdir,$(SUBDIRS), \
 		$(foreach f,$(CLEAN_FILES), \
 			rm -f ${subdir}/${f}; \
 		) \
