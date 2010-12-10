@@ -4696,14 +4696,19 @@ IMediaSource::ReadFD (FILE *read_fd, MediaReadClosure *closure)
 		return;
 	}
 		
-	buffer = g_try_malloc (closure->GetCount ());
-	if (buffer == NULL) {
-		media->unref ();
-		ReportErrorOccurred ("ProgressiveSource: could not allocate read buffer\n");
-		return;
+	if (closure->GetCount () > 0) {
+		buffer = g_try_malloc (closure->GetCount ());
+		if (buffer == NULL) {
+			media->unref ();
+			ReportErrorOccurred ("ProgressiveSource: could not allocate read buffer");
+			return;
+		}
+
+		read = fread (buffer, 1, closure->GetCount (), read_fd);
+	} else {
+		buffer = NULL;
+		read = 0;
 	}
-	
-	read = fread (buffer, 1, closure->GetCount (), read_fd);
 
 	mem = new MemoryBuffer (media, buffer, read, true);
 	closure->SetData (mem);

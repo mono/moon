@@ -743,7 +743,7 @@ Mp3Demuxer::RequestMoreData (MediaCallback *callback, guint32 count)
 	g_return_val_if_fail (!waiting_for_read, false);
 	
 	if (read_closure != NULL) {
-		if (read_closure->GetCount () != read_closure->GetData ()->GetSize ()) {
+		if (read_closure->GetCount () == 0 || read_closure->GetCount () != read_closure->GetData ()->GetSize ()) {
 			/* The last read didn't read everything we requested, so there is nothing more to read */
 			LOG_MP3 ("Mp3Demuxer::RequestMoreData (): the last read didn't read everything we requested, so we reached eof.\n");
 			return false;
