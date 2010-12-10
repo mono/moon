@@ -11,7 +11,7 @@ $(OBJECTS): %Leak.dll : %Test.cs $(BUILD_FILES)
 	@$(foreach f,$(BUILD_FILES), \
 		cp ${f} $*; \
 	)
-	@(cd $* && mxap --application-name=Leak)
+	@(cd $* && mono ../../../tools/mxap/mxap.exe --application-name=Leak)
 	@cp Leak.html $*
 
 clean:
