@@ -203,6 +203,7 @@ test/sizes/Makefile
 test/templates/Makefile
 test/templates/managed/Makefile
 test/cpp/Makefile
+test/leak/Makefile
 tools/Makefile
 tools/mopen/Makefile
 tools/mxap/Makefile
