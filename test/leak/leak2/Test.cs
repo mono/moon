@@ -24,8 +24,10 @@ namespace Leak
 			grid.Children.RemoveAt (0);
 
 			GCAndInvoke (() => {
-				if (WeakSubtree != null)
-					throw new Exception ("Subtree was not collected");
+				if (WeakSubtree == null)
+					Succeed ();
+				else
+					Fail ("Subtree was not collected");
 			});
 		}
 	}

@@ -17,7 +17,7 @@ namespace Leak
 	public partial class Page
 	{
 		class Wrapper {
-			public Value { get; set;
+			public object Value { get; set; }
 		}
 
 		void RunTest ()
@@ -40,7 +40,7 @@ namespace Leak
 					else
 						Succeed ();
 				});
-			});
+			};
 			
 			WeakStoryboard.Begin ();
 		}

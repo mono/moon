@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Windows.Browser;
 
 namespace Leak
 {
@@ -77,12 +78,14 @@ namespace Leak
 		
 		void Fail (string message)
 		{
-			// Signal Failure and shut down
+			ScriptObject so = HtmlPage.Window.GetProperty ("Fail") as ScriptObject;
+			so.InvokeSelf (message);
 		}
 		
 		void Succeed ()
 		{
-			// ShutDown
+			ScriptObject so = HtmlPage.Window.GetProperty ("ShutdownHarness") as ScriptObject;
+			so.InvokeSelf ();
 		}
 
 		void Queue (Action a)

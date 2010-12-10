@@ -17,7 +17,7 @@ namespace Leak
 	public partial class Page
 	{
 		class Wrapper {
-			public Value { get; set;
+			public object Value { get; set; }
 		}
 		
 		void RunTest ()
@@ -30,10 +30,10 @@ namespace Leak
 			WeakControl.SetValue (dp, new Wrapper { Value = WeakControl });
 			
 			GCAndInvoke (() => {
-				if (WeakControl != null)
-					Fail ("FailureReason");
-				else
+				if (WeakControl == null)
 					Succeed ();
+				else
+					Fail ("FailureReason");
 			});
 		}
 	}

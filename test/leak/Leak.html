@@ -27,8 +27,14 @@
 		Fail ("Failed");
 	}
 	
+	function ShutdownHarness() {
+            TestLogger.LogDebug("ShutdownHarness: Success");
+            SignalShutdown();
+        }
+        
 	function Fail (msg)
 	{
+		TestLogger.LogDebug("ShutdownHarness: Failure");
 		TestLogger.LogError (msg);
 		TestLogger.LogResult (-1)
 		SignalShutdown ();

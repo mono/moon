@@ -16,15 +16,24 @@ namespace Leak
 {
 	public partial class Page
 	{
+		SolidColorBrush Brush {
+			get; set;
+		}
+
 		void RunTest ()
 		{
-			// Do test here
+			// This is special because its style defines a ControlTemplate inside
+			// a ControlTemplate. This can leak if the XamlContexts are held
+			// strongly.
+			WeakControl = new ContentControl ();
+			Brush = new SolidColorBrush (Colors.Red);
+			WeakControl.Foreground = Brush;
 			
 			GCAndInvoke (() => {
-				// if (failureCondition)
-				//	Fail ("FailureReason");
-				// else
-				//	Succeed ();
+				if (WeakControl != null)
+					Fail ("Control should be GC'ed");
+				else
+					Succeed ();
 			});
 		}
 	}

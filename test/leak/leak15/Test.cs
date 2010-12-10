@@ -22,20 +22,14 @@ namespace Leak
 
 		void RunTest ()
 		{
-			// Hold the Storyboard with a strong ref and the target with a weak ref.
-
-			WeakControl = new ContentControl ();
-			Storyboard = new Storyboard ();
-			DoubleAnimation anim = new DoubleAnimation { From = 0, To = 1, Duration = new Duration (TimeSpan.FromSeconds (1)) };
-			Storyboard.SetTarget (Storyboard, WeakControl);
-			Storyboard.SetTargetProperty (Storyboard, new PropertyPath ("Opacity"));
-			Storyboard.Children.Add (anim);
-
-			Storyboard.Begin ();
+			// Take the default style and apply it as a local
+			// style too.
+			WeakControl = ApplyTemplate (new ScrollBar ());
+			WeakControl.Template = WeakControl.Template;
 			
 			GCAndInvoke (() => {
 				if (WeakControl != null)
-					Fail ("Storyboard target should be GC'ed");
+					Fail ("ScrollBar should be GC'ed");
 				else
 					Succeed ();
 			});

@@ -31,8 +31,8 @@ namespace Leak
 			}
 			
 			GCAndInvoke (() => {
-				if (WeakControl == null)
-					Fail ("The subtree wasn't GC'ed");
+				if (WeakControl != null)
+					Fail ("The control was not GC'ed");
 				else
 					Succeed ();
 			});
