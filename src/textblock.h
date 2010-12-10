@@ -108,7 +108,7 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer, public I
 	/* @PropertyType=TextTrimming,DefaultValue=TextTrimmingNone */
 	const static int TextTrimmingProperty;	
 
-	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateManagedField=false,GenerateAccessors */
+	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateAccessors */
 	const static int FontResourceProperty;
 	
 	/* @GeneratePInvoke */

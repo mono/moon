@@ -89,7 +89,7 @@ public:
 	const static int LanguageProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,HiddenDefaultValue,ManagedPropertyType=TextDecorationCollection,GenerateAccessors,Coercer=TextElement::CoerceTextDecorations */
 	const static int TextDecorationsProperty;
-	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateManagedField=false,GenerateAccessors */
+	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateAccessors */
 	const static int FontResourceProperty;
 
 	static bool CoerceTextDecorations (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
