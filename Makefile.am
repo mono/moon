@@ -43,6 +43,7 @@ GALLIUM_SUBDIR = gallium
 endif
 
 SUBDIRS = \
+	. \
 	$(MONO_RUNTIME) \
 	$(GALLIUM_SUBDIR) \
 	generators \
@@ -89,8 +90,23 @@ else
 	@echo "Error: You must configure with Firefox 2 or 3 support"; exit 1
 endif
 
+NEEDED_MONO_VERSION:=$(shell grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}')
+MONO_VERSION=$(shell cd $(MONO_PATH) && git log | head -1 | awk '{print $2}' )
+
 reset-mono:
-	cd $(MONO_PATH) && git fetch && git reset --hard `grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}'`
+	cd $(MONO_PATH) && git fetch && git reset --hard $(NEEDED_MONO_VERSION)
+
+check-mono:
+	@(if test `awk "BEGIN { print index (\\"$(MONO_VERSION)\\",\\"$(NEEDED_MONO_VERSION)\\") }"` = "0"; then \
+	   echo "Your mono version is out of date, please run 'make reset-mono'"; \
+	   if test x$(IGNORE_MONO_VERSION) = "x"; then \
+	   	exit 1; \
+	   fi; \
+	 else \
+	   echo "Your mono version is up to date"; \
+	 fi)
+	
+all-local: check-mono
 
 dist-hook:
 	mkdir $(distdir)/icons
