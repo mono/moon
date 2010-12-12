@@ -1286,7 +1286,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				sprintf (rvalue, "nrm(%s)", src[0]);
 				break;
 			case D3DSIO_SINCOS:
-				sprintf (rvalue, "(sincos(%s(%s.%s), %s(%s.%s), %s(%s.%s))).%s",
+				sprintf (rvalue, "sincos(%s(%s.%s), %s(%s.%s), %s(%s.%s)).%s",
 					 srcmod[0], srcreg[0], swizzle[0],
 					 srcmod[1], srcreg[1], swizzle[1],
 					 srcmod[2], srcreg[2], swizzle[2],
