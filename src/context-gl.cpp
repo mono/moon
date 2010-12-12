@@ -1328,11 +1328,15 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				// case D3DSIO_TEXDEPTH: break;
 			case D3DSIO_CMP:
 				/* direct3d does src0 >= 0 */
-				sprintf (rvalue, "mix(%s, %s, %s(lessThan(%s, %s(0.0))))",
-					 src[1], src[2],
-					 WritemaskToType (writemask),
-					 src[0],
-					 WritemaskToType (writemask));
+				if (strlen (writemask) == 1)
+					sprintf (rvalue, "mix(%s, %s, float(%s < 0.0))",
+						 src[1], src[2], src[0]);
+				else
+					sprintf (rvalue, "mix(%s, %s, %s(lessThan(%s, %s(0.0))))",
+						 src[1], src[2],
+						 WritemaskToType (writemask),
+						 src[0],
+						 WritemaskToType (writemask));
 				break;
 				// case D3DSIO_BEM: break;
 			case D3DSIO_DP2ADD:
