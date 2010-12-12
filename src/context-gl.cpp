@@ -1111,6 +1111,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		char                        writemask[64];
 		char                        srcreg[8][64];
 		char                        srcmod[8][64];
+		char                        srcmodend[8][64];
 		char                        swizzle[8][64];
 		char                        src[8][64];
 		char                        rvalue[256];
@@ -1163,19 +1164,21 @@ GLContext::GetEffectProgram (PixelShader *ps)
 
 			switch (source[k].srcmod) {
 				case D3DSPS_NEGATE:
-					sprintf (srcmod[k], "-");
+					sprintf (srcmod[k], "(-");
+					sprintf (srcmodend[k], ")");
 					break;
 				case D3DSPS_ABS:
-					sprintf (srcmod[k], "abs");
+					sprintf (srcmod[k], "abs(");
+					sprintf (srcmodend[k], ")");
 					break;
 				default:
-					srcmod[k][0] = '\0';
+					srcmod[k][0] = srcmodend[k][0] = '\0';
 					break;
 			}
 
 			if (op.meta.ndstparam)
 				sprintf (src[k],
-					 "%s(%s.%s%s%s%s)",
+					 "%s%s.%s%s%s%s%s",
 					 srcmod[k],
 					 srcreg[k],
 					 reg.writemask & 0x1 ?
@@ -1185,7 +1188,8 @@ GLContext::GetEffectProgram (PixelShader *ps)
 					 reg.writemask & 0x4 ?
 					 swizzle_str[source[k].swizzle.z] : "",
 					 reg.writemask & 0x8 ?
-					 swizzle_str[source[k].swizzle.w] : "");
+					 swizzle_str[source[k].swizzle.w] : "",
+					 srcmodend[k]);
 		}
 
 		i += op.length;
@@ -1230,11 +1234,13 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				sprintf (rvalue, "inversesqrt(%s)", src[0]);
 				break;
 			case D3DSIO_DP3:
-				sprintf (rvalue, "dot(%s(%s.%c%c%c), %s(%s.%c%c%c))",
+				sprintf (rvalue, "dot(%s%s.%c%c%c%s, %s%s.%c%c%c%s)",
 					 srcmod[0], srcreg[0],
 					 swizzle[0][0], swizzle[0][1], swizzle[0][2],
+					 srcmodend[0],
 					 srcmod[1], srcreg[1],
-					 swizzle[1][0], swizzle[1][1], swizzle[1][2]);
+					 swizzle[1][0], swizzle[1][1], swizzle[1][2],
+					 srcmodend[1]);
 				break;
 			case D3DSIO_DP4:
 				sprintf (rvalue, "dot(%s, %s)", src[0], src[1]);
@@ -1286,22 +1292,23 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				sprintf (rvalue, "nrm(%s)", src[0]);
 				break;
 			case D3DSIO_SINCOS:
-				sprintf (rvalue, "sincos(%s(%s.%s), %s(%s.%s), %s(%s.%s)).%s",
-					 srcmod[0], srcreg[0], swizzle[0],
-					 srcmod[1], srcreg[1], swizzle[1],
-					 srcmod[2], srcreg[2], swizzle[2],
+				sprintf (rvalue, "sincos(%s%s.%s%s, %s%s.%s%s, %s%s.%s%s).%s",
+					 srcmod[0], srcreg[0], swizzle[0], srcmodend[0],
+					 srcmod[1], srcreg[1], swizzle[1], srcmodend[1],
+					 srcmod[2], srcreg[2], swizzle[2], srcmodend[2],
 					 writemask);
 				break;
 				// case D3DSIO_MOVA: break;
 				// case D3DSIO_TEXCOORD: break;
 				// case D3DSIO_TEXKILL: break;
 			case D3DSIO_TEX:
-				sprintf (rvalue, "texture2D(%s, %s(%s.%c%c)).%s",
+				sprintf (rvalue, "texture2D(%s, %s%s.%c%c%s).%s",
 					 srcreg[1],
 					 srcmod[0],
 					 srcreg[0],
 					 swizzle[0][0],
 					 swizzle[0][1],
+					 srcmodend[0],
 					 writemask);
 				break;
 				// case D3DSIO_TEXBEM: break;
@@ -1340,10 +1347,13 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				break;
 				// case D3DSIO_BEM: break;
 			case D3DSIO_DP2ADD:
-				sprintf (rvalue, "dot(%s(%s.%c%c), %s(%s.%c%c)) + %s(%s.%c)",
+				sprintf (rvalue, "dot(%s%s.%c%c%s, %s%s.%c%c%s) + %s%s.%c%s",
 					 srcmod[0], srcreg[0], swizzle[0][0], swizzle[0][1],
+					 srcmodend[0],
 					 srcmod[1], srcreg[1], swizzle[1][0], swizzle[1][1],
-					 srcmod[2], srcreg[2], swizzle[2][0]);
+					 srcmodend[1],
+					 srcmod[2], srcreg[2], swizzle[2][0],
+					 srcmodend[2]);
 				break;
 				// case D3DSIO_DSX: break;
 				// case D3DSIO_DSY: break;
