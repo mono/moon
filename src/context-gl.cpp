@@ -1069,26 +1069,23 @@ GLContext::GetEffectProgram (PixelShader *ps)
 
 		// x * x
 		g_string_sprintfa (s, "v.z = v1.w * v1.w;\n");
-		g_string_sprintfa (s, "v.xy = vec2(v.z) * vec2(v2) + "
-				   "vec2(v2.wzzw);\n");
-		g_string_sprintfa (s, "v.xy = vec2(v) * vec2(v.z) + "
-				   "vec2(v3);\n");
+		g_string_sprintfa (s, "v.xy = v.zz * v2.xy + v2.wz;\n");
+		g_string_sprintfa (s, "v.xy = v.xy * v.zz + v3.xy;\n");
 
 		// partial sin( x/2 ) and final cos( x/2 )
-		g_string_sprintfa (s, "v.xy = vec2(v) * vec2(v.z) + "
-				   "vec2(v3.wzzw);\n");
+		g_string_sprintfa (s, "v.xy = v.xy * v.zz + v3.wz;\n");
 
 		// sin( x/2 )
-		g_string_sprintfa (s, "v.x = float(v) * float(v1.w);\n");
+		g_string_sprintfa (s, "v.x = v.x * v1.w;\n");
 	
 		// compute sin( x/2 ) * sin( x/2 ) and sin( x/2 ) * cos( x/2 )
-		g_string_sprintfa (s, "v1.xy = vec2(v) * vec2(v.x);\n");
+		g_string_sprintfa (s, "v1.xy = v.xy * v.xx;\n");
 	
 		// 2 * sin( x/2 ) * sin( x/2 ) and 2 * sin( x/2 ) * cos( x/2 )
-		g_string_sprintfa (s, "v.xy = vec2(v1) + vec2(v1);\n");
+		g_string_sprintfa (s, "v.xy = v1.xy + v1.xy;\n");
 	
 		// cos( x ) and sin( x )
-		g_string_sprintfa (s, "v.x = float(v3.z) - float(v);\n");
+		g_string_sprintfa (s, "v.x = v3.z - v.x;\n");
 
 		g_string_sprintfa (s, "return v;\n");
 		g_string_sprintfa (s, "}\n");
