@@ -879,7 +879,6 @@ GLContext::GetEffectProgram (PixelShader *ps)
 	int           n_imm = 0;
 	char          src_reg[D3DSPR_LAST][MAX_CONSTANTS][64];
 	char          dst_reg[D3DSPR_LAST][MAX_CONSTANTS][64];
-	int           last_constant = -1;
 	int           n_sincos = 0;
 	int           n = 0;
 
@@ -1016,14 +1015,10 @@ GLContext::GetEffectProgram (PixelShader *ps)
 						  src.regtype != D3DSPR_SAMPLER &&
 						  src.regtype != D3DSPR_TEXTURE);
 
-					if (src.regtype == D3DSPR_CONST) {
-						if (src_reg[D3DSPR_CONST][src.regnum][0] == '\0') {
+					if (src.regtype == D3DSPR_CONST)
+						if (src_reg[D3DSPR_CONST][src.regnum][0] == '\0')
 							sprintf (src_reg[D3DSPR_CONST][src.regnum],
 								 "InConstant[%d]", src.regnum);
-
-							last_constant = MAX (last_constant, (int) src.regnum);
-						}
-					}
 
 					ERROR_IF (src_reg[src.regtype][src.regnum][0] == '\0');
 				}
@@ -1053,6 +1048,10 @@ GLContext::GetEffectProgram (PixelShader *ps)
 			} break;
 		}
 	}
+
+	g_string_sprintfa (s,
+			   "uniform vec4 InConstant[%d];\n",
+			   MAX_CONSTANTS);
 
 	if (n_imm)
 		g_string_sprintfa (s, "uniform vec4 imm[%d];\n", n_imm);
@@ -1090,11 +1089,6 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		g_string_sprintfa (s, "return v;\n");
 		g_string_sprintfa (s, "}\n");
 	}
-
-	if (last_constant >= 0)
-		g_string_sprintfa (s,
-				   "uniform vec4 InConstant[%d];\n",
-				   last_constant + 1);
 
 	g_string_sprintfa (s, "void main()\n");
 	g_string_sprintfa (s, "{\n");
