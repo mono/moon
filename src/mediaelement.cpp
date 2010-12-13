@@ -1407,13 +1407,18 @@ MediaElement::PlayOrStop ()
 		// If we can't pause, we play
 		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
-	} else if (flags & PlayRequested) {
-		// A Play has already been requested.
+	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
+		// We need to AutoPlay before we check for PlayRequested, otherwise this can happen (drt #999)
+		// me.Source = foo.wmv;
+		// me.Play (); /* PlayRequested is set */
+		// <we open, end up here, and start playing since PlayRequested is set */
+		// me.Pause ();
+		// <if we need to buffer, we end up here when done buffering, and since AutoPlayed is still true, we start playing again>
+		flags |= AutoPlayed;
 		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
-	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
-		// Autoplay us.
-		flags |= AutoPlayed;
+	} else if (flags & PlayRequested) {
+		// A Play has already been requested.
 		SetState (MediaElementStatePlaying);
 		playlist->PlayAsync ();
 	} else {
