@@ -55,7 +55,7 @@ namespace Leak
 			Queue (RunTest);
 		}
 		
-		Control ApplyTemplate (Control c)
+		T ApplyTemplate <T> (T c) where T : FrameworkElement
 		{
 			// Add the element to the live tree so the default style
 			// is set, then apply the template and remove it from the
