@@ -386,8 +386,11 @@ namespace System.Windows.Data {
 
 			cached = true;
 			if (DataSource == null) {
-				cachedValue = dp.GetDefaultValue (Target);
-				return cachedValue;
+				if (Binding.FallbackValue == null) {
+					cachedValue = dp.GetDefaultValue (Target);
+					return cachedValue;
+				}
+				cachedValue = Binding.FallbackValue;
 			}
 			else if (PropertyPathWalker.IsPathBroken) {
 				// If it the path is broken, don't call the converter unless we use the fallback.
@@ -436,7 +439,13 @@ namespace System.Windows.Data {
 
 				if (value != null) {
 					var converter = GetConverterTo ();
-					value = converter == null ? value : converter.ConvertTo (null, GetConverterCulture (), value, dp.PropertyType);
+
+					if (converter == null) {
+						if (value == Binding.FallbackValue)
+							value = MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
+						else
+							value = converter.ConvertTo (null, GetConverterCulture (), value, dp.PropertyType);
+					}
 				}
 			} catch (Exception ex) {
 				return MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
