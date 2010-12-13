@@ -125,7 +125,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	double cursor_offset;
 	MoonIMContext *im_ctx;
 	TextBuffer *buffer;
-	TextBoxView *view;
+	WeakRef <TextBoxView> view;
 	int max_length;
 	
 	short accepts_return:1;
@@ -247,7 +247,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
  public:
 	/* @SkipFactories */
-	TextBoxBase () { }
+	TextBoxBase ()
+		: view (this, "View") { }
 	
 	//
 	// Overrides

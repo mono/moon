@@ -611,13 +611,6 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 
 TextBoxBase::~TextBoxBase ()
 {
-	if (view) {
-		view->SetTextBox (NULL);
-		view->unref ();
-	}
-
-	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
-	
 	ResetIMContext ();
 	delete im_ctx;
 	
@@ -2226,11 +2219,12 @@ TextBoxBase::OnApplyTemplate ()
 	
 	if (view != NULL) {
 		view->SetTextBox (NULL);
-		view->unref ();
 	}
 
+	// Store the view on the managed peer and then drop the extra ref.
 	view = MoonUnmanagedFactory::CreateTextBoxView ();
-	
+	view->unref ();
+
 	view->SetEnableCursor (!is_read_only);
 	view->SetTextBox (this);
 	
@@ -2250,12 +2244,11 @@ TextBoxBase::OnApplyTemplate ()
 	} else if (contentElement->Is (Type::PANEL)) {
 		DependencyObjectCollection *children = ((Panel *) contentElement)->GetChildren ();
 		
-		children->Add (view);
+		children->Add ((TextBoxView*) view);
 	} else {
 		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentElement of type %s",
 			   contentElement->GetType ()->GetName ());
 		view->SetTextBox (NULL);
-		view->unref ();
 		view = NULL;
 	}
 	
@@ -3217,16 +3210,8 @@ TextBoxView::TextBoxView ()
 
 TextBoxView::~TextBoxView ()
 {
-	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxView::mouse_left_button_down, this);
-	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxView::mouse_left_button_up, this);
-	
-	if (textbox) {
-		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
-		textbox->view->unref ();
-		textbox->view = NULL;
-	}
-	
-	DisconnectBlinkTimeout ();
+	if (!GetDeployment ()->IsShuttingDown ())
+		DisconnectBlinkTimeout ();
 	
 	delete layout;
 }
