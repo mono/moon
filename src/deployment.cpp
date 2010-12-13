@@ -310,8 +310,14 @@ Deployment::RegisterThread (Deployment *deployment)
 Deployment*
 Deployment::GetCurrent()
 {
-	Deployment *deployment = (Deployment *) pthread_getspecific (tls_key);
-	MonoDomain *current_domain = mono_domain_get ();
+	Deployment *deployment;
+	MonoDomain *current_domain;
+
+	if (!initialized)
+		return NULL;
+
+	deployment = (Deployment *) pthread_getspecific (tls_key);
+	current_domain = mono_domain_get ();
 
 	/*
 	 * If we dont have a Deployment* in the TLS slot then we are in a thread created
