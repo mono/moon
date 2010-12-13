@@ -363,7 +363,8 @@ Deployment::GetCurrent()
 			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %u, (tls) deployment: %p, deployment->domain: %p, (mono_domain_get) current_domain: %p, root_domain: %p, hash deployment: %p\n",
 				(int) pthread_self (), deployment, deployment->domain, current_domain, root_domain, g_hash_table_lookup (current_hash, current_domain));
 			pthread_mutex_lock (&hash_mutex);
-			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
+			if (current_hash != NULL)
+				deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
 			pthread_mutex_unlock (&hash_mutex);
 			
 			/* Fixup our tls entry */
