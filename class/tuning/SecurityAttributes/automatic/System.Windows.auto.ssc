@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 643 methods
+# 641 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -123,8 +123,6 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::matrix3_d_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::matrix3_dprojection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::matrix_transform_new()
-+SSC-M: System.IntPtr Mono.SafeNativeMethods::media_attribute_new()
-+SSC-M: System.IntPtr Mono.SafeNativeMethods::media_attribute_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::media_base_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::media_element_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::mouse_button_event_args_new()

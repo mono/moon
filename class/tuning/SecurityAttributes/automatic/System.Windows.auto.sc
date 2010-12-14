@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 589 methods needs to be decorated.
+# 590 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -612,6 +612,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_get_matrix_values(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::media_attribute_get_value_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_element_set_demuxer_source(System.IntPtr,System.IntPtr,System.Windows.Media.MediaStreamSource/CloseDemuxerDelegate,System.Windows.Media.MediaStreamSource/GetDiagnosticAsyncDelegate,System.Windows.Media.MediaStreamSource/GetFrameAsyncDelegate,System.Windows.Media.MediaStreamSource/OpenDemuxerAsyncDelegate,System.Windows.Media.MediaStreamSource/SeekAsyncDelegate,System.Windows.Media.MediaStreamSource/SwitchMediaStreamAsyncDelegate)
