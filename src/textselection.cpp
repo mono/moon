@@ -170,9 +170,9 @@ TextSelection::Insert (TextElement *element)
 
 		int new_el_loc = parents_children->IndexOf (el) + 1;
 		parents_children->Insert (new_el_loc, new_el);
-
 		el = el_parent;
 		loc = new_el_loc;
+		new_el->unref ();
 	}
 
 

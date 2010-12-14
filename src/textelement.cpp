@@ -539,7 +539,7 @@ Run::Split (int loc)
 	char *right_text = g_strdup (existing_text + loc);
 	existing_text[loc] = 0;
 
-	Run *new_r = new Run ();
+	Run *new_r = MoonUnmanagedFactory::CreateRun ();
 	new_r->SetText (right_text);
 
 	SetText (existing_text);
@@ -636,7 +636,7 @@ Paragraph::Split (int loc)
 	InlineCollection *inlines = GetInlines();
 	int count = inlines->GetCount();
 
-	Paragraph *new_p = new Paragraph ();
+	Paragraph *new_p = MoonUnmanagedFactory::CreateParagraph ();
 	InlineCollection *new_inlines = new_p->GetInlines();
 
 	for (int i = loc + 1; i < count; i ++) {
@@ -690,7 +690,7 @@ Section::Split (int loc)
 	BlockCollection *blocks = GetBlocks();
 	int count = blocks->GetCount();
 
-	Section *new_s = new Section ();
+	Section *new_s = MoonUnmanagedFactory::CreateSection ();
 	BlockCollection *new_blocks = new_s->GetBlocks();
 
 	for (int i = loc + 1; i < count; i ++) {
@@ -765,7 +765,7 @@ Span::Split (int loc)
 	InlineCollection *inlines = GetInlines();
 	int count = inlines->GetCount();
 
-	Span *new_s = new Span ();
+	Span *new_s = MoonUnmanagedFactory::CreateSpan ();
 	InlineCollection *new_inlines = new_s->GetInlines();
 
 	for (int i = loc + 1; i < count; i ++) {
