@@ -238,12 +238,6 @@ RichTextBox::RichTextBox ()
 
 RichTextBox::~RichTextBox ()
 {
-	if (view) {
-		view->SetTextBox (NULL);
-		view->unref ();
-	}
-	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);
-	
 	ResetIMContext ();
 	delete im_ctx;
 	
@@ -1179,11 +1173,11 @@ RichTextBox::OnApplyTemplate ()
 	
 	if (view) {
 		view->SetTextBox (NULL);
-		view->unref ();
 	}
 
 	// Create our view control
 	view = MoonUnmanagedFactory::CreateRichTextBoxView ();
+	view->unref ();
 	
 	view->SetEnableCursor (!GetIsReadOnly());
 	view->SetTextBox (this);
@@ -1204,12 +1198,11 @@ RichTextBox::OnApplyTemplate ()
 	} else if (contentElement->Is (Type::PANEL)) {
 		DependencyObjectCollection *children = ((Panel *) contentElement)->GetChildren ();
 		
-		children->Add (view);
+		children->Add ((RichTextBoxView *) view);
 	} else {
 		g_warning ("RichTextBox::OnApplyTemplate: don't know how to handle a ContentElement of type %s",
 			   contentElement->GetType ()->GetName ());
 		view->SetTextBox (NULL);
-		view->unref ();
 		view = NULL;
 	}
 	
@@ -1445,15 +1438,8 @@ RichTextBoxView::RichTextBoxView ()
 
 RichTextBoxView::~RichTextBoxView ()
 {
-	RemoveHandler (UIElement::MouseLeftButtonDownEvent, RichTextBoxView::mouse_left_button_down, this);
-	RemoveHandler (UIElement::MouseLeftButtonUpEvent, RichTextBoxView::mouse_left_button_up, this);
-
-	if (textbox) {
-		textbox->view->unref ();
-		textbox->view = NULL;
-	}
-	
-	DisconnectBlinkTimeout ();
+	if (!GetDeployment ()->IsShuttingDown ())
+		DisconnectBlinkTimeout ();
 	
 	delete layout;
 }

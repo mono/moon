@@ -68,7 +68,7 @@ protected:
 	Stack *undo;
 	Stack *redo;
 	double cursor_offset;
-	RichTextBoxView *view;
+	WeakRef<RichTextBoxView> view;
 	MoonIMContext *im_ctx;
 	
 	short accepts_return:1;
