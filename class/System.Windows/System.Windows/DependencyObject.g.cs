@@ -745,11 +745,6 @@ namespace System.Windows.Media {
 		internal MatrixTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
-	partial class MediaAttribute {
-		public MediaAttribute () : base (SafeNativeMethods.media_attribute_new (), true) {}
-		internal MediaAttribute (IntPtr raw, bool dropref) : base (raw, dropref) {}
-	}
-
 	partial class MultiScaleTileSource {
 		internal MultiScaleTileSource () : base (SafeNativeMethods.multi_scale_tile_source_new (), true)
 		{

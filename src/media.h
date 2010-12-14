@@ -24,7 +24,7 @@
 
 namespace Moonlight {
 
-/* @Namespace=System.Windows.Media */
+/* @Namespace=None */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
@@ -32,26 +32,26 @@ class MediaAttribute : public DependencyObject {
  public:
  	/* @PropertyType=string,GenerateAccessors */
 	const static int ValueProperty;
-	
- 	/* @GeneratePInvoke */
-	MediaAttribute () { SetObjectType (Type::MEDIAATTRIBUTE); }
+
+	/* @SkipFactories */
+	MediaAttribute () : DependencyObject (Type::MEDIAATTRIBUTE) { }
 	
 	//
 	// Property Accessors
 	//
+	/* @GeneratePInvoke */
 	const char *GetValue();
 	void SetValue (const char *value);
 };
 
 /* @Namespace=None */
-/* @GenerateCBindingCtor=true */
 class MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
 
  public:
 	/* @SkipFactories */
-	/* @GeneratePInvoke */
+	/* @GenerateCBinding */
 	MediaAttributeCollection () { SetObjectType (Type::MEDIAATTRIBUTE_COLLECTION); }
 	
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }

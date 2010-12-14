@@ -393,8 +393,16 @@ namespace Mono {
 				int count = NativeMethods.collection_get_count (p);
 				var dict = new Dictionary<string, string> ();
 				for (int i = 0; i < count; i ++) {
-					var attr = (MediaAttribute) Value.ToObject (NativeMethods.collection_get_value_at (p, i));
-					dict.Add (attr.Name, attr.Value);
+					IntPtr map = NativeMethods.collection_get_value_at (p, i);
+					if (map == IntPtr.Zero)
+						continue;
+					Value *attribute = (Value *) map;
+					if (attribute->k != Kind.MEDIAATTRIBUTE || attribute->u.p == IntPtr.Zero)
+						continue;
+					string name = NativeMethods.dependency_object_get_name (attribute->u.p);
+					string val = NativeMethods.media_attribute_get_value (attribute->u.p);
+
+					dict.Add (name, val);
 				}
 				return dict;
 			}
