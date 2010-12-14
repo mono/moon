@@ -241,7 +241,9 @@ namespace System.Net.Browser {
 						async_result.SetComplete ();
 					} else {
 						string location = wres.InternalHeaders ["Location"];
-						Uri redirect = new Uri (location);
+						Uri redirect = new Uri (location, UriKind.RelativeOrAbsolute);
+						if (!redirect.IsAbsoluteUri)
+							redirect = new Uri (wreq.RequestUri, redirect);
 						// Silverlight does NOT redirect POST as POST to avoid cross site attacks - see DRT #866 or
 						// http://blogs.msdn.com/jackgr/archive/2010/04/19/silverlight-clients-and-appfabric-access-control.aspx
 						if ((String.Compare (method, "HEAD", StringComparison.OrdinalIgnoreCase) == 0) || 
