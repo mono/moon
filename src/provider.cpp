@@ -111,8 +111,10 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Pr
 			continue;
 
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
-		if (new_value != NULL)
+		if (new_value != NULL) {
 			new_value = new Value (*new_value);
+			new_value->Weaken ();
+		}
 
 		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
 
@@ -159,8 +161,10 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 			// This is a property which is in both styles
 			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
-			if (newValue != NULL)
+			if (newValue != NULL) {
 				newValue = new Value (*newValue);
+				newValue->Weaken ();
+			}
 
 			g_hash_table_insert (style_hash, oldProp, newValue);
 			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
@@ -171,8 +175,10 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 			// This is a property which is only in the new style
 			oldValue = NULL;
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
-			if (newValue != NULL)
+			if (newValue != NULL) {
 				newValue = new Value (*newValue);
+				newValue->Weaken ();
+			}
 
 			g_hash_table_insert (style_hash, newProp, newValue);
 			obj->ProviderValueChanged (precedence, newProp, oldValue, newValue, true, true, false, error);
@@ -250,8 +256,10 @@ ImplicitStylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *
 			continue;
 
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
-		if (new_value != NULL)
+		if (new_value != NULL) {
 			new_value = new Value (*new_value);
+			new_value->Weaken ();
+		}
 
 		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
 
@@ -299,8 +307,10 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 			// This is a property which is in both styles
 			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
-			if (newValue != NULL)
+			if (newValue != NULL) {
 				newValue = new Value (*newValue);
+				newValue->Weaken ();
+			}
 
 			g_hash_table_insert (style_hash, oldProp, newValue);
 			obj->ProviderValueChanged (precedence, oldProp, oldValue, newValue, true, true, false, error);
@@ -311,8 +321,10 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 			// This is a property which is only in the new style
 			oldValue = NULL;
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
-			if (newValue != NULL)
+			if (newValue != NULL) {
 				newValue = new Value (*newValue);
+				newValue->Weaken ();
+			}
 
 			g_hash_table_insert (style_hash, newProp, newValue);
 			obj->ProviderValueChanged (precedence, newProp, oldValue, newValue, true, true, false, error);
