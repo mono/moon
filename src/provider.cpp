@@ -1197,7 +1197,7 @@ InheritedIsEnabledValueProvider::LocalValueChanged (DependencyProperty *property
 		current_value = new_value;
 
 		MoonError error;
-		obj->ProviderValueChanged (precedence, obj->GetDeployment ()->GetTypes ()->GetProperty (Control::IsEnabledProperty), new Value (old_value), new Value (new_value), true, false, false, &error);
+		obj->ProviderValueChanged (precedence, obj->GetDeployment ()->GetTypes ()->GetProperty (Control::IsEnabledProperty), &old_value, &new_value, true, false, false, &error);
 		return true;
 	}
 	return false;
