@@ -518,7 +518,7 @@ namespace Mono {
 			case Kind.UNDERLINE: return new Underline (raw, false);
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
-			case Kind.VIDEOFORMAT_COLLECTION: return new VideoBrush (raw, false);
+			case Kind.VIDEOFORMAT_COLLECTION: return new VideoFormatCollection (raw, false);
 			case Kind.WEBBROWSER: return new WebBrowser (raw, false);
 			case Kind.WINDOW: return new Window (raw, false);
 			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
