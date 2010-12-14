@@ -1280,7 +1280,8 @@ Mp4Demuxer::OpenMoov ()
 			stream->SetExtraData (g_memdup (entry->extradata, entry->extradata_size));
 		}
 		stream->SetCodecId (GINT32_FROM_BE (entry->type));
-		stream->SetDuration (ToPts (tkhd->duration, moov->mvhd->timescale));
+		/* MS seems to only have ms accuracy on duration - the remaining microseconds are stripped off (/10000*10000). #7000 */
+		stream->SetDuration ((ToPts (tkhd->duration, moov->mvhd->timescale) / 10000) * 10000);
 		stream->SetPtsPerFrame (pts_per_frame);
 		LOG_MP4 ("Mp4Demuxer::OpenMoov (): codec_id: %i = %s, duration: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " pts = %" G_GUINT64_FORMAT "ms pts_per_frame = %" G_GUINT64_FORMAT " ms\n",
 			stream->GetCodecId (), stream->GetCodec (), tkhd->duration, stream->GetDuration (), MilliSeconds_FromPts (stream->GetDuration ()), MilliSeconds_FromPts (pts_per_frame));
