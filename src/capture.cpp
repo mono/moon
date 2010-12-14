@@ -334,6 +334,7 @@ AudioCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 	  col->Add (Value (AudioFormat (formats[i])));
 
 	SetSupportedFormats (col);
+	col->unref ();
 
 	SetFriendlyName (audio_device->GetFriendlyName());
 }
@@ -379,6 +380,7 @@ VideoCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 	  col->Add (Value (VideoFormat (formats[i])));
 
 	SetSupportedFormats (col);
+	col->unref ();
 
 	SetFriendlyName (video_device->GetFriendlyName());
 }

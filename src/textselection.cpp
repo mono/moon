@@ -251,6 +251,7 @@ TextSelection::SetText (const char *text)
 				children->Insert (anchor.GetLocation(), Value (p));
 				children = p->GetInlines();
 				children->Add (Value (r));
+				p->unref ();
 			}
 			else {
 				children->Insert (anchor.GetLocation(), Value (r));
@@ -258,6 +259,7 @@ TextSelection::SetText (const char *text)
 
 			anchor = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
 			moving = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
+			r->unref ();
 		}
 	}
 }

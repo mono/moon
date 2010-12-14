@@ -36,7 +36,9 @@ namespace System.Windows.Media {
 		public Matrix Value {
 			get {
 				IntPtr matrix = NativeMethods.general_transform_get_matrix (native);
-				return new Matrix (matrix);
+				var m = new Matrix (matrix);
+				NativeMethods.event_object_unref (matrix);
+				return m;
 			}
 		}
 	}
