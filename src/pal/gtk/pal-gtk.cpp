@@ -103,7 +103,7 @@ MapKeyvalToKey (guint keyval)
 	case GDK_5: case GDK_percent:			return KeyDIGIT5;
 	case GDK_6: case GDK_asciicircum:		return KeyDIGIT6;
 	case GDK_7: case GDK_ampersand:			return KeyDIGIT7;
-	case GDK_8: case GDK_multiply:			return KeyDIGIT8;
+	case GDK_8: case GDK_asterisk:			return KeyDIGIT8;
 	case GDK_9: case GDK_parenleft:			return KeyDIGIT9;
 	case GDK_a: case GDK_A:				return KeyA;
 	case GDK_b: case GDK_B:				return KeyB;
