@@ -34,6 +34,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Documents;
 using System.Reflection;
 
 namespace Mono {
@@ -167,6 +168,12 @@ namespace Mono {
 					} else if (str_val == "None") {
 						return null;
 					}
+				}
+
+				if (destinationType == typeof (InlineCollection)) {
+					InlineCollection inlines = new InlineCollection ();
+					inlines.Add (str_val);
+					return inlines;
 				}
 
 				if (destinationType == typeof (System.Globalization.CultureInfo))
