@@ -213,6 +213,7 @@
 
 +SC-M: System.Void Mono.IListenPropertyChanged::OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 +SC-M: System.Void System.Windows.TemplateBindingExpression::Mono.IListenPropertyChanged.OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SC-M: System.Void System.Windows.Data.StandardPropertyPathNode::Mono.IListenPropertyChanged.OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
 # Can create a delegate on private/internal method" 
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()

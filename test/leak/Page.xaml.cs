@@ -72,6 +72,7 @@ namespace Leak
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				System.Threading.Thread.Sleep (500);
 				GC.Collect ();
+				GC.WaitForPendingFinalizers ();
 				d.BeginInvoke (a);
 			});
 		}

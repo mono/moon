@@ -34,9 +34,11 @@ using Mono;
 
 namespace System.Windows.Data
 {
-	class StandardPropertyPathNode : PropertyPathNode {
+	class StandardPropertyPathNode : PropertyPathNode, IListenPropertyChanged {
 
-		Mono.UnmanagedPropertyChangeHandler dpChanged;
+		WeakPropertyChangedListener Listener {
+			get; set;
+		}
 
 		public string PropertyName {
 			get; private set;
@@ -58,9 +60,8 @@ namespace System.Windows.Data
 
 			var old_do = oldSource as DependencyObject;
 			var new_do = newSource as DependencyObject;
-			if (dpChanged != null) {
-				Mono.NativeMethods.dependency_object_remove_property_change_handler (old_do.native, DependencyProperty.Native, dpChanged);
-				dpChanged = null;
+			if (Listener != null) {
+				Listener.Detach ();
 			}
 
 			DependencyProperty = null;
@@ -79,8 +80,7 @@ namespace System.Windows.Data
 			Types.Ensure (type);
 			if (new_do != null && DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
 				DependencyProperty = prop;
-				dpChanged = DPChanged;
-				Mono.NativeMethods.dependency_object_add_property_change_handler (new_do.native, DependencyProperty.Native, dpChanged, IntPtr.Zero);
+				Listener = new WeakPropertyChangedListener (new_do, DependencyProperty, this);
 			}
 
 			// If there's an attached DP called 'Foo' and also a regular CLR property
@@ -92,7 +92,7 @@ namespace System.Windows.Data
 			}
 		}
 
-		void DPChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)
+		void IListenPropertyChanged.OnPropertyChanged (IntPtr dependency_object, IntPtr property_changed_event_args, ref MoonError error, IntPtr closure)
 		{
 			try {
 				UpdateValue ();
