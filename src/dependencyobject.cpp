@@ -483,6 +483,8 @@ EventObject::ref ()
 			 * shutdown). Now if the ShuttingDownEvent is emitted just between the unref delayed is enqueued and
 			 * before it's executed, we fail this check. */
 			g_warn_if_fail (man_ob != NULL);
+			if (!man_ob)
+				print_stack_trace ();
 #endif
 			managed_handle = deployment->CreateGCHandle (man_ob);
 #if 0
