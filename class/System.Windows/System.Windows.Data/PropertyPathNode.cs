@@ -35,7 +35,7 @@ using Mono;
 
 namespace System.Windows.Data
 {
-	abstract class PropertyPathNode : IPropertyPathNode {
+	abstract class PropertyPathNode : IPropertyPathNode, IListenINPC {
 
 		public event EventHandler ValueChanged;
 
@@ -51,6 +51,10 @@ namespace System.Windows.Data
 				// then the final value cannot be retrieved so the chain is broken
 				return Source == null || (PropertyInfo == null && DependencyProperty == null);
 			}
+		}
+
+		public IWeakListener Listener {
+			get; set;
 		}
 
 		public IPropertyPathNode Next {
@@ -102,11 +106,14 @@ namespace System.Windows.Data
 		{
 			if (Source != source) {
 				var oldSource = Source;
-				if (Source is INotifyPropertyChanged)
-					((INotifyPropertyChanged) Source).PropertyChanged -= OnSourcePropertyChanged;
+				if (Listener != null) {
+					Listener.Detach ();
+					Listener = null;
+				}
+
 				Source = source;
 				if (Source is INotifyPropertyChanged)
-					((INotifyPropertyChanged) Source).PropertyChanged += OnSourcePropertyChanged;
+					Listener = new WeakINPCListener ((INotifyPropertyChanged) Source, this);
 
 				OnSourceChanged (oldSource, Source);
 				UpdateValue ();
@@ -116,5 +123,10 @@ namespace System.Windows.Data
 		}
 
 		public abstract void UpdateValue ();
+
+		void IListenINPC.OnPropertyChanged (object o, PropertyChangedEventArgs e)
+		{
+			OnSourcePropertyChanged (o, e);
+		}
 	}
 }
