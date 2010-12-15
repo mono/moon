@@ -249,13 +249,21 @@ class XamlContextInternal {
 
 		create_ignorable = false;
 	}
+
 	
+	static void unref_element (gpointer data, gpointer user_data)
+	{
+		((DependencyObject *) data)->unref ();
+	}
+
 	~XamlContextInternal ()
 	{
 		if (imported_namespaces)
 			g_hash_table_destroy (imported_namespaces);
-		if (resources)
+		if (resources) {
+			g_slist_foreach (resources, unref_element, NULL);
 			g_slist_free (resources);
+		}
 		Deployment::GetCurrent ()->FreeGCHandle (callbacks.gchandle);
 
 		delete top_element;
@@ -2050,13 +2058,17 @@ create_resource_list (XamlParserInfo *p)
 	while (walk) {
 		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::FRAMEWORKELEMENT)) {
 			FrameworkElement *fwe = (FrameworkElement *)walk->GetAsDependencyObject ();
-			if (g_slist_index (list, fwe) == -1)
+			if (g_slist_index (list, fwe) == -1) {
+				fwe->ref ();
 				list = g_slist_prepend (list, fwe);
+			}
 		}
 		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
 			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ();
-			if (g_slist_index (list, rd) == -1)
+			if (g_slist_index (list, rd) == -1) {
+				rd->ref ();
 				list = g_slist_prepend (list, walk->GetAsDependencyObject ());
+			}
 		}
 		walk = walk->parent;
 	}
