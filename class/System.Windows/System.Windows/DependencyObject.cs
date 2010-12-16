@@ -78,8 +78,10 @@ namespace System.Windows {
 			}
 		}
 
+		WeakReference templateOwner;
 		internal DependencyObject TemplateOwner {
-			get; set;
+			get { return (DependencyObject) (templateOwner == null ? null : templateOwner.Target); }
+			set { templateOwner = new WeakReference (value); }
 		}
 
 		internal Uri ResourceBase {
