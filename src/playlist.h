@@ -91,6 +91,7 @@ private:
 	char *info_target;
 	char *info_url;
 	bool client_skip;
+	bool is_entry_ref;
 	TimeSpan start_time;
 	Duration *duration;
 	GHashTable *params;
@@ -167,6 +168,9 @@ public:
 
 	bool GetClientSkip ();
 	void SetClientSkip (bool value);
+
+	bool GetIsEntryRef () { return is_entry_ref; }
+	void SetIsEntryRef (bool value) { is_entry_ref = value; }
 
 	void AddParams (const char *name, const char *value);
 	

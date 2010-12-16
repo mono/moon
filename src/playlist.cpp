@@ -159,6 +159,7 @@ PlaylistEntry::Init (Playlist *parent)
 	set_values = (PlaylistKind::Kind) 0;
 	opened = false;
 	params = NULL;
+	is_entry_ref = false;
 }
 
 void
@@ -776,7 +777,7 @@ PlaylistEntry::PopulateMediaAttributes ()
 	add_attribute (attributes, "TITLE", title);
 	
 	current = this;
-	while (current != NULL) {
+	while (current != NULL && !current->GetIsEntryRef ()) {
 		if (current->params != NULL)
 			g_hash_table_foreach (current->params, (GHFunc) add_attribute_glib, attributes);
 		current = current->GetParent ();
@@ -1274,6 +1275,7 @@ Playlist::MergeWith (PlaylistEntry *entry)
 	SetSourceName (entry->GetSourceName () ? new Uri (*entry->GetSourceName ()) : NULL);
 	if (entry->HasDuration ()) 
 		SetDuration (entry->GetDuration ());
+	SetIsEntryRef (entry->GetIsEntryRef ());
 	Initialize (entry->GetMedia ());
 	entry->ClearMedia ();
 }
@@ -1363,7 +1365,7 @@ PlaylistRoot::IsSingleFile ()
 void
 PlaylistEntry::DumpInternal (int tabs)
 {
-	printf ("%*s%s %i\n", tabs, "", GetTypeName (), GET_OBJ_ID (this));
+	printf ("%*s%s %i %s\n", tabs, "", GetTypeName (), GET_OBJ_ID (this), GetIsEntryRef () ? "EntryRef" : "Entry");
 	tabs++;
 	printf ("%*sParent: %p %s\n", tabs, "", parent, parent ? parent->GetTypeName () : NULL);
 	printf ("%*sFullSourceName: %s\n", tabs, "", GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL);
@@ -1371,7 +1373,7 @@ PlaylistEntry::DumpInternal (int tabs)
 	printf ("%*sMedia: %i %s\n", tabs, "", GET_OBJ_ID (media), media ? "" : "(null)");
 	if (media) {
 		IMediaDemuxer *demuxer = media->GetDemuxerReffed ();
-		printf ("%*sUri: %s\n", tabs, "", media->GetUri ()->GetOriginalString ());
+		printf ("%*sUri: %s\n", tabs, "", media->GetUri () ? media->GetUri ()->GetOriginalString () : NULL);
 		printf ("%*sDemuxer: %i %s\n", tabs, "", GET_OBJ_ID (demuxer), demuxer ? demuxer->GetTypeName () : "N/A");
 		printf ("%*sSource:  %i %s\n", tabs, "", GET_OBJ_ID (media->GetSource ()), media->GetSource () ? media->GetSource ()->GetTypeName () : "N/A");
 		if (demuxer)
@@ -2028,6 +2030,7 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 		}
 
 		PlaylistEntry *entry = new PlaylistEntry (playlist);
+		entry->SetIsEntryRef (true);
 		if (uri)
 			entry->SetSourceName (uri);
 		uri = NULL;
