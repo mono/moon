@@ -384,6 +384,72 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous ()]
+		public void MarkersTest ()
+		{
+			MediaElement mel = new MediaElement ();
+			AssertFailedException ex = null;
+			TimelineMarker marker1 = new TimelineMarker ();
+			TimelineMarker marker2 = new TimelineMarker ();
+			int markers_reached = 0;
+			marker1.Text = "marker1";
+			marker1.Type = "type1";
+			marker1.Time = TimeSpan.FromSeconds (1);
+			marker2.Text = "marker2";
+			marker2.Type = "type2";
+			marker2.Time = TimeSpan.FromSeconds (1.1);
+			mel.Name = "mel";
+			mel.AutoPlay = true;
+
+			TestPanel.Children.Add (mel);
+
+			mel.MediaFailed += new EventHandler<ExceptionRoutedEventArgs> (delegate (object sender, ExceptionRoutedEventArgs e)
+			{
+				ex = new AssertFailedException ("Media should open successfully");
+			});
+			mel.MediaOpened += new RoutedEventHandler (delegate (object sender, RoutedEventArgs e)
+			{
+				mel.Markers.Add (marker2);
+				mel.Markers.Add (marker1);
+				if (mel.Markers [0] != marker1)
+					ex = new AssertFailedException ("mel.Markers [0] != markers1");
+				if (mel.Markers [1] != marker2)
+					ex = new AssertFailedException ("mel.Markers [1] != markers2");
+			});
+			mel.MarkerReached += new TimelineMarkerRoutedEventHandler (delegate (object sender, TimelineMarkerRoutedEventArgs e)
+			{
+				markers_reached++;
+				switch (markers_reached) {
+				case 1:
+					if (marker1 == e.Marker)
+						ex = new AssertFailedException ("Got marker1 back, not a copy");
+					break;
+				case 2:
+					if (marker2 == e.Marker)
+						ex = new AssertFailedException ("Got marker2 back, not a copy");
+					break;
+				}
+				if (mel.Markers [0] != marker1)
+					ex = new AssertFailedException ("mel.Markers [0] != markers1");
+				if (mel.Markers [1] != marker2)
+					ex = new AssertFailedException ("mel.Markers [1] != markers2");
+			});
+			mel.MediaEnded += new RoutedEventHandler (delegate (object sender, RoutedEventArgs e)
+			{
+				ex = new AssertFailedException ("MediaEnded: Test should finish before media ends");
+			});
+			mel.Source = new Uri ("/moon-unit;component/timecode-long-with-audio.wmv", UriKind.Relative);
+
+			EnqueueConditional (() => ex != null || markers_reached == 2);
+			Enqueue (() =>
+			{
+				if (ex != null)
+					throw ex;
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous ()]
 		public void MediaFailedState ()
 		{
 			bool failed = false;
