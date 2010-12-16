@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 590 methods needs to be decorated.
+# 588 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1725,12 +1725,6 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.Documents.LogicalDirection Mono.NativeMethods::text_pointer_get_logical_direction(System.IntPtr)
-
-# overrides 'System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()'.
-+SC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL3MarkupExpressionParser::GetParentTemplate()
-
-# overrides 'System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()'.
-+SC-M: System.Windows.FrameworkTemplate Mono.Xaml.SL4MarkupExpressionParser::GetParentTemplate()
 
 # p/invoke declaration
 +SC-M: System.Windows.InstallState Mono.NativeMethods::application_get_install_state(System.IntPtr)

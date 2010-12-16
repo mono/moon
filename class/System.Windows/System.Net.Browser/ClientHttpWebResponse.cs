@@ -159,6 +159,7 @@ namespace System.Net.Browser {
 
 		public override Stream GetResponseStream ()
 		{
+			stream.Seek (0, SeekOrigin.Begin);
 			return stream;
 		}
 
