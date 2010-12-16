@@ -67,18 +67,6 @@ namespace Mono.Xaml {
 			return o;
 		}
 
-		protected override FrameworkTemplate GetParentTemplate ()
-		{
-			IntPtr template = NativeMethods.xaml_get_template_parent (parser, target_data);
-
-			if (template == IntPtr.Zero)
-				return null;
-
-			INativeEventObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
-
-			return dob as FrameworkTemplate;
-		}
-
 		protected override PropertyPath ParsePropertyPath (string piece)
 		{
 			Kind k = Deployment.Current.Types.TypeToKind (typeof (PropertyPath));
@@ -131,11 +119,6 @@ namespace Mono.Xaml {
 			if (o == null && !parsingBinding)
 				throw new XamlParseException (String.Format ("Resource '{0}' must be available as a static resource", name));
 			return o;
-		}
-
-		protected override FrameworkTemplate GetParentTemplate ()
-		{
-			return parser.GetParentTemplate (target_element);
 		}
 
 		protected override PropertyPath ParsePropertyPath (string piece)
@@ -338,7 +321,6 @@ namespace Mono.Xaml {
 
 			char next;
 			string prop = GetNextPiece (ref expression, out next);
-			/*FrameworkTemplate template = */GetParentTemplate ();
 
 			tb.TargetPropertyName = attribute_name;
 			tb.SourcePropertyName = prop;
@@ -516,7 +498,6 @@ namespace Mono.Xaml {
 		}
 
 		protected abstract object LookupNamedResource (DependencyObject dob, string name);
-		protected abstract FrameworkTemplate GetParentTemplate ();
 		protected abstract PropertyPath ParsePropertyPath (string piece);
 	}
 }

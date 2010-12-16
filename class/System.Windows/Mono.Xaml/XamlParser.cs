@@ -313,19 +313,6 @@ namespace Mono.Xaml {
 				dob.SetNameOnScope (name, NameScope);
 		}
 
-		internal FrameworkTemplate GetParentTemplate (XamlElement element)
-		{
-			XamlElement parent = element.Parent;
-
-			while (parent != null && !IsTemplate (parent))
-				parent = parent.Parent;
-
-			if (parent != null)
-				return ((XamlObjectElement) parent).Object as FrameworkTemplate;
-
-			return Context.Template;
-		}
-
 		private bool IsTemplate (XamlElement element)
 		{
 			XamlObjectElement obj = element as XamlObjectElement;
