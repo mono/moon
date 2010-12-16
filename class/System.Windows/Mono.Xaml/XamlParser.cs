@@ -579,9 +579,13 @@ namespace Mono.Xaml {
 
 			XamlObjectElement obj = CurrentElement as XamlObjectElement;
 			if (obj != null) {
-
 				if (IsTextBlockElement (obj)) {
 					ParseTextBlockText (obj, value);
+					return;
+				}
+
+				if (typeof (Paragraph).IsAssignableFrom (obj.Type)) {
+					ParseParagraphText (obj, value);
 					return;
 				}
 
@@ -641,6 +645,14 @@ namespace Mono.Xaml {
 			TextBlock textblock = block.Object as TextBlock;
 
 			textblock.Inlines.Add (run);
+		}
+
+		private void ParseParagraphText (XamlObjectElement obj, string value)
+		{
+			Paragraph para = (Paragraph) obj.Object;
+			Run run = ParseRunText (value);
+
+			para.Inlines.Add (run);
 		}
 
 		private void ParseSpanText (XamlObjectElement obj, string value)

@@ -170,12 +170,6 @@ namespace Mono {
 					}
 				}
 
-				if (destinationType == typeof (InlineCollection)) {
-					InlineCollection inlines = new InlineCollection ();
-					inlines.Add (str_val);
-					return inlines;
-				}
-
 				if (destinationType == typeof (System.Globalization.CultureInfo))
 					return CultureInfo.GetCultureInfo (str_val);
 
