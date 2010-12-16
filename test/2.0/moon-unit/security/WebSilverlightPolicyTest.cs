@@ -295,6 +295,33 @@ namespace MoonTest.Security {
 			Assert.IsTrue (cap.IsAllowed (new Uri ("http://server/data/file.txt"), "GET", null), "granted");
 			Assert.IsFalse (cap.IsAllowed (new Uri ("http://server/file.txt"), "GET", null), "not-granted-parent");
 		}
+
+		[TestMethod]
+		public void MultiScheme ()
+		{
+			string policy = @"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri=""http://*"" />
+				<domain uri=""https://*"" />
+			</allow-from>
+			<grant-to>
+				<resource path=""/data/"" include-subpaths=""true"" />
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>";
+			ClientAccessPolicy cap = GetPolicy (policy);
+			ClientAccessPolicy.ApplicationUri = http;
+
+			Assert.IsTrue (cap.IsAllowed (new Uri ("http://server/data/file.txt"), "GET", null), "http/granted");
+			Assert.IsFalse (cap.IsAllowed (new Uri ("http://server/file.txt"), "GET", null), "http/not-granted-parent");
+
+			Assert.IsTrue (cap.IsAllowed (new Uri ("https://server/data/file.txt"), "GET", null), "https/granted");
+			Assert.IsFalse (cap.IsAllowed (new Uri ("https://server/file.txt"), "GET", null), "https/not-granted-parent");
+		}
 	}
 }
 
