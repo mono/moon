@@ -21,11 +21,6 @@ namespace Leak
 			// Ensure TextBoxes are collectable
 			WeakControl = ApplyTemplate (new TextBox ());
 			
-			// Work around a FrameworkTemplate issue whereby it
-			// keeps one control alive longer than necessary
-			for (int i = 0; i < 10; i ++)
-				ApplyTemplate (new TextBox ());
-
 			GCAndInvoke (() => {
 				if (WeakControl != null)
 					Fail ("TextBox should be collected");

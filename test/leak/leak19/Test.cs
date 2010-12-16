@@ -21,11 +21,6 @@ namespace Leak
 			// Ensure TextBoxes are collectable
 			WeakSubtree = ApplyTemplate (new TextBlock ());
 			
-			// Work around a FrameworkTemplate issue whereby it
-			// keeps one control alive longer than necessary
-			for (int i = 0; i < 10; i ++)
-				ApplyTemplate (new TextBlock ());
-
 			GCAndInvoke (() => {
 				if (WeakSubtree != null)
 					Fail ("TextBox should be collected");

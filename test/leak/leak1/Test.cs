@@ -20,11 +20,6 @@ namespace Leak
 		{
 			WeakControl = ApplyTemplate (new Button ());
 			
-			// Work around a FrameworkTemplate issue which keeps the button alive.
-			for (int i = 0; i < 10; i ++) {
-				ApplyTemplate (new Button ());
-			}
-			
 			GCAndInvoke (() => {
 				if (WeakControl != null)
 					Fail ("The control was not GC'ed");

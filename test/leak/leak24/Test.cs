@@ -28,9 +28,6 @@ namespace Leak
 
 			Control.Template = null;
 
-			for (int i = 0; i < 10; i ++)
-				ApplyTemplate (new ContentControl ());
-
 			GCAndInvoke (() => {
 				if (WeakSubtree != null)
 					Fail ("The subtree should be collected");
