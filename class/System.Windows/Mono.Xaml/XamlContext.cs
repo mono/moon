@@ -48,7 +48,7 @@ namespace Mono.Xaml
 			Xmlns = new Dictionary<string,string> ();
 		}
 
-		internal XamlContext (XamlContext parent, XamlElement top_element, List<DependencyObject> resources, FrameworkTemplate template)
+		internal XamlContext (XamlContext parent, object top_element, List<DependencyObject> resources, FrameworkTemplate template)
 		{
 			Parent = parent;
 			TopElement = top_element;
@@ -68,7 +68,7 @@ namespace Mono.Xaml
 			private set;
 		}
 
-		public XamlElement TopElement {
+		public object TopElement {
 			get;
 			private set;
 		}

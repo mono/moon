@@ -85,11 +85,11 @@ namespace Mono.Xaml {
 			get { return current_element; }
 		}
 
-		public XamlElement TopElement {
+		public object TopElement {
 			get {
 				if (Context.TopElement != null)
 					return Context.TopElement;
-				return top_element;
+				return top_element is XamlObjectElement ? ((XamlObjectElement) top_element).Object : null;
 			}
 		}
 
@@ -511,8 +511,10 @@ namespace Mono.Xaml {
 			try {
 				FrameworkTemplate template = parser.ParseString (xaml) as FrameworkTemplate;
 				
-				if (template != null)
+				if (template != null) {
 					dob = template.Content as INativeEventObjectWrapper;
+					template.Content = null;
+				}
 
 				// No errors, but the template was just empty.
 				if (dob == null)
@@ -520,6 +522,10 @@ namespace Mono.Xaml {
 			} catch (Exception e) {
 				error = new MoonError (e);
 				return IntPtr.Zero;
+			} finally {
+				context.IsExpandingTemplate = false;
+				context.TemplateOwner = null;
+				context.TemplateBindingSource = null;
 			}
 
 			// XamlParser needs to ref its return value otherwise we can end up returning a an object to native
@@ -1526,7 +1532,7 @@ namespace Mono.Xaml {
 
 		private XamlContext CreateXamlContext (FrameworkTemplate template)
 		{
-			return new XamlContext (Context, top_element, CreateResourcesList (), template);
+			return new XamlContext (Context, TopElement, CreateResourcesList (), template);
 		}
 
 		private List<DependencyObject> CreateResourcesList ()

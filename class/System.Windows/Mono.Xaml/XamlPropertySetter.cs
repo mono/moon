@@ -412,7 +412,7 @@ namespace Mono.Xaml {
 			MethodInfo invoker_info = evnt.EventHandlerType.GetMethod ("Invoke");
 			ParameterInfo [] event_params = invoker_info.GetParameters ();
 			string handler_name = value as string;
-			XamlObjectElement subscriber = Parser.TopElement as XamlObjectElement;
+			var subscriber = Parser.TopElement;
 
 			if (subscriber == null)
 				throw Parser.ParseException ("Attempt to set an event handler on an invalid object.");
@@ -422,7 +422,7 @@ namespace Mono.Xaml {
 
 
 			Delegate d = null;
-			MethodInfo [] methods = subscriber.Type.GetMethods (XamlParser.EVENT_BINDING_FLAGS);
+			MethodInfo [] methods = subscriber.GetType ().GetMethods (XamlParser.EVENT_BINDING_FLAGS);
 			MethodInfo candidate = null;
 			bool name_match = false;
 
@@ -466,7 +466,7 @@ namespace Mono.Xaml {
 			if (candidate == null)
 				throw Parser.ParseException ("Event handler not found for event {0}.", Name);
 
-			d = Delegate.CreateDelegate (evnt.EventHandlerType, subscriber.Object, candidate, false);
+			d = Delegate.CreateDelegate (evnt.EventHandlerType, subscriber, candidate, false);
 			if (d == null)
 				throw Parser.ParseException ("Unable to create event delegate for event {0}.", Name);
 
