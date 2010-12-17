@@ -600,6 +600,7 @@ private:
 	static DecoderInfo *registered_decoders;
 	static bool registering_ms_codecs;
 	static bool registered_ms_codecs;
+	static bool registered_ms_codecs1;
 
 	Mutex mutex;
 	
@@ -752,6 +753,7 @@ public:
 	
 	static void RegisterMSCodecs (); // Private implementation
 	static bool IsMSCodecsInstalled ();
+	static bool IsMSCodecs1Installed ();
 	static void InstallMSCodecs (bool is_user_initiated);
 	
 	static void Initialize ();

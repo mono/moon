@@ -47,6 +47,7 @@ namespace Moonlight {
 
 bool Media::registering_ms_codecs = false;
 bool Media::registered_ms_codecs = false;
+bool Media::registered_ms_codecs1 = false;
 
 DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
@@ -168,6 +169,12 @@ bool
 Media::IsMSCodecsInstalled ()
 {
 	return registered_ms_codecs;
+}
+
+bool
+Media::IsMSCodecs1Installed ()
+{
+	return registered_ms_codecs1;
 }
 
 void
@@ -5645,7 +5652,11 @@ ExternalDecoder::ExternalDecoder (Media *media, IMediaStream *stream, void *inst
 	this->has_delayed_frame = has_delayed_frame;
 	this->dispose = dispose;
 	this->dtor = dtor;
-	this->input_ended = input_ended;
+	if (Media::IsMSCodecs1Installed ()) {
+		this->input_ended = NULL;
+	} else {
+		this->input_ended = input_ended;
+	}
 }
 	
 ExternalDecoder::~ExternalDecoder ()
@@ -5695,7 +5706,11 @@ ExternalDecoder::HasDelayedFrame ()
 void
 ExternalDecoder::InputEnded ()
 {
-	input_ended (instance);
+	if (input_ended) {
+		input_ended (instance);
+	} else {
+		GetStream ()->SetOutputEnded (true);
+	}
 }
 
 /*
