@@ -32,9 +32,11 @@ using System.Collections.Specialized;
 using System.Reflection;
 using System.ComponentModel;
 
+using Mono;
+
 namespace System.Windows.Data
 {
-	class IndexedPropertyPathNode : PropertyPathNode {
+	class IndexedPropertyPathNode : PropertyPathNode, IListenCollectionChanged {
 		static readonly PropertyInfo IListIndexer = GetIndexer (true, typeof (IList));
 
 		bool isBroken;
@@ -46,6 +48,10 @@ namespace System.Windows.Data
 
 		public object Index {
 			get; private set;
+		}
+
+		IWeakListener Listener {
+			get; set;
 		}
 
 		public IndexedPropertyPathNode (string index)
@@ -86,14 +92,14 @@ namespace System.Windows.Data
 			return propInfo;
 		}
 
-		void OnCollectionChanged (object o, NotifyCollectionChangedEventArgs e)
+		void IListenCollectionChanged.CollectionChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
 			UpdateValue ();
 			if (Next != null)
 				Next.SetSource (Value);
 		}
 
-		void OnPropertyChanged (object o, PropertyChangedEventArgs e)
+		protected override void OnSourcePropertyChanged (object o, PropertyChangedEventArgs e)
 		{
 			UpdateValue ();
 			if (Next != null)
@@ -104,16 +110,14 @@ namespace System.Windows.Data
 		{
 			base.OnSourceChanged (oldSource, newSource);
 
-			if (oldSource is INotifyCollectionChanged)
-				((INotifyCollectionChanged) oldSource).CollectionChanged -= OnCollectionChanged;
-			if (newSource is INotifyCollectionChanged)
-				((INotifyCollectionChanged) newSource).CollectionChanged += OnCollectionChanged;
+			if (Listener != null) {
+				Listener.Detach ();
+				Listener = null;
+			}
 
-			if (oldSource is INotifyPropertyChanged)
-				((INotifyPropertyChanged) oldSource).PropertyChanged -= OnPropertyChanged;
-			if (newSource is INotifyPropertyChanged)
-				((INotifyPropertyChanged) newSource).PropertyChanged += OnPropertyChanged;
-			
+			if (newSource is INotifyCollectionChanged)
+				Listener = new WeakCollectionChangedListener ((INotifyCollectionChanged) newSource, this);
+
 			GetIndexer ();
 		}
 
