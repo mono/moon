@@ -1209,7 +1209,7 @@ namespace Mono.Xaml {
 				if (typeof (DependencyObject).Assembly != t.Assembly)
 					return true;
 				if (typeof (DependencyObject).Assembly == t.Assembly && IsValidInternalType (t))
-					res = true;
+					return true;
 			}
 			return res;
 		}
@@ -1222,19 +1222,71 @@ namespace Mono.Xaml {
 			return false;
 		}
 
+		private Type LoadTypeFromAssembly (Assembly assembly, string name)
+		{
+			Type t = assembly.GetType (name);
+			
+			if (!IsValidType (t))
+				return null;
+			
+			return t;
+		}
+
+		private class XmlNsKey {
+			string xmlns;
+			string name;
+			
+			public XmlNsKey (string xmlns, string name)
+			{
+				this.xmlns = xmlns;
+				this.name = name;
+			}
+			
+			public override int GetHashCode ()
+			{
+				int code = name.GetHashCode ();
+				
+				if (xmlns != null)
+					code += xmlns.GetHashCode ();
+				
+				return code;
+			}
+			
+			public override bool Equals (object o)
+			{
+				XmlNsKey key = o as XmlNsKey;
+				
+				if (key == null)
+					return false;
+				
+				return key.xmlns == this.xmlns && key.name == this.name;
+			}
+		}
+
+		private Dictionary<XmlNsKey, Type> xmlnsCachedTypes = new Dictionary<XmlNsKey, Type> ();
+		private Type LoadTypeFromXmlNs (string xmlns, string name)
+		{
+			XmlNsKey key = new XmlNsKey (xmlns, name);
+			Type t;
+			
+			if (xmlnsCachedTypes.TryGetValue (key, out t))
+				return t;
+			
+			t = FindType (xmlns, name);
+			if (!IsValidType (t))
+				t = null;
+			
+			xmlnsCachedTypes.Add (key, t);
+			
+			return t;
+		}
+
 		public Type LoadType (Assembly assembly, string xmlns, string name)
 		{
-			Type t = null;
-
-			if (assembly == null)
-				t = FindType (xmlns, name);
+			if (assembly != null)
+				return LoadTypeFromAssembly (assembly, name);
 			else
-				t = assembly.GetType (name);
-
-			if (IsValidType (t))
-				return t;
-
-			return null;
+				return LoadTypeFromXmlNs (xmlns, name);
 		}
 
 		private Type FindType (string xmlns, string name)
