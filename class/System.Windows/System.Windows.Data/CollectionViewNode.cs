@@ -33,7 +33,7 @@ using System.Collections;
 
 namespace System.Windows.Data {
 
-	class CollectionViewNode : PropertyPathNode {
+	class CollectionViewNode : PropertyPathNode, IListenEventRaised {
 
 		public override bool IsBroken {
 			get { return Source == null; }
@@ -86,13 +86,15 @@ namespace System.Windows.Data {
 		void ConnectViewHandlers (ICollectionView view)
 		{
 			if (view != null)
-				view.CurrentChanged += HandleSourceViewCurrentChanged;
+				Listener = new WeakCurrentChangedListener (view, this);
 		}
 
 		void DisconnectViewHandlers (ICollectionView view)
 		{
-			if (view != null)
-				view.CurrentChanged -= HandleSourceViewCurrentChanged;
+			if (Listener != null) {
+				Listener.Detach ();
+				Listener = null;
+			}
 		}
 
 		void ViewChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
@@ -103,10 +105,10 @@ namespace System.Windows.Data {
 			DisconnectViewHandlers ((ICollectionView) oldValue);
 			ConnectViewHandlers ((ICollectionView) newValue);
 
-			HandleSourceViewCurrentChanged (this, EventArgs.Empty);
+			((IListenEventRaised) this).OnEventRaised (this, EventArgs.Empty);
 		}
 
-		void HandleSourceViewCurrentChanged (object sender, EventArgs e)
+		void IListenEventRaised.OnEventRaised (object sender, EventArgs e)
 		{
 			UpdateValue ();
 			if (Next != null)

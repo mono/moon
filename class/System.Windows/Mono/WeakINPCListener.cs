@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Mono {
 
-	public class WeakINPCListener : IWeakListener {
+	class WeakINPCListener : IWeakListener {
 
 		WeakReference listener;
 

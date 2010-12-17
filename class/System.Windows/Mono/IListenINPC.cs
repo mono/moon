@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Mono {
 
-	public interface IListenINPC {
+	interface IListenINPC {
 		void OnPropertyChanged (object o, PropertyChangedEventArgs e);
 	}
 }
