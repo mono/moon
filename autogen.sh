@@ -159,6 +159,7 @@ fi
 
 configure_mono=1
 build_mono=1
+mono_flags="--with-sgen=no"
 mono_path=../mono
 mcs_path=../mono/mcs
 configure_gallium=1
@@ -184,6 +185,8 @@ for arg; do
       configure_gallium=0 ;;
     --with-gallium-path* )
       gallium_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --with-sgen=yes | --with-sgen )
+      mono_flags="--with-moon-gc=sgen" ;;
   esac
 done
 
@@ -195,7 +198,7 @@ if [ $configure_mono -eq 1 ] ; then
   if test -d $mono_path; then
     echo Running $mono_path/autogen.sh ...
     # we build --with-sgen=no to not build both boehm and sgen (and we build with boehm instead of sgen because sgen has a problem nobody has investigated much into yet)
-    (cd $mono_path/ ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger --with-sgen=no --with-shared_mono=no)
+    (cd $mono_path/ ; ./autogen.sh "$@" --with-moonlight=only --with-profile4=no --enable-minimal=aot,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --disable-mono-debugger --with-shared_mono=no $mono_flags)
     echo Done running $mono_path/autogen.sh ...
   fi
 fi
