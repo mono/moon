@@ -200,8 +200,6 @@
     <File subtype="Code" buildaction="Nothing" name="textbox.h" />
     <File subtype="Code" buildaction="Compile" name="thickness.cpp" />
     <File subtype="Code" buildaction="Compile" name="tilesource.cpp" />
-    <File subtype="Code" buildaction="Compile" name="pipeline-ui.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="pipeline-ui.h" />
     <File subtype="Code" buildaction="Compile" name="moonlightconfiguration.cpp" />
     <File subtype="Code" buildaction="Nothing" name="moonlightconfiguration.h" />
     <File subtype="Code" buildaction="Compile" name="pipeline-logo.cpp" />
@@ -220,10 +218,6 @@
     <File subtype="Code" buildaction="Compile" name="application.cpp" />
     <File subtype="Code" buildaction="Nothing" name="application.h" />
     <File subtype="Code" buildaction="Compile" name="bitmapimage.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="pipeline-nocodec-ui.h" />
-    <File subtype="Code" buildaction="Nothing" name="pipeline-nocodec-ui.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="codec-url.h" />
-    <File subtype="Code" buildaction="Nothing" name="codec-version.h.in" />
     <File subtype="Code" buildaction="Nothing" name="fontfamily.h" />
     <File subtype="Code" buildaction="Nothing" name="mkcolor.cs" />
     <File subtype="Code" buildaction="Nothing" name="propertypath.h" />
@@ -246,7 +240,6 @@
     <File subtype="Code" buildaction="Nothing" name="morton-layout-table.inc" />
     <File subtype="Code" buildaction="Compile" name="timemanager.cpp" />
     <File subtype="Code" buildaction="Nothing" name="timemanager.h" />
-    <File subtype="Code" buildaction="Nothing" name="codec-version.h" />
     <File subtype="Code" buildaction="Compile" name="fontmanager.cpp" />
     <File subtype="Code" buildaction="Nothing" name="fontmanager.h" />
     <File subtype="Code" buildaction="Compile" name="fonts.cpp" />
@@ -378,6 +371,8 @@
     <File subtype="Code" buildaction="Compile" name="textlayout.cpp" />
     <File subtype="Code" buildaction="Compile" name="textpointer.cpp" />
     <File subtype="Code" buildaction="Compile" name="textselection.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="icon128.h" />
+    <File subtype="Code" buildaction="Nothing" name="png-to-header.cs" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
