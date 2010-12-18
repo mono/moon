@@ -27,6 +27,9 @@ Thickness::FromStr (const char *str, Thickness *thickness)
 	bool rv = true;
 
 	switch (values->len) {
+	case 0:
+		*thickness = Thickness ();
+		break;
 	case 1:
 		*thickness = Thickness (g_array_index (values, double, 0));
 		break;
