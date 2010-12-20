@@ -112,7 +112,7 @@ namespace System.Windows {
 			native = raw;
 			expressions = new Dictionary<DependencyProperty, Expression> ();
 			strongRefs = new Dictionary<IntPtr,object> ();
-			namedRefs = new Dictionary<string,object> ();
+			namedRefs = new Dictionary<string,object> (StringComparer.Ordinal);
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
 			NativeMethods.event_object_set_object_type (native, GetKind ());
