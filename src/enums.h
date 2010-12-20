@@ -591,6 +591,7 @@ enum MediaFrameState {
 	MediaFrameConverted = 1 << 3,
 	MediaFrameKeyFrame  = 1 << 4,
 	MediaFrameMarker    = 1 << 5,
+	MediaFramePosixAlloc= 1 << 6,
 };
 
 /* @IncludeInKinds */

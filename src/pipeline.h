@@ -806,6 +806,7 @@ private:
 	guint8 *buffer;
 	guint32 buflen;
 	guint64 duration;
+	guint16 state; // Current state of the frame
 
 	void Initialize ();
 	
@@ -819,7 +820,8 @@ public:
 	void Dispose ();
 	
 	/* @GenerateCBinding */
-	void AddState (MediaFrameState state) { this->state |= (guint16) state; } // There's no way of "going back" to an earlier state 
+	void AddState (MediaFrameState state) { this->state |= (guint16) state; }
+	void RemoveState (MediaFrameState state) { this->state &= ~((guint16) state); }
 	bool IsDecoded () { return (((MediaFrameState) state) & MediaFrameDecoded) == MediaFrameDecoded; }
 	bool IsDemuxed () { return (((MediaFrameState) state) & MediaFrameDemuxed) == MediaFrameDemuxed; }
 	bool IsConverted () { return (((MediaFrameState) state) & MediaFrameConverted) == MediaFrameConverted; }
@@ -832,8 +834,7 @@ public:
 	MediaMarker *marker;
 	void *decoder_specific_data; // data specific to the decoder
 	guint64 pts; // Set by the demuxer
-	
-	guint16 state; // Current state of the frame
+
 	guint16 event; // special frame event if non-0
 	
 	// planar data
@@ -856,6 +857,12 @@ public:
 	/* Allocates the buffer. Reports an error and returns false if buffer couldn't be allocated. */
 	bool AllocateBuffer (guint32 size);
 
+	/* @GeneratePInvoke */
+	bool AllocateBuffer (guint32 size, guint32 alignment);
+
+	/* @GenerateCBinding */
+	void FreeBuffer ();
+
 	/* Allocates the buffer and reads 'size' bytes from data into it. Reports any errors and returns false in case of errors. */
 	bool FetchData (guint32 size, void *data);
 	/* Creates a new buffer which is 'size' bytes bigger, copies 'data' into it and then the previous buffer after that */
@@ -868,7 +875,7 @@ public:
 	guint32 GetBufLen () { return buflen; }
 	/* @GenerateCBinding */
 	void SetBufLen (guint32 value) { buflen = value; }
-	/* @GenerateCBinding */
+	/* @GeneratePInvoke */
 	guint8* GetBuffer () { return buffer; }
 	/* @GenerateCBinding */
 	void SetBuffer (guint8 *value) { buffer = value; }

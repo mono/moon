@@ -4156,11 +4156,26 @@ MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, gu
 bool
 MediaFrame::AllocateBuffer (guint32 size)
 {
+	return AllocateBuffer (size, 0);
+}
+
+bool
+MediaFrame::AllocateBuffer (guint32 size, guint32 alignment)
+{
 	g_return_val_if_fail (buffer == NULL, false);
 	g_return_val_if_fail (stream != NULL, false);
 
 	buflen = size;
-	buffer = (guint8 *) g_try_malloc (buflen + stream->GetMinPadding ());
+	if (alignment == 0 || Media::IsMSCodecs1Installed ()) {
+		buffer = (guint8 *) g_try_malloc (buflen + stream->GetMinPadding ());
+		RemoveState (MediaFramePosixAlloc);
+	} else {
+		if (posix_memalign ((void **) &buffer, alignment, size) != 0) {
+			stream->ReportErrorOccurred ("Moonlight: could not allcoate memory for next frame");
+			return false;
+		}
+		AddState (MediaFramePosixAlloc);
+	}
 	if (buffer == NULL) {
 		stream->ReportErrorOccurred ("Moonlight: Could not allocate memory for next frame");
 		return false;
@@ -4169,6 +4184,17 @@ MediaFrame::AllocateBuffer (guint32 size)
 	memset (buffer + buflen, 0, stream->GetMinPadding ());
 
 	return true;
+}
+
+void
+MediaFrame::FreeBuffer ()
+{
+	if ((state & MediaFramePosixAlloc) == MediaFramePosixAlloc) {
+		free (buffer);
+	} else {
+		g_free (buffer);
+	}
+	buffer = NULL;
 }
 
 bool
@@ -5293,8 +5319,7 @@ MediaResult
 NullDecoder::DecodeVideoFrame (MediaFrame *frame)
 {
 	// free encoded buffer and alloc a new one for our image
-	g_free (frame->GetBuffer ());
-	frame->SetBuffer (NULL);
+	frame->FreeBuffer ();
 	if (!frame->FetchData (logo_size, logo)) {
 		return MEDIA_FAIL;
 	}
@@ -5314,7 +5339,7 @@ NullDecoder::DecodeAudioFrame (MediaFrame *frame)
 	guint64 diff_pts;
 	
 	// discard encoded data
-	g_free (frame->GetBuffer ());
+	frame->FreeBuffer ();
 
 	// We have no idea here how long the encoded audio data is
 	// for the first frame we use 0.1 seconds, for the rest

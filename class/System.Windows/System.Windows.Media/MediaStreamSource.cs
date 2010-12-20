@@ -302,15 +302,17 @@ namespace System.Windows.Media
 			mediaStreamSample.Stream.Seek (mediaStreamSample.Offset, System.IO.SeekOrigin.Begin);
 			mediaStreamSample.Stream.Read (buf, 0, (int) buflen);
 			
-			buffer = Marshal.AllocHGlobal ((int) buflen);
-			Marshal.Copy (buf, 0, buffer, (int) buflen);
-			
 			// we pass a hardocded true as keyframe flag here. User code can lie and
 			// don't set the keyframe flag on any frame at all. Our pipeline doesn't work well
 			// for this case (seeking in particular, we seek to keyframes, and when 
 			// there are no keyframes...). Since we can't rely on the keyframe
 			// flag being set at all, just lie the best way for our pipeline.
-			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, true);
+			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, IntPtr.Zero, buflen, (ulong) mediaStreamSample.Timestamp, true);
+
+			if (NativeMethods.media_frame_allocate_buffer (frame, buflen, 16)) {
+				buffer = NativeMethods.media_frame_get_buffer (frame);
+				Marshal.Copy (buf, 0, buffer, (int) buflen);
+			}
 			
 			if (mediaStreamSample.Attributes.ContainsKey (MediaSampleAttributeKeys.FrameHeight)) {
 				if (int.TryParse (mediaStreamSample.Attributes [MediaSampleAttributeKeys.FrameHeight], out height)) {

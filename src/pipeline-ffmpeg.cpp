@@ -300,9 +300,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			mf, MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
 
 		mf->AddState (MediaFramePlanar);
-		
-		g_free (mf->GetBuffer ());
-		mf->SetBuffer (NULL);
+		mf->FreeBuffer ();
 		mf->SetBufLen (0);
 		
 		mf->srcSlideY = 0;
@@ -419,8 +417,8 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 				decoded_size = 0;
 			}	
 		} while (remain > 0);
-		
-		g_free (mf->GetBuffer ());
+
+		mf->FreeBuffer ();
 
 		mf->SetBuffer (decoded_frames);
 		mf->SetBufLen (decoded_size);
