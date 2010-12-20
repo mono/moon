@@ -40,11 +40,31 @@ using System.Threading;
 using System.Windows;
 
 using Mono.Security.Cryptography;
+using System.Collections.Generic;
 
 namespace Mono {
 
 	internal static partial class Helper {
+
+		class ConverterKey {
+			public ICustomAttributeProvider Info;
+			public Type Type;
+
+			public override int GetHashCode ()
+			{
+				return Type.GetHashCode ();
+			}
+
+			public override bool Equals (object obj)
+			{
+				var x = (ConverterKey) obj;
+				return Info == x.Info && Type == x.Type;
+			}
+		}
+
 		internal static CultureInfo DefaultCulture = CultureInfo.GetCultureInfo ("en-US");
+		static Dictionary<Type, Func<TypeConverter>> classTypeConverters = new Dictionary<Type, Func<TypeConverter>>();
+		static Dictionary<ConverterKey, Func<TypeConverter>> cachedConverters = new Dictionary<ConverterKey, Func<TypeConverter>> ();
 
 		public static bool AreEqual (object x, object y)
 		{
@@ -70,9 +90,20 @@ namespace Mono {
 
 		public static TypeConverter GetConverterFor (ICustomAttributeProvider info, Type target_type)
 		{
+			var x = GetConverterCreatorFor (info, target_type);
+			return x == null ? null : x ();
+		}
+
+		public static Func<TypeConverter> GetConverterCreatorFor (ICustomAttributeProvider info, Type target_type)
+		{
+			Func<TypeConverter> creator;
+			var converterKey = new ConverterKey { Info = info, Type = target_type };
+			if (cachedConverters.TryGetValue (converterKey, out creator))
+				return creator;
+
+			TypeConverter converter = null;
 			Attribute[] attrs;
 			TypeConverterAttribute at = null;
-			TypeConverter converter = null;
 			Type t = null;
 
 			// first check for a TypeConverter attribute on the property
@@ -102,28 +133,44 @@ namespace Mono {
 				if (target_type == typeof (bool?)) {
 					t = typeof (NullableBoolConverter);
 				} else {
+					cachedConverters.Add (converterKey, null);
 					return null;
 				}
 			} else {
 				t = Type.GetType (at.ConverterTypeName);
 			}
 
-			if (t == null || !typeof (TypeConverter).IsAssignableFrom (t))
+			if (t == null || !typeof (TypeConverter).IsAssignableFrom (t)) {
+				cachedConverters.Add (converterKey, null);
 				return null;
-
+			}
 			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(Type) });
-			if (ci != null)
-				converter = (TypeConverter) ci.Invoke (new object[] { target_type });
-			else
-				converter = (TypeConverter) Activator.CreateInstance (t);
+			if (ci != null) {
+				creator = System.Linq.Expressions.Expression.Lambda<Func<TypeConverter>> (
+					System.Linq.Expressions.Expression.New (ci,
+					System.Linq.Expressions.Expression.Constant (target_type))).Compile ();
+			} else
+				creator = System.Linq.Expressions.Expression.Lambda<Func<TypeConverter>> (
+					System.Linq.Expressions.Expression.New (t)).Compile ();
 
-			return converter;
+			cachedConverters.Add (converterKey, creator);
+			return creator;
 		}
 
 		// This method checks for a class level TypeConverter and returns it
 		public static TypeConverter GetConverterFor (Type type)
 		{
-			TypeConverter converter = null;
+			var x = GetConverterCreatorFor (type);
+			return x == null ? null  : x ();
+		}
+
+		// This method checks for a class level TypeConverter and returns it
+		public static Func<TypeConverter> GetConverterCreatorFor (Type type)
+		{
+			Func<TypeConverter> creator;
+			if (classTypeConverters.TryGetValue (type, out creator))
+				return creator;
+
 			string converterTypeName = null;
 			Type converterType = null;
 			foreach (Attribute attr in type.GetCustomAttributes (true)) {
@@ -136,10 +183,14 @@ namespace Mono {
 			if (!string.IsNullOrEmpty (converterTypeName))
 				converterType = Type.GetType (converterTypeName);
 
-			if (converterType == null)
-				return null;
-
-			return (TypeConverter) Activator.CreateInstance (converterType);
+			if (converterType == null) {
+				creator = null;
+			} else {
+				creator = System.Linq.Expressions.Expression.Lambda<Func<TypeConverter>> (
+					System.Linq.Expressions.Expression.New (converterType)).Compile ();
+			}
+			classTypeConverters.Add (type, creator);
+			return creator;
 		}
 
 		public static IntPtr StreamToIntPtr (Stream stream)
