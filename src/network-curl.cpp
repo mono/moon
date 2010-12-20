@@ -768,6 +768,19 @@ CurlHttpHandler::ReleaseHandle (CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::ReleaseHandle handle:%p\n", handle);
 
+#if SANITY
+	/* Check that we don't have duplicate handles in the pool */
+	CurlNode *node;
+
+	pool->Lock ();
+	node = (CurlNode *) pool->LinkedList ()->First ();
+	while (node) {
+		g_assert (node->handle != handle); /* #if SANITY */
+		node = (CurlNode *) node->next;
+	}
+	pool->Unlock ();
+#endif
+
 	curl_easy_reset (handle);
 	pool->Push (new CurlNode (handle));
 }
