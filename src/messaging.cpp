@@ -203,6 +203,7 @@ LocalMessageSender::SendAsyncWithError (const char *msg, GCHandle managedUserSta
 		sender->AddMessageSentCallback (LocalMessageSender::MessageSentHandler, this);
 	}
 
+	ref ();
 	sender->SendMessageAsync (msg, managedUserState, error);
 }
 
@@ -212,6 +213,7 @@ LocalMessageSender::MessageSentHandler (MoonError *error, const char *message, c
 	LocalMessageSender *sender = (LocalMessageSender*)data;
 
 	sender->MessageSent (error, message, response, managedUserState);
+	sender->unref ();
 }
 
 void
