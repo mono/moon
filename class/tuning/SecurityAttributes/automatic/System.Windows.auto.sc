@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 588 methods needs to be decorated.
+# 590 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -99,6 +99,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream_nth_file(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::media_frame_allocate_buffer(System.IntPtr,System.UInt32,System.UInt32)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_capture_service_request_system_access(System.IntPtr)
@@ -618,6 +621,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_element_set_demuxer_source(System.IntPtr,System.IntPtr,System.Windows.Media.MediaStreamSource/CloseDemuxerDelegate,System.Windows.Media.MediaStreamSource/GetDiagnosticAsyncDelegate,System.Windows.Media.MediaStreamSource/GetFrameAsyncDelegate,System.Windows.Media.MediaStreamSource/OpenDemuxerAsyncDelegate,System.Windows.Media.MediaStreamSource/SeekAsyncDelegate,System.Windows.Media.MediaStreamSource/SwitchMediaStreamAsyncDelegate)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::media_frame_get_buffer(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_frame_new(System.IntPtr,System.IntPtr,System.UInt32,System.UInt64,System.Boolean)
