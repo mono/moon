@@ -146,8 +146,6 @@ namespace Mono
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
-			if (event_list != null)
-				event_list.Free ();
 		}
 		
 		~Surface ()

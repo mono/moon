@@ -277,9 +277,6 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
-			if (event_list != null)
-				event_list.Free ();
-
 			NativeDependencyObjectHelper.ClearManagedPeerCallbacks (this);
 
 			if (free_mapping)

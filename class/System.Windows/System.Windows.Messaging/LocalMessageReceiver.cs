@@ -105,8 +105,6 @@ namespace System.Windows.Messaging {
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
-			if (event_list != null)
-				event_list.Free ();
 		}
 
 		public void Listen()

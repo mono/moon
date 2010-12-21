@@ -171,8 +171,6 @@ namespace System.Windows {
 				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 			}
-			if (event_list != null)
-				event_list.Free ();
 		}
 		
 		internal Mono.EventHandlerList EventList {

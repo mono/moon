@@ -49,13 +49,8 @@ namespace Mono {
 	}
 
 	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
-		GCHandle gc_handle; /* to make sure the EventHandlerList outlives its INativeDependencyObjectWrapper */
 
 		public EventHandlerList (INativeEventObjectWrapper wrapper)
-		{
-		}
-
-		public void Free ()
 		{
 		}
 
