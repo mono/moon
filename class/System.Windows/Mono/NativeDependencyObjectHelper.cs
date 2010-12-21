@@ -152,17 +152,6 @@ namespace Mono {
 									       NativeDependencyObjectHelper.detached);
 		}
 
-		public static void ClearManagedPeerCallbacks (INativeEventObjectWrapper obj)
-		{
-			// This cannot be called from the finalizer thread as the main moonlight
-			// thread may have just null checked the callbacks and might try to invoke
-			// it. This is a race as the finalizer thread could null it out.
-			return;
-			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
-									       null, null,
-									       null,
-									       null, null);
-		}
 #region "helpers for the INativeDependencyObjectWrapper interface"
 		public static object GetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
