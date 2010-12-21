@@ -60,6 +60,7 @@ system_windows_sources =							\
 	$(srcdir)/MS.Internal/InternalTransform.cs				\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
+	$(srcdir)/Mono/DependencyObjectHandle.cs				\
 	$(srcdir)/Mono/DoubleKeyedDictionary.cs					\
 	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\

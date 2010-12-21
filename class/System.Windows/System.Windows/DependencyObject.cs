@@ -42,7 +42,7 @@ using System.Windows.Media;
 namespace System.Windows {
 	public abstract partial class DependencyObject : INativeDependencyObjectWrapper, IRefContainer {
 		internal static Thread moonlight_thread;
-		IntPtr _native;
+		DependencyObjectHandle _native;
 		EventHandlerList event_list;
 		bool free_mapping;
 		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers = new List<UnmanagedPropertyChangeHandler> ();
@@ -65,15 +65,15 @@ namespace System.Windows {
 
 		internal IntPtr native {
 			get {
-				return _native;
+				return _native.Handle;
 			}
 
 			set {
-				if (_native != IntPtr.Zero) {
+				if (_native != null) {
 					throw new InvalidOperationException ("DependencyObject.native is already set");
 				}
 
-				_native = value;
+				_native = new DependencyObjectHandle { Object = this, Handle = value };
 				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
@@ -284,12 +284,6 @@ namespace System.Windows {
 
 			if (free_mapping)
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			this._native = IntPtr.Zero;
-		}
-
-		~DependencyObject ()
-		{
-			Free ();
 		}
 
 		public object GetValue (DependencyProperty dp)

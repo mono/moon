@@ -307,7 +307,10 @@ namespace Mono {
 		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
-			IntPtr native = wrapper.NativeHandle;
+			FreeNativeMapping (wrapper.NativeHandle);
+		}
+		public static void FreeNativeMapping (IntPtr native)
+		{
 			GCHandle handle;
 			
 			if (native == IntPtr.Zero)
@@ -322,8 +325,7 @@ namespace Mono {
 					handle.Free ();
 				}
 			}
-			NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, IntPtr.Zero);
-			GC.SuppressFinalize (wrapper);
+			NativeMethods.event_object_set_managed_handle (native, IntPtr.Zero);
 		}
 
 		internal static INativeEventObjectWrapper FromIntPtr (IntPtr data)
