@@ -85,6 +85,7 @@ private:
 	Display       *dpy;
 	GLXDrawable   drawable;
 	_XxGLXContext ctx;
+	GLint         maxTextureSize;
 };
 
 };

@@ -38,6 +38,7 @@ GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
 
 	ctx = glXCreateContext (dpy, visinfo, 0, True);
 	glXMakeCurrent (dpy, drawable, ctx);
+	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
 	XFree (visinfo);
 }
@@ -243,6 +244,10 @@ GLXContext::SyncDrawable ()
 Rect
 GLXContext::GroupBounds (Group extents)
 {
+	if (extents.r.width  > maxTextureSize ||
+	    extents.r.height > maxTextureSize)
+		return Rect ();
+
 	return extents.r;
 }
 
