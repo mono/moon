@@ -219,8 +219,10 @@ ImplicitStylePropertyValueProvider::~ImplicitStylePropertyValueProvider ()
 {
 	if (styles) {
 		for (int i = 0; styles[i]; i ++) {
-			// styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
-			// styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &styles[i]);
+			if (styles[i]) {
+				styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+				styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &styles[i]);
+			}
 		}
 		g_free (styles);
 	}
@@ -335,17 +337,20 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 
 	if (this->styles) {
 		for (int i = 0; this->styles[i]; i ++) {
-			this->styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
-			//this->styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+			if (this->styles [i]) {
+				this->styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+				this->styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+			}
 		}
 		g_free (this->styles);
 	}
 	this->styles = styles;
 	if (this->styles) {
 		for (int i = 0; this->styles[i]; i ++) {
-			//this->styles[i]->AddHandler (Style::SettersChangedEvent, ImplicitStylePropertyValueProvider::setters_changed, this);
-			this->styles[i]->AddHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
-			//this->styles[i]->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+			if (this->styles [i]) {
+				this->styles[i]->AddHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+				this->styles[i]->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+			}
 		}
 	}
 }
