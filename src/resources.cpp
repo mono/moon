@@ -257,8 +257,8 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 
 		delete v_copy;
 
-		if (addStrongRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-			addStrongRef (this, v, key);
+		if (addManagedRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+			addManagedRef (this, v, key);
 			v->Weaken ();
 		}
 
@@ -330,7 +330,7 @@ ResourceDictionary::Clear ()
 #endif
 	g_hash_table_foreach_remove (hash, (GHRFunc) _true, NULL);
 
-	// FIXME: we need to clearStrongRef
+	// FIXME: we need to clearManagedRef
 
 	from_resource_dictionary_api = true;
 	bool rv = Collection::Clear ();
@@ -382,8 +382,8 @@ ResourceDictionary::Remove (const char *key)
 	// No need to strengthen orig_value before clearing
 	// because we copy it first.
 	Value *orig_copy = new Value (*orig_value);
-	if (clearStrongRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
-		clearStrongRef (this, orig_value, key);
+	if (clearManagedRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
+		clearManagedRef (this, orig_value, key);
 
 	g_hash_table_remove (hash, key);
 
@@ -412,11 +412,11 @@ ResourceDictionary::Set (const char *key, Value *value)
 	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
 	// No need to strengthen orig_value as it's deleted immediately
-	if (clearStrongRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
-		clearStrongRef (this, orig_value, key);
+	if (clearManagedRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
+		clearManagedRef (this, orig_value, key);
 	Collection::Add (v);
-	if (addStrongRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-		addStrongRef (this, v, key);
+	if (addManagedRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+		addManagedRef (this, v, key);
 		v->Weaken ();
 	}
 	from_resource_dictionary_api = false;
@@ -546,8 +546,8 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		delete obj_value_copy;
 
-		if (addStrongRef && obj_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-			addStrongRef (this, value, key);
+		if (addManagedRef && obj_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+			addManagedRef (this, value, key);
 			obj_value->Weaken ();
 		}
 	}
@@ -571,7 +571,7 @@ remove_from_hash_by_value (gpointer  key,
 {
 	Value *v = (Value*)value;
 	DependencyObject *obj = (DependencyObject *) user_data;
-	// FIXME: clearStrongRef
+	// FIXME: clearManagedRef
 	return (v->GetKind () == obj->GetObjectType () && v->AsDependencyObject() == obj);
 }
 

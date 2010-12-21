@@ -256,8 +256,8 @@ class TypeReference {
 			case "SetValueCallback":
 				managed_type = "Mono.SetValueCallback";
 				break;
-			case "StrongRefCallback":
-				managed_type = "Mono.StrongRefCallback";
+			case "ManagedRefCallback":
+				managed_type = "Mono.ManagedRefCallback";
 				break;
 			case "AttachCallback":
 				managed_type = "Mono.AttachCallback";

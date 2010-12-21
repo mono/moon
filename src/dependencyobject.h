@@ -51,7 +51,7 @@ typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_dat
 
 typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
 
-typedef void (* StrongRefCallback) (EventObject *referer, Value *referent, const char *name);
+typedef void (* ManagedRefCallback) (EventObject *referer, Value *referent, const char *name);
 typedef void (* AttachCallback) (EventObject *object);
 typedef void (* MentorChangedCallback) (EventObject *object, EventObject *mentor);
 
@@ -184,8 +184,8 @@ public:
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
 	/* @GeneratePInvoke */
-	void SetManagedPeerCallbacks (StrongRefCallback add_strong_ref,
-				      StrongRefCallback clear_strong_ref,
+	void SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
+				      ManagedRefCallback clear_strong_ref,
 				      MentorChangedCallback mentor_changed,
 				      AttachCallback attached,
 				      AttachCallback detached);
@@ -236,8 +236,8 @@ public:
 	/* @GeneratePInvoke */
 	void SetManagedHandle (GCHandle managed_handle);
 
-	StrongRefCallback addStrongRef;
-	StrongRefCallback clearStrongRef;
+	ManagedRefCallback addManagedRef;
+	ManagedRefCallback clearManagedRef;
 	MentorChangedCallback mentorChanged;
 	AttachCallback attached;
 	AttachCallback detached;

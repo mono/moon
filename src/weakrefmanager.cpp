@@ -49,10 +49,10 @@ WeakRefBase::Clear ()
 	/* clear old field value */
 	if (field != NULL && field->AsEventObject ()) {
 		field->AsEventObject ()->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
-		if (storeInManaged && obj && obj->clearStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
-			/* We have to check if we're shutting down, since clearStrongRef is a managed callback */
+		if (storeInManaged && obj && obj->clearManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
+			/* We have to check if we're shutting down, since clearManagedRef is a managed callback */
 			// Don't strengthen the Value* because we're going to delete it next.
-			obj->clearStrongRef (obj, field, name);
+			obj->clearManagedRef (obj, field, name);
 		}
 	}
 	delete field;
@@ -85,9 +85,9 @@ WeakRefBase::Set (const EventObject *ptr)
 		field->AsEventObject ()->unref ();
 		field->SetNeedUnref (false);
 
-		if (storeInManaged && obj && obj->addStrongRef && !obj->GetDeployment ()->IsShuttingDown ()) {
-			/* We have to check if we're shutting down, since addStrongRef is a managed callback */
-			obj->addStrongRef (obj, field, name);
+		if (storeInManaged && obj && obj->addManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
+			/* We have to check if we're shutting down, since addManagedRef is a managed callback */
+			obj->addManagedRef (obj, field, name);
 		}
 		field->AsEventObject ()->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 	}

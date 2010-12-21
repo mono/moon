@@ -210,8 +210,8 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
-	addStrongRef = NULL;
-	clearStrongRef = NULL;
+	addManagedRef = NULL;
+	clearManagedRef = NULL;
 	mentorChanged = NULL;
 	attached = NULL;
 	detached = NULL;
@@ -310,16 +310,16 @@ EventObject::ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closur
 }
 
 void
-EventObject::SetManagedPeerCallbacks (StrongRefCallback add_strong_ref,
-				      StrongRefCallback clear_strong_ref,
+EventObject::SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
+				      ManagedRefCallback clear_strong_ref,
 				      MentorChangedCallback mentor_changed,
 				      AttachCallback attached,
 				      AttachCallback detached)
 {
 	hadManagedPeer = true;
 
-	this->addStrongRef = add_strong_ref;
-	this->clearStrongRef = clear_strong_ref;
+	this->addManagedRef = add_strong_ref;
+	this->clearManagedRef = clear_strong_ref;
 	this->mentorChanged = mentor_changed;
 	this->attached = attached;
 	this->detached = detached;
@@ -1737,16 +1737,16 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 		// clear out the current value from the managed side if there's a ref to it
 		if (current_value) {
-			if (clearStrongRef && current_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+			if (clearManagedRef && current_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 					current_value->Strengthen ();
-					clearStrongRef (this, current_value, property->GetName());
+					clearManagedRef (this, current_value, property->GetName());
 			}
 		}
 
 		// replace it with the new value
 		if (new_value) {
-			if (addStrongRef && new_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-				addStrongRef (this, new_value, property->GetName());
+			if (addManagedRef && new_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+				addManagedRef (this, new_value, property->GetName());
 				new_value->Weaken ();
 			}
 

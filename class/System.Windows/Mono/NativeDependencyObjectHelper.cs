@@ -53,8 +53,8 @@ namespace Mono {
 
 	internal static class NativeDependencyObjectHelper {
 
-		public static StrongRefCallback add_strong_ref = new StrongRefCallback (AddStrongRef);
-		public static StrongRefCallback clear_strong_ref = new StrongRefCallback (ClearStrongRef);
+		public static ManagedRefCallback add_strong_ref = new ManagedRefCallback (AddStrongRef);
+		public static ManagedRefCallback clear_strong_ref = new ManagedRefCallback (ClearStrongRef);
 
 		public static AttachCallback attached = new AttachCallback (Attached);
 		public static AttachCallback detached = new AttachCallback (Detached);

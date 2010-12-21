@@ -964,8 +964,8 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 			   Type::Find (deployment, value->GetKind())->GetName());
 #endif
 
-	if (obj->addStrongRef && value->HoldManagedRef () && !obj->GetDeployment ()->IsShuttingDown ()) {
-		obj->addStrongRef (obj, value, property->GetName());
+	if (obj->addManagedRef && value->HoldManagedRef () && !obj->GetDeployment ()->IsShuttingDown ()) {
+		obj->addManagedRef (obj, value, property->GetName());
 		value->Weaken ();
 	}
 
