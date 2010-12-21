@@ -240,23 +240,35 @@ GLXContext::SyncDrawable ()
 	ms->unref ();
 }
 
+Rect
+GLXContext::GroupBounds (Group extents)
+{
+	return extents.r;
+}
+
 void
 GLXContext::Push (Group extents)
 {
-	cairo_matrix_t matrix;
-	Rect           r = extents.r;
-        GLXSurface     *surface = new GLXSurface (r.width, r.height);
-        Target         *target = new Target (surface, extents.r);
+	Rect r = GroupBounds (extents);
 
-	Top ()->GetMatrix (&matrix);
+	if (!r.IsEmpty ()) {
+		cairo_matrix_t matrix;
+		GLXSurface     *surface = new GLXSurface (r.width, r.height);
+		Target         *target = new Target (surface, extents.r);
 
-	// mark target contents as uninitialized
-	target->SetInit (NULL);
+		Top ()->GetMatrix (&matrix);
 
-	Stack::Push (new Context::Node (target, &matrix, &extents.r));
+		// mark target contents as uninitialized
+		target->SetInit (NULL);
 
-	target->unref ();
-	surface->unref ();
+		Stack::Push (new Context::Node (target, &matrix, &extents.r));
+
+		target->unref ();
+		surface->unref ();
+	}
+	else {
+		Context::Push (Clip ());
+	}
 }
 
 cairo_t *

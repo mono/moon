@@ -79,6 +79,7 @@ protected:
 	void ForceCurrent ();
 	gboolean HasDrawable ();
 	void SyncDrawable ();
+	Rect GroupBounds (Group extents);
 
 private:
 	Display       *dpy;
