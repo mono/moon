@@ -1182,7 +1182,7 @@ protected:
 	virtual ~AnimationClock ();
 
 private:
-	Animation *timeline;
+	WeakRef<Animation> timeline;
 	AnimationStorage *storage;
 };
 

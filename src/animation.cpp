@@ -303,7 +303,7 @@ AnimationStorage::~AnimationStorage ()
 }
 
 AnimationClock::AnimationClock (Animation *timeline)
-  : Clock (timeline)
+  : Clock (timeline), timeline (this, NULL, false)
 {
 	SetObjectType (Type::ANIMATIONCLOCK);
 
@@ -345,7 +345,7 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {
-	return timeline->GetCurrentValue (defaultOriginValue, defaultDestinationValue, this);
+	return timeline ? timeline->GetCurrentValue (defaultOriginValue, defaultDestinationValue, this) : defaultOriginValue;
 }
 
 void
