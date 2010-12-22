@@ -33705,6 +33705,13 @@
                 </parameters>
               </constructor>
             </constructors>
+            <constructors>
+              <constructor name=".ctor(System.Int16)" attrib="6278">
+                <parameters>
+                  <parameter name="layoutKind" position="0" attrib="0" type="System.Int16" />
+                </parameters>
+              </constructor>
+            </constructors>
             <properties>
               <property name="Value" attrib="0" ptype="System.Runtime.InteropServices.LayoutKind" params="">
                 <methods>
