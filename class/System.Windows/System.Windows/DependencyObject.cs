@@ -110,8 +110,6 @@ namespace System.Windows {
 		internal DependencyObject (IntPtr raw, bool dropref)
 		{
 			native = raw;
-			expressions = new Dictionary<DependencyProperty, Expression> ();
-			strongRefs = new Dictionary<IntPtr,object> ();
 			namedRefs = new Dictionary<string,object> (StringComparer.Ordinal);
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
@@ -142,7 +140,7 @@ namespace System.Windows {
 				return;
 			}
 
-			if (name == "" && strongRefs.ContainsKey (referent))
+			if (name == "" && strongRefs != null && strongRefs.ContainsKey (referent))
 				return;
 			if (namedRefs.ContainsKey (name))
 				return;
@@ -153,14 +151,15 @@ namespace System.Windows {
 #if DEBUG_REF
 					Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3} (referent = {4:x})", GetHashCode(), this, o.GetHashCode(), o, (int) referent);
 #endif
-
+					if (strongRefs == null) {
+						strongRefs = new Dictionary<IntPtr, object> ();
+					}
 					strongRefs.Add (referent, o);
 				}
 				else {
 #if DEBUG_REF
 					Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
 #endif
-
 					namedRefs.Add (name, o);
 				}
 			}
@@ -187,8 +186,8 @@ namespace System.Windows {
 #if DEBUG_REF
 				Console.WriteLine ("Clearing ref from {0}/{1} to referent = {2:x}", GetHashCode(), this, (int) referent);
 #endif
-
-				strongRefs.Remove (referent);
+				if (strongRefs != null)
+					strongRefs.Remove (referent);
 			}
 			else {
 #if DEBUG_REF
@@ -210,9 +209,10 @@ namespace System.Windows {
 
 		internal virtual void AccumulateManagedRefs (List<HeapRef> refs)
 		{
-			foreach (IntPtr nativeref in strongRefs.Keys)
-				if (strongRefs[nativeref] is INativeEventObjectWrapper)
-					refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
+			if (strongRefs != null)
+				foreach (IntPtr nativeref in strongRefs.Keys)
+					if (strongRefs[nativeref] is INativeEventObjectWrapper)
+						refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
 
 			foreach (string name in namedRefs.Keys)
 				if (namedRefs[name] is INativeEventObjectWrapper)
@@ -253,26 +253,12 @@ namespace System.Windows {
 
 		void INativeEventObjectWrapper.OnDetached ()
 		{
-#if false
-			foreach (Expression e in expressions.Values)
-				e.OnDetached (this);
-#endif
+
 		}
 
 		void INativeEventObjectWrapper.OnAttached ()
 		{
-			foreach (Expression e in expressions.Values) {
-				if (!e.Attached)
-					e.OnAttached (this);
-			}
-		}
 
-		void DetachAllExpressions ()
-		{
-			foreach (Expression e in expressions.Values) {
-				if (e.Attached)
-					e.OnDetached (this);
-			}
 		}
 
 		internal void Free ()
@@ -333,7 +319,7 @@ namespace System.Windows {
 		internal object ReadLocalValueImpl (DependencyProperty dp)
 		{
 			Expression expression;
-			if (expressions.TryGetValue (dp, out expression))
+			if (expressions != null && expressions.TryGetValue (dp, out expression))
 				return expression;
 			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
 		}
@@ -378,7 +364,7 @@ namespace System.Windows {
 		{
 			bool updateTwoWay = false;
 			bool addingExpression = false;
-			Expression existing;
+			Expression existing = null;
 			Expression expression = value as Expression;
 			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
 			
@@ -390,7 +376,9 @@ namespace System.Windows {
 				bindingExpression.Binding.Seal ();
 			}
 
-			expressions.TryGetValue (dp, out existing);
+			if (expressions != null)
+				if (!expressions.TryGetValue (dp, out existing))
+					existing = null;
 			
 			if (expression != null) {
 				if (existing != expression) {
@@ -399,6 +387,9 @@ namespace System.Windows {
 
 					if (existing != null)
 						RemoveExpression (dp);
+					if (expressions == null)
+						expressions = new Dictionary<DependencyProperty, Expression> ();
+
 					expressions.Add (dp, expression);
 					expression.OnAttached (this);
 				}
@@ -488,7 +479,7 @@ namespace System.Windows {
 
 		internal void InvalidateLocalBindings ()
 		{
-			if (expressions.Count == 0)
+			if (expressions == null || expressions.Count == 0)
 				return;
 
 			if (invalidatingLocalBindings)
@@ -516,7 +507,7 @@ namespace System.Windows {
 		void RemoveExpression (DependencyProperty dp)
 		{
 			Expression e;
-			if (expressions.TryGetValue (dp, out e)) {
+			if (expressions != null && expressions.TryGetValue (dp, out e)) {
 				expressions.Remove (dp);
 				e.OnDetached (this);
 			}
