@@ -1535,6 +1535,11 @@ static bool listeners_notified;
 void
 DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (hadManagedPeer && !GetManagedHandle ().IsAllocated ()) {
+		g_warning ("Calling NotifyListenersOfPropertyChange on an element whose managed peer has died\n");
+		return;
+	}
+
 	GSList *list;
 	GSList *node;
 	GSList *n;
