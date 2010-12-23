@@ -68,7 +68,7 @@ namespace Mono {
 				if (container == null)
 					return;
 	
-				container.AddStrongRef (referent, name);
+				container.AddStrongRef (referent, string.Intern (name));
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
