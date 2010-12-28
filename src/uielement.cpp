@@ -1059,6 +1059,15 @@ UIElement::InvalidatePaint ()
 */
 
 void
+UIElement::InvalidateParent (Rect r)
+{
+	if (GetVisualParent ())
+		GetVisualParent ()->Invalidate (r);
+	else if (IsAttached ())
+		GetDeployment ()->GetSurface ()->Invalidate (r);
+}
+
+void
 UIElement::InvalidateSubtreePaint ()
 {
 	Invalidate (GetSubtreeBounds ());
@@ -1067,9 +1076,7 @@ UIElement::InvalidateSubtreePaint ()
 void
 UIElement::InvalidateClip ()
 {
-	if (GetVisualParent ())
-		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
-
+	InvalidateParent (GetSubtreeBounds ());
 	UpdateBounds (true);
 	ComputeComposite ();
 }
@@ -1077,9 +1084,7 @@ UIElement::InvalidateClip ()
 void
 UIElement::InvalidateMask ()
 {
-	if (GetVisualParent ())
-		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
-
+	InvalidateParent (GetSubtreeBounds ());
 	ComputeComposite ();
 }
 
@@ -1087,9 +1092,7 @@ void
 UIElement::InvalidateVisibility ()
 {
 	UpdateTotalRenderVisibility ();
-	if (GetVisualParent ())
-		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
-
+	InvalidateParent (GetSubtreeBounds ());
 	ComputeComposite ();
 }
 
@@ -1104,8 +1107,7 @@ UIElement::InvalidateEffect ()
 	else
 		effect_padding = Thickness (0);
 
-	if (GetVisualParent ())
-		GetVisualParent ()->Invalidate (GetSubtreeBounds ());
+	InvalidateParent (GetSubtreeBounds ());
 
 	if (old_effect_padding != effect_padding)
 		UpdateBounds ();

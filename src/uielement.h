@@ -380,6 +380,11 @@ public:
 	void Invalidate ();
 
 	// 
+	// Invalidates a subrectangle of parent element
+	//
+	void InvalidateParent (Rect r);
+
+	// 
 	// Invalidates the paint region of the element and its subtree
 	//
 	void InvalidateSubtreePaint ();
