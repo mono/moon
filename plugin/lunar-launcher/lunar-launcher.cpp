@@ -169,8 +169,8 @@ add_mono_config (const char *plugin_dir)
 	return true;
 }
 
-static bool
-load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
+static void
+setup_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 {
 	Surface *surface;
 	char *path, *uri;
@@ -194,9 +194,6 @@ load_app (Deployment *deployment, const char *base_dir, MoonAppRecord *app)
 	g_free (path);
 	g_free (uri);
 	delete url;
-	
-	/* load the xap */
-	return deployment->InitializeManagedDeployment (NULL, NULL, NULL);
 }
 
 static MoonWindow*
@@ -221,10 +218,7 @@ create_window (Deployment *deployment, const char *app_id)
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 
-	if (!load_app (deployment, installer->GetBaseInstallDir (), app)) {
-		surface->unref ();
-		return NULL;
-	}
+	setup_app (deployment, installer->GetBaseInstallDir (), app);
 
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	surface->unref ();
@@ -256,14 +250,6 @@ create_window (Deployment *deployment, const char *app_id)
 
 		g_free (window_title);
 
-		moon_window->Resize (settings->GetWidth (), settings->GetHeight());
-			
-		if (settings->GetWindowStartupLocation () == WindowStartupLocationManual) {
-			// FIXME: this should really use a MoonWindow::Move
-			moon_window->SetLeft (settings->GetLeft ());
-			moon_window->SetTop (settings->GetTop ());
-		}
-
 		moon_window->SetStyle (settings->GetWindowStyle ());
 
 	} else if (oob != NULL) {
@@ -272,6 +258,12 @@ create_window (Deployment *deployment, const char *app_id)
 		moon_window->SetTitle ("Moonlight");
 	}
 	
+	/* load the xap */
+	if (!deployment->InitializeManagedDeployment (NULL, NULL, NULL)) {
+		surface->unref ();
+		return NULL;
+	}
+
 	delete app;
 
 	return moon_window;

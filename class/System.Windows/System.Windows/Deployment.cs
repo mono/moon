@@ -727,6 +727,30 @@ namespace System.Windows {
 				return false;
 			}
 
+			if (instance.IsRunningOutOfBrowser) {
+				WindowSettings ws = OutOfBrowserSettings.WindowSettings;
+				if (ws != null) {
+					Window w = instance.MainWindow;
+					w.Width = ws.Width;
+					w.Height = ws.Height;
+
+					switch (ws.WindowStartupLocation) {
+					case WindowStartupLocation.Manual:
+						w.Left = ws.Left;
+						w.Top = ws.Top;
+						break;
+					case WindowStartupLocation.CenterScreen:
+						// FIXME PAL : export screen width and height
+						w.Left = ((1280 - w.Width) / 2);
+						w.Top = ((800 - w.Height) / 2);
+						break;
+					default:
+						// let the OS decide where to show the window
+						break;
+					}
+				}
+			}
+
 			StartupEventArgs args = new StartupEventArgs();
 			instance.OnStartup (args);
 
