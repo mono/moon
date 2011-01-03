@@ -33,26 +33,32 @@ Window::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetProperty()->GetOwnerType() != Type::WINDOW)
 		DependencyObject::OnPropertyChanged (args, error);
 
-	int prop_id = args->GetProperty()->GetId();
+	if (moon_window) {
+		int prop_id = args->GetProperty()->GetId();
 
-	if (prop_id == Window::HeightProperty) {
-		printf ("Window::HeightProperty changed!\n");
+		if (prop_id == Window::HeightProperty) {
+			moon_window->SetHeight (args->GetNewValue()->AsDouble ());
+		}
+		else if (prop_id == Window::WidthProperty) {
+			moon_window->SetWidth (args->GetNewValue()->AsDouble ());
+		}
+		else if (prop_id == Window::LeftProperty) {
+			moon_window->SetLeft (args->GetNewValue()->AsDouble ());
+		}
+		else if (prop_id == Window::TopProperty) {
+			moon_window->SetTop (args->GetNewValue()->AsDouble ());
+		}
+		else if (prop_id == Window::TopMostProperty) {
+			// FIXME
+			printf ("Window::TopMost changed!\n");
+		}
+		else if (prop_id == Window::WindowStateProperty) {
+			// FIXME
+			printf ("Window::WindowState changed!\n");
+		}
 	}
-	else if (prop_id == Window::WidthProperty) {
-		printf ("Window::WidthProperty changed!\n");
-	}
-	else if (prop_id == Window::LeftProperty) {
-		printf ("Window::LeftProperty changed!\n");
-	}
-	else if (prop_id == Window::TopProperty) {
-		printf ("Window::TopProperty changed!\n");
-	}
-	else if (prop_id == Window::TopMostProperty) {
-		printf ("Window::TopMost changed!\n");
-	}
-	else if (prop_id == Window::WindowStateProperty) {
-		printf ("Window::WindowState changed!\n");
-	}
+
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

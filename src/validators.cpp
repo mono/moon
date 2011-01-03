@@ -26,6 +26,7 @@
 #include "fonts.h"
 #include "designmode.h"
 #include "runtime.h"
+#include "security.h"
 
 namespace Moonlight {
 
@@ -489,6 +490,91 @@ Validators::AssemblyPartSourceValidator (DependencyObject* instance, DependencyP
 {
 	if (!value || value->GetIsNull ())
 		*value = Value ("");
+	return true;
+}
+
+static bool 
+IsRunningOutOfBrowser (Deployment *deployment, MoonError *error)
+{
+	// fill in a NotSupportedException if not running Out-Of-Browser
+	if (!deployment->GetCurrentApplication ()->IsRunningOutOfBrowser ()) {
+		MoonError::FillIn (error, MoonError::NOT_SUPPORTED_EXCEPTION, "Can only be set when Out-Of-Browser");
+		return false;
+	}
+	return true;
+}
+
+static bool
+IsElevatedPermission (Deployment *deployment)
+{
+	OutOfBrowserSettings *oob = deployment->GetOutOfBrowserSettings ();
+	if (!oob)
+		return false;
+
+	SecuritySettings *ss = oob->GetSecuritySettings ();
+	return (ss && (ss->GetElevatedPermissions () == ElevatedPermissionsRequired));
+}
+
+bool
+Validators::WindowTopLeftValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	Deployment *d = instance->GetDeployment ();
+
+	// must be running out of browser
+	if (!IsRunningOutOfBrowser (d, error))
+		return false;
+
+	// can only be set for WindowStartupLocation == Manual -> otherwise it is ignored (no error)
+	OutOfBrowserSettings *oob = d->GetOutOfBrowserSettings ();
+	if (!oob)
+		return false;
+	WindowSettings* ws = oob->GetWindowSettings ();
+	if (!ws || ws->GetWindowStartupLocation () != WindowStartupLocationManual)
+		return false;
+
+	// can only be set before the end of Application.Startup -> otherwise it is ignored (no error)
+	return d->IsInitializing ();
+}
+
+bool
+Validators::WindowElevatedValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	Deployment *d = instance->GetDeployment ();
+
+	// must be running out of browser
+	if (!IsRunningOutOfBrowser (d, error))
+		return false;
+
+	// if Application.Setup is over then...
+	if (!d->IsInitializing ()) {
+		Surface *s = d->GetSurface ();
+		//  this can only occurs for user-initiated events *AND* if running with elevated permissions
+		if (!s->IsUserInitiatedEvent () && !IsElevatedPermission (d)) {
+			MoonError::FillIn (error, MoonError::SECURITY_EXCEPTION, 1001, "Value can only be set from a user-initiated event");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool
+Validators::WindowHeightValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!WindowElevatedValidator (instance, property, value, error))
+		return false;
+
+	// FIXME PAL : ArgumentOutOfRangeException is throw if setting outside screen height
+	return true;
+}
+
+bool
+Validators::WindowWidthValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!WindowElevatedValidator (instance, property, value, error))
+		return false;
+
+	// FIXME PAL : ArgumentOutOfRangeException is throw if setting outside screen width
 	return true;
 }
 

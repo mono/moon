@@ -30,19 +30,19 @@ public:
 	/* @GeneratePInvoke */
 	Window ();
 	
-	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
+	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=WindowHeightValidator */
 	const static int HeightProperty;
-	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
+	/* @PropertyType=double,DefaultValue=100.0,ManagedFieldAccess=Internal,Validator=WindowWidthValidator */
 	const static int WidthProperty;
-	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal,Validator=WindowTopLeftValidator */
 	const static int LeftProperty;
-	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal */
+	/* @PropertyType=double,DefaultValue=50.0,ManagedFieldAccess=Internal,Validator=WindowTopLeftValidator */
 	const static int TopProperty;
 	/* @PropertyType=bool,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal */
 	const static int IsActiveProperty;
-	/* @PropertyType=bool,ManagedFieldAccess=Internal,Validator=UserInitiatedValidator */
+	/* @PropertyType=bool,ManagedFieldAccess=Internal,Validator=WindowElevatedValidator */
 	const static int TopMostProperty;
-	/* @PropertyType=WindowState,ManagedFieldAccess=Internal */
+	/* @PropertyType=WindowState,ManagedFieldAccess=Internal,Validator=WindowElevatedValidator */
 	const static int WindowStateProperty;
 
 	/* @DelegateType=EventHandler<ClosingEventArgs> */

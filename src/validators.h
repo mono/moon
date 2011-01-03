@@ -55,6 +55,10 @@ public:
 	static ValueValidator NullOrInDesignMode;
 	static ValueValidator UserInitiatedValidator;
 	static ValueValidator AssemblyPartSourceValidator;
+	static ValueValidator WindowTopLeftValidator;
+	static ValueValidator WindowElevatedValidator;
+	static ValueValidator WindowHeightValidator;
+	static ValueValidator WindowWidthValidator;
 };
 
 };
