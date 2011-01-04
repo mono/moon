@@ -173,9 +173,9 @@ static void start_element (void *data, const char *el, const char **attr);
 static void end_element (void *data, const char *el);
 
 static bool
-get_tile_layer (int level, int x, int y, Uri **uri, void *userdata)
+get_tile_layer (MultiScaleTileSource* msts, int level, int x, int y, Uri **uri)
 {
-	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y, uri);
+	return ((DeepZoomImageTileSource *)msts)->GetTileLayer (level, x, y, uri);
 }
 
 void

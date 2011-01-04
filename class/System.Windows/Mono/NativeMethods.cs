@@ -133,7 +133,7 @@ namespace Mono {
 		int char_code,
 		IntPtr domEvent);
 
-	internal delegate bool ImageUriFunc (int level, int posx, int posy, ref IntPtr uri, IntPtr ignore);
+	internal delegate bool ImageUriFunc (IntPtr msts, int level, int posx, int posy, ref IntPtr uri);
 
 	internal delegate IntPtr System_Uri_Ctor_1 (string uri_string);
 	internal delegate IntPtr System_Uri_Ctor_2 (string uri_string, UriKind uri_kind);

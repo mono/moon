@@ -411,7 +411,7 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 bool
 MultiScaleImage::CanDownloadMoreTiles ()
 {
-	return n_downloading < MAX_DOWNLOADERS;
+	return n_downloading < MAX_DOWNLOADERS && !GetDeployment ()->IsShuttingDown ();
 }
 
 void
@@ -500,7 +500,7 @@ MultiScaleImage::HandleDzParsed ()
 	while (CanDownloadMoreTiles ()) {
 		Uri *tile = NULL;
 		
-		if (source->get_tile_func (layer, 0, 0, &tile, source) && tile != NULL) {
+		if (source->get_tile_func (source, layer, 0, 0, &tile) && tile != NULL) {
 			QTree *node;
 			
 			if ((node = qtree_insert (shared_cache, layer, 0, 0)))
@@ -1140,7 +1140,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					
 					if (!qtree_has_tile (node)) {
 						tile = NULL;
-						if (dzits->get_tile_func (from_layer, x, y, &tile, tile_source))
+						if (dzits->get_tile_func (tile_source, from_layer, x, y, &tile))
 							DownloadTile (tile, node);
 						delete tile;
 					}
@@ -1352,7 +1352,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!qtree_has_tile (node)) {
 					Uri *tile = NULL;
 					
-					if (source->get_tile_func (from_layer, i, j, &tile, source))
+					if (source->get_tile_func (source, from_layer, i, j, &tile))
 						DownloadTile (tile, node);
 					else
 						qtree_set_tile (node, NULL, 0.0);

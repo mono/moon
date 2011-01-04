@@ -18,23 +18,13 @@ using System.Collections.Generic;
 namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
-	{		
-		System.Runtime.InteropServices.GCHandle handle;
-		Action clear_image_uri_func;
-		
+	{
+		static readonly ImageUriFunc GetImageUriCallback = GetImageUriSafe;
+
 		private new void Initialize ()
 		{
 			if (!(this is DeepZoomImageTileSource)) {
-				ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
-				handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
-				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
-				
-				clear_image_uri_func = ClearImageUri;
-				
-				if (!Deployment.QueueForShutdown (clear_image_uri_func)) {
-					/* we're already shutting down */
-					clear_image_uri_func ();
-				}
+				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, GetImageUriCallback);
 			}
 		}
 
@@ -62,34 +52,6 @@ namespace System.Windows.Media
 			TileOverlap = tileOverlap;
 		}
 
-		void ClearImageUri ()
-		{
-			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, null);
-			handle.Free ();	
-		}
-
-		~MultiScaleTileSource () /* thread-safe: no p/invokes */
-		{
-			/*
-			 * If we're destructed during normal execution, the only ref
-			 * left on this object is the toggleref, which means that 
-			 * the function pointers won't be called anymore.
-			 * 
-			 * If we're destructed during shutdown, the clear image uri
-			 * func has already been executed, and the function pointers
-			 * cleared out.
-			 * 
-			 * In neither case it's necessary to clear out the function
-			 * pointers here: this prevents the need for locking in the
-			 * native MultiScaleTileSource object.
-			 */
-			if (clear_image_uri_func != null)
-				Deployment.UnqueueForShutdown (clear_image_uri_func);
-			
-			if (handle.IsAllocated)
-				handle.Free ();
-		}
-		
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 		{
 			NativeMethods.multi_scale_tile_source_invalidate_tile_layer (native, level, tilePositionX, tilePositionY, tileLayer);
@@ -97,18 +59,11 @@ namespace System.Windows.Media
 		
 		protected abstract void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources);
 
-		private bool GetImageUriSafe (int tileLevel, int tilePositionX, int tilePositionY, ref IntPtr uuri, IntPtr ignore)
+		static bool GetImageUriSafe (IntPtr msts, int tileLevel, int tilePositionX, int tilePositionY, ref IntPtr uuri)
 		{
 			try {
-				List<object> list = new List<object> ();
-				GetTileLayers (tileLevel, tilePositionX, tilePositionY, list);
-				if (list.Count == 0)
-					return false;
-				Uri uri = list[0] as Uri;
-				if (uri == null)
-					return false;
-				uuri = UriHelper.ToNativeUri (uri);
-				return true;
+				var source = (MultiScaleTileSource) NativeDependencyObjectHelper.Lookup (msts);
+				return source.GetImageUri (tileLevel, tilePositionX, tilePositionY, ref uuri);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in MultiScaleTileSource.GetImageUri: {0}", ex);
@@ -117,6 +72,19 @@ namespace System.Windows.Media
 				}
 			}
 			return false;
+		}
+
+		bool GetImageUri (int tileLevel, int tilePositionX, int tilePositionY, ref IntPtr uuri)
+		{
+			List<object> list = new List<object> ();
+			GetTileLayers (tileLevel, tilePositionX, tilePositionY, list);
+			if (list.Count == 0)
+				return false;
+			Uri uri = list[0] as Uri;
+			if (uri == null)
+				return false;
+			uuri = UriHelper.ToNativeUri (uri);
+			return true;
 		}
 	}
 }
