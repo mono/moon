@@ -154,15 +154,15 @@ namespace Mono {
 						return reference;
 
 					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "nodeType")) {
-
 						Value val;
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
 						int r = val.u.i32;
 						NativeMethods.value_free_value (ref val);
-
-						if (r == 9)
+						if (r == (int)HtmlElement.NodeType.Document)
 							return new HtmlDocument (v.u.p);
-						else if (r == 1)
+						else if (r == (int)HtmlElement.NodeType.Element ||
+								 r == (int)HtmlElement.NodeType.Comment ||
+								 r == (int)HtmlElement.NodeType.Text)
 							return new HtmlElement (v.u.p);
 
 					}

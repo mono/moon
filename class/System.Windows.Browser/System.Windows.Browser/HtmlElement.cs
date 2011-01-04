@@ -31,6 +31,32 @@ namespace System.Windows.Browser
 {
 	public sealed class HtmlElement : HtmlObject
 	{
+		internal enum NodeType : int {
+			NotSet		= 0,
+			Element 	= 1,
+			Attribute 	= 2,
+			Text		= 3,
+			CDATA		= 4,
+			EntityRef	= 5,
+			Entity		= 6,
+			Instruction = 7,
+			Comment		= 8,
+			Document	= 9,
+			DocType		= 10,
+			DocFragment	= 11,
+			Notation	= 12,
+		}
+
+		NodeType type;
+		NodeType Type {
+			get {
+				if (type == NodeType.NotSet) {
+					type = (NodeType) int.Parse (GetProperty ("nodeType").ToString());
+				}
+				return type;
+			}
+		}
+
 		// When does this .ctor make sense?
 		internal HtmlElement ()
 		{
@@ -106,7 +132,7 @@ namespace System.Windows.Browser
 		}
 
 		public ScriptObjectCollection Children {
-			get { return GetProperty ("childNodes") as ScriptObjectCollection; }
+			get { return GetProperty ("children") as ScriptObjectCollection; }
 		}
 
 		public string CssClass {
@@ -126,7 +152,13 @@ namespace System.Windows.Browser
 		}
 
 		public string TagName {
-			get { return (string) GetProperty ("tagName"); }
+			get {
+				if (Type == NodeType.Comment)
+					return "!";
+				else if (Type == NodeType.Text)
+					return String.Empty;
+				return GetProperty ("tagName").ToString().ToLower ();
+			}
 		}
 	}
 }
