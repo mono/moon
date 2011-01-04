@@ -110,8 +110,8 @@ namespace System.Windows.Browser
 		}
 
 		public string CssClass {
-			get { return (string) GetProperty ("class"); }
-			set { SetProperty ("class", value); }
+			get { return (string) GetProperty ("className"); }
+			set { SetProperty ("className", value); }
 		}
 
 		public string Id {
