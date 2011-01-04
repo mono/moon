@@ -81,5 +81,10 @@ namespace System.Windows.Media {
 			OnFormatChange (args.NewFormat);
 		}
 
+		~VideoSink ()
+		{
+			// required for API compatibility.
+			// Maybe we'll need to do something here...
+		}
 	}
 }
