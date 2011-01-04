@@ -202,7 +202,7 @@ namespace System.Windows.Browser {
 
 		public virtual object InvokeSelf (params object [] args)
 		{
-			return InvokeInternal (args);
+			return InvokeSelfInternal (args);
 		}
 
 		protected void Initialize (IntPtr handle, IntPtr identity, bool addReference, bool releaseReferenceOnDispose)
@@ -302,7 +302,7 @@ namespace System.Windows.Browser {
 			return result;
 		}
 
-		internal object InvokeInternal (params object [] args)
+		internal object InvokeSelfInternal (params object [] args)
 		{
 			CheckHandle ();
 			int length = args == null ? 0 : args.Length;
