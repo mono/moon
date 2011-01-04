@@ -34,18 +34,15 @@ using System.Collections.Generic;
 
 namespace System.Windows.Media {
 
-	public class CaptureImageCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper
-	{
+	public class CaptureImageCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper {
 
-                internal CaptureImageCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
-                        : base (exc,
-                                false,
-				null)
-                {
-                        NativeHandle = raw;
-                        if (dropref)
-                                NativeMethods.event_object_unref (raw);
-                }
+		internal CaptureImageCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
+			: base (exc, false, null)
+		{
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
 
 		public CaptureImageCompletedEventArgs (WriteableBitmap image)
 			: base (null, false, null)
@@ -54,52 +51,52 @@ namespace System.Windows.Media {
 			throw new NotImplementedException ();
 		}
 
-                ~CaptureImageCompletedEventArgs ()
-                {
-                        Free ();
-                }
+		~CaptureImageCompletedEventArgs ()
+		{
+			Free ();
+		}
 
-                void Free ()
-                {
-                        if (free_mapping) {
-                                free_mapping = false;
-                                NativeDependencyObjectHelper.FreeNativeMapping (this);
-                        }
-                }
+		void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
 
 		WriteableBitmap result;
-                public WriteableBitmap Result {
-                        get {
+		public WriteableBitmap Result {
+			get {
 				if (result == null) {
 					BitmapSource source = (BitmapSource)NativeDependencyObjectHelper.FromIntPtr (NativeMethods.capture_image_completed_event_args_get_source (NativeHandle));
 					result = new WriteableBitmap (source);
 				}
 				return result;
 			}
-                }
+		}
 
-                bool free_mapping;
+		bool free_mapping;
 
 #region "INativeEventObjectWrapper interface"
-                IntPtr _native;
+		IntPtr _native;
 
-                internal IntPtr NativeHandle {
-                        get { return _native; }
-                        set {
-                                if (_native != IntPtr.Zero) {
-                                        throw new InvalidOperationException ("native handle is already set");
-                                }
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("native handle is already set");
+				}
 
-                                _native = value;
+				_native = value;
 
-                                free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-                        }
-                }
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
 
-                IntPtr INativeEventObjectWrapper.NativeHandle {
-                        get { return NativeHandle; }
-                        set { NativeHandle = value; }
-                }
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
 
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
 		{
