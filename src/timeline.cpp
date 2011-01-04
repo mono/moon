@@ -398,8 +398,8 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 }
 
 TimelineMarker::TimelineMarker ()
+	: DependencyObject (Type::TIMELINEMARKER)
 {
-	SetObjectType (Type::TIMELINEMARKER);
 }
 
 TimelineMarker::~TimelineMarker ()
