@@ -25,12 +25,12 @@
 namespace Moonlight {
 
 EventArgs::EventArgs ()
-	: DependencyObject (Type::EVENTARGS)
+	: EventObject (Type::EVENTARGS)
 {
 }
 
 EventArgs::EventArgs (Type::Kind kind)
-	: DependencyObject (kind)
+	: EventObject (kind)
 {
 }
 
