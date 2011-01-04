@@ -419,11 +419,12 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		}
 	}
 	
+	TimeSpan start_time = GetStartTime ();
 	for (int i = 0; i < emit_list.GetCount (); i++) {
 		/* We need to emit a clone of the original TimelineMarker */
 		TimelineMarker *mk = MoonUnmanagedFactory::CreateTimelineMarker ();
 		marker = (TimelineMarker *) emit_list [i];
-		mk->SetTime (marker->GetTime ());
+		mk->SetTime (marker->GetTime () - start_time);
 		mk->SetText (marker->GetText ());
 		mk->SetType (marker->GetType ());
 		Emit (MarkerReachedEvent, new TimelineMarkerRoutedEventArgs (mk));
