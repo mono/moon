@@ -925,7 +925,7 @@ CurlHttpHandler::AddCallback (CallData *data)
 }
 
 void
-CurlHttpHandler::AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
+CurlHttpHandler::AddCallback (CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val)
 {
 	AddCallback (new CallData (this, func, res, buffer, size, name, val));
 }
@@ -946,7 +946,7 @@ CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderReq
 		req->ref ();
 }
 
-CallData::CallData (CurlHttpHandler *bridge, CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val)
+CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val)
 	: bridge(bridge), func(func), res (res), req(NULL), buffer(buffer), size(size), name(name), val(val)
 {
 	if (bridge)

@@ -82,20 +82,20 @@ class CurlHttpHandler : public HttpHandler {
 
 	void GetData ();
 	void AddCallback (CallData *data);
-	void AddCallback (CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val);
+	void AddCallback (CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
 	bool IsDataThread ();
 	bool IsShuttingDown () { return shutting_down; }
 };
 
 class CallData {
 public:
-	CallData (CurlHttpHandler *bridge, CallHandler func, HttpResponse *res, char *buffer, size_t size, const char* name, const char* val);
+	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
 	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req);
 	~CallData ();
 
 	CurlHttpHandler *bridge;
 	CallHandler func;
-	HttpResponse *res;
+	CurlDownloaderResponse *res;
 	CurlDownloaderRequest *req;
 	char *buffer;
 	size_t size;
