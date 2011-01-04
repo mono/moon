@@ -2213,16 +2213,11 @@ ProgressiveSource::CheckPendingReads ()
 	while (node != NULL) {
 		MediaReadClosure *closure = node->GetClosure ();
 		next = (MediaReadClosureNode *) node->next;
-		
-		if (size > 0 && closure->GetOffset () + closure->GetCount () > size) {
-			/* Requested data after the ended of the file, fixup the count so that it matches the end of the file */
-			LOG_PIPELINE ("ProgressiveSource::CheckPendingReads () invalid request (offset %" G_GUINT64_FORMAT " + count %u > size %" G_GUINT64_FORMAT"): "
-				"fixing count to %" G_GUINT64_FORMAT "\n", closure->GetOffset (), closure->GetCount (), size, size - closure->GetOffset ());
-			closure->SetCount (size - closure->GetOffset ());
-		}
 
 		if (complete && brr_enabled != 1 /* enabled */) {
 			ready = true;
+		} else if (size > 0 && closure->GetOffset () + closure->GetCount () > size) {
+			ready = ranges.Contains (closure->GetOffset (), size - closure->GetOffset ());
 		} else {
 			ready = ranges.Contains (closure->GetOffset (), closure->GetCount ());
 		}
