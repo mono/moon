@@ -998,7 +998,6 @@ struct debug_media_data {
 					g_string_append_printf (fmt, 
 						"\t\t\tWidth: %u Height: %u Bits per sample: %u Bitrate: %u Time per frame: %" G_GUINT64_FORMAT " ms (%.3f fps) Initial time: %" G_GUINT64_FORMAT " ms\n",
 						vs->GetWidth (), vs->GetHeight (), vs->GetBitsPerSample (), vs->GetBitRate (), MilliSeconds_FromPts (vs->GetPtsPerFrame ()), 10000000.0 / vs->GetPtsPerFrame (), MilliSeconds_FromPts (vs->GetInitialPts ()));
-					g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms Frames in buffer: %i = %.2f fps.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()), stream->GetQueueLength (), stream->GetQueueLength () != 0 ? 1000.0 / (double) (MilliSeconds_FromPts (stream->GetBufferedSize ()) / (double) stream->GetQueueLength ()) : 0.0);
 				} else if (stream->Is (Type::AUDIOSTREAM)) {
 					AudioStream *as = (AudioStream *) stream;
 					g_string_append_printf (fmt,
@@ -1006,9 +1005,13 @@ struct debug_media_data {
 						as->GetInputBitsPerSample (), as->GetOutputBitsPerSample (), as->GetInputBlockAlign (), as->GetOutputBlockAlign (), as->GetInputSampleRate (), as->GetOutputSampleRate (), as->GetInputChannels (), as->GetOutputChannels (), as->GetInputBitRate (), as->GetOutputBitRate ()
 						);
 				}
-				g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()));
+				g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms Demuxed frames in buffer: %i Decoded frames in buffer: %i Fps: %.2f.\n",
+						MilliSeconds_FromPts (stream->GetBufferedSize ()),
+						stream->GetDemuxedQueueLength (), stream->GetDecodedQueueLength (),
+						(stream->GetDemuxedQueueLength () + stream->GetDecodedQueueLength ()) != 0 ? 1000.0 / (double) (MilliSeconds_FromPts (stream->GetBufferedSize ()) / (double) (stream->GetDemuxedQueueLength () + stream->GetDecodedQueueLength ())) : 0.0);
 				g_string_append_printf (fmt, "\t\t\tFirst pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetFirstPts ()));
-				g_string_append_printf (fmt, "\t\t\tLast enqueued pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastEnqueuedPts ()));
+				g_string_append_printf (fmt, "\t\t\tLast enqueued demuxer pts: %" G_GUINT64_FORMAT " ms Last enqueued decoder pts: %" G_GUINT64_FORMAT ".\n",
+					MilliSeconds_FromPts (stream->GetLastEnqueuedDemuxedPts ()), MilliSeconds_FromPts (stream->GetLastEnqueuedDecodedPts ()));
 				g_string_append_printf (fmt, "\t\t\tLast popped pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
 				IMediaDecoder *decoder = stream->GetDecoder ();
 				if (decoder != NULL) {

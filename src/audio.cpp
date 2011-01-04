@@ -408,7 +408,7 @@ AudioSource::IsQueueEmpty ()
 	if (stream == NULL) {
 		result = true;
 	} else {
-		result = stream->IsQueueEmpty ();
+		result = stream->IsDecodedQueueEmpty ();
 		stream->unref ();
 	}
 	
@@ -666,7 +666,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	
 	while (GetState () == AudioPlaying) {
 		if (current_frame == NULL) {
-			MediaFrame *frame = stream->PopFrame ();
+			MediaFrame *frame = stream->PopDecodedFrame ();
 			if (frame != NULL) {
 				current_frame = new AudioFrame (frame);
 				frame->unref ();

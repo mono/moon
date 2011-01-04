@@ -624,7 +624,7 @@ MediaPlayer::AdvanceFrame ()
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): target pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", target_pts, MilliSeconds_FromPts (target_pts));
 
 	while (true) {
-		frame = video_stream->PopFrame ();
+		frame = video_stream->PopDecodedFrame ();
 		if (frame == NULL) {
 			if (video_stream->GetOutputEnded ()) {
 				if (!HasAudio ()) {
@@ -694,7 +694,7 @@ MediaPlayer::AdvanceFrame ()
 			break;
 		}
 		
-		if (video_stream->IsQueueEmpty ()) {
+		if (video_stream->IsDecodedQueueEmpty ()) {
 			// no more packets in queue, this frame is the most recent we have available
 			break;
 		}
@@ -769,7 +769,7 @@ MediaPlayer::LoadVideoFrame ()
 		return;
 	}
 	
-	frame = video_stream->PopFrame ();
+	frame = video_stream->PopDecodedFrame ();
 
 	if (frame == NULL) {
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): no frames available.\n");
@@ -784,7 +784,7 @@ MediaPlayer::LoadVideoFrame ()
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %" G_GUINT64_FORMAT ", target pts: %" G_GUINT64_FORMAT ", pts_per_frame: %" G_GUINT64_FORMAT ", buflen: %i\n",
 		frame->pts, GetTargetPts (), video_stream->GetPtsPerFrame (), frame->GetBufLen ());
 
-	if (frame->pts + video_stream->GetPtsPerFrame () >= target_pts) {
+	if (frame->pts + frame->GetDuration () >= target_pts) {
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): rendering.\n");
 		RemoveBit (LoadFramePending);
 		RenderFrame (frame);

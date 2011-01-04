@@ -469,10 +469,13 @@ private:
 	bool input_ended; // end of stream reached in demuxer
 	bool output_ended; // end of stream reached in decoder
 	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
-	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
-	guint64 last_enqueued_pts; // The pts of the last frame enqueued, initialized to G_MAXUINT64
+	guint64 last_popped_decoded_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
+	guint64 last_enqueued_demuxed_pts; // The pts of the last demuxed frame enqueued, initialized to G_MAXUINT64
+	guint64 last_enqueued_decoded_pts; // The pts of the last decoded frame enqueued, initialized to G_MAXUINT64
 	guint64 last_available_pts; // The last pts available, initialized to 0. Note that this field won't be correct for streams which CanSeekToPts.
-	Queue queue; // Our queue of demuxed frames
+	Mutex queue_mutex;
+	List demuxed_queue; // Our queue of demuxed frames
+	List decoded_queue; // Our queue of decoded frames
 	IMediaDecoder *decoder;
 
 	void *extra_data;
@@ -491,7 +494,7 @@ private:
 
 protected:
 	virtual ~IMediaStream () {}
-	virtual void FrameEnqueued () {}
+	virtual void DecodedFrameEnqueued () {}
 
 	static char *CreateCodec (int codec_id); // converts fourcc int value into a string
 
@@ -534,15 +537,21 @@ public:
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
 	
-	void EnqueueFrame (MediaFrame *frame);
-	MediaFrame *PopFrame ();
-	bool IsQueueEmpty ();
+	void EnqueueDemuxedFrame (MediaFrame *frame);
+	void EnqueueDecodedFrame (MediaFrame *frame);
+	MediaFrame *PopDecodedFrame ();
+	MediaFrame *PopDemuxedFrame ();
+	bool IsDecodedQueueEmpty ();
 	void ClearQueue ();
-	gint32 GetQueueLength () { return queue.Length (); }
+	gint32 GetDemuxedQueueLength ();
+	gint32 GetDecodedQueueLength ();
 	guint64 GetFirstPts () { return first_pts; }
-	guint64 GetLastPoppedPts () { return last_popped_pts; }
-	guint64 GetLastEnqueuedPts () { return last_enqueued_pts; }
+	guint64 GetLastPoppedPts () { return last_popped_decoded_pts; }
+	guint64 GetLastEnqueuedDemuxedPts () { return last_enqueued_demuxed_pts; }
+	guint64 GetLastEnqueuedDecodedPts () { return last_enqueued_decoded_pts; }
 	guint64 GetBufferedSize (); // Returns the time between the last frame returned and the last frame available (buffer time)
+
+	guint32 GetGeneration ();
 	
 	gint32 GetIndex () { return index; }
 	void SetIndex (gint32 value) { index = value; }
@@ -586,6 +595,7 @@ public:
 #if DEBUG
 	void PrintBufferInformation ();
 #endif
+	/* This event is emitted when a decoded frame frame is enqueued and the list of decoded frames is empty */
 	const static int FirstFrameEnqueuedEvent;
 };
 
@@ -805,6 +815,7 @@ private:
 	// decoder then uses and replaces with the decoded data.
 	guint8 *buffer;
 	guint32 buflen;
+	guint32 generation;
 	guint64 duration;
 	guint16 state; // Current state of the frame
 
@@ -867,6 +878,9 @@ public:
 	bool FetchData (guint32 size, void *data);
 	/* Creates a new buffer which is 'size' bytes bigger, copies 'data' into it and then the previous buffer after that */
 	bool PrependData (guint32 size, void *data);
+
+	guint32 GetGeneration () { return generation; }
+	IMediaStream *GetStream () { return stream; }
 
 	guint64 GetDuration () { return duration; }
 	void SetDuration (guint64 value) { duration = value; }
@@ -959,6 +973,7 @@ private:
 	};
 	IMediaStream **streams;
 	int stream_count;
+	guint32 generation; /* Incremented when seeked, any frames with a lower generation will automatically be dropped when enqueued */
 	bool opened;
 	bool opening;
 	bool seeking; /* Only media thread may access, no lock required. When set, the demuxer should not request new frames */
@@ -1046,8 +1061,11 @@ public:
 	void ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue);
 	
 	guint64 GetBufferedSize ();
+	guint32 GetGeneration () { return generation; }
+
 	/* @GenerateCBinding */
 	void FillBuffers ();
+	void FillBuffersSync () { FillBuffersInternal (); }
 	void ClearBuffers ();
 	
 	void PrintBufferInformation ();
@@ -1809,7 +1827,7 @@ public:
 	//  - The demuxer frees the MediaFrame, and the original frame buffer (before decoding).
 	void MarkerFound (MediaFrame *frame);
 	
-	virtual void FrameEnqueued ();
+	virtual void DecodedFrameEnqueued ();
 	MediaMarker *Pop ();
 };
 
