@@ -307,6 +307,7 @@ public:
 
 	DependencyProperty **GetProperties (bool only_changed);
 	
+	/* @GeneratePInvoke */
 	DependencyObject *GetMentor ();
 	void SetMentor (DependencyObject *value);
 

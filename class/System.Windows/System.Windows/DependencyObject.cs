@@ -77,10 +77,15 @@ namespace System.Windows {
 			}
 		}
 
-		WeakReference templateOwner;
 		internal DependencyObject TemplateOwner {
-			get { return (DependencyObject) (templateOwner == null ? null : templateOwner.Target); }
-			set { templateOwner = new WeakReference (value); }
+			get {
+				var owner = Mono.NativeMethods.dependency_object_get_template_owner (native);
+				return (DependencyObject) NativeDependencyObjectHelper.Lookup (owner);
+			}
+			set {
+				var owner = value == null ? IntPtr.Zero : value.native;
+				Mono.NativeMethods.dependency_object_set_template_owner (native, owner);
+			}
 		}
 
 		internal Uri ResourceBase {
@@ -109,7 +114,6 @@ namespace System.Windows {
 		internal DependencyObject (IntPtr raw, bool dropref)
 		{
 			native = raw;
-			namedRefs = new Dictionary<string,object> (StringComparer.Ordinal);
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
 			NativeMethods.event_object_set_object_type (native, GetKind ());
@@ -131,17 +135,9 @@ namespace System.Windows {
 		{
 			var o = Value.ToObject (null, referent);
 
-			if (name == "TemplateOwner") {
-#if DEBUG_REF
-				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
-#endif
-				TemplateOwner = o as DependencyObject;
-				return;
-			}
-
 			if (name == "" && strongRefs != null && strongRefs.ContainsKey (referent))
 				return;
-			if (namedRefs.ContainsKey (name))
+			if (namedRefs != null && namedRefs.ContainsKey (name))
 				return;
 
 			if (o != null) {
@@ -159,6 +155,8 @@ namespace System.Windows {
 #if DEBUG_REF
 					Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
 #endif
+					if (namedRefs == null)
+						namedRefs = new Dictionary<string,object> (StringComparer.Ordinal);
 					namedRefs.Add (name, o);
 				}
 			}
@@ -172,14 +170,6 @@ namespace System.Windows {
 
 		internal virtual void ClearStrongRef (IntPtr referent, string name)
 		{
-			if (name == "TemplateOwner") {
-#if DEBUG_REF
-				Console.WriteLine ("Clearing ref named `{3}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
-#endif
-				TemplateOwner = null;
-				return;
-			}
-
 			if (name == "") {
 
 #if DEBUG_REF
@@ -192,7 +182,8 @@ namespace System.Windows {
 #if DEBUG_REF
 				Console.WriteLine ("Clearing ref named `{4}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
 #endif
-				namedRefs.Remove (name);
+				if (namedRefs != null)
+					namedRefs.Remove (name);
 			}
 		}
 
@@ -213,6 +204,7 @@ namespace System.Windows {
 					if (strongRefs[nativeref] is INativeEventObjectWrapper)
 						refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
 
+			if (namedRefs != null)
 			foreach (string name in namedRefs.Keys)
 				if (namedRefs[name] is INativeEventObjectWrapper)
 					refs.Add (new HeapRef (true, (INativeEventObjectWrapper)namedRefs[name], name));
@@ -226,25 +218,15 @@ namespace System.Windows {
 	
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
 		{
-			var o = NativeDependencyObjectHelper.FromIntPtr (mentor_ptr) as FrameworkElement;
-
-			if (o == null)
-				mentor = null;
-			else
-				mentor = new WeakReference (o);
-
 			var h = MentorChanged;
 			if (h != null)
 				MentorChanged (this, EventArgs.Empty);
 		}
 
-		WeakReference mentor;
-
 		internal FrameworkElement Mentor {
 			get {
-				if (mentor == null)
-					return null;
-				return mentor.Target as FrameworkElement;
+				var mentor = NativeMethods.dependency_object_get_mentor (native);
+				return (FrameworkElement) NativeDependencyObjectHelper.Lookup (mentor);
 			}
 		}
 
