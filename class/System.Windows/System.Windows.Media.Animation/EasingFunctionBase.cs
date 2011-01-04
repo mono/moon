@@ -30,16 +30,29 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class EasingFunctionBase : DependencyObject, IEasingFunction
 	{
+		static readonly EasingFunctionCallback EaseCallback = EaseCallbackSafe;
+
 		private new void Initialize ()
 		{
-			callback = EasingFunctionWrapper.CreateSafeEasingFunction (new EasingFunctionCallback (Ease));
-
-			NativeMethods.easing_function_base_set_easing_function (native, callback);
+			NativeMethods.easing_function_base_set_easing_function (native, EaseCallback);
 		}
 
-		~EasingFunctionBase ()
+		static double EaseCallbackSafe (IntPtr native, double normalizedTime)
 		{
-			NativeMethods.easing_function_base_set_easing_function (native, null);
+			try {
+				var e = (EasingFunctionBase) NativeDependencyObjectHelper.Lookup (native);
+				return e.Ease (normalizedTime);
+			}
+			catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in EasingFunctionBase.EaseCallbackSafe: {0}", ex);
+				}
+				catch {
+					// Ignore
+				}
+
+				return 0.0;
+			}
 		}
 
 		public double Ease (double normalizedTime)
@@ -63,6 +76,5 @@ namespace System.Windows.Media.Animation
 
 		protected abstract double EaseInCore (double normalizedTime);
 
-		EasingFunctionCallback callback;
 	}
 }

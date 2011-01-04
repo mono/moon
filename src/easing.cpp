@@ -46,7 +46,7 @@ double
 EasingFunctionBase::Ease (double normalizedTime)
 {
 	if (easing_function_callback)
-		return easing_function_callback (normalizedTime);
+		return easing_function_callback (this, normalizedTime);
 
 	switch (GetEasingMode()) {
 	case EasingModeIn:

@@ -17,7 +17,7 @@
 namespace Moonlight {
 
 /* @CBindingRequisite */
-typedef double (*EasingFunction) (double normalizedTime);
+typedef double (*EasingFunction) (EasingFunctionBase* easing, double normalizedTime);
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @CallInitialize */
