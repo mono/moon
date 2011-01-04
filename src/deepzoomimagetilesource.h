@@ -91,8 +91,11 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	//
 	// Events
 	//
+	/* @GenerateManagedEvent=false */
 	const static int DownloaderCompletedEvent;
+	/* @GenerateManagedEvent=false */
 	const static int DownloaderFailedEvent;
+	/* @GenerateManagedEvent=false */
 	const static int UriSourceChangedEvent;
 };
 
