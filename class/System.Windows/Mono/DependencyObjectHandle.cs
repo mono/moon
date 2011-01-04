@@ -6,11 +6,17 @@ namespace Mono {
 	class DependencyObjectHandle {
 
 		public IntPtr Handle {
-			get; set;
+			get; private set;
 		}
 
 		public INativeEventObjectWrapper Object {
-			get; set;
+			get; private set;
+		}
+
+		public DependencyObjectHandle (IntPtr handle, INativeEventObjectWrapper wrapper)
+		{
+			Object = wrapper;
+			Handle = handle;
 		}
 
 		~DependencyObjectHandle ()

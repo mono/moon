@@ -73,7 +73,7 @@ namespace System.Windows {
 				}
 
 				NativeDependencyObjectHelper.AddNativeMapping (value, this);
-				_native = new DependencyObjectHandle { Object = this, Handle = value };
+				_native = new DependencyObjectHandle (value, this);
 			}
 		}
 
