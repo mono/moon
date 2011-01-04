@@ -1068,6 +1068,6 @@ Value::GetName ()
 
 	return g_string_free (str, FALSE);
 }
+#endif
 
 };
-#endif

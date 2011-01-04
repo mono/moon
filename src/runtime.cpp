@@ -2611,6 +2611,7 @@ runtime_init_desktop ()
 	runtime_init (NULL, RUNTIME_INIT_DESKTOP, false);
 }
 
+#if DEBUG || LOGGING
 static guint32
 get_debug_options (const char *envname, MoonlightDebugOption options[])
 {
@@ -2658,6 +2659,7 @@ get_debug_options (const char *envname, MoonlightDebugOption options[])
 
 	return flags;
 }
+#endif
 
 static RuntimeInitFlag
 get_runtime_options (RuntimeInitFlag def)
