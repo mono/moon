@@ -225,12 +225,7 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 	TimelineMarkerCollection *markers = NULL;
 	MediaMarker::Node *current = (MediaMarker::Node *) media->GetMarkers ()->First ();
 	
-	if (current == NULL) {
-		//printf ("MediaElement::ReadMarkers (): no markers.\n");
-		return;
-	}
-	
-	markers = new TimelineMarkerCollection ();
+	markers = MoonUnmanagedFactory::CreateTimelineMarkerCollection ();
 	while (current != NULL) {
 		TimelineMarker *new_marker = new TimelineMarker ();
 		MediaMarker *marker = current->marker;
