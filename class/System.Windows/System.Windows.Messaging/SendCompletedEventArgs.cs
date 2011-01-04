@@ -36,6 +36,8 @@ namespace System.Windows.Messaging {
 
 	public sealed class SendCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper
 	{
+		DependencyObjectHandle handle;
+
 		internal SendCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
 			: base (exc,
 				false,
@@ -46,19 +48,6 @@ namespace System.Windows.Messaging {
 			NativeHandle = raw;
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
-		}
-
-		~SendCompletedEventArgs ()
-		{
-			Free ();
-		}
-
-		void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
 		}
 
 		public string Message {
@@ -77,21 +66,17 @@ namespace System.Windows.Messaging {
 			get { return NativeMethods.send_completed_event_args_get_response (NativeHandle); }
 		}
 
-		bool free_mapping;
-
 #region "INativeEventObjectWrapper interface"
-		IntPtr _native;
 
 		internal IntPtr NativeHandle {
-			get { return _native; }
+			get { return handle.Handle; }
 			set {
-				if (_native != IntPtr.Zero) {
+				if (handle != null) {
 					throw new InvalidOperationException ("native handle is already set");
 				}
 
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				handle = new DependencyObjectHandle (value, this);
 			}
 		}
 

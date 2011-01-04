@@ -39,6 +39,8 @@ namespace System.Windows.Messaging {
 		static List<string> any_domain = new List<string> { "*" };
 		public static readonly IEnumerable<string> AnyDomain = new ReadOnlyCollection<string> (any_domain);
 
+		DependencyObjectHandle handle;
+
 		public LocalMessageReceiver (string receiverName)
 			: this (receiverName, ReceiverNameScope.Domain, null, false)
 		{
@@ -94,19 +96,6 @@ namespace System.Windows.Messaging {
 				NativeMethods.event_object_unref (raw);
 		}
 
-		~LocalMessageReceiver ()
-		{
-			Free ();
-		}
-
-		void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-
 		public void Listen()
 		{
 			listening = true;
@@ -153,22 +142,19 @@ namespace System.Windows.Messaging {
 		IEnumerable<string> allowedSenderDomains;
 		bool disableSenderTrustCheck;
 
-		bool free_mapping;
 		bool listening;
 		bool disposed;
 
-		IntPtr _native;
 
 		internal IntPtr NativeHandle {
-			get { return _native; }
+			get { return handle.Handle; }
 			set {
-				if (_native != IntPtr.Zero) {
+				if (handle != null) {
 					throw new InvalidOperationException ("native handle is already set");
 				}
 
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				handle = new DependencyObjectHandle (value, this);
 			}
 		}
 

@@ -38,6 +38,8 @@ namespace System.Windows.Messaging {
 		static char[] InvalidChars = { ',', ':' };
 		public const string Global = "*";
 
+		DependencyObjectHandle handle;
+
 		internal LocalMessageSender (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;
@@ -74,19 +76,6 @@ namespace System.Windows.Messaging {
 			this.receiverDomain = receiverDomain;
 		}
 
-		~LocalMessageSender ()
-		{
-			Free ();
-		}
-
-		void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-
 		public void SendAsync (string message)
 		{
 			NativeMethods.local_message_sender_send_async (NativeHandle, message, (IntPtr)GCHandle.Alloc (null));
@@ -113,21 +102,17 @@ namespace System.Windows.Messaging {
 		string receiverDomain;
 		string receiverName;
 
-		bool free_mapping;
-
 #region "INativeDependencyObjectWrapper interface"
-		IntPtr _native;
 
 		internal IntPtr NativeHandle {
-			get { return _native; }
+			get { return handle.Handle; }
 			set {
-				if (_native != IntPtr.Zero) {
+				if (handle != null) {
 					throw new InvalidOperationException ("native handle is already set");
 				}
 
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				handle = new DependencyObjectHandle (value, this);
 			}
 		}
 
