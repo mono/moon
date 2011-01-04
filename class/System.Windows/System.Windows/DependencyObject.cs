@@ -44,7 +44,7 @@ namespace System.Windows {
 		internal static Thread moonlight_thread;
 		DependencyObjectHandle _native;
 		EventHandlerList event_list;
-		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers = new List<UnmanagedPropertyChangeHandler> ();
+		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers;
 
 		internal EventHandlerList EventList {
 			get {
@@ -278,12 +278,18 @@ namespace System.Windows {
 		internal void AddPropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
 		{
 			// Store the delegate in managed land to prevent it being GC'ed early
+			if (propertyChangedHandlers == null)
+				propertyChangedHandlers = new List<UnmanagedPropertyChangeHandler> ();
+
 			propertyChangedHandlers.Add (handler);
 			NativeMethods.dependency_object_add_property_change_handler (native, property.Native, handler, IntPtr.Zero);
 		}
 
 		internal void RemovePropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
 		{
+			if (propertyChangedHandlers == null)
+				return;
+
 			// When removing a delegate from native, we have to ensure we pass the exact same object reference
 			// to native code, otherwise the native pointer will be different and we'll fail to remove it from
 			// the native list. To enforce this, use the delegate in the List when invoking the native code.
