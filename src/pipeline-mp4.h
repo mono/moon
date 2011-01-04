@@ -317,6 +317,7 @@ private:
 	guint64 buffer_position;
 	bool last_buffer;
 	bool ftyp_validated;
+	int8_t nal_size_length; // the length of the size field before each nal unit (in bytes)
 
 	MoovBox *moov;
 
@@ -325,7 +326,8 @@ private:
 	void ReadSampleDataAsync (MediaReadClosure *closure);
 	void ReadHeaderDataAsync (MediaReadClosure *closure);
 	void RequestMoreHeaderData (guint64 offset, guint32 size); /* size: the number of more bytes to request */
-
+	void ParseAVCExtraData (IMediaStream *stream, SampleEntry *entry);
+	bool ParseAVCFrame (MediaFrame *frame, MemoryBuffer *buffer, guint32 sample_size);
 
 	bool ReadBox (guint64 *size, guint32 *type);
 	bool ReadFullBox (FullBox *box);

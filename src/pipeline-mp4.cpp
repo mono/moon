@@ -576,6 +576,29 @@ AudioSampleEntry::AudioSampleEntry (guint32 type, guint64 size)
  * Mp4Demuxer
  */
 
+static inline
+guint8 *append_nal_start_code (guint8 *buf)
+{
+	buf [0] = 0;
+	buf [1] = 0;
+	buf [2] = 1;
+	return buf + 3;
+}
+
+static inline
+int32_t read_nalu_length (guint8 *ptr, uint32_t nal_size_length)
+{
+	switch (nal_size_length) {
+	case 1:
+		return ptr [0];
+	case 2:
+		return GINT16_FROM_BE (((guint16 *) ptr) [0]); // network byte order
+	case 4:
+		return GINT32_FROM_BE (((guint32 *) ptr) [0]); // network byte order
+	}
+	return 0; // This shouldn't happen
+}
+
 Mp4Demuxer::Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer)
 	: IMediaDemuxer (Type::MP4DEMUXER, media, source)
 {
@@ -586,6 +609,7 @@ Mp4Demuxer::Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initia
 	ftyp_validated = false;
 	moov = NULL;
 	buffer_position = 0;
+	nal_size_length = 0;
 }
 
 Mp4Demuxer::~Mp4Demuxer ()
@@ -939,14 +963,8 @@ Mp4Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	MediaFrame *frame = new MediaFrame (stream);
 	frame->pts = pts;
 	frame->SetDuration (duration);
-	if (!frame->AllocateBuffer (sample_size)) {
-		frame->unref ();
-		ReportErrorOccurred ("Mp4Demuxer: error while allocating frame buffer");
-		goto cleanup;
-	}
-	if (!buffer->Read (frame->GetBuffer (), sample_size)) {
-		frame->unref ();
-		ReportErrorOccurred ("Mp4Demuxer: error while reading frame data");
+	if (!ParseAVCFrame (frame, buffer, sample_size)) {
+		/* ParseAVCFrame has already reported the error */
 		goto cleanup;
 	}
 	frame->AddState (MediaFrameDemuxed);
@@ -988,6 +1006,99 @@ Mp4Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 cleanup:
 	if (frame)
 		frame->unref ();
+}
+
+bool
+Mp4Demuxer::ParseAVCFrame (MediaFrame *frame, MemoryBuffer *memory_buffer, guint32 sample_size)
+{
+	guint8 *buffer = (guint8 *) memory_buffer->GetCurrentPtr ();
+	int32_t buflen = sample_size;
+
+	/* AVC frames comes with an array of NALUs (network abstraction layer unit). Each NALU is prefixed
+	 * with the length of the NALU (the nal_size_length field specifies the number of bytes used for this length field).
+	 * However the decoder expects each NALU to be prefixed with a NALU start code (bytes: 00 00 01), and no length
+	 * field. So we need to rewrite the input data */
+
+	if (memory_buffer->GetRemainingSize () < sample_size) {
+		ReportErrorOccurred ("Mp4Demuxer: not enough data in buffer");
+		return false;
+	}
+
+	if (frame->GetStream ()->IsAudio ()) {
+		if (!frame->AllocateBuffer (sample_size)) {
+			ReportErrorOccurred ("Mp4Demuxer: could not allocate frame buffer");
+			return false;
+		}
+		if (!memory_buffer->Read (frame->GetBuffer (), sample_size)) {
+			ReportErrorOccurred ("Mp4Demuxer: could not read from memory buffer");
+			return false;
+		}
+		return true;
+	}
+
+
+	guint8 *out;
+	guint8 *in = buffer;
+	int32_t len_left = buflen;
+	int32_t nalu_size;
+	int32_t nalus = 0;
+
+	/* Count NALUs */
+	/* We need to count the number of NALUs when nal_size_length < 3, to calculate the size of the output buffer.
+	 * When nal_size_length >= 3, we can just use buflen, since buflen is at least as big as the size of the
+	 * data we'll write (since nal start code is 3 bytes)
+	 */
+
+	in = buffer;
+	len_left = buflen;
+	while (len_left >= nal_size_length) {
+		nalu_size = read_nalu_length (in, nal_size_length);
+		if (len_left >= nalu_size) {
+			nalus++;
+			len_left -= (nalu_size + nal_size_length);
+			in += (nalu_size + nal_size_length);
+		} else {
+			break;
+		}
+	}
+	LOG_MP4 ("Mp4Demuxer::ParseAVCFrame (): found %i nalus\n", nalus);
+
+	guint32 out_len = buflen + nalus * (3 - nal_size_length);
+
+	if (!frame->AllocateBuffer (out_len)) {
+		ReportErrorOccurred ("Mp4Demuxer: error while allocating frame buffer");
+		return false;
+	}
+
+	out = frame->GetBuffer ();
+	in = buffer;
+	len_left = buflen;
+	while (len_left >= nal_size_length) {
+		nalu_size = read_nalu_length (in, nal_size_length);
+
+		len_left -= nal_size_length;
+		in += nal_size_length;
+
+		if (nalu_size > len_left) {
+			LOG_MP4 ("Mp4Demuxer::ParseAVCFrame (): found nalu with size %i, but there is only %i bytes left in frame\n", nalu_size, len_left);
+			break;
+		}
+
+		LOG_MP4 ("Mp4Demuxer::ParseAVCFrame (): found nalu with size %i, %i bytes left\n", nalu_size, len_left);
+
+		out = append_nal_start_code (out);
+		memcpy (out, in, nalu_size);
+
+		len_left -= nalu_size;
+		in += nalu_size;
+		out += nalu_size;
+	}
+
+	LOG_MP4 ("Mp4Demuxer::ParseAVCFrame (): returning %i bytes of data with %i nalus from frame with pts %" G_GUINT64_FORMAT " ms!\n", out_len, nalus, MilliSeconds_FromPts (frame->GetPts ()));
+
+	memory_buffer->SeekOffset (buflen - len_left);
+
+	return true;
 }
 
 MediaResult
@@ -1275,10 +1386,7 @@ Mp4Demuxer::OpenMoov ()
 		streams [stream_count] = stream;
 		stream_count++;
 
-		if (entry->extradata_size != 0) {
-			stream->SetExtraDataSize (entry->extradata_size);
-			stream->SetExtraData (g_memdup (entry->extradata, entry->extradata_size));
-		}
+		ParseAVCExtraData (stream, entry);
 		stream->SetCodecId (GINT32_FROM_BE (entry->type));
 		/* MS seems to only have ms accuracy on duration - the remaining microseconds are stripped off (/10000*10000). #7000 */
 		stream->SetDuration ((ToPts (tkhd->duration, moov->mvhd->timescale) / 10000) * 10000);
@@ -1302,6 +1410,120 @@ cleanup:
 		media->unref ();
 
 	return result;
+}
+
+void
+Mp4Demuxer::ParseAVCExtraData (IMediaStream *stream, SampleEntry *entry)
+{
+	/* Parse extradata according to ISO/IEC 14496-15;2004 section 5.2.4.1.1 */
+	/* Possibly this is only required for avc1 streams */
+	guint8 *extradata = entry->extradata;
+	guint32 extradata_size = entry->extradata_size;
+
+	if (extradata_size == 0 || extradata == NULL) {
+		LOG_MP4 ("Mp4Demuxer::ParseAVCExtraData (): no decoder parameters found in extradata\n");
+		return;
+	}
+
+	if (stream->IsAudio ()) {
+		stream->SetExtraDataSize (extradata_size);
+		stream->SetExtraData (g_memdup (extradata, extradata_size));
+		return;
+	}
+
+	if (extradata_size < 7) {
+		char *msg = g_strdup_printf ("Mp4Demuxer::ParseAVCExtraData (): data corruption in extradata (size too small: %i, expected >= 7)", extradata_size);
+		ReportErrorOccurred (msg);
+		g_free (msg);
+		return;
+	}
+
+	guint8 *cur_ptr = extradata;
+
+	uint32_t nal_data_size = 0;
+	uint32_t computed_size;
+	uint8_t configuration_version = cur_ptr [0];
+	uint8_t avc_profile_indication = cur_ptr [1];
+	uint8_t profile_compatibility = cur_ptr [2];
+	uint8_t avc_level_indication = cur_ptr [3];
+	//uint8_t reserved_1 = cur_ptr [4] >> 3;
+	uint8_t length_size_minus_one = cur_ptr [4] & 0x3;
+	//uint8_t reserved_2 = cur_ptr [5] >> 3;
+	uint8_t num_sequence_parameter_sets = cur_ptr [5] & 0x1F;
+	
+	if (length_size_minus_one == 2) {
+		ReportErrorOccurred ("Mp4Demuxer::ParseAVCExtraData (): data corruption in extradata (invalid length_size_minus_one)");
+		return;
+	}
+	// 0 -> 1 byte, 1 -> 2 bytes, 2 -> invalid, 3 -> 4 bytes */
+	nal_size_length = length_size_minus_one + 1;
+
+	computed_size = 7 + (num_sequence_parameter_sets * 2);
+	if (computed_size > extradata_size) {
+		ReportErrorOccurred ("Mp4Demuxer::ParseAVCExtraData (): data corruption in extradata (too many sequence parameter sets)");
+		return;
+	}
+
+	/* First figure out the size of the output buffer (nal_data_size) */
+	cur_ptr += 6;
+	for (int i = 0; i < num_sequence_parameter_sets; i++) {
+		uint16_t sequence_parameter_set_length = GINT16_FROM_BE (((guint16 *) cur_ptr) [0]);
+		computed_size += sequence_parameter_set_length;
+		if (computed_size > extradata_size) {
+			ReportErrorOccurred (g_strdup_printf ("Mp4Demuxer::ParseAVCExtraData (): data corruption in extradata (sequence parameter set #%i is too long: %i)", i, sequence_parameter_set_length));
+			return;
+		}
+		cur_ptr += (2 + sequence_parameter_set_length);
+		nal_data_size += (3 /* nal start code */ + sequence_parameter_set_length);
+	}
+
+	uint8_t num_picture_parameter_sets = cur_ptr [0];
+	cur_ptr++;
+	computed_size += (num_picture_parameter_sets * 2);
+	if (computed_size > extradata_size) {
+		ReportErrorOccurred ("Mp4Demuxer::ParseAVCExtraData (): data corruption in extradata (too many picture parameter sets)");
+		return;
+	}
+	for (int i = 0; i < num_picture_parameter_sets; i++) {
+		uint16_t picture_parameter_set_length = GINT16_FROM_BE (((guint16 *) cur_ptr) [0]);
+		computed_size += picture_parameter_set_length;
+		if (computed_size > extradata_size) {
+			ReportErrorOccurred (g_strdup_printf ("Mp4Demuxer::ParseAVCExtraData (): data corruption in extradata (picture parameter set #%i is too long: %i)", i, picture_parameter_set_length));
+			return;
+		}
+		cur_ptr += (2 + picture_parameter_set_length);
+		nal_data_size += (3 /* nal start code */ + picture_parameter_set_length);
+	}
+
+	guint8 *avc_extradata = (guint8 *) g_malloc (nal_data_size);
+	stream->SetExtraDataSize (nal_data_size);
+	stream->SetExtraData (avc_extradata);
+
+	/* Now copy data to the output buffer */
+
+	guint8 *out_ptr = (guint8 *) avc_extradata;
+	cur_ptr = extradata + 6; /* start of sequence parameter sets */
+	for (int i = 0; i < num_sequence_parameter_sets; i++) {
+		uint16_t sequence_parameter_set_length = GINT16_FROM_BE (((guint16 *) cur_ptr) [0]);
+		cur_ptr += 2;
+		out_ptr = append_nal_start_code (out_ptr);
+		memcpy (out_ptr, cur_ptr, sequence_parameter_set_length);
+		out_ptr += sequence_parameter_set_length;
+		cur_ptr += sequence_parameter_set_length;
+	}
+	cur_ptr++; /* start of picture parameter sets */
+	for (int i = 0; i < num_picture_parameter_sets; i++) {
+		uint16_t picture_parameter_set_length = GINT16_FROM_BE (((guint16 *) cur_ptr) [0]);
+		cur_ptr += 2;
+		out_ptr = append_nal_start_code (out_ptr);
+		memcpy (out_ptr, cur_ptr, picture_parameter_set_length);
+		out_ptr += picture_parameter_set_length;
+		cur_ptr += picture_parameter_set_length;
+	}
+
+	LOG_MP4 ("Mp4Demuxer::ParseAVCExtraData () extradata_size: %i configuration_version: %i avc_profile_indication: %i profile_compatibility: %i avc_level_indication: %i"
+		" length_size_minus_one: %i num_sequence_parameter_sets: %i num_picture_parameter_sets: %i\n",
+		extradata_size, configuration_version, avc_profile_indication, profile_compatibility, avc_level_indication, length_size_minus_one, num_sequence_parameter_sets, num_picture_parameter_sets);
 }
 
 void
