@@ -148,10 +148,6 @@ namespace System.Windows {
 		
 		public static void SetCurrentApplication (Application application)
 		{
-			if ((application == null && Application.IsCurrentSet) ||
-				(application != null && Application.IsCurrentSet && Application.Current != application))
-				Application.Current.Free ();
-
 			NativeMethods.deployment_set_current_application (Current.native, application == null ? IntPtr.Zero : application.NativeHandle);
 		}
 

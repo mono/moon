@@ -90,6 +90,7 @@ public:
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
+	/* @GenerateManagedEvent=false */
 	const static int ChangedEvent;
 
 protected:

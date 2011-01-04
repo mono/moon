@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 634 methods
+# 632 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -384,7 +384,6 @@
 +SSC-M: System.Void System.Windows.Media.Effects.ShaderEffect::UpdateShaderSampler(System.IntPtr,System.Int32,System.Int32,System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.Application::Mono.INativeEventObjectWrapper.GetKind()
-+SSC-M: System.Void System.Windows.Application::Free()
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
 +SSC-M: System.Windows.InstallState System.Windows.Application::get_InstallState()
 +SSC-M: System.Boolean System.Windows.Application::Install()
@@ -481,7 +480,6 @@
 +SSC-M: System.Void System.Windows.ResourceDictionary::Clear()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
-+SSC-M: System.Void System.Windows.RoutedEventArgs::Free()
 +SSC-M: System.Object System.Windows.RoutedEventArgs::get_OriginalSource()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::set_OriginalSource(System.Object)
 +SSC-M: System.Boolean System.Windows.RoutedEventArgs::get_EventHandled()

@@ -62,8 +62,7 @@ namespace System.Windows {
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 		ApplicationLifetimeObjectsCollection lifetime_objects;
-
-		bool free_mapping;
+		DependencyObjectHandle handle;
 
 		static Application ()
 		{
@@ -158,19 +157,6 @@ namespace System.Windows {
 			ReinitializeStaticData ();
 		}
 
-		~Application ()
-		{
-			Free ();
-		}
-
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-		
 		internal Mono.EventHandlerList EventList {
 			get {
 				if (event_list == null)
@@ -929,18 +915,15 @@ namespace System.Windows {
 		private static readonly DependencyProperty ResourcesProperty =
 			DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
 
-		IntPtr _native;
-
 		internal IntPtr NativeHandle {
-			get { return _native; }
+			get { return handle.Handle; }
 			set {
-				if (_native != IntPtr.Zero) {
+				if (handle != null) {
 					throw new InvalidOperationException ("Application.native is already set");
 				}
 
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				handle = new DependencyObjectHandle (value, this);
 			}
 		}
 

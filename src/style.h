@@ -63,9 +63,7 @@ public:
 	void SetTargetType (ManagedTypeInfo *type_info);
 	ManagedTypeInfo *GetTargetType ();
 
-	/* GenerateManagedEvent=false */
-	const static int SettersChangedEvent;
-	/* GenerateManagedEvent=false */
+	/* @GenerateManagedEvent=false */
 	const static int DetachedEvent;
 
 protected:
