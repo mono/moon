@@ -1535,16 +1535,16 @@ MediaElement::Stop ()
 void
 MediaElement::Seek (TimeSpan to, bool force)
 {
-	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_MEDIAELEMENT, "MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
 	VERIFY_MAIN_THREAD;
 
 	if (!force && !IsAttached ()) {
-		LOG_MEDIAELEMENT ("MediaElement::Seek (): not attached.\n");
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_MEDIAELEMENT, "MediaElement::Seek (): not attached.\n");
 		return;
 	}
 		
 	if (!force && !GetCanSeek ()) {
-		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_MEDIAELEMENT, "MediaElement::Seek (): CanSeek is false, not seeking\n");
 		return;
 	}
 	
@@ -1598,7 +1598,7 @@ MediaElement::Seek (TimeSpan to, bool force)
 		Emit (MediaInvalidatedEvent);
 		Invalidate ();
 		
-		LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_MEDIAELEMENT, "MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT " really_to: %" G_GUINT64_FORMAT " ms\n", to, MilliSeconds_FromPts (to), previous_position, MilliSeconds_FromPts (really_to));
 		
 		break;
 	}

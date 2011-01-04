@@ -220,7 +220,7 @@ static struct MoonlightDebugOption debugs[] = {
 	{ "playlist",          RUNTIME_DEBUG_PLAYLIST },
 	{ "pulse",             RUNTIME_DEBUG_PULSE },
 	{ "text",              RUNTIME_DEBUG_TEXT },
-	{ "ui",                RUNTIME_DEBUG_UI },
+	{ "seek",              RUNTIME_DEBUG_SEEK },
 	{ "value",             RUNTIME_DEBUG_VALUE },
 	{ "xaml",              RUNTIME_DEBUG_XAML },
 	{ NULL }

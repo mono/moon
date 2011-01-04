@@ -77,7 +77,6 @@ G_END_DECLS
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (G_UNLIKELY (x && debug_flags & PIPELINE_ERROR)) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FRAMEREADERLOOP)) printf (__VA_ARGS__);
 #define LOG_FFMPEG(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FFMPEG)) printf(__VA_ARGS__);
-#define LOG_UI(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_UI)) printf (__VA_ARGS__);
 #define LOG_CODECS(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_CODECS)) printf (__VA_ARGS__);
 #define LOG_DP(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DP)) printf (__VA_ARGS__);
 #define LOG_DOWNLOADER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DOWNLOADER)) printf (__VA_ARGS__);
@@ -99,6 +98,7 @@ G_END_DECLS
 #define LOG_MP4(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MP4)) printf (__VA_ARGS__);
 #define LOG_EFFECT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) printf (__VA_ARGS__);
 #define LOG_OOB(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_OOB)) printf (__VA_ARGS__);
+#define LOG_CUSTOM(x,...)		if (G_UNLIKELY (debug_flags & (x))) printf (__VA_ARGS__);
 
 #else
 
@@ -121,7 +121,6 @@ G_END_DECLS
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...)
 #define LOG_FRAMEREADERLOOP(...)
 #define LOG_FFMPEG(...)
-#define LOG_UI(...)
 #define LOG_CODECS(...)
 #define LOG_DP(...)
 #define LOG_DOWNLOADER(...)
@@ -143,6 +142,7 @@ G_END_DECLS
 #define LOG_MP4(...)
 #define LOG_EFFECT(...)
 #define LOG_OOB(...)
+#define LOG_CUSTOM(...)
 
 #endif /* LOGGING */
 

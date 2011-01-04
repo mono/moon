@@ -457,7 +457,7 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 void
 PlaylistEntry::Seek (guint64 pts)
 {	
-	LOG_PLAYLIST ("PlaylistEntry::Seek (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "PlaylistEntry::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (media != NULL);
 	
@@ -1130,7 +1130,7 @@ Playlist::Seek (guint64 pts)
 {
 	PlaylistEntry *current_entry;
 	
-	LOG_PLAYLIST ("Playlist::Seek (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "Playlist::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	current_entry = GetCurrentEntry ();
 	
@@ -1423,7 +1423,7 @@ PlaylistRoot::SeekCallback (EventObject *obj)
 	PlaylistRoot *playlist = (PlaylistRoot *) obj;
 	PtsNode *pts_node;
 	
-	LOG_PLAYLIST ("PlaylistRoot::SeekCallback ()\n");
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "PlaylistRoot::SeekCallback ()\n");
 
 	if (playlist->IsDisposed ())
 		return;
@@ -1439,7 +1439,7 @@ PlaylistRoot::SeekCallback (EventObject *obj)
 void
 PlaylistRoot::SeekAsync (guint64 pts)
 {
-	LOG_PLAYLIST ("PlaylistRoot::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "PlaylistRoot::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
 	seeks.Append (new PtsNode (pts));
 	AddTickCall (SeekCallback);
 }

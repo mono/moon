@@ -74,7 +74,6 @@ GtkNoCodecsUI::ResponseEventHandler (GtkDialog *dialog, gint response, gpointer 
 void
 GtkNoCodecsUI::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 {
-	LOG_UI ("GtkNoCodecsUI::ResponseEvent (%d)\n", response);
 	SetCurrentDeployment ();
 
 	switch (response) {
@@ -83,7 +82,6 @@ GtkNoCodecsUI::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 		return;
 	case GTK_RESPONSE_OK:
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dont_ask))) {
-			LOG_UI ("Setting DontWarnUnsupportedCodecs\n");
 			configuration.SetBooleanValue ("Codecs", "DontWarnUnsupportedCodecs", true);
 			configuration.Save ();
 		}
@@ -223,8 +221,6 @@ GtkNoCodecsUI::Show ()
 void
 GtkNoCodecsUI::Close ()
 {
-	LOG_UI ("GtkNoCodecsUI::Close ()\n");
-
 	gtk_widget_destroy (dialog);
 	unref ();
 	running = false;

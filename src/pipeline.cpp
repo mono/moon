@@ -463,7 +463,7 @@ Media::ReportDownloadProgress (double progress, double offset, bool force)
 void
 Media::SeekAsync (guint64 pts)
 {
-	LOG_PIPELINE ("Media::SeekAsync (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "Media::SeekAsync (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
 
 	if (demuxer == NULL) {
 		ReportErrorOccurred ("Media::SeekAsync was called, but there is no demuxer to seek on.\n");
@@ -476,7 +476,7 @@ Media::SeekAsync (guint64 pts)
 void
 Media::ReportSeekCompleted (guint64 pts)
 {
-	LOG_PIPELINE ("Media::ReportSeekCompleted (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "Media::ReportSeekCompleted (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
 	
 	buffering_progress = 0;
 	ClearQueue ();
@@ -3107,7 +3107,7 @@ IMediaStream::IsDecodedQueueEmpty ()
 void
 IMediaStream::ReportSeekCompleted ()
 {
-	LOG_PIPELINE ("IMediaStream::ReportSeekCompleted ()\n");
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaStream::ReportSeekCompleted ()\n");
 	input_ended = false;
 	output_ended = false;
 	ClearQueue ();
@@ -3725,7 +3725,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 {
 	Media *media;
 
-	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (seeking);
 	g_return_if_fail (seek_pending);
@@ -3769,11 +3769,11 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 		pending_fill_buffers = false;
 		FillBuffers ();
 	} else {
-		LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT "): still pending seeks, enqueuing another seek.\n", pts);
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT "): still pending seeks, enqueuing another seek.\n", pts);
 		EnqueueSeek ();
 	}
 	
-	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ") [Done]\n", pts);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ") [Done]\n", pts);
 }
 
 void
@@ -3882,6 +3882,7 @@ IMediaDemuxer::SeekCallback (MediaClosure *closure)
 void
 IMediaDemuxer::EnqueueSeek ()
 {
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::EnqueueSeek ()\n");
 	Media *media = GetMediaReffed ();
 	MediaSeekClosure *closure;
 	
@@ -3898,14 +3899,14 @@ IMediaDemuxer::SeekAsync ()
 {
 	guint64 pts = G_MAXUINT64;
 	
-	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (), seeking: %i\n", seeking);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::SeekAsync (), seeking: %i\n", seeking);
 	
 	g_return_if_fail (Media::InMediaThread ());
 	
 	if (seek_pending) {
 		/* We're already seeking, wait until that seek has finished */
 		/* ReportSeekCompleted will call EnqueueSeek if we still need to seek when the current seek has finished */
-		LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): already seeking, wait until the current seek has finished.\n");
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::SeekAsync (): already seeking, wait until the current seek has finished.\n");
 		return;
 	}
 	
@@ -3913,7 +3914,7 @@ IMediaDemuxer::SeekAsync ()
 	
 	if (pending_stream != NULL) {
 		/* we're waiting for the demuxer to demux a frame, wait a bit with the seek */
-		LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): %i waiting for a frame, postponing seek until that frame arrives\n", GET_OBJ_ID (this));
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::SeekAsync (): %i waiting for a frame, postponing seek until that frame arrives\n", GET_OBJ_ID (this));
 		return;
 	}
 	
@@ -3923,7 +3924,7 @@ IMediaDemuxer::SeekAsync ()
 	mutex.Unlock ();
 	
 	if (pts == G_MAXUINT64) {
-		LOG_PIPELINE ("IMediaDemuxer.:SeekAsync (): %i no pending seek?\n", GET_OBJ_ID (this));
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer.:SeekAsync (): %i no pending seek?\n", GET_OBJ_ID (this));
 		seeking = false;
 		return;
 	}
@@ -3932,7 +3933,7 @@ IMediaDemuxer::SeekAsync ()
 
 	/* Ask the demuxer to seek */
 	/* at this point the pipeline shouldn't be doing anything else (for this media) */
-	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): %i seeking to %" G_GUINT64_FORMAT " new generation: %i\n", GET_OBJ_ID (this), pts, generation);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::SeekAsync (): %i seeking to %" G_GUINT64_FORMAT " new generation: %i\n", GET_OBJ_ID (this), pts, generation);
 	Media *media = GetMediaReffed ();
 	if (media) {
 		media->EmitSafe (Media::SeekingEvent);
@@ -3945,7 +3946,7 @@ IMediaDemuxer::SeekAsync ()
 void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
-	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "IMediaDemuxer::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
 	// Can be called both on main and media thread
 
 	if (IsDisposed ())

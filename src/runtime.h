@@ -116,7 +116,7 @@ enum RuntimeDebugFlag {
 	RUNTIME_DEBUG_PIPELINE_ERROR    = 1 << 8,
 	RUNTIME_DEBUG_FRAMEREADERLOOP   = 1 << 9,
 	RUNTIME_DEBUG_FFMPEG            = 1 << 10,
-	RUNTIME_DEBUG_UI                = 1 << 11,
+	RUNTIME_DEBUG_SEEK              = 1 << 11,
 	RUNTIME_DEBUG_CODECS            = 1 << 12,
 	RUNTIME_DEBUG_DP                = 1 << 13,
 	RUNTIME_DEBUG_DOWNLOADER        = 1 << 14,
