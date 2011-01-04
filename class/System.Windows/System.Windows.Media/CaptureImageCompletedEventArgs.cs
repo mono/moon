@@ -36,6 +36,8 @@ namespace System.Windows.Media {
 
 	public class CaptureImageCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper {
 
+		DependencyObjectHandle handle;
+
 		internal CaptureImageCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
 			: base (exc, false, null)
 		{
@@ -51,19 +53,6 @@ namespace System.Windows.Media {
 			throw new NotImplementedException ();
 		}
 
-		~CaptureImageCompletedEventArgs ()
-		{
-			Free ();
-		}
-
-		void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-
 		WriteableBitmap result;
 		public WriteableBitmap Result {
 			get {
@@ -75,21 +64,17 @@ namespace System.Windows.Media {
 			}
 		}
 
-		bool free_mapping;
-
 #region "INativeEventObjectWrapper interface"
-		IntPtr _native;
 
 		internal IntPtr NativeHandle {
-			get { return _native; }
+			get { return handle.Handle; }
 			set {
-				if (_native != IntPtr.Zero) {
+				if (handle != null) {
 					throw new InvalidOperationException ("native handle is already set");
 				}
 
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				handle = new DependencyObjectHandle (value, this);
 			}
 		}
 

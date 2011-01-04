@@ -51,6 +51,11 @@ namespace System.Windows.Media {
 				throw new NotImplementedException ();
 			}
 		}
+
+		~AudioSink ()
+		{
+			// Needed for API/ABI compatibility
+		}
 	}
 }
 

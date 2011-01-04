@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 634 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -547,7 +547,6 @@
 +SSC-M: System.Boolean System.Windows.Media.CaptureDeviceConfiguration::RequestDeviceAccess()
 +SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::.ctor(System.IntPtr,System.Exception,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
-+SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::Free()
 +SSC-M: System.Windows.Media.Imaging.WriteableBitmap System.Windows.Media.CaptureImageCompletedEventArgs::get_Result()
 +SSC-M: System.Exception System.Windows.Media.CaptureImageCompletedEventArgs::GetExceptionFromUnmanaged(System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.CaptureSource::CaptureImageAsync()
