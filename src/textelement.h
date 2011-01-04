@@ -87,7 +87,7 @@ public:
 	const static int ForegroundProperty;
 	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=LanguageValidator,GenerateAccessors */
 	const static int LanguageProperty;
-	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,HiddenDefaultValue,ManagedPropertyType=TextDecorationCollection,GenerateAccessors,Coercer=TextElement::CoerceTextDecorations */
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,HiddenDefaultValue,ManagedFieldAccess=Internal,GenerateManagedAccessors=false,ManagedPropertyType=TextDecorationCollection,GenerateAccessors,Coercer=TextElement::CoerceTextDecorations */
 	const static int TextDecorationsProperty;
 	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateAccessors */
 	const static int FontResourceProperty;

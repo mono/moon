@@ -41,7 +41,12 @@ namespace System.Windows.Documents {
 		public static readonly new DependencyProperty FontWeightProperty = TextElement.FontWeightProperty;
 		public static readonly new DependencyProperty ForegroundProperty = TextElement.ForegroundProperty;
 		public static readonly new DependencyProperty LanguageProperty = TextElement.LanguageProperty;
+		// FIXME: Maybe this should not be declared on TextElement. Is it valid to set this DP on a pure TextElement?
 		public static readonly new DependencyProperty TextDecorationsProperty = TextElement.TextDecorationsProperty;
 
+		public TextDecorationCollection TextDecorations {
+			get { return (TextDecorationCollection) GetValue (TextDecorationsProperty); }
+			set { SetValue (TextDecorationsProperty, value); }
+		}
 	}
 }
