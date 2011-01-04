@@ -26,7 +26,7 @@ public:
 	/* @GeneratePInvoke */
 	WebBrowser ();
 
-	/* @PropertyType=Uri */
+	/* @PropertyType=Uri,ManagedFieldAccess=Internal */
 	const static int SourceProperty;
 
 	/* @DelegateType=LoadCompletedEventHandler */

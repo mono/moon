@@ -85,7 +85,7 @@ namespace System.Windows.Controls {
 			get; set;
 		}
 
-		public UIElement DefaultTemplate {
+		internal UIElement DefaultTemplate {
 			get {
 				if (defaultTemplate == null) {
 					var x = (ControlTemplate) XamlReader.Load (@"

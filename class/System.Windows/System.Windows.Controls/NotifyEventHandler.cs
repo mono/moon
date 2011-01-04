@@ -28,6 +28,6 @@
 using System;
 
 namespace System.Windows.Controls {
-	public delegate void NotifyEventHandler (object sender, NotifyEventArgs e);
+	delegate void NotifyEventHandler (object sender, NotifyEventArgs e);
 }
 

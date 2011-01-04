@@ -156,6 +156,7 @@ protected:
 	//
 	// Protected Events
 	//
+	/* GenerateManagedEvent=false */
 	const static int ModelChangedEvent;
 	
 	virtual ~RichTextBox ();
@@ -185,7 +186,7 @@ protected:
 	const static int HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityAuto,GenerateAccessors,ManagedFieldAccess=Private */
 	const static int VerticalScrollBarVisibilityProperty;
-	/* @PropertyType=string,GenerateAccessors */
+	/* @PropertyType=string,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int XamlProperty;
 	
 	//
@@ -308,6 +309,7 @@ protected:
 	const static int ContentChangedEvent;
 	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
+	/* GenerateManagedEvent=false */
 	const static int CursorPositionChangedEvent;
 };
 

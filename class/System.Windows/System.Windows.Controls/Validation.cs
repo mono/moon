@@ -34,7 +34,7 @@ namespace System.Windows.Controls {
 	public static class Validation {
 		public static readonly DependencyProperty ErrorsProperty =
 			DependencyProperty.RegisterAttachedCore ("Errors", typeof (ReadOnlyObservableCollection<ValidationError>), typeof (Validation), null);
-		public static readonly DependencyProperty ErrorsCoreProperty =
+		static readonly DependencyProperty ErrorsCoreProperty =
 			DependencyProperty.RegisterAttachedCore ("ErrorsCore", typeof (ObservableCollection<ValidationError>), typeof (Validation), null);
 		public static readonly DependencyProperty HasErrorProperty =
 			DependencyProperty.RegisterAttachedCore ("HasError", typeof (bool), typeof (Validation), null);
