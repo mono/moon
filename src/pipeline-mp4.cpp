@@ -371,6 +371,7 @@ SttsBox::SttsBox (guint32 type, guint64 size)
 	entry_count = 0;
 	sample_count = NULL;
 	sample_delta = NULL;
+	total_sample_count = 0;
 }
 
 SttsBox::~SttsBox ()
@@ -582,7 +583,9 @@ Mp4Demuxer::Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initia
 	buffer->ref ();
 	get_frame_stream = NULL;
 	last_buffer = false;
+	ftyp_validated = false;
 	moov = NULL;
+	buffer_position = 0;
 }
 
 Mp4Demuxer::~Mp4Demuxer ()
@@ -693,14 +696,14 @@ Mp4Demuxer::SeekAsyncInternal (guint64 pts)
 
 		/* Find the first key frame before the exact sample */
 		if (stss != NULL) {
-			if (sample >= stss->sample_number [stts->entry_count - 1]) {
+			if (sample >= stss->sample_number [stss->entry_count - 1]) {
 				/* After the last key frame, seek to the last key frame */
-				trak->current_sample = stss->sample_number [stts->entry_count - 1];
+				trak->current_sample = stss->sample_number [stss->entry_count - 1] - 1;
 			} else {
 				trak->current_sample = sample;
 				for (guint32 i = 0; i < stss->entry_count; i++) {
 					if (sample >= stss->sample_number [i] && sample < stss->sample_number [i + 1]) {
-						trak->current_sample = stss->sample_number [i];
+						trak->current_sample = stss->sample_number [i] - 1;
 						break;
 					}
 				}
@@ -725,7 +728,7 @@ Mp4Demuxer::SeekAsyncInternal (guint64 pts)
 					return;
 				}
 				trak->stsc_index = i;
-				trak->stsc_sample_count = (chunk_count - stsc->first_chunk [i]) * stsc->samples_per_chunk [i];
+				trak->stsc_sample_count = (chunk_count - stsc->first_chunk [i] + 1) * stsc->samples_per_chunk [i];
 				if (samples_left >= trak->stsc_sample_count) {
 					trak->stsc_sample_index = trak->stsc_sample_count - 1;
 				} else {
@@ -778,6 +781,7 @@ Mp4Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	Co64Box *co64;
 	SttsBox *stts;
 	StblBox *stbl;
+	CttsBox *ctts;
 
 	LOG_MP4 ("Mp4Demuxer::GetFrameAsyncInternal (%s)\n", stream->GetTypeName ());
 
@@ -797,6 +801,7 @@ Mp4Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	stco = trak->mdia->minf->stbl->stco;
 	co64 = trak->mdia->minf->stbl->co64;
 	stts = trak->mdia->minf->stbl->stts;
+	ctts = trak->mdia->minf->stbl->ctts;
 
 	if (!GetSampleCount (stbl, &sample_count))
 		return;
@@ -855,26 +860,85 @@ Mp4Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	guint64 pts = 0;
 	guint64 time = 0;
 	guint32 samples_left = trak->current_sample;
+	guint32 sample_delta = 0;
+	guint64 duration; /* sample_delta in pts */
+
+	if (trak->current_sample == 0 && stts->entry_count > 0) {
+		sample_delta = stts->sample_delta [0];
+	}
+
 	/* Note that in most cases the stts table is composed of a single entry for all samples, so caching values would likely not be faster */
 	for (guint32 i = 0; i < stts->entry_count && samples_left > 0; i++) {
 		if (stts->sample_count [i] >= samples_left) {
-			time += stts->sample_delta [i] * samples_left;
+			sample_delta = stts->sample_delta [i];
+			time += sample_delta * samples_left;
 			break;
 		} else {
-			time += stts->sample_delta [i] * stts->sample_count [i];
+			sample_delta = stts->sample_delta [i];
+			time += sample_delta * stts->sample_count [i];
 			samples_left -= stts->sample_count [i];
 		}
 	}
+
+	/* Add composition time delta from ctts if applicable */
+	if (ctts != NULL) {
+		gint32 ctts_value = 0;
+		if (ctts->entry_count == sample_count) {
+			/* We can enter the array by sample index */
+			ctts_value = ctts->sample_offset [trak->current_sample];
+		} else {
+			samples_left = trak->current_sample;
+			for (guint32 i = 0; i < ctts->entry_count && samples_left > 0; i++) {
+				if (ctts->sample_count [i] >= samples_left) {
+					ctts_value = ctts->sample_offset [i];
+					break;
+				} else {
+					samples_left -= ctts->sample_count [i];
+				}
+			}
+		}
+		LOG_MP4 ("Mp4Demuxer::GetFrameAsyncInternal (%s): sample %u has decoding time %" G_GUINT64_FORMAT " and composition time %i and min_offset %i => time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
+			stream->GetTypeName (), trak->current_sample, time, ctts_value, ctts->min_offset, time + ctts_value - ctts->min_offset, ToPts (time + ctts_value - ctts->min_offset, trak) / 10000);
+
+		time += ctts_value;
+
+		if (ctts->min_offset < 0) {
+			/* ctts is non-standard with negative values. Shift the entire timeline earlier by the min_offset */
+			/* Since this gives negative pts, which we can't have, we need to stuff several frames in the first frame duration */
+			/* Calculate number of frames we need to stuff into the first frame duration */
+			guint32 number = (gint32) ceil ((double) (-ctts->min_offset) / (double) sample_delta);
+			/*
+			 *   sample#  time          ctts_value   min_offset       final time   sample#    shifted
+			 *      0       0            0             -1000              0           0          0
+			 *      1      1000         2000           -1000            2000          3        -1000
+			 *      2      2000        -1000           -1000             500          1         -500
+			 *      3      3000        -1000           -1000            1000          2        -1000
+			 */
+			LOG_MP4 ("Mp4Demuxer::GetFrameAsyncInternal (%s): negative ctts, min offset: %i current sample: %u number: %u\n", stream->GetTypeName (), ctts->min_offset, trak->current_sample, number);
+			if (trak->current_sample == 0) {
+				/* Don't shift the first frame */
+			} else if (number >= trak->current_sample) {
+				time -= (sample_delta / (number + 1)) * (trak->current_sample);
+				LOG_MP4 ("Mp4Demuxer::GetFrameAsyncInternal (%s): => shifted %i time units\n", stream->GetTypeName (), (sample_delta / (number + 1)) * (trak->current_sample));
+			} else {
+				/* No stuffing necessary */
+				time += ctts->min_offset;
+			}
+		}
+	}
 	pts = ToPts (time, trak);
+	duration = ToPts (sample_delta, trak);
+	duration += 10000; /* add 1 ms */
 	
 	/* We now have what we need (pts, sample offset and sample size), create the frame */
 	buffer->SeekSet (sample_offset - buffer_position);
 
-	LOG_MP4 ("Mp4Demuxer::GetFrameAsyncInternal (%s): sample %u at offset %" G_GUINT64_FORMAT " and size %u (chunk index: %u, stsc index: %u) pts: %" G_GUINT64_FORMAT " ms\n",
-		stream->GetTypeName (), trak->current_sample, sample_offset, sample_size, trak->current_sample, trak->stsc_index, MilliSeconds_FromPts (pts));
+	LOG_MP4 ("Mp4Demuxer::GetFrameAsyncInternal (%s): sample %u at offset %" G_GUINT64_FORMAT " and size %u (chunk index: %u, stsc index: %u) pts: %" G_GUINT64_FORMAT " duration: %" G_GUINT64_FORMAT "\n",
+		stream->GetTypeName (), trak->current_sample, sample_offset, sample_size, trak->current_sample, trak->stsc_index, pts, duration);
 
 	MediaFrame *frame = new MediaFrame (stream);
 	frame->pts = pts;
+	frame->SetDuration (duration);
 	if (!frame->AllocateBuffer (sample_size)) {
 		frame->unref ();
 		ReportErrorOccurred ("Mp4Demuxer: error while allocating frame buffer");
@@ -909,7 +973,7 @@ Mp4Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 					stsc->first_chunk [trak->stsc_index], chunk_count);
 				trak->current_sample = G_MAXUINT32;
 			} else {
-				trak->stsc_sample_count = (chunk_count - stsc->first_chunk [trak->stsc_index]) * stsc->samples_per_chunk [trak->stsc_index];
+				trak->stsc_sample_count = (chunk_count - stsc->first_chunk [trak->stsc_index] + 1) * stsc->samples_per_chunk [trak->stsc_index];
 			}
 		} else {
 			/* We check that first_chunk are sequential when parsing, so the subtraction can't end up with a negative answer here */
@@ -941,7 +1005,7 @@ Mp4Demuxer::ReadHeaderDataAsyncCallback (MediaClosure *closure)
 }
 
 void
-Mp4Demuxer::RequestMoreHeaderData (guint32 size)
+Mp4Demuxer::RequestMoreHeaderData (guint64 offset, guint32 size)
 {
 	Media *media;
 	guint32 count = size;
@@ -958,8 +1022,8 @@ Mp4Demuxer::RequestMoreHeaderData (guint32 size)
 		return;
 	}
 	
-	LOG_MP4 ("MpDemuxer::RequestMoreHeaderData (%u): requesting %u bytes.\n", size, count);
-	MediaReadClosure *closure = new MediaReadClosure (media, ReadHeaderDataAsyncCallback, this, 0, count);
+	LOG_MP4 ("Mp4Demuxer::RequestMoreHeaderData (%u): requesting %u bytes at offset %" G_GUINT64_FORMAT ".\n", size, count, offset);
+	MediaReadClosure *closure = new MediaReadClosure (media, ReadHeaderDataAsyncCallback, this, offset, count);
 	source->ReadAsync (closure);
 	media->unref ();
 	closure->unref ();
@@ -1002,11 +1066,17 @@ Mp4Demuxer::ReadHeaderDataAsync (MediaReadClosure *closure)
 }
 
 guint64
-Mp4Demuxer::ToPts (guint64 time, TrakBox *trak)
+Mp4Demuxer::ToPts (guint64 time, guint64 timescale)
 {
 	/* input:  'timescale' units per second */
 	/* result: 10.000.000 units per second = 100-nano second units */
-	return (guint64) ((double) time * (double) 10000000 / (double) trak->mdia->mdhd->timescale);
+	return (guint64) ((double) time * (double) 10000000 / (double) timescale);
+}
+
+guint64
+Mp4Demuxer::ToPts (guint64 time, TrakBox *trak)
+{
+	return ToPts (time, trak->mdia->mdhd->timescale);
 }
 
 guint64
@@ -1144,16 +1214,19 @@ Mp4Demuxer::OpenMoov ()
 	streams = (IMediaStream **) g_malloc0 (sizeof (IMediaStream *) * moov->trak_count);
 	for (guint32 i = 0; i < moov->trak_count; i++) {
 		TrakBox *trak = moov->trak [i];
+		TkhdBox *tkhd = trak->tkhd;
 		HdlrBox *hdlr = trak->mdia->hdlr;
 		MdhdBox *mdhd = trak->mdia->mdhd;
 		StblBox *stbl = trak->mdia->minf->stbl;
 		StsdBox *stsd = stbl->stsd;
+		SttsBox *stts = stbl->stts;
 		SampleEntry *entry;
 		AudioSampleEntry *audio_entry;
 		VisualSampleEntry *visual_entry;
 		IMediaStream *stream;
 		AudioStream *audio;
 		VideoStream *video;
+		guint64 pts_per_frame = 0;
 
 		LOG_MP4 ("Mp4Demuxer::OpenMoov () trak #%i has %i sample entries.\n", i, stsd->entry_count);
 		if (stsd->entry_count == 0) {
@@ -1178,6 +1251,7 @@ Mp4Demuxer::OpenMoov ()
 			audio->SetBitsPerSample (audio_entry->samplesize);
 			audio->SetBitRate (0);
 			audio->SetBlockAlign (0);
+			LOG_MP4 ("Mp4Demuxer::OpenMoov (): added audio track with channels: %i sample rate: %ihz bits per sample: %i\n", audio->GetChannels (), audio->GetSampleRate (), audio->GetBitsPerSample ());
 			break;
 		case VIDE_4CC:
 			video = new VideoStream (media);
@@ -1185,12 +1259,17 @@ Mp4Demuxer::OpenMoov ()
 			visual_entry = (VisualSampleEntry *) entry;
 			video->SetWidth (visual_entry->width);
 			video->SetHeight (visual_entry->height);
+			LOG_MP4 ("Mp4Demuxer::OpenMoov (): added video track with width: %i height: %i\n", video->GetWidth (), video->GetHeight ());
 			break;
 		default:
 			LOG_MP4 ("Mp4Demuxer::OpenMoov (): unsupported track type: " FORMAT_4CC "' (%u) %s\n", VALUES_4CC(hdlr->handler_type), hdlr->handler_type, hdlr->name);
 			continue;
 		}
 		
+		if (stts != NULL && mdhd != NULL && stts->entry_count == 1) {
+			pts_per_frame = (guint64) stts->sample_delta [0] * 10000000ULL / (guint64) mdhd->timescale;
+		}
+
 		trak->stream = stream;
 		trak->stream->ref ();
 		streams [stream_count] = stream;
@@ -1201,7 +1280,10 @@ Mp4Demuxer::OpenMoov ()
 			stream->SetExtraData (g_memdup (entry->extradata, entry->extradata_size));
 		}
 		stream->SetCodecId (GINT32_FROM_BE (entry->type));
-		stream->SetDuration (ToPts (mdhd->duration, trak));
+		stream->SetDuration (ToPts (tkhd->duration, moov->mvhd->timescale));
+		stream->SetPtsPerFrame (pts_per_frame);
+		LOG_MP4 ("Mp4Demuxer::OpenMoov (): codec_id: %i = %s, duration: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " pts = %" G_GUINT64_FORMAT "ms pts_per_frame = %" G_GUINT64_FORMAT " ms\n",
+			stream->GetCodecId (), stream->GetCodec (), tkhd->duration, stream->GetDuration (), MilliSeconds_FromPts (stream->GetDuration ()), MilliSeconds_FromPts (pts_per_frame));
 	}
 
 	result = true;
@@ -1226,74 +1308,36 @@ Mp4Demuxer::OpenDemuxerAsyncInternal ()
 {
 	MemoryBuffer *source = buffer;
 	guint64 size;
+	guint64 start;
 	guint32 type;
-	guint32 major_brand;
-	guint32 minor_brand;
-	guint32 compatible_brand;
 	bool result;
-	
+	guint64 parsed_boxes_size = 0;
+
 	LOG_MP4 ("Mp4Demuxer::OpenDemuxerAsyncInternal () %" G_GINT64_FORMAT " bytes available.\n", source->GetSize ());
-	
-	if (!ReadBox (&size, &type))
-		return;
-
-	/* Check for "ISO base media file format" as specified in ISO/IEC 14496-12 */
-	if (type != FTYP_4CC) {
-		ReportErrorOccurred ("Mp4Demuxer could not find 'ftyp' box");
-		return;
-	}
-
-	/* We check for 'avc1', 'mp41' and 'mp42' major brand or compatible brands. The MP4 file specification (ISO/IEC 14496-14)
-	 * states that the types 'mp41' or 'mp42' shall appear in the list of compatible-brands in the ftyp box, though SL plays 
-	 * 'avc1' files too. */
-	major_brand = source->ReadBE_U32 ();
-	minor_brand = source->ReadBE_U32 ();
-
-	LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): major brand: " FORMAT_4CC " (%u), minor brand: " FORMAT_4CC " (%u)\n", VALUES_4CC (major_brand), major_brand, VALUES_4CC (minor_brand), minor_brand);
-
-	result = IsCompatibleType (major_brand);
-	while (size > (guint64) source->GetPosition ()) {
-		if (source->GetRemainingSize () < 4) {
-			RequestMoreHeaderData ();
-			return;
-		}
-		compatible_brand = source->ReadBE_U32 ();
-		result = result || IsCompatibleType (compatible_brand);
-		LOG_MP4 (" got compatible brand: " FORMAT_4CC " (%u)\n", VALUES_4CC (compatible_brand), compatible_brand);
-	}
-
-	LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): result: %i\n", result);
-
-	if (!result) {
-		/* This shouldn't happen, since Mp4DemuxerInfo::Supports should return false */
-		ReportErrorOccurred ("Mp4Demuxer could not find any of the required brands ('avc1', 'mp41' or 'mp42') in the ftyp box");
-		return;
-	}
 
 	while (true) {
-		guint64 sub_start = source->GetPosition ();
-		guint64 sub_size;
-		guint32 sub_type;
+		start = source->GetPosition ();
 
-		if ((guint64) source->GetRemainingSize () < 28 /* max amount of data ReadBox can read */) {
-			RequestMoreHeaderData ();
+		if ((guint64) source->GetRemainingSize () < 32 /* max amount of data ReadBox can read */) {
+			RequestMoreHeaderData (buffer_position + parsed_boxes_size, 1024);
 			return;
 		}
 
-		if (!ReadBox (&sub_size, &sub_type)) {
+		if (!ReadBox (&size, &type)) {
 			/* This shouldn't happen, in any case ReadBox has already called ReportErrorOccurred */
 			return;
 		}
 
-		if ((guint64) source->GetRemainingSize () < sub_size - (source->GetPosition () - sub_start)) {
-			RequestMoreHeaderData (MAX (1024, sub_size - (source->GetPosition () - sub_start)));
-			return;
-		}
-
-		switch (sub_type) {
-		case MOOV_4CC:
+		switch (type) {
+		case MOOV_4CC: {
 			LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): reading 'moov' box.\n");
-			if (!ReadMoov (sub_type, sub_start, sub_size))
+
+			if ((guint64) source->GetRemainingSize () < size - (source->GetPosition () - start)) {
+				RequestMoreHeaderData (buffer_position + parsed_boxes_size, size);
+				return;
+			}
+
+			if (!ReadMoov (type, start, size))
 				return;
 
 			if (OpenMoov ())
@@ -1301,12 +1345,57 @@ Mp4Demuxer::OpenDemuxerAsyncInternal ()
 
 			/* Nothing more to do here */
 			return;
+		}
+		case FTYP_4CC: {
+			/* We check for 'avc1', 'mp41' and 'mp42' major brand or compatible brands. The MP4 file specification (ISO/IEC 14496-14)
+			 * states that the types 'mp41' or 'mp42' shall appear in the list of compatible-brands in the ftyp box, though SL plays
+			 * 'avc1' files too. */
+
+			LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): reading 'ftyp' box.\n");
+
+			if ((guint64) source->GetRemainingSize () < size - (source->GetPosition () - start)) {
+				RequestMoreHeaderData (buffer_position + parsed_boxes_size, size + 32 /* 32: to read enough to get data for the next box */);
+				return;
+			}
+
+			guint32 major_brand = source->ReadBE_U32 ();
+			guint32 minor_brand = source->ReadBE_U32 ();
+			guint32 compatible_brand;
+		
+			LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): major brand: " FORMAT_4CC " (%u), minor brand: " FORMAT_4CC " (%u)\n", VALUES_4CC (major_brand), major_brand, VALUES_4CC (minor_brand), minor_brand);
+		
+			result = IsCompatibleType (major_brand);
+			while (size > (guint64) source->GetPosition () && source->GetRemainingSize () >= 4) {
+				compatible_brand = source->ReadBE_U32 ();
+				result = result || IsCompatibleType (compatible_brand);
+				LOG_MP4 (" got compatible brand: " FORMAT_4CC " (%u)\n", VALUES_4CC (compatible_brand), compatible_brand);
+			}
+		
+			LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): result: %i\n", result);
+
+			if (!result) {
+				/* This shouldn't happen, since Mp4DemuxerInfo::Supports should return false */
+				ReportErrorOccurred ("Mp4Demuxer could not find any of the required brands ('avc1', 'mp41' or 'mp42') in the ftyp box");
+				return;
+			}
+
+			ftyp_validated = true;
+			break;
+		}
 		default:
-			LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): unknown top-level type " FORMAT_4CC " (%u).\n", VALUES_4CC (sub_type), sub_type);
+			LOG_MP4 ("Mp4DemuxerInfo::OpenDemuxerAsyncInternal (): unknown top-level type " FORMAT_4CC " (%u).\n", VALUES_4CC (type), type);
+			/* We want to skip this box */
+
+			if ((guint64) source->GetRemainingSize () < size - (source->GetPosition () - start)) {
+				RequestMoreHeaderData (buffer_position + parsed_boxes_size + size, 1024);
+				return;
+			}
+
 			break;
 		}
 
-		source->SeekSet (sub_start + sub_size);
+		parsed_boxes_size += size;
+		source->SeekSet (start + size);
 	}
 }
 
@@ -1410,11 +1499,14 @@ Mp4Demuxer::ReadLoop (guint64 start, guint64 size, Box *container)
 		VERIFY_AVAILABLE_POSITION (sub_start + sub_size);
 
 		if (sub_size == 0) {
-			/* We need to report this error, otherwise we'll go into an infinite loop */
-			char *msg = g_strdup_printf ("Corrupted mp4 file at position: %" G_GUINT64_FORMAT "(box size in " FORMAT_4CC " box is 0)", sub_start, VALUES_4CC (container->type));
-			ReportErrorOccurred (msg);
-			g_free (msg);
-			return false;
+			sub_size = (source->GetPosition () - sub_start);
+			if (sub_size == 0) {
+				/* We need to report this error, otherwise we'll go into an infinite loop */
+				char *msg = g_strdup_printf ("Corrupted mp4 file at position: %" G_GUINT64_FORMAT "(box size in " FORMAT_4CC " box is 0)", sub_start, VALUES_4CC (container->type));
+				ReportErrorOccurred (msg);
+				g_free (msg);
+				return false;
+			}
 		}
 
 		handled = true;
@@ -1996,6 +2088,8 @@ Mp4Demuxer::ReadStts (guint32 type, guint64 start, guint64 size, StblBox *stbl)
 		stts->sample_count [i] = source->ReadBE_U32 ();
 		stts->sample_delta [i] = source->ReadBE_U32 ();
 	
+		stts->total_sample_count += stts->sample_count [i];
+
 		if (stts->sample_delta [i] == 0) {
 			ReportErrorOccurred ("Mp4Demuxer: found invalid sample delta (0) in stts entry");
 			return false;
@@ -2037,10 +2131,12 @@ Mp4Demuxer::ReadCtts (guint32 type, guint64 start, guint64 size, StblBox *stbl)
 	LOG_MP4 ("Mp4Demuxer::ReadCtts (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ") entry_count: %u\n", start, size, ctts->entry_count);
 
 	ctts->sample_count = (guint32 *) g_malloc (sizeof (guint32) * ctts->entry_count);
-	ctts->sample_offset = (guint32 *) g_malloc (sizeof (guint32) * ctts->entry_count);
+	ctts->sample_offset = (gint32 *) g_malloc (sizeof (guint32) * ctts->entry_count);
+	ctts->min_offset = 0;
 	for (guint32 i = 0; i < ctts->entry_count; i++) {
 		ctts->sample_count [i] = source->ReadBE_U32 ();
-		ctts->sample_offset [i] = source->ReadBE_U32 ();
+		ctts->sample_offset [i] = source->ReadBE_I32 ();
+		ctts->min_offset = MIN (ctts->min_offset, ctts->sample_offset [i]);
 		//LOG_MP4 ("Mp4Demuxer::ReadCtts (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ") entry [%u]: sample_count: %u sample_delta: %u\n", start, size, i, ctts->sample_count [i], ctts->sample_offset [i]);
 	}
 
@@ -2098,12 +2194,11 @@ Mp4Demuxer::ReadEsds (guint32 type, guint64 start, guint64 size, SampleEntry *en
 	if (tag == /*ES_DescrTag*/ 0x03) {
 		if (!ReadDescriptorLength (&length))
 			return false;
-		VERIFY_BOX_SIZE (length, "esds");
 		esds->ES_ID = source->ReadBE_U16 ();
 		tmp = source->ReadBE_U8 ();
-		esds->streamDependenceFlag = tmp & 0x1; /* 1 bit */
-		esds->URL_Flag = (tmp & 0x2) >> 1; /* 1 bit */
-		esds->OCRstreamFlag = (tmp & 0x4) >> 2; /* 1 bit */
+		esds->streamDependenceFlag = 0;//tmp & 0x1; /* 1 bit */
+		esds->URL_Flag = 0;//(tmp & 0x2) >> 1; /* 1 bit */
+		esds->OCRstreamFlag = 0;//(tmp & 0x4) >> 2; /* 1 bit */
 		esds->streamPriority = tmp >> 3; /* 5 bits */
 		if (esds->streamDependenceFlag)
 			esds->dependsOn_ES_ID = source->ReadBE_U16 ();

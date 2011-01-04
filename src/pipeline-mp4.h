@@ -194,6 +194,7 @@ struct SttsBox : public FullBox {
 	guint32 entry_count;
 	guint32 *sample_count;
 	guint32 *sample_delta;
+	guint32 total_sample_count;
 	SttsBox (guint32 type, guint64 size);
 	virtual ~SttsBox ();
 };
@@ -208,7 +209,11 @@ struct StssBox : public FullBox {
 struct CttsBox : public FullBox {
 	guint32 entry_count;
 	guint32 *sample_count;
-	guint32 *sample_offset;
+	/* The spec states very clearly that the sample offsets are unsigned and can't be negative.
+	 * Obviously that doesn't prevent people from making encoders that use negative values here. */
+	gint32 *sample_offset;
+
+	gint32 min_offset; /* the smallest sample_offset entry, used to offset pts by this amount */
 	CttsBox (guint32 type, guint64 size);
 	virtual ~CttsBox ();
 };
@@ -311,6 +316,7 @@ private:
 	IMediaStream *get_frame_stream;
 	guint64 buffer_position;
 	bool last_buffer;
+	bool ftyp_validated;
 
 	MoovBox *moov;
 
@@ -318,7 +324,8 @@ private:
 	static MediaResult ReadSampleDataAsyncCallback (MediaClosure *closure);
 	void ReadSampleDataAsync (MediaReadClosure *closure);
 	void ReadHeaderDataAsync (MediaReadClosure *closure);
-	void RequestMoreHeaderData (guint32 size = 1024); /* size: the number of more bytes to request, offset is always 0 */
+	void RequestMoreHeaderData (guint64 offset, guint32 size); /* size: the number of more bytes to request */
+
 
 	bool ReadBox (guint64 *size, guint32 *type);
 	bool ReadFullBox (FullBox *box);
@@ -355,6 +362,7 @@ private:
 	bool OpenMoov ();
 
 	guint64 ToPts (guint64 time, TrakBox *trak);
+	guint64 ToPts (guint64 time, guint64 timescale);
 	guint64 FromPts (guint64 pts, TrakBox *trak);
 	bool GetSampleSize (StblBox *stbl, guint32 sample_index, guint32 *result);
 	bool GetSampleCount (StblBox *stbl, guint32 *result);
