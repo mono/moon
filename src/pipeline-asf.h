@@ -168,6 +168,7 @@ private:
 	enum MmsWaitingState {
 		MmsInitialization,
 		MmsDescribeResponse,
+		MmsInitialSeek,
 		MmsPlayResponse,
 		MmsStreamSwitchResponse,
 	};

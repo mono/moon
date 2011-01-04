@@ -176,8 +176,17 @@ PlaylistEntry::Initialize (Media *media)
 	media->AddSafeHandler (Media::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
 	media->AddSafeHandler (Media::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
 	media->AddSafeHandler (Media::MediaErrorEvent, MediaErrorCallback, this);
-		
-	media->SetStartTime (start_time);
+
+	if (!media->IsInitialized ()) {
+		/* For nested asx playlists we'll end up here with an initialized media. */
+		media->SetStartTime (start_time);
+		if (HasInheritedDuration ()) {
+			Duration *duration = GetInheritedDuration ();
+			if (duration->HasTimeSpan ()) {
+				media->SetDuration (duration->GetTimeSpan ());
+			}
+		}
+	}
 
 	this->media = media;
 	this->media->ref ();
@@ -1275,6 +1284,8 @@ Playlist::MergeWith (PlaylistEntry *entry)
 	SetSourceName (entry->GetSourceName () ? new Uri (*entry->GetSourceName ()) : NULL);
 	if (entry->HasDuration ()) 
 		SetDuration (entry->GetDuration ());
+	if (entry->HasStartTime ())
+		SetStartTime (entry->GetStartTime ());
 	SetIsEntryRef (entry->GetIsEntryRef ());
 	Initialize (entry->GetMedia ());
 	entry->ClearMedia ();
@@ -1369,7 +1380,7 @@ PlaylistEntry::DumpInternal (int tabs)
 	tabs++;
 	printf ("%*sParent: %p %s\n", tabs, "", parent, parent ? parent->GetTypeName () : NULL);
 	printf ("%*sFullSourceName: %s\n", tabs, "", GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL);
-	printf ("%*sDuration: %s %.2f seconds\n", tabs, "", HasDuration () ? "yes" : "no", HasDuration () ? GetDuration ()->ToSecondsFloat () : 0.0);
+	printf ("%*sDuration: %s %.2f seconds StartTime: %" G_GUINT64_FORMAT " ms\n", tabs, "", HasDuration () ? "yes" : "no", HasDuration () ? GetDuration ()->ToSecondsFloat () : 0.0, MilliSeconds_FromPts (GetStartTime ()));
 	printf ("%*sMedia: %i %s\n", tabs, "", GET_OBJ_ID (media), media ? "" : "(null)");
 	if (media) {
 		IMediaDemuxer *demuxer = media->GetDemuxerReffed ();

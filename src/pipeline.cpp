@@ -79,6 +79,7 @@ Media::Media (PlaylistRoot *root)
 	buffering_progress = 0.0;
 	target_pts = 0;
 	start_time = 0;
+	duration = G_MAXINT64;
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -163,6 +164,16 @@ Media::SetStartTime (TimeSpan value)
 	VERIFY_MAIN_THREAD;
 	g_return_if_fail (!initialized);
 	start_time = value;
+}
+
+void
+Media::SetDuration (TimeSpan value)
+{
+	VERIFY_MAIN_THREAD;
+	printf ("Media::SetDuration (%" G_GUINT64_FORMAT " ms)\n", MilliSeconds_FromPts (value));
+	g_return_if_fail (!initialized);
+	g_return_if_fail (value >= 0);
+	duration = value;
 }
 
 bool
@@ -3811,6 +3822,8 @@ void
 IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 {
 	Media *media = NULL;
+	guint64 end_pts;
+	bool ended;
 	
 	LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (%p) %s InMediaThread: %i\n", stream, stream->GetTypeName (), Media::InMediaThread ());
 	
@@ -3836,7 +3849,21 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 	if (stream != NULL) {
 		pending_stream = stream;
 		pending_stream->ref ();
-		GetFrameAsyncInternal (stream);
+
+		ended = false;
+		if (media->GetDuration () < G_MAXINT64) {
+			end_pts = media->GetStartTime () + media->GetDuration ();
+			if (end_pts < stream->GetLastEnqueuedDemuxedPts () && stream->GetLastEnqueuedDemuxedPts () != G_MAXUINT64) {
+				LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (): reached end of fixed duration, last enqueued demuxed pts: %" G_GUINT64_FORMAT " ms, end_pts: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (stream->GetLastEnqueuedDemuxedPts ()), MilliSeconds_FromPts (end_pts));
+				ended = true;
+			}
+		}
+
+		if (ended) {
+			ReportGetFrameCompleted (NULL);
+		} else {
+			GetFrameAsyncInternal (stream);
+		}
 	}
 
 cleanup:
@@ -4000,6 +4027,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	guint64 last_enqueued_pts = 0;
 	guint64 p_last_enqueued_pts = 6666666LL;
 	guint64 target_pts;
+	guint64 end_pts = G_MAXUINT64;
 	int ended = 0;
 	int media_streams = 0;
 	const char *c = NULL;
@@ -4027,7 +4055,11 @@ IMediaDemuxer::FillBuffersInternal ()
 	 * of 0.
 	 */
 	g_return_if_fail (media != NULL);
-	
+
+	if (media->GetDuration () < G_MAXINT64) {
+		end_pts = media->GetStartTime () + media->GetDuration ();
+	}
+
 	buffering_time = media->GetBufferingTime ();
 	target_pts = media->GetTargetPts ();
 	target_pts = target_pts == G_MAXUINT64 ? 0 : target_pts;

@@ -633,6 +633,7 @@ private:
 	double download_progress;
 	double buffering_progress;
 	TimeSpan start_time;
+	TimeSpan duration;
 	
 	PlaylistRoot *playlist;
 
@@ -723,6 +724,9 @@ public:
 
 	void SetStartTime (TimeSpan value); // main thread only, before Initialize has been called
 	TimeSpan GetStartTime () { return start_time; }
+
+	void SetDuration (TimeSpan value); // main thread only, before Initialize has been called
+	TimeSpan GetDuration () { return duration; }
 	
 	// A list of MediaMarker::Node.
 	// This is the list of markers found in the metadata/headers (not as a separate stream).
@@ -737,6 +741,7 @@ public:
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
 	bool IsStopped () { return stopped; }
+	bool IsInitialized () { return initialized; }
 	
 	void RetryHttp (ErrorEventArgs *args);
 	

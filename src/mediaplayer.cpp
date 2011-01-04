@@ -337,7 +337,6 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		asx_duration = TimeSpan_ToPts (entry->GetInheritedDuration ()->GetTimeSpan ());
 		if (asx_duration < duration || GetBit (IsLive)) {
 			duration = asx_duration;
-			SetBit (FixedDuration);
 		}
 	}
 
@@ -654,32 +653,6 @@ MediaPlayer::AdvanceFrame ()
 			first_live_pts = MIN (current_pts, first_live_pts);
 		}
 
-		if (GetBit (FixedDuration)) {
-			/*
-			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %" G_GUINT64_FORMAT " ms, duration: %" G_GUINT64_FORMAT " ms, first_live_pts: %" G_GUINT64_FORMAT " ms, diff: %"  G_GUINT64_FORMAT "ms\n",
-				GetBit (IsLive), MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (duration), MilliSeconds_FromPts (first_live_pts), MilliSeconds_FromPts (current_pts - first_live_pts));
-			*/
-			if (GetBit (IsLive)) {
-				if (current_pts - first_live_pts > duration) {
-					// TODO: Move this out of AdvanceFrame, here it only works for media which has video, not for audio-only media.
-					StopAudio ();
-					AudioFinished ();
-					VideoFinished ();
-				}
-			} else {
-				if (current_pts > duration) {
-					StopAudio ();
-					AudioFinished ();
-					VideoFinished ();
-				}
-			}
-			if (GetBit (VideoEnded)) {
-				//printf ("MediaPlayer::AdvanceFrame (): Reached end of duration.\n");
-				update = false;
-				break;
-			}
-		}
-		
 		if (!frame->IsDecoded ()) {
 			printf ("MediaPlayer::AdvanceFrame (): Got a non-decoded frame.\n");
 			update = false;
@@ -1033,16 +1006,9 @@ MediaPlayer::NotifySeek (guint64 pts)
 	VERIFY_MAIN_THREAD;
 
 	seeks++;
-	guint64 duration = GetDuration ();
-	
+
 	g_return_if_fail (GetCanSeek ());
-	
-	if (pts > start_pts + duration)
-		pts = start_pts + duration;
-	
-	if (pts < start_pts)
-		pts = start_pts;
-	
+
 	StopAudio ();
 	SetTimeout (0);
 
@@ -1310,8 +1276,6 @@ MediaPlayer::GetStateName (MediaPlayer::PlayerState state)
 		v [i++] = "CanSeek";
 	if (state & CanPause)
 		v [i++] = "CanPause";
-	if (state & FixedDuration)
-		v [i++] = "FixedDuration";
 	if (state & AudioEnded)
 		v [i++] = "AudioEnded";
 	if (state & VideoEnded)

@@ -291,6 +291,8 @@ MediaElement::CheckMarkers ()
 {
 	guint64 current_position = GetPosition ();
 	
+	current_position += GetStartTime ();
+
 	LOG_MARKERS_EX ("MediaElement::CheckMarkers () current position: %" G_GUINT64_FORMAT ", previous position: %" G_GUINT64_FORMAT ")\n", current_position, previous_position);
 	VERIFY_MAIN_THREAD;
 	
@@ -1074,6 +1076,8 @@ MediaElement::SetProperties (Media *media)
 		can_pause = true;
 	}
 	
+	previous_position = entry->GetStartTime ();
+
 	natural_duration = new Duration (TimeSpan_FromPts (mplayer->GetDuration ()));
 	SetCanPause (can_pause);
 	SetCanSeek (can_seek);
@@ -1558,6 +1562,8 @@ MediaElement::Seek (TimeSpan to, bool force)
 	case MediaElementStatePaused:
 	case MediaElementStateStopped:
 		Duration *duration = GetNaturalDuration ();
+		TimeSpan start_time = playlist->GetCurrentPlaylistEntry ()->GetStartTime ();
+		TimeSpan really_to;
 		
 		if (duration->HasTimeSpan () && to > duration->GetTimeSpan ())
 			to = duration->GetTimeSpan ();
@@ -1577,16 +1583,17 @@ MediaElement::Seek (TimeSpan to, bool force)
 		//if (!force && to == TimeSpan_FromPts (mplayer->GetPosition ()))
 		//	return;
 		
-		previous_position = to;
-		seek_to_position = to;
-		seeked_to_position = to;
-		paused_position = to;
+		really_to = to + start_time;
+		previous_position = really_to;
+		seek_to_position = really_to;
+		seeked_to_position = really_to;
+		paused_position = really_to;
 
 		if (state == MediaElementStatePlaying)
 			flags |= PlayRequested;
 
-		mplayer->NotifySeek (TimeSpan_ToPts (to));
-		playlist->SeekAsync (to);
+		mplayer->NotifySeek (TimeSpan_ToPts (really_to));
+		playlist->SeekAsync (really_to);
 		Emit (MediaInvalidatedEvent);
 		Invalidate ();
 		
@@ -1724,6 +1731,22 @@ MediaElement::ReportErrorOccurred (const char *args)
 	eea->unref ();
 }
 
+TimeSpan
+MediaElement::GetStartTime ()
+{
+	PlaylistEntry *entry;
+	TimeSpan start_time = 0;
+
+	if (playlist != NULL) {
+		entry = playlist->GetCurrentPlaylistEntry ();
+		if (entry != NULL) {
+			start_time = entry->GetStartTime ();
+		}
+	}
+
+	return start_time;
+}
+
 /*
  * MediaElementPropertyValueProvider
  */
@@ -1818,6 +1841,7 @@ MediaElementPropertyValueProvider::GetPosition ()
 	bool use_pause = false;
 	MediaElement *element = (MediaElement *) obj;
 	guint64 position = TimeSpan_ToPts (element->seek_to_position);
+	TimeSpan start_time = element->GetStartTime ();
 	
 	delete this->position;
 	this->position = NULL;
@@ -1856,7 +1880,10 @@ MediaElementPropertyValueProvider::GetPosition ()
 	
 	if (TimeSpan_FromPts (position) == -1) {
 		position = 0;
+	} else if ((TimeSpan) position < start_time) {
+		position = 0;
 	} else {
+		position -= start_time;
 		position = MIN (position, element->mplayer->GetDuration ());
 	}
 		

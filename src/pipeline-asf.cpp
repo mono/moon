@@ -1780,6 +1780,16 @@ MmsSource::SendPlayRequest ()
 	LOG_MMS ("MmsSource::SendPlayRequest () uri: %s request_uri: %s waiting_state: %i\n", uri->GetOriginalString (), request_uri->GetOriginalString (), waiting_state);
 	VERIFY_MAIN_THREAD;
 
+	switch (waiting_state) {
+	case MmsInitialization:
+	case MmsDescribeResponse:
+		/* Can't play yet */
+		LOG_MMS ("MmsSource::SendPlayRequest (): can't play yet, waiting for describe response\n");
+		return;
+	default:
+		break;
+	}
+
 	waiting_state = MmsPlayResponse;
 
 	Lock ();
@@ -1789,6 +1799,8 @@ MmsSource::SendPlayRequest ()
 
 	if (pts == G_MAXUINT64)
 		pts = 0;
+
+	LOG_MMS ("MmsSource::SendPlayRequest () pts: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (pts));
 
 	CreateDownloaders ("GET");
 
@@ -2533,11 +2545,20 @@ MmsSource::OpenedHandler (IMediaDemuxer *demuxer, EventArgs *args)
 
 	switch (waiting_state) {
 	case MmsDescribeResponse:
+		waiting_state = MmsInitialSeek;
 		if (!CanSeek ()) {
 			/* We've gotten the describe response now, and parsed it successfully. Time to start playing */
 			SendPlayRequest ();
 		} else {
-			/* The MediaPlayer will seek to the start of the media, which will end up with a play request */
+			/* The Media will seek to the start of the media, which will end up with a play request
+			 * This might have happened already, and SendPlayRequest didn't do anything (too early),
+			 * so check if we need to call SendPlayRequest again now that we can */
+			bool seek_pending = false;
+			Lock ();
+			seek_pending = requested_pts != G_MAXUINT64;
+			Unlock ();
+			if (seek_pending)
+				SendPlayRequest ();
 		}
 		break;
 	case MmsStreamSwitchResponse:
@@ -2783,8 +2804,10 @@ MmsSource::StoppedHandler (HttpRequest *request, HttpRequestStoppedEventArgs *ar
 
 	is_temporary = RemoveTemporaryDownloader (request);
 
-	if (is_temporary || args->IsSuccess ())
+	if (is_temporary || args->IsSuccess ()) {
+		LOG_MMS ("MmsSource::DownloadStoppedHandler (): temporary downloader was stopped\n");
 		goto cleanup; /* Nothing more to do here, don't report failures for temporary downloaders */
+	}
 
 	g_return_if_fail (media != NULL);
 
@@ -3394,6 +3417,10 @@ MmsPlaylistEntry::AddEntry ()
 	
 	entry = new PlaylistEntry (playlist);
 	entry->SetIsLive (features & HttpStreamingBroadcast);
+	if (playlist->HasStartTime ())
+		entry->SetStartTime (playlist->GetStartTime ());
+	if (playlist->HasDuration ())
+		entry->SetDuration (playlist->GetDuration ());
 	
 	playlist->AddEntry (entry);
 	
@@ -3622,7 +3649,10 @@ MmsDemuxer::SeekInternal (guint64 pts)
 void 
 MmsDemuxer::SeekAsyncInternal (guint64 seekToTime)
 {
-	printf ("MmsDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT "): Not implemented.\n", seekToTime);
+	LOG_MMS("MmsDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT "): mms_source: %p\n", MilliSeconds_FromPts (seekToTime), mms_source);
+	if (mms_source == NULL)
+		return;
+	mms_source->SeekToPts (seekToTime);
 }
 
 void 

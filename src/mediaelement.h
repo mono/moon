@@ -269,6 +269,7 @@ class MediaElement : public FrameworkElement {
 	static const char *GetFlagNames (guint32 flags); // Not thread-safe.
 	
 	PlaylistRoot *GetPlaylist () { return playlist; }
+	TimeSpan GetStartTime ();
 	
 	int GetFlags () { return flags; }
 	MediaElementState GetState () { return state; } // Thread-safe

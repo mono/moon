@@ -153,6 +153,7 @@ public:
 
 	TimeSpan GetStartTime ();
 	void SetStartTime (TimeSpan start_time);
+	bool HasStartTime () { return (set_values & PlaylistKind::StartTime); }
 
 	Duration *GetDuration ();
 	Duration *GetInheritedDuration ();
