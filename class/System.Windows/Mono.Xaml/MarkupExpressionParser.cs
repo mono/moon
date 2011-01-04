@@ -322,7 +322,6 @@ namespace Mono.Xaml {
 			char next;
 			string prop = GetNextPiece (ref expression, out next);
 
-			tb.TargetPropertyName = attribute_name;
 			tb.SourcePropertyName = prop;
 			// tb.Source will be filled in elsewhere between attaching the change handler.
 

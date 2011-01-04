@@ -57,9 +57,6 @@ namespace System.Windows {
 			get; set;
 		}
 
-		internal string TargetPropertyName {
-			get; set;
-		}
 		internal TemplateBindingExpression ()
 		{
 		}
