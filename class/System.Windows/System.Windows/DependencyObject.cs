@@ -44,7 +44,6 @@ namespace System.Windows {
 		internal static Thread moonlight_thread;
 		DependencyObjectHandle _native;
 		EventHandlerList event_list;
-		bool free_mapping;
 		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers = new List<UnmanagedPropertyChangeHandler> ();
 
 		internal EventHandlerList EventList {
@@ -73,8 +72,8 @@ namespace System.Windows {
 					throw new InvalidOperationException ("DependencyObject.native is already set");
 				}
 
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
 				_native = new DependencyObjectHandle { Object = this, Handle = value };
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 
@@ -259,12 +258,6 @@ namespace System.Windows {
 		void INativeEventObjectWrapper.OnAttached ()
 		{
 
-		}
-
-		internal void Free ()
-		{
-			if (free_mapping)
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		public object GetValue (DependencyProperty dp)

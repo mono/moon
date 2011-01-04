@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 642 methods
+# 641 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -415,7 +415,6 @@
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Uri System.Windows.DependencyObject::get_ResourceBase()
 +SSC-M: System.Void System.Windows.DependencyObject::set_ResourceBase(System.Uri)
-+SSC-M: System.Void System.Windows.DependencyObject::Free()
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::FindName(System.String)
 +SSC-M: System.Boolean System.Windows.DependencyObject::SetNameOnScope(System.String,Mono.NameScope)
 +SSC-M: Mono.Kind System.Windows.DependencyObject::GetKind()

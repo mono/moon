@@ -9,13 +9,13 @@ namespace Mono {
 			get; set;
 		}
 
-		public DependencyObject Object {
+		public INativeEventObjectWrapper Object {
 			get; set;
 		}
 
 		~DependencyObjectHandle ()
 		{
-			Object.Free ();
+			NativeDependencyObjectHelper.FreeNativeMapping (Handle);
 			Handle = IntPtr.Zero;
 		}
 	}

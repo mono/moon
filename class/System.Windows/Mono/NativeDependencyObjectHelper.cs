@@ -274,14 +274,10 @@ namespace Mono {
 			lock (objects) {
 				if (objects.ContainsKey (native)) {
 					Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
-#if DEBUG
 					throw new ExecutionEngineException (string.Format ("multiple mappings registered for the same unmanaged peer."));
-#else
-					return false;
-#endif
 				}
 
-				NativeMethods.event_object_set_managed_handle (wrapper.NativeHandle, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
+				NativeMethods.event_object_set_managed_handle (native, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
 
 #if DEBUG_REF
 				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
