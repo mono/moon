@@ -58,7 +58,6 @@ namespace System.Windows {
 		Types types;
 		Stack<Uri> parse_uri_stack;
 
-		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 
 		internal int MajorVersion {
@@ -125,40 +124,8 @@ namespace System.Windows {
 		
 		internal static bool Shutdown ()
 		{
-			lock (shutdown_actions) {
-				is_shutting_down = true;
-				while (shutdown_actions.Count > 0) {
-					Action a;
-					a = shutdown_actions [shutdown_actions.Count - 1];
-					shutdown_actions.RemoveAt (shutdown_actions.Count - 1);
-					a ();
-				}
-			}
-			// Console.WriteLine ("Deployment.Shutdown ()");
+			is_shutting_down = true;
 			return true;
-		}
-		
-		/* 
-		 * thread-safe
-		 * return false if we're shutting down already.
-		 */
-		internal static bool QueueForShutdown (Action a)
-		{
-			lock (shutdown_actions) {
-				if (is_shutting_down)
-					return false;
-				shutdown_actions.Add (a);
-			}
-			
-			return true;
-		}
-		
-		/* thread-safe */
-		internal static void UnqueueForShutdown (Action a)
-		{
-			lock (shutdown_actions) {
-				shutdown_actions.Remove (a);
-			}
 		}
 		
 		public static Deployment Current {
