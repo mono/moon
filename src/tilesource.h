@@ -93,6 +93,7 @@ class MultiScaleTileSource : public DependencyObject {
 	//
 	// Events
 	//
+	/* @GenerateManagedEvent=false */
 	const static int TileLayerInvalidatedEvent;
 };
 
