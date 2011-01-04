@@ -156,7 +156,7 @@ protected:
 	//
 	// Protected Events
 	//
-	/* GenerateManagedEvent=false */
+	/* @GenerateManagedEvent=false */
 	const static int ModelChangedEvent;
 	
 	virtual ~RichTextBox ();
@@ -309,7 +309,7 @@ protected:
 	const static int ContentChangedEvent;
 	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
-	/* GenerateManagedEvent=false */
+	/* @GenerateManagedEvent=false */
 	const static int CursorPositionChangedEvent;
 };
 
