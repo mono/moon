@@ -418,9 +418,15 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	}
 	
 	for (int i = 0; i < emit_list.GetCount (); i++) {
+		/* We need to emit a clone of the original TimelineMarker */
+		TimelineMarker *mk = MoonUnmanagedFactory::CreateTimelineMarker ();
 		marker = (TimelineMarker *) emit_list [i];
-		Emit (MarkerReachedEvent, new TimelineMarkerRoutedEventArgs (marker));
+		mk->SetTime (marker->GetTime ());
+		mk->SetText (marker->GetText ());
+		mk->SetType (marker->GetType ());
+		Emit (MarkerReachedEvent, new TimelineMarkerRoutedEventArgs (mk));
 		marker->unref ();
+		mk->unref ();
 	}
 }
 
