@@ -1,0 +1,139 @@
+<html>
+	<head>
+		<title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<TextBlock x:Name="message"                       Canvas.Left="0" Canvas.Top="0"/>
+				<MediaElement x:Name="2s-24fps-h264-baseline.mp4" Canvas.Left="0" Canvas.Top="25" />
+				<MediaElement x:Name="2s-24fps-h264-high.mp4"     Canvas.Left="0" Canvas.Top="50" />
+				<MediaElement x:Name="2s-24fps-h264-main.mp4"     Canvas.Left="0" Canvas.Top="75" />
+				<MediaElement x:Name="2s-24fps-h264.mp4"          Canvas.Left="0" Canvas.Top="100" />
+				<MediaElement x:Name="2s-24fps-h264.mov"          Canvas.Left="0" Canvas.Top="125" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+			var mediaElements = [null, null, null, null, null, null, null];
+			var fileNames = ["2s-24fps-h264-baseline.mp4", "2s-24fps-h264-high.mp4", "2s-24fps-h264-main.mp4", "2s-24fps-h264.mp4", "2s-24fps-h264.mov"];
+			var opened = [ false, false, false, false, false, false, false];
+			var seek_points = ["00:00:00.000", "00:00:00.042", "00:00:00.043", "00:00:00.084", "00:00:00.085", "00:00:00.999", "00:00:01.000", "00:00:01.001", "00:00:01.959", "00:00:01.960", "00:00:02.000", "00:00:03.000" ];
+			var seek_point = -1;
+			var prefix = "timecode-";
+			var root;
+			var running = false;
+			var textblock;
+
+			function getIndex (mediaElement)
+			{
+				for (i = 0; i < fileNames.length; i++) {
+					if (prefix + fileNames [i] == mediaElement.Source)
+						return i;
+				}
+				return -1;
+			}
+
+			function Initialize ()
+			{
+				TestLogger.LogDebug ("Initialize");
+				for (i = 0; i < fileNames.length; i++) {
+					mediaElements [i] = root.findName (fileNames [i]);
+					mediaElements [i].AutoPlay = false;
+					mediaElements [i].addEventListener ("MediaOpened", OnMediaOpened);
+					mediaElements [i].addEventListener ("MediaFailed", OnMediaFailed);
+					mediaElements [i].Source = prefix + fileNames [i];
+				}
+				textblock = root.findName ("message");
+			}
+
+			function RunNextTest ()
+			{
+				TestLogger.LogDebug (new Date ().toTimeString () +  " RunNextTest");
+
+				seek_point++;
+				
+				TestLogger.LogDebug ("Capturing image #" + seek_point + "/" + seek_points.length + "...");
+				var Master = "";
+				if (navigator.userAgent.indexOf ("IE") >= 0)
+					Master = "Master";
+				TestHost.CaptureSingleImage ("", "test-seek-" + seek_point + Master + ".png", 0, 0, 200, 220);
+
+				if (seek_point >= seek_points.length) {
+					TestLogger.LogMessage ("Seek test finished");
+					TestHost.SignalShutdown (document.name);
+					return;
+				}
+				
+				var msg = "" + seek_points [seek_point] + " #" + (seek_point + 1) + "/" + seek_points.length;
+				TestLogger.LogDebug (msg);
+				textblock.Text = msg;
+				document.getElementById ("message").innerHTML = msg;
+				for (i = 0; i < fileNames.length; i++) {
+					mediaElements [i].Position = seek_points [seek_point];
+				}
+				
+				// Seek once every second
+				setTimeout ("RunNextTest ();", 1000);
+			}
+
+			function OnMediaOpened (sender, args)
+			{
+				TestLogger.LogDebug ("OnMediaOpened [" + getIndex (sender) + "]: " + sender.Source + " Duration: " + sender.NaturalDuration.seconds);
+				opened [getIndex (sender)] = true;
+				
+				if (!running) {
+					var counter = 0;
+					for (i = 0; i < fileNames.length; i++) {
+						if (opened [i] == true)
+							counter++;
+					}
+					TestLogger.LogDebug ("OnMediaOpened: there are now " + counter + "/" + fileNames.length + " opened media files");
+					if (counter == fileNames.length) {
+						running = true;
+						setTimeout ("RunNextTest ();", 1000);
+					}
+				}
+			}
+
+			function OnMediaFailed (sender, args)
+			{
+				TestLogger.LogError ("OnMediaFailed [" + getIndex (sender) + "]: " + sender.Source + " => " + ErrorEventArgsToOneLineString (args));
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			}
+
+			function OnPluginLoad (sender, args)
+			{
+				TestLogger.LogDebug ("OnPluginLoad");
+				root = sender;
+				setTimeout ("Initialize ();", 100);
+			}
+			
+			function OnPluginError (sender, args)
+			{
+				TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			}
+		
+		</script>
+	</head>
+
+	<body scroll="no" style='border-width: 0px'>
+		<div>
+			<embed type="application/x-silverlight"
+				width="340"
+				height="220"
+				id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+				style="position:absolute; left:0px; top:0px"
+				background="green" >
+			</embed>
+		</div>
+		<div style="position:absolute; left:0px; top:300px">
+			<span id="message" />
+		</div>
+	</body>
+</html>
+
