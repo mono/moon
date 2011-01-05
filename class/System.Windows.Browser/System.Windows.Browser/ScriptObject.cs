@@ -54,9 +54,9 @@ namespace System.Windows.Browser {
 		bool free_mapping;
 		bool handleIsScriptableNPObject;
 
-		internal Dictionary<string, EventInfo> events = new Dictionary<string, EventInfo> ();
-		internal Dictionary<string, List<Method>> methods = new Dictionary<string, List<Method>> ();
-		internal Dictionary<string, Property> properties = new Dictionary<string, Property> ();
+		internal Dictionary<string, EventInfo> events;
+		internal Dictionary<string, List<Method>> methods;
+		internal Dictionary<string, Property> properties;
 		internal Dictionary<string, List<ScriptObjectEventInfo>> event_handlers;
 		
 		internal bool HasTypes { get; set; }
@@ -343,6 +343,9 @@ namespace System.Windows.Browser {
 
 		internal void RegisterScriptableProperty (PropertyInfo pi, string scriptAlias, object target)
 		{
+			if (properties == null)
+				properties = new Dictionary<string, Property> ();
+
 			properties[scriptAlias] = new Property () {property = pi, obj = target};
 		}
 
@@ -351,7 +354,7 @@ namespace System.Windows.Browser {
 			if (ManagedObject is IDictionary) {
 				return true;
 			}
-			return properties.ContainsKey (scriptAlias) || events.ContainsKey (scriptAlias);
+			return (properties != null && properties.ContainsKey (scriptAlias)) || (events != null && events.ContainsKey (scriptAlias));
 		}
 
 		bool SetPropertyFromUnmanaged (string scriptAlias, IntPtr[] uargs, int arg_count, ref Value value)
@@ -360,7 +363,7 @@ namespace System.Windows.Browser {
 				IDictionary dic = ManagedObject as IDictionary;
 				dic[scriptAlias] = ScriptObjectHelper.FromValue (value);
 				return true;
-			} else if (properties.ContainsKey (scriptAlias)) {
+			} else if (properties != null && properties.ContainsKey (scriptAlias)) {
 				object[] args = new object[arg_count + 1];
 				for (int i = 0; i < arg_count; i++) {
 					if (uargs[i] == IntPtr.Zero) {
@@ -375,7 +378,7 @@ namespace System.Windows.Browser {
 				SetProperty (scriptAlias, args);
 
 				return true;
-			} else if (events.ContainsKey (scriptAlias)) {
+			} else if (events != null && events.ContainsKey (scriptAlias)) {
 				if (arg_count != 0)
 					throw new InvalidOperationException ("arg count != 0");
 
@@ -399,7 +402,7 @@ namespace System.Windows.Browser {
 
 		internal object GetProperty (string scriptAlias, object[] args)
 		{
-			if (!properties.ContainsKey (scriptAlias))
+			if (properties == null || !properties.ContainsKey (scriptAlias))
 				throw new InvalidOperationException ("Property '" + scriptAlias + "' not found");
 			PropertyInfo pi = properties[scriptAlias].property;
 			object obj = properties[scriptAlias].obj;
@@ -454,6 +457,8 @@ namespace System.Windows.Browser {
 
 		internal void RegisterScriptableEvent (EventInfo ei, string scriptAlias)
 		{
+			if (events == null)
+				events = new Dictionary<string, EventInfo> ();
 			events[scriptAlias] = ei;
 		}
 
@@ -498,6 +503,9 @@ namespace System.Windows.Browser {
 
 		internal void RegisterBuiltinScriptableMethod (MethodInfo mi, string scriptAlias, object target)
 		{
+			if (methods == null)
+				methods = new Dictionary<string, List<Method>> ();
+
 			if (!methods.ContainsKey (scriptAlias)) {
 				methods[scriptAlias] = new List<Method>();
 			}
@@ -514,6 +522,9 @@ namespace System.Windows.Browser {
 		{
 			if (reservedNames.Contains (scriptAlias))
 				throw new InvalidOperationException ("Reserved name '" + scriptAlias + "'.");
+
+			if (methods == null)
+				methods = new Dictionary<string, List<Method>> ();
 
 			if (!methods.ContainsKey (scriptAlias)) {
 				methods[scriptAlias] = new List<Method>();
@@ -533,7 +544,7 @@ namespace System.Windows.Browser {
 
 		bool HasMethod (string scriptAlias)
 		{
-			return methods.ContainsKey (scriptAlias);
+			return methods != null && methods.ContainsKey (scriptAlias);
 		}
 #endregion
 
@@ -780,7 +791,7 @@ namespace System.Windows.Browser {
 
 		internal void Invoke (string name, object[] args, ref Value ret)
 		{
-			if (methods.ContainsKey (name)) {
+			if (methods != null && methods.ContainsKey (name)) {
 				foreach (Method method in methods[name]) {
 					if (method.method != null)
 						if (ValidateArguments (method.method, args)) {
