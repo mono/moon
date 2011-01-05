@@ -1101,6 +1101,11 @@ namespace Mono.Xaml {
 
 		public Type ResolveType (string xmlns, string full_name)
 		{
+			Type t;
+			var dictKey = new XmlNsKey (xmlns, full_name);
+			if (Context.XmlnsCachedTypes.TryGetValue (dictKey, out t))
+				return t;
+
 			string ns = null;
 			string asm_name = null;
 			Assembly assembly = null;
@@ -1128,7 +1133,10 @@ namespace Mono.Xaml {
 			if (asm_name != null)
 				assembly = LoadAssembly (asm_name);
 
-			return LoadType (assembly, xmlns, full_name);
+			t = LoadType (assembly, xmlns, full_name);
+			if (!Context.XmlnsCachedTypes.ContainsKey (dictKey))
+				Context.XmlnsCachedTypes.Add (dictKey, t);
+			return t;
 		}
 
 		private static string ResolveClrNamespace (string xmlns)
@@ -1232,52 +1240,19 @@ namespace Mono.Xaml {
 			return t;
 		}
 
-		private class XmlNsKey {
-			string xmlns;
-			string name;
-			
-			public XmlNsKey (string xmlns, string name)
-			{
-				this.xmlns = xmlns;
-				this.name = name;
-			}
-			
-			public override int GetHashCode ()
-			{
-				int code = name.GetHashCode ();
-				
-				if (xmlns != null)
-					code += xmlns.GetHashCode ();
-				
-				return code;
-			}
-			
-			public override bool Equals (object o)
-			{
-				XmlNsKey key = o as XmlNsKey;
-				
-				if (key == null)
-					return false;
-				
-				return key.xmlns == this.xmlns && key.name == this.name;
-			}
-		}
-
-		private Dictionary<XmlNsKey, Type> xmlnsCachedTypes = new Dictionary<XmlNsKey, Type> ();
 		private Type LoadTypeFromXmlNs (string xmlns, string name)
 		{
 			XmlNsKey key = new XmlNsKey (xmlns, name);
 			Type t;
 			
-			if (xmlnsCachedTypes.TryGetValue (key, out t))
+			if (Context.XmlnsCachedTypes.TryGetValue (key, out t))
 				return t;
-			
+
 			t = FindType (xmlns, name);
 			if (!IsValidType (t))
 				t = null;
 			
-			xmlnsCachedTypes.Add (key, t);
-			
+			Context.XmlnsCachedTypes.Add (key, t);
 			return t;
 		}
 

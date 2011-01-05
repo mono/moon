@@ -802,6 +802,7 @@
     <File subtype="Code" buildaction="Compile" name="Mono/IListenEventRaised.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/WeakEventListener.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/WeakCurrentChangedListener.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XmlNsKey.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

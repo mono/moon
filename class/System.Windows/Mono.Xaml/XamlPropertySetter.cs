@@ -271,27 +271,30 @@ namespace Mono.Xaml {
 
 		private object target;
 		private bool is_mutable;
-		private PropertyInfo prop;
+		private Accessors accessors;
 
-		public XamlReflectionPropertySetter (XamlObjectElement element, object target, PropertyInfo prop) : base (element, prop.Name, Helper.GetConverterFor (prop, prop.PropertyType))
+		public static XamlReflectionPropertySetter Create (XamlObjectElement element, object target, Accessors accessors)
+		{
+			if (accessors == null)
+				return null;
+			return new XamlReflectionPropertySetter (element, target, accessors);
+		}
+
+		XamlReflectionPropertySetter (XamlObjectElement element, object target, Accessors accessors) : base (element, accessors.Name, accessors.ConverterCreator == null ? null : accessors.ConverterCreator ())
 		{
 			this.target = target;
-			this.prop = prop;
+			this.accessors = accessors;
 
 			if (target is MutableObject)
 				is_mutable = true;
 		}
 
 		public override Type Type {
-			get { return prop.PropertyType; }
+			get { return accessors.Type; }
 		}
 
 		public override Type DeclaringType {
-			get { return prop.DeclaringType; }
-		}
-
-		public PropertyInfo PropertyInfo {
-			get { return prop; }
+			get { return accessors.DeclaringType; }
 		}
 
 		public object Target {
@@ -306,7 +309,7 @@ namespace Mono.Xaml {
 
 		public object GetValue ()
 		{
-			return prop.GetValue (Target, null);
+			return accessors.Getter (Target);
 		}
 
 		public override void SetValue (XamlObjectElement obj, object value)
@@ -334,7 +337,7 @@ namespace Mono.Xaml {
 			// null is a legal value here because they may have done something like foo="{x:Null}"
 			//
 			if (value == null || Type.IsAssignableFrom (value.GetType ())) {
-				prop.SetValue (Target, ConvertValue (Type, value), null);
+				accessors.Setter (Target, ConvertValue (Type, value));
 				return;
 			}
 
@@ -353,7 +356,7 @@ namespace Mono.Xaml {
 
 		private void AddToCollection (XamlObjectElement obj, object value)
 		{
-			IList list = prop.GetValue (target, null) as IList;
+			IList list = accessors.Getter (target) as IList;
 			if (list == null) {
 				throw Parser.ParseException ("Collection property in non collection type.");
 			}
@@ -363,7 +366,7 @@ namespace Mono.Xaml {
 
 		private void AddToDictionary (XamlObjectElement obj, object value)
 		{
-			IDictionary rd = prop.GetValue (target, null) as IDictionary;
+			IDictionary rd = accessors.Getter (target) as IDictionary;
 			if (rd == null)
 				throw Parser.ParseException ("Collection property in non collection type.");
 
@@ -509,31 +512,29 @@ namespace Mono.Xaml {
 
 	internal class XamlAttachedPropertySetter : XamlPropertySetter {
 
-		private Type type;
-		private MethodInfo getter;
-		private MethodInfo setter;
-
-		public XamlAttachedPropertySetter (XamlObjectElement element, string name, MethodInfo getter, MethodInfo setter, TypeConverter converter) : base (element, name, converter)
+		public static XamlAttachedPropertySetter Create (XamlObjectElement element, Accessors accessors)
 		{
-			this.getter = getter;
-			this.setter = setter;
+			if (accessors == null)
+				return null;
+			return new XamlAttachedPropertySetter (element, accessors);
+		}
 
-			if (getter != null)
-				type = getter.ReturnType;
-			else
-				type = setter.GetParameters () [1].ParameterType;
+		Accessors Accessors {
+			get; set;
+		}
+
+		XamlAttachedPropertySetter (XamlObjectElement element, Accessors accessors)
+			: base (element, accessors.Name, accessors.ConverterCreator == null ? null : accessors.ConverterCreator ())
+		{
+			Accessors = accessors;
 		}
 
 		public override Type Type {
-			get { return type; }
+			get { return Accessors.Type; }
 		}
 
 		public override Type DeclaringType {
-			get {
-				if (getter != null)
-					return getter.DeclaringType;
-				return setter.DeclaringType;
-			}
+			get { return Accessors.DeclaringType; }
 		}
 
 		public override void SetValue (XamlObjectElement obj, object value)
@@ -559,7 +560,7 @@ namespace Mono.Xaml {
 			}
 
 			if (value == null || Type.IsAssignableFrom (value.GetType ())) {
-				setter.Invoke (null, new object [] { Element == null ? null : Element.Object, ConvertValue (Type, value) });
+				Accessors.Setter (Element.Object, ConvertValue (Type, value));
 				return;
 			}
 				
@@ -571,14 +572,14 @@ namespace Mono.Xaml {
 			throw new XamlParseException (
 				string.Format ("XamlAttachedPropertySetter.SetValue: Could not set value '{0}' to the attached property '{1}.{2}'",
 					value,
-					setter.DeclaringType,
-					setter.Name)
+					Accessors.DeclaringType,
+					Accessors.Name)
 			);
 		}
 
 		public void AddToCollection (object value)
 		{
-			IList list = getter.Invoke (null, new object [] { Element.Object }) as IList;
+			IList list = Accessors.Getter (Element.Object) as IList;
 
 			if (list == null)
 				throw Parser.ParseException ("Attempt to add attached property to empty list.");

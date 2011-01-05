@@ -33,6 +33,7 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
@@ -352,11 +353,24 @@ namespace Mono.Xaml {
 
 		private XamlReflectionPropertySetter XamlReflectionPropertyForName (Type target, string name)
 		{
-			PropertyInfo p = target.GetProperty (PropertyName (name), XamlParser.PROPERTY_BINDING_FLAGS);
-			if (p == null)
-				return null;
+			Accessors accessors;
+			var key = new CachedAccessorKey (name, target);
+			if (!XamlContext.PropertyAccessorCache.TryGetValue (key, out accessors)) {
+				PropertyInfo p = target.GetProperty (PropertyName (name), XamlParser.PROPERTY_BINDING_FLAGS);
+				if (p != null) {
+					accessors = new Accessors (
+						CreateGetter (p.GetGetMethod (true)),
+						CreateSetter (p.GetSetMethod (true)),
+						p.PropertyType,
+						p.Name,
+						Helper.GetConverterCreatorFor (p, p.PropertyType),
+						p.DeclaringType
+					);
+				}
+				XamlContext.PropertyAccessorCache.Add (key, accessors);
+			}
 
-			return new XamlReflectionPropertySetter (this, Object, p);
+			return XamlReflectionPropertySetter.Create (this, Object, accessors);
 		}
 
 		public XamlReflectionEventSetter XamlReflectionEventForName (object target, string name)
@@ -370,21 +384,34 @@ namespace Mono.Xaml {
 
 		private XamlPropertySetter XamlImplicitAttachedPropertyForName (object target, string name)
 		{
-			return LookupAttachedProperty (this, Type, name);
+			Accessors accessors;
+			var dictKey = new CachedAccessorKey (name, Type);
+
+			if (!XamlContext.AttachedPropertyAccessorCache.TryGetValue (dictKey, out accessors)) {
+				accessors = CreateAttachedAccessors (this, Type, name);
+				XamlContext.AttachedPropertyAccessorCache.Add (dictKey, accessors);
+			}
+
+			return XamlAttachedPropertySetter.Create (this, accessors);
 		}
 
 		private XamlPropertySetter LookupAttachedProperty (XmlReader reader)
 		{
-			Type t = Parser.ResolveType ();
-			string name = AttachedPropertyName (reader.LocalName);
+			Accessors accessors;
+			var key = new CachedAccessorKey (reader.LocalName, Parser.ResolveType ());
 
-			if (t == null || name == null)
-				return null;
+			if (!XamlContext.AttachedPropertyAccessorCache.TryGetValue (key, out accessors)) {
+				if (key.Type != null && key.Name != null) {
+					var name = AttachedPropertyName (key.Name);
+					accessors = CreateAttachedAccessors (this, key.Type, name);
+				}
+				XamlContext.AttachedPropertyAccessorCache.Add (key, accessors);
+			}
 
-			return LookupAttachedProperty (this, t, name);
+			return XamlAttachedPropertySetter.Create (this, accessors);
 		}
 
-		public static XamlPropertySetter LookupAttachedProperty (XamlObjectElement parent, Type t, string name)
+		static Accessors CreateAttachedAccessors (XamlObjectElement parent, Type t, string name)
 		{
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
 			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter == null ? null : getter.ReturnType);
@@ -395,11 +422,18 @@ namespace Mono.Xaml {
 			if (setter == null && !IsCollectionType (getter.ReturnType))
 				return null;
 
-			TypeConverter converter = null;
+			Func<TypeConverter> converter = null;
 			if (getter != null)
-				converter = Helper.GetConverterFor (getter, getter.ReturnType);
+				converter = Helper.GetConverterCreatorFor (getter, getter.ReturnType);
 
-			return new XamlAttachedPropertySetter (parent, name, getter, setter, converter);
+			return new Accessors (
+				CreateAttachedGetter (getter),
+				CreateAttachedSetter (setter),
+				getter != null ? getter.ReturnType : setter.GetParameters () [1].ParameterType,
+				name,
+				converter,
+				getter != null ? getter.DeclaringType : setter.DeclaringType
+			);
 		}
 
 		private static bool IsCollectionType (Type t)
@@ -464,6 +498,115 @@ namespace Mono.Xaml {
 
 			return null;
 		}
+
+		private static Func<object, object> CreateGetter(MethodInfo getMethod)
+		{
+			if (getMethod == null)
+				return null;
+
+			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
+			System.Linq.Expressions.Expression getter =
+				System.Linq.Expressions.Expression.Call(
+					System.Linq.Expressions.Expression.Convert(target, getMethod.DeclaringType),
+				getMethod
+			);
+
+			getter = System.Linq.Expressions.Expression.Convert(getter, typeof(object));
+			try {
+				return System.Linq.Expressions.Expression.Lambda<Func<object, object>>(getter, target).Compile ();
+			} catch {
+				return (t) => InvokeGetter (getMethod, t);
+			}
+		}
+
+		private static Func<object, object> CreateAttachedGetter(MethodInfo getMethod)
+		{
+			if (getMethod == null)
+				return null;
+
+			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
+			System.Linq.Expressions.Expression getter =
+				System.Linq.Expressions.Expression.Call(
+					getMethod,
+					System.Linq.Expressions.Expression.Convert(target, getMethod.GetParameters ()[0].ParameterType)
+			);
+
+			getter = System.Linq.Expressions.Expression.Convert(getter, typeof(object));
+			try {
+				return System.Linq.Expressions.Expression.Lambda<Func<object, object>>(getter, target).Compile();
+			} catch {
+				return (t) => InvokeAttachedGetter (getMethod, t);
+			}
+		}
+
+		private static Action<object, object> CreateSetter(MethodInfo setMethod)
+		{
+			if (setMethod == null)
+				return null;
+
+			var parameterType = setMethod.GetParameters ()[0].ParameterType;
+			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
+			var value = System.Linq.Expressions.Expression.Parameter(typeof(object), "b");
+
+			// If the object we're setting the value on is a value type we need to use
+			// the PropertyInfo to set the value, otherwise we'll end up modifying a
+			// copy of the value type instead of the actual one.
+			if (parameterType.IsValueType)
+				return (t, v) => InvokeSetter (setMethod, t, v);
+
+			var setter = System.Linq.Expressions.Expression.Call (
+				System.Linq.Expressions.Expression.Convert (target, setMethod.DeclaringType),
+				setMethod,
+				System.Linq.Expressions.Expression.Convert (value, parameterType)
+			);
+
+			try {
+				return System.Linq.Expressions.Expression.Lambda<Action<object, object>>(setter, target, value).Compile();
+			} catch {
+				return (t, v) => InvokeSetter (setMethod, t, v);
+			}
+		}
+
+		private static Action<object, object> CreateAttachedSetter(MethodInfo setMethod)
+		{
+			if (setMethod == null)
+				return null;
+
+			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
+			var value = System.Linq.Expressions.Expression.Parameter(typeof(object), "b");
+
+			var setter = System.Linq.Expressions.Expression.Call(
+				setMethod,
+				System.Linq.Expressions.Expression.Convert(target, setMethod.GetParameters()[0].ParameterType),
+				System.Linq.Expressions.Expression.Convert(value, setMethod.GetParameters()[1].ParameterType)
+			);
+			try {
+				return System.Linq.Expressions.Expression.Lambda<Action<object, object>>(setter, target, value).Compile();
+			} catch {
+				return (t, v) => InvokeAttachedSetter (setMethod, t, v);
+			}
+		}
+
+		static object InvokeAttachedGetter (MethodInfo getter, object target)
+		{
+			return getter.Invoke (null, new object [] { target });
+		}
+
+		static void InvokeAttachedSetter (MethodInfo setter, object target, object value)
+		{
+			setter.Invoke (null, new object [] { target, value });
+		}
+
+		static object InvokeGetter (MethodInfo getter, object target)
+		{
+			return getter.Invoke (target, null);
+		}
+
+		static void InvokeSetter (MethodInfo setter, object target, object value)
+		{
+			setter.Invoke (target, new object [] { value });
+		}
+
 	}
 }
 

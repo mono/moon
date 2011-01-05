@@ -114,6 +114,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono.Xaml/XamlParser.cs					\
 	$(srcdir)/Mono.Xaml/XamlPropertySetter.cs				\
 	$(srcdir)/Mono.Xaml/XamlElement.cs					\
+	$(srcdir)/Mono.Xaml/XmlNsKey.cs						\
 	$(srcdir)/Mono.Xaml/XamlTypeConverter.cs				\
 	$(srcdir)/System.ComponentModel/AlternateContentPropertyAttribute.cs	\
 	$(srcdir)/System.ComponentModel/ClosingEventArgs.cs						\
