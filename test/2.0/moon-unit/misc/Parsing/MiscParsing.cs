@@ -1055,5 +1055,11 @@ Width=""100"" Height=""100"">
 			var beb = (BindingExpression) canvas.Children [0].ReadLocalValue (TextBlock.TextProperty);
 			Assert.AreEqual (@",}{ } }{", beb.ParentBinding.ConverterParameter, "#1");
 		}
+
+		[TestMethod]
+		public void BraceInsteadOfPath ()
+		{
+			Assert.Throws<XamlParseException> ( () => XamlReader.Load (@"<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" Text=""{Binding {}"" />") );
+		}
 	}
 }
