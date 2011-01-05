@@ -308,6 +308,8 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 			}
 		}
 
+	} else {
+		delete v;
 	}
 	return result;
 }
