@@ -284,6 +284,9 @@ namespace Mono.Xaml {
 			string remaining = expression;
 			string piece = GetNextPiece (ref remaining, out next);
 
+			if (piece == "{")
+				throw new Exception ("{{ not permissible in this context");
+
 			if (next == '=')
 				HandleProperty (binding, piece, ref remaining);
 			else
@@ -367,6 +370,7 @@ namespace Mono.Xaml {
 			case "Mode":
 				if (str_value == null)
 					throw new XamlParseException (String.Format ("Invalid type '{0}' for Mode.", value == null ? "null" : value.GetType ().ToString ()));
+				str_value = str_value.Trim ();
 				b.Mode = (BindingMode) Enum.Parse (typeof (BindingMode), str_value, true);
 				break;
 			case "Path":
