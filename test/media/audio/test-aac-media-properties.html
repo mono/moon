@@ -1,0 +1,136 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement Name="Media" Source="" AutoPlay="False" MediaOpened="OnMediaOpened" 
+				MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
+				DownloadProgressChanged="OnDownloadProgressChanged"
+			/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		
+		var mediaElement = null;
+		var timeout = null;
+		var sources = ["miguel.mp4", null];
+		var durations = [21.711];
+		var expected = [true];
+		var sources_index = -1;
+		var failed = false;
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+		}
+
+		function NextMedia ()
+		{
+			sources_index++;
+			if (sources [sources_index] == null) {
+				TestLogger.LogResult (failed ? -1 : 1);
+				SignalShutdown ();
+			} else {
+				mediaElement.Source = sources [sources_index];
+			}
+		}
+
+		function checkFloat (a, b, tolerance)
+		{
+			TestLogger.LogDebug ("checkFloat (" + a + ", " + b + ", " + tolerance + ") abs (a-b): " + Math.abs (a - b));
+			return (Math.abs (a - b) <= tolerance);
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", State: " + sender.CurrentState);
+
+			TestLogger.LogDebug ("AudioStreamCount: " + sender.AudioStreamCount);
+			if (sender.AudioStreamCount != 1) {
+				failed = true; TestLogger.LogDebug ("Expected AudioStreamCount to be 1");
+			}
+			TestLogger.LogDebug ("AudioStreamIndex: " + sender.AudioStreamIndex);
+			if (sender.AudioStreamIndex != null) {
+				failed = true; TestLogger.LogError ("Expected AudioStreamIndex to be null");
+			}
+			TestLogger.LogDebug ("Balance: " + sender.Balance);
+			if (sender.Balance != 0) {
+				failed = true; TestLogger.LogError ("Expected Balance to be 0");
+			}
+			TestLogger.LogDebug ("CanPause: " + sender.CanPause);
+			if (sender.CanPause != true) {
+				failed = true; TestLogger.LogError ("Expected CanPause to be true");
+			}
+			TestLogger.LogDebug ("CanSeek: " + sender.CanSeek);
+			if (sender.CanSeek != true) {
+				failed = true; TestLogger.LogError ("Expected CanSeek to be true");
+			}
+			TestLogger.LogDebug ("NaturalDuration: " + sender.NaturalDuration.Seconds);
+			if (!checkFloat (sender.NaturalDuration.Seconds, durations [sources_index], 0.001)) {
+				failed = true; TestLogger.LogError ("Expected NaturalDuration to be " + durations [sources_index]);
+			}
+			TestLogger.LogDebug ("NaturalVideoHeight: " + sender.NaturalVideoHeight);
+			if (sender.NaturalVideoHeight != 0) {
+				failed = true; TestLogger.LogError ("Expected NaturalVideoHeight to be 0");
+			}
+			TestLogger.LogDebug ("NaturalVideoWidth: " + sender.NaturalVideoWidth);
+			if (sender.NaturalVideoWidth != 0) {
+				failed = true; TestLogger.LogError ("Expected NaturalVideoWidth to be 0");
+			}
+			TestLogger.LogDebug ("Volume: " + sender.Volume);
+			if (sender.Volume != 0.5) {
+				failed = true; TestLogger.LogError ("Expected Volume to be 0.5");
+			}
+			TestLogger.LogDebug ("Width: " + sender.Width);
+			if (sender.Width != 0) {
+				failed = true; TestLogger.LogError ("Expected Width to be 0");
+			}
+			TestLogger.LogDebug ("Height: " + sender.Height);
+			if (sender.Height != 0) {
+				failed = true; TestLogger.LogError ("Expected Height to be 0");
+			}
+
+			setTimeout ("NextMedia ();", 100);
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + sender.Source + " " + ErrorEventArgsToOneLineString (args));
+			failed = true;
+			setTimeout ("NextMedia ();", 100);
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			mediaElement = sender.findName ("Media");
+			NextMedia ();
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+  </body>
+</html>
+
+
