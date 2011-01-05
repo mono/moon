@@ -18,7 +18,7 @@
 +SSC-M: System.Object System.Windows.Browser.ScriptObject::GetPropertyInternal(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
 +SSC-M: System.Object System.Windows.Browser.ScriptObject::InvokeInternal(System.String,System.Object[])
-+SSC-M: System.Object System.Windows.Browser.ScriptObject::InvokeInternal(System.Object[])
++SSC-M: System.Object System.Windows.Browser.ScriptObject::InvokeSelfInternal(System.Object[])
 +SSC-M: System.Object System.Windows.Browser.ScriptObject::GetProperty(System.String,System.Object[])
 +SSC-M: System.Windows.Browser.ScriptObject System.Windows.Browser.ScriptObject::LookupScriptObject(System.IntPtr)
 +SSC-M: System.Boolean System.Windows.Browser.ScriptObject::AddNativeMapping(System.IntPtr,System.Windows.Browser.ScriptObject)

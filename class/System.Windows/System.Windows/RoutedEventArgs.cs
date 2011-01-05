@@ -31,8 +31,8 @@ namespace System.Windows {
 	public class RoutedEventArgs : EventArgs, INativeEventObjectWrapper, IRefContainer {
 
 		DependencyObjectHandle handle;
-		DependencyObject source;
-		bool source_set;
+		object source;
+		Dictionary<IntPtr,object> strongRefs;
 
 		internal IntPtr NativeHandle {
 			get { return handle.Handle; }
@@ -56,11 +56,16 @@ namespace System.Windows {
 			return NativeMethods.event_object_get_object_type (NativeHandle);
 		}
 
-		Dictionary<IntPtr,object> strongRefs;
-
 		void IRefContainer.AddStrongRef (IntPtr referent, string name)
 		{
-			if (strongRefs.ContainsKey (referent))
+			if (StringComparer.Ordinal.Equals (name, "Source")) {
+				source = Value.ToObject (referent);
+				return;
+			}
+
+			if (strongRefs == null)
+				strongRefs = new Dictionary<IntPtr, object> ();
+			else if (strongRefs.ContainsKey (referent))
 				return;
 
 			var o = Value.ToObject (referent);
@@ -74,17 +79,23 @@ namespace System.Windows {
 
 		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
 		{
+			if (StringComparer.Ordinal.Equals (name, "Source")) {
+				source = null;
+				return;
+			} else if (strongRefs != null) {
 #if DEBUG_REF
-			var o = Value.ToObject (referent);
-			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+				var o = Value.ToObject (referent);
+				Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
 #endif
-			strongRefs.Remove (referent);
+				strongRefs.Remove (referent);
+			}
 		}
 
 #if HEAPVIZ
 		System.Collections.ICollection IRefContainer.GetManagedRefs ()
 		{
 			List<HeapRef> refs = new List<HeapRef> ();
+			if (strongRefs != null)
 			foreach (IntPtr nativeref in strongRefs.Keys)
 				if (strongRefs[nativeref] is INativeEventObjectWrapper)
 					refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
@@ -107,7 +118,6 @@ namespace System.Windows {
 		internal RoutedEventArgs (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;
-			strongRefs = new Dictionary<IntPtr,object> ();
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
@@ -119,28 +129,19 @@ namespace System.Windows {
 
 		public object OriginalSource {
 			get {
-				if (source_set)
-					return source;
-
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.routed_event_args_get_source (NativeHandle));
+				return source;
 			}
 
 			internal set {
 				if (value == null) {
 					NativeMethods.routed_event_args_set_source (NativeHandle, IntPtr.Zero);
-					source = null;
-					source_set = false;
-					return;
+				} else {
+					DependencyObject v = value as DependencyObject;
+					if (v == null)
+						throw new ArgumentException ();
+
+					NativeMethods.routed_event_args_set_source (NativeHandle, v.native);
 				}
-
-				DependencyObject v = value as DependencyObject;
-				if (v == null)
-					throw new ArgumentException ();
-
-				source_set = true;
-				source = v;
-
-				NativeMethods.routed_event_args_set_source (NativeHandle, v.native);
 			}
 		}
 
