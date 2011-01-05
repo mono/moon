@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 591 methods needs to be decorated.
+# 592 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -978,6 +978,9 @@
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.IntPtr Mono.Xaml.XamlParser::ParseTemplate(Mono.Value*,System.IntPtr,System.IntPtr,System.IntPtr,System.String,Mono.MoonError&)
+
+# internal call
++SC-M: System.Object Mono.NativeMethods::event_object_get_managed_object(System.IntPtr)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)
