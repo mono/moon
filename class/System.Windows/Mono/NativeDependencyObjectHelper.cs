@@ -261,31 +261,17 @@ namespace Mono {
 		}
 #endregion
 
-		/* accessed from several threads, all usage must use a lock */
-		internal static Dictionary<IntPtr, GCHandle> objects = new Dictionary<IntPtr, GCHandle> ();
-
-
 		/* thread-safe */
 		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
 			if (native == IntPtr.Zero)
 				return false;
 
-			lock (objects) {
-				if (objects.ContainsKey (native)) {
-					Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
-					throw new ExecutionEngineException (string.Format ("multiple mappings registered for the same unmanaged peer."));
-				}
-
-				NativeMethods.event_object_set_managed_handle (native, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
+			NativeMethods.event_object_set_managed_handle (native, GCHandle.ToIntPtr (GCHandle.Alloc (wrapper, GCHandleType.Normal)));
 
 #if DEBUG_REF
-				Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
+			Console.WriteLine ("adding native mapping from {0:x} to {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
 #endif
-
-				objects[native] = GCHandle.Alloc (wrapper, GCHandleType.Weak);
-			}
-			
 			return true;
 		}
 		
@@ -301,15 +287,6 @@ namespace Mono {
 			if (native == IntPtr.Zero)
 				return;
 
-			lock (objects) {
-				if (objects.TryGetValue (native, out handle)) {
-#if DEBUG_REF
-					Console.WriteLine ("freeing native mapping for {0:x} - {1}/{2}", (int)native, wrapper.GetHashCode(), wrapper.GetType());
-#endif
-					objects.Remove (native);
-					handle.Free ();
-				}
-			}
 			NativeMethods.event_object_set_managed_handle (native, IntPtr.Zero);
 		}
 
@@ -326,13 +303,7 @@ namespace Mono {
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
-
-			GCHandle handle;
-			lock (objects) {
-				if (objects.TryGetValue (ptr, out handle))
-					return (INativeEventObjectWrapper) handle.Target;
-			}
-			return null;
+			return (INativeEventObjectWrapper) Mono.NativeMethods.event_object_get_managed_object (ptr);
 		}
 
 		internal static object CreateObject (Kind k, IntPtr raw)

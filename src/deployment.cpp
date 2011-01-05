@@ -96,6 +96,12 @@ moonlight_should_insert_breakpoint (MonoMethod *method)
 	return MONO_BREAK_POLICY_ON_DBG;
 }
 
+void *event_object_get_managed_object (EventObject *eo)
+{
+	return eo->GetDeployment ()->GetGCHandleTarget (eo->GetManagedHandle ());
+}
+
+
 bool
 Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 {
@@ -182,7 +188,8 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		mono_set_break_policy (moonlight_should_insert_breakpoint);
 	
 		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
-		
+		mono_add_internal_call ("Mono.NativeMethods::event_object_get_managed_object", (const void *)event_object_get_managed_object);
+
 		LOG_DEPLOYMENT ("Deployment::Initialize (): Root domain is %p\n", root_domain);
 	}
 	else {

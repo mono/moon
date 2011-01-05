@@ -34,6 +34,7 @@ using System.Security;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Messaging;
+using System.Runtime.CompilerServices;
 
 namespace Mono {
 	internal enum HttpRequestOptions {
@@ -222,5 +223,8 @@ namespace Mono {
 				return new NotSupportedException (msg);
 			}
 		}
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		public extern static object event_object_get_managed_object (IntPtr handle);
 	}
 }
