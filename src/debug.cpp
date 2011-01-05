@@ -50,22 +50,16 @@ get_method_name_from_ip (void *ip)
 {
 	MonoJitInfo *ji;
 	MonoMethod *mi;
-	char *method;
-	char *res;
 	MonoDomain *domain = mono_domain_get ();
 
 	ji = mono_jit_info_table_find (domain, (char*) ip);
 	if (!ji) {
 		return NULL;
 	}
+	
 	mi = mono_jit_info_get_method (ji);
-	method = mono_method_full_name (mi, TRUE);
-
-	res = g_strdup_printf ("%s", method);
-
-	g_free (method);
-
-	return res;
+	
+	return mono_method_full_name (mi, TRUE);
 }
 #endif
 
