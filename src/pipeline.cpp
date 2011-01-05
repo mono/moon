@@ -4210,38 +4210,7 @@ IMediaDemuxer::FillBuffersInternal ()
 		}
 	}
 
-	if (request_stream == NULL) {
-		/* We don't need more frames, but is there something to decode? */
-		decode_frame = NULL;
-		for (int i = 0; i < GetStreamCount (); i++) {
-			stream = GetStream (i);
-			if (!stream->GetSelected ())
-				continue;
-	
-			if (stream->GetDemuxedQueueLength () == 0)
-				continue; /* nothing to decode */
-
-			decode_frame = stream->PopDemuxedFrame ();
-#if SANITY
-			g_assert (decode_frame->GetStream () == stream);
-#endif
-			break;
-		}
-
-		if (decode_frame) {
-			LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): decode requested for %s with pts %" G_GUINT64_FORMAT "\n", decode_frame->GetStream ()->GetTypeName (), decode_frame->GetPts ());
-			IMediaDecoder *decoder = decode_frame->GetStream ()->GetDecoder ();
-			if (decoder != NULL) {
-	#if SANITY
-				g_assert (decoder->GetStream () == decode_frame->GetStream ());
-	#endif
-				decoder->DecodeFrameAsync (decode_frame, true /* always enqueue */);
-			}
-			decode_frame->unref ();
-			decode_frame = NULL;
-			/* Don't go to cleanup here so that we report buffering progress below */
-		}
-	} else {
+	if (request_stream != NULL) {
 		/* We need to demux a frame */
 		LOG_BUFFERING ("%s::FillBuffersInternal (): requesting frame from %s stream, TargetPts: %" G_GUINT64_FORMAT " ms LastEnqueuedPts: %" G_GUINT64_FORMAT " ms MinBufferedSize: %" G_GUINT64_FORMAT " ms: %s\n",
 			GetTypeName (), request_stream->GetTypeName (), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (p_last_enqueued_pts), MilliSeconds_FromPts (min_buffered_size), pc);
