@@ -19,7 +19,7 @@
 		var timeout = null;
 		var sources = ["miguel.mp3", "miguel-11.025kHz-16kbps.mp3", "miguel-11.025kHz-16kbps-p.mp3", "miguel-16kHz-56kbps.mp3", "miguel-44.1kHz-56kbps.mp3", null];
 		var durations = [21.707, 21.734, 21.734, 21.780, 21.760];
-		var expected = [true, true, false, true, true];
+		var expected = [true, true, true, true, true];
 		var sources_index = -1;
 		var failed = false;
 
@@ -46,17 +46,7 @@
 
 		function OnMediaOpened (sender, args)
 		{
-			if (expected [sources_index]) {
-				TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", State: " + sender.CurrentState);
-			} else {
-				// For some reason SL doesn't like miguel-11.025kHz-16kbps-p.mp3, 
-				// possibly because it's CRC protected (the only difference from miguel-11.025kHz-16kbps.mp3)
-				// Instead of failing CRC protected files and maybe failing valid files too, just accept them all.
-				if (sources_index != 2) {
-					TestLogger.LogError ("OnMediaOpened: " + sender.Source + ", State: " + sender.CurrentState);
-					failed = true;
-				}
-			}
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", State: " + sender.CurrentState);
 
 			TestLogger.LogDebug ("AudioStreamCount: " + sender.AudioStreamCount);
 			if (sender.AudioStreamCount != 1) {
@@ -108,12 +98,8 @@
 
 		function OnMediaFailed (sender, args)
 		{
-			if (expected [sources_index]) {
-				TestLogger.LogError ("OnMediaFailed: " + sender.Source + " " + ErrorEventArgsToOneLineString (args));
-				failed = true;
-			} else {
-				TestLogger.LogDebug ("OnMediaFailed: " + sender.Source + " " + ErrorEventArgsToOneLineString (args));
-			}
+			TestLogger.LogError ("OnMediaFailed: " + sender.Source + " " + ErrorEventArgsToOneLineString (args));
+			failed = true;
 			setTimeout ("NextMedia ();", 100);
 		}
 

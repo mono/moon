@@ -35,7 +35,7 @@ tests.push ("miguel-11.025kHz-16kbps.mp3");
 results ["miguel-11.025kHz-16kbps.mp3"] = ["MediaOpened", "MediaEnded"];
 
 tests.push ("miguel-11.025kHz-16kbps-p.mp3");
-results ["miguel-11.025kHz-16kbps-p.mp3"] = ["MediaFailed"];
+results ["miguel-11.025kHz-16kbps-p.mp3"] = ["MediaOpened", "MediaEnded"];
 
 tests.push ("miguel-16kHz-56kbps.mp3");
 results ["miguel-16kHz-56kbps.mp3"] = ["MediaOpened", "MediaEnded"];
