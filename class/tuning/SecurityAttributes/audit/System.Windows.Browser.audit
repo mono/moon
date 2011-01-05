@@ -43,8 +43,9 @@ System.Object System.Windows.Browser.ManagedObject::Invoke(System.String,System.
 System.Object System.Windows.Browser.ScriptObject::ConvertTo(System.Type,System.Boolean)
 	20101013	spouliot - 7795670 - if the 'targetType' is a delegate then return a delegate based on a new ScriptObjectEventInfo [SecurityCritical] built on 'this' and the specified 'targetType'
 
-!SSC-947903997E8D809D4C410A4147692B8A
+!SSC-8DE81DE324D945C724E969BAA0EC9939
 System.Object System.Windows.Browser.ScriptObject::GetProperty(System.String,System.Object[])
+	20110105	spouliot - e5e0fca - add a null check on 'properties' since it is now lazyly allocated
 	r153088		spouliot - calls Invoke [SecurityCritical] on the 'scriptAlias' property getter using the arguments 'args'
 
 !SSC-EC8AFC240F10CF4C92AC4CE2510B73B1
@@ -52,17 +53,18 @@ System.Object System.Windows.Browser.ScriptObject::GetPropertyInternal(System.In
 	20101013	spouliot - 7795670 - non-generic version, same pinvoke then, if not invalid, call ScriptObjectHelper [SecurityCritical] FromValue on the 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
 	r142142		spouliot - added validations, pinvoke into html_object_get_property
 
-!SSC-E243BAC2192316221D2961F852141003
-System.Object System.Windows.Browser.ScriptObject::InvokeInternal(System.Object[])
-	20101013	spouliot - 7795670 - non-generic version, call ScriptObjectHelper [SecurityCritical] ToValue on all 'args' before the pinvoke, then ScriptObjectHelper [SecurityCritical] FromValue on 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
-	r142747		spouliot - visibility changed to internal (to match SL2 API)
-	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
-
 !SSC-4E5DE5752627FF79EA72B5E697CACA2B
 System.Object System.Windows.Browser.ScriptObject::InvokeInternal(System.String,System.Object[])
 	20101013	spouliot - 7795670 - non-generic version, call ScriptObjectHelper [SecurityCritical] ToValue on all 'args' before the pinvoke, then ScriptObjectHelper [SecurityCritical] FromValue on 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
 	r142747		spouliot - visibility changed to internal (to match SL2 API)
 	r142142		spouliot - added validations, pinvoke into html_object_invoke
+
+!SSC-053CDBEDB873C58282129886FAC770FB
+System.Object System.Windows.Browser.ScriptObject::InvokeSelfInternal(System.Object[])
+	20110105	spouliot - 36332fc - renamed from InvokeInternal
+	20101013	spouliot - 7795670 - non-generic version, call ScriptObjectHelper [SecurityCritical] ToValue on all 'args' before the pinvoke, then ScriptObjectHelper [SecurityCritical] FromValue on 'res' (this will be the return value) and pinvoke value_free_value on (temporary) 'res'
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
 
 !SSC-627868E191EC1F54388196A467CDAC17
 System.Void System.Windows.Browser.HtmlPage::.cctor()

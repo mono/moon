@@ -123,7 +123,7 @@ class Program {
 					data.Comments.Add (revision, message);
 				}
 				catch (ArgumentException) {
-					Console.WriteLine ("Comments for revision #{0} already exist.", revision);
+					Console.WriteLine ("Comments for revision #{0} already exist on '{1}'.", revision, name);
 					Environment.Exit (1);
 				}
 			}
@@ -155,6 +155,7 @@ class Program {
 	// a bit resource heavy but it's not really time critical
 	static string GetHash (MethodDefinition method)
 	{
+		bool log = (debug_log_enabled && (method.ToString () == debug_log_method));
 		byte [] digest = null;
 		using (MemoryStream ms = new MemoryStream ()) {
 			using (StreamWriter sw = new StreamWriter (ms)) {
@@ -162,9 +163,14 @@ class Program {
 				sw.WriteLine (method.GetFullName ());
 				sw.WriteLine (method.Attributes);
 				sw.WriteLine (method.ImplAttributes);
+				if (log) {
+					Console.WriteLine (method.GetFullName ());
+					Console.WriteLine (method.Attributes);
+					Console.WriteLine (method.ImplAttributes);
+				}
 				// an icall (or pinvoke) can be audited but won't have any IL
 				if (method.HasBody)
-					HashBody (method.Body, sw);
+					HashBody (method.Body, sw, log);
 				sw.Flush ();
 				ms.Position = 0;
 				hash.Initialize ();
@@ -178,10 +184,13 @@ class Program {
 		return sb.ToString ();
 	}
 
-	static void HashBody (MethodBody body, StreamWriter sw)
+	static void HashBody (MethodBody body, StreamWriter sw, bool log)
 	{
-		foreach (Instruction instr in body.Instructions)
-			sw.WriteLine ("{0}#{1}#{2}", instr.Offset, instr.OpCode.Value, FormatOperand (instr));
+		foreach (Instruction instr in body.Instructions) {
+			sw.WriteLine ("{0}#{1}#{2}", instr.Offset, instr.OpCode.Value, FormatOperand (instr, sw, log));
+			if (log)
+				Console.WriteLine ("{0}#{1}#{2}", instr.Offset, instr.OpCode.Value, FormatOperand (instr, sw, log));
+		}
 
 		if (!body.HasExceptionHandlers)
 			return;
@@ -196,11 +205,14 @@ class Program {
 		// we must preserve order else the hash will be different for the same handlers
 		if (handlers.Count > 1)
 			handlers.Sort (StringComparer.InvariantCulture);
-		foreach (string s in handlers)
+		foreach (string s in handlers) {
 			sw.WriteLine (s);
+			if (log)
+				Console.WriteLine (s);
+		}
 	}
 
-	static string FormatOperand (Instruction instr)
+	static string FormatOperand (Instruction instr, StreamWriter sw, bool log)
 	{
 		switch (instr.OpCode.OperandType) {
 		case OperandType.InlineNone:
@@ -211,11 +223,26 @@ class Program {
 		case OperandType.InlineSwitch:
 			return ((Instruction []) instr.Operand).Aggregate (" ", (s, i) => s + i.Offset.ToString ());
 		case OperandType.InlineField:
-		case OperandType.InlineMethod:
-		case OperandType.InlineTok:
 		case OperandType.InlineType:
 		case OperandType.InlineSig:
 			return ((IMetadataTokenProvider) instr.Operand).ToString ();
+		case OperandType.InlineMethod:
+			Code code = instr.OpCode.Code;
+			if ((code == Code.Ldftn) || (code == Code.Ldvirtftn)) {
+				// anonymous methods can change name between compilation, so we include their content in the loader
+				MethodDefinition md = (instr.Operand as MethodDefinition);
+				if (md != null && md.HasBody && md.Name.StartsWith ("<")) {
+					HashBody (md.Body, sw, log);
+					return String.Empty;
+				}
+			}
+			return ((IMetadataTokenProvider) instr.Operand).ToString ();
+		case OperandType.InlineTok:
+			string s = instr.Operand.ToString ();
+			// other details will change between compilations, generating a new digest each time
+			if (s.StartsWith ("<PrivateImplementationDetails>"))
+				return "<PrivateImplementationDetails>";
+			return s;
 		case OperandType.ShortInlineVar:
 		case OperandType.InlineVar:
 			return ((VariableDefinition) instr.Operand).Index.ToString ();
@@ -298,6 +325,9 @@ class Program {
 		Data.Clear ();
 	}
 
+	static bool debug_log_enabled = false;
+	static string debug_log_method = String.Empty;
+
 	static int Main (string [] args)
 	{
 		if (args.Length < 3) {
@@ -325,6 +355,9 @@ class Program {
 			Console.WriteLine ("Invalid revision number '{0}'.", args [2]);
 			return 1;
 		}
+
+		debug_log_method = Environment.GetEnvironmentVariable ("MOON_AUDIT_LOG");
+		debug_log_enabled = !String.IsNullOrEmpty (debug_log_method);
 
 		foreach (string assembly in PlatformCode.Assemblies) {
 			string filename = Path.Combine (dest_dir, assembly + ".audit");

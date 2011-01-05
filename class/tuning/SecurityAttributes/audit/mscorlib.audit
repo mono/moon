@@ -6,8 +6,9 @@ System.AppDomain System.AppDomain::get_CurrentDomain()
 System.Array System.Array::CreateInstance(System.Type,System.Int32[])
 	r142142		spouliot - can create any type (see security/MiscTest.cs)
 
-!SSC-F7DD71FF7C54639A5340A983050EEA03
+!SSC-170F2AB77775092EA46BE5103C42CFD3
 System.Boolean System.Array::InternalArray__ICollection_Contains<T>(T)
+	20110104	spouliot - no source change / compiler
 	r142142		spouliot - call GetGenericValueImpl<T> (icall without bounds checking) with non user-controlled, valid values (0, length)
 
 !SSC-24EF0E738A5AAD6CE399A053856C73D1
@@ -203,8 +204,9 @@ System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[
 System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan)
 	r142142		spouliot - call flow modified, call overload with boolean (emitContext) parameter, which calls WaitAll_internal (icall in mono/metadata/threads.c) with false (no context)
 
-!SSC-98975CD58F05B06A5A84D1110BC46FC7
+!SSC-2B3806108A608BAEAF0E38801C6465A8
 System.Boolean System.Threading.WaitHandle::WaitOne()
+	20110104	spouliot - no source change, compiler generates smaller IL
 	r142142		spouliot - call WaitOne_internal (icall in mono/metadata/threads.c) with handle, Timeout.Infinite (-1) and false (no context)
 
 !SSC-05A9F426A086B660D7EAE64EB38867FD
@@ -352,8 +354,9 @@ System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::Enu
 System.Collections.Generic.IEnumerable`1<System.String> System.IO.Directory::EnumerateFileSystemEntries(System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-E85EFF12FBDE2369FB7F45846DB9179C
+!SSC-2198A5C8397D94B5D553B3FC367A0355
 System.Collections.Generic.IList`1<System.Reflection.CustomAttributeData> System.MonoCustomAttrs::GetCustomAttributesData(System.Reflection.ICustomAttributeProvider)
+	20110104	spouliot - no source change -> compiler
 	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
 
 !SSC-A71229084616484B75DC7F7AAB79EE64
@@ -515,8 +518,9 @@ System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_Da
 	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call construct_datetime_format (icall in locales.c). parameter-less (instance)
 
-!SSC-19BD8CC3D2AAA3812CCB631AD0FA8651
+!SSC-193D98D44D4CBD7DD9B068F9504B3FF4
 System.Globalization.DaylightTime System.CurrentSystemTimeZone::GetDaylightChanges(System.Int32)
+	20110104	spouliot - no source change - compiler generates smaller IL
 	20101116	spouliot - no source change / compiler (lock) ?
 	r142142		spouliot - call GetTimeZoneData (icall) with the 'year' parameter
 
@@ -577,8 +581,9 @@ System.Int32 System.Array::GetLowerBound(System.Int32)
 System.Int32 System.Array::IndexOf(System.Array,System.Object,System.Int32,System.Int32)
 	r142142		spouliot - call GetValueImpl (icall without bounds checking) with a validated 'startIndex' and 'count'
 
-!SSC-0E05692C71EA8EEA50F988F33BCB9E51
+!SSC-E43F174FE3CE9E9C9A59D36B6CA0B746
 System.Int32 System.Array::InternalArray__IndexOf<T>(T)
+	20110104	spouliot - no source change / compiler
 	r142142		spouliot - call GetGenericValueImpl<T> (icall without bounds checking) with non user-controlled, valid values (0, length)
 
 !SSC-C4E497BB65EF8A1941F2879305DCE1EE
@@ -621,8 +626,9 @@ System.Int32 System.Enum::GetHashCode()
 System.Int32 System.Environment::get_ExitCode()
 	r144558		spouliot - visible icall (named mono_environment_exitcode_get in mono/metadata/environment.c). return static value
 
-!SSC-0027F79B703C378884729E1C6737030A
+!SSC-B8221BA742FA168E01E4AA47E2A185F6
 System.Int32 System.Environment::get_ProcessorCount()
+	20110104	spouliot - compiler/linker change, HasSecurity is now present in attributes
 	r155836		spouliot - visible icall (named mono_cpu_count in mono/utils/mono-proclib.c).
 
 !SSC-B9DCE5D3F065E1DCB5056AA680B0DF34
@@ -938,8 +944,9 @@ System.Object System.MonoType::InvokeMember(System.String,System.Reflection.Bind
 System.Object System.Object::MemberwiseClone()
 	r144558		spouliot - visible icall. parameter-less (instance)
 
-!SSC-C5CF95C7C5D344A73EC49B0CCEA0A855
+!SSC-94D4EA4EB451628C8FB49EFB98AFBD6A
 System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
+	20110104	spouliot - no source change - compiler generates smaller IL
 	r145113		spouliot - call InternalInvoke (icall named ves_icall_InternalInvoke) with potentially-null 'obj' and validated/converted 'parameters'
 
 !SSC-CDD859CADD0A41EE45CB1AC02AE74A38
@@ -950,8 +957,9 @@ System.Object System.Reflection.MonoField::GetRawConstantValue()
 System.Object System.Reflection.MonoField::GetValue(System.Object)
 	r142142		spouliot - call GetValueInternal (icall) with potentially null value (for static fields)
 
-!SSC-9DF50EB11CEC0A81E4B48B9C15888A18
+!SSC-076C889DC5EAB5E687437CB4C66D6847
 System.Object System.Reflection.MonoMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
+	20110104	spouliot - no source change - compiler generates smaller IL
 	r150954		spouliot - now call MonoMethodInfo.GetParametersInfo instead of GetParameters (optimization to avoid allocating an array each time)
 	r142142		spouliot - call InternalInvoke (icall named ves_icall_InternalInvoke) with potentially-null 'obj' and validated/converted 'parameters'
 
@@ -992,8 +1000,9 @@ System.Object[] System.MonoCustomAttrs::GetCustomAttributes(System.Reflection.IC
 System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
 	r142142		spouliot - call MonoMethodInfo.get_method_info (icall)
 
-!SSC-7615CE9F18C8CF2B9CB667FDF8008789
+!SSC-DDB479C9DCF5AE03A4DB10B0222D9E61
 System.OperatingSystem System.Environment::get_OSVersion()
+	20110104	spouliot - 411fb0a - convert PlatformID.MacOSX (now correctly reported by runtime) into Unix (compatibility with earlier versions)
 	r142142		spouliot - call GetOSVersionString (icall) and Platform (icall)
 
 !SSC-6802E0800C5A97A0EAF08A05F9092527
@@ -1294,8 +1303,9 @@ System.String System.Diagnostics.StackFrame::GetSecureFileName()
 System.String System.Environment::get_NewLine()
 	r144558		spouliot - visible icall - returns "\r\n" string (except on windows)
 
-!SSC-D730A3DFEBA21F81AA1C3A782AAA61FB
+!SSC-863FFB7AA09784877C13F597DA2671D9
 System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
+	20110104	spouliot - d2a367e - now call UnixGetFolderPath (renamed from InternalGetFolderPath)InternalGetFolderPath 
 	r155642		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-F5A6750B89F661FD46054E28BB23FF48
@@ -1330,13 +1340,15 @@ System.String System.IO.IsolatedStorage.IsolatedStorageFileStream::Verify(System
 System.String System.IO.Path::GetFullPath(System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-FC799872A47876C0055C2F36309064D9
+!SSC-8D0B93B40141DB01BED668C11DE9D136
 System.String System.IO.Path::GetTempFileName()
+	20110104	spouliot - compiler/linker change, HasSecurity is now present in attributes
 	r156704		spouliot - catch DirectoryNotFoundException in case TMPDIR does not exists (causing infinite loop)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-981D8F50BA27056536423B8865030117
+!SSC-968256A4AB789ED9E6688FEF22E8290D
 System.String System.IO.Path::GetTempPath()
+	20110104	spouliot - compiler/linker change, HasSecurity is now present in attributes
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
 !SSC-1B5A8D767977AA5BC5833FD553E401A5
@@ -1459,8 +1471,9 @@ System.String System.String::Join(System.String,System.String[])
 System.String System.String::Join(System.String,System.String[],System.Int32,System.Int32)
 	r144912		spouliot - call JoinUnchecked [SecurityCritical] with validated parameters
 
-!SSC-E231D59ABCA3D7A8F673A3294010976F
+!SSC-7F10A707D75E55A655ECDC77C0177DB9
 System.String System.String::Join<T>(System.String,System.Collections.Generic.IEnumerable`1<T>)
+	20110104	spouliot - bd05c6c - missing 'params' was added to 'value' parameter (new in FX4 / SL4)
 	r159898		spouliot - no source change (compiler?)
 	r153874		spouliot - (new SL4/FX4) check parameters (non-null) then call JoinUnchecked [SecurityCritical] with valid parameters
 
@@ -1814,12 +1827,14 @@ System.Void System.Array::CheckComparerAvailable(System.Array,System.Int32,Syste
 System.Void System.Array::Clear(System.Array,System.Int32,System.Int32)
 	r142142		spouliot - call ClearInternal (icall) after validating the parameters
 
-!SSC-97BD7FC919ABA8E1AABC3D9851AF6299
+!SSC-7884185740665938081787AF3812216D
 System.Void System.Array::Copy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
+	20110104	spouliot - compiler change (shorter IL generated)
 	r142142		spouliot - call FastCopy (icall) after minimal validation (more is done if the icall fails) then loop calls on GetValueImpl (icall) and SetValueImpl (icall) with validated indexes
 
-!SSC-DBBA120CB97C5ADC5B7C334E81ABC16D
+!SSC-2B66D139577C754F7C82DD2E31533AD1
 System.Void System.Array::InternalArray__set_Item<T>(System.Int32,T)
+	20110104	spouliot - no source change / compiler
 	r142142		spouliot - call SetGenericValueImpl (icall without bounds checking) with validated 'index' value
 
 !SSC-54F9AD1207C487AD18D31D158E83022B
@@ -1838,8 +1853,9 @@ System.Void System.Array::SetValue(System.Object,System.Int32)
 System.Void System.Array::SetValue(System.Object,System.Int32[])
 	r144558		spouliot - visible icall. null-check/exception-thrown in unmanaged code for 'idxs'
 
-!SSC-3BE8297B0244C6551D3549BEFBCA5B97
+!SSC-63DFF93CC5767C5E9936C6C517D641EF
 System.Void System.Array::SortImpl(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
+	20110104	spouliot - compiler change
 	r160527		spouliot - changed to call CheckComparerAvailable (instead of MoveNullKeysToFront) only when comparer is null
 	r159551		spouliot - additional condition (type check) on 'items' parameter before enable the fast-path
 	r145677		spouliot - new method refactored from Sort (see below)
@@ -2107,8 +2123,9 @@ System.Void System.NumberFormatter::.cctor()
 System.Void System.Reflection.AssemblyName::.ctor(System.String)
 	r142142		spouliot - call ParseName (icall) and throw if it return false
 
-!SSC-95F08F86F3F0BB3A66171A2E19997EA1
+!SSC-FEBE0256AFCAF8727486A0B58BA563B3
 System.Void System.Reflection.CustomAttributeData::ResolveArguments()
+	20110104	spouliot - no source change, compiler changed !!0 to T[] on calls to Array::AsReadOnly
 	20100826	spouliot - 2913acfc - lazy revolve - calls ResolveArgumentsInternal (icall) using parameters acquired by the internal ctor
 
 !SSC-74D7B977EE89A5E7C818A32D115628CB
@@ -2251,8 +2268,9 @@ System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroByt
 System.Void System.Security.SecurityManager::.cctor()
 	r155633		spouliot - set HasElevatedPermissions [SecurityCritical] based on SecurityEnabled state (for 2,1 code outside the plugin)
 
-!SSC-E8CB6E33517AAC9F83F19BA564EDA1EA
+!SSC-82F1D576E7F101EA3FB9C1AEB74924D1
 System.Void System.String::.cctor()
+	20110104	spouliot - new hash value with special care for compiler-generated <PrivateImplementationDetails>...
 	r147732		spouliot - call GetLOSLimit (parameter-less icall) to initialize LOS_limit readonly static int32 variable
 
 !SSC-33549640E201BCF91E45FA4E714BF26F
@@ -2376,8 +2394,9 @@ System.Void System.WeakReference::Finalize()
 System.Void System.WeakReference::set_Target(System.Object)
 	r142142		spouliot - get the Target property of it's private GCHandle (SecurityCritical)
 
-!SSC-FE11A33623F85F5144290AB55CE0E171
+!SSC-172F7FBB08B93CA30C5B063120FC6893
 T System.Array::InternalArray__get_Item<T>(System.Int32)
+	20110104	spouliot - no source change / compiler
 	r142142		spouliot - call GetGenericValueImpl<T> (icall without bounds checking) with validated 'index' value
 
 !SSC-C4A7D6A546FE71498196D4DA94671B48
