@@ -1,10 +1,3 @@
-/*
-tests.push ("timecode-short-h264.mp4");
-results ["timecode-short-h264.mp4"] = [
-"MediaOpened",
-"MediaEnded"
-]
-*/
 tests.push ("embedded-script-commands.wmv");
 results ["embedded-script-commands.wmv"] = [
 "MediaOpened", 
@@ -93,4 +86,29 @@ results ["timecode-short-wmv9.wmv"] = ["MediaOpened", "MediaEnded"];
 tests.push ("timecode.wmv");
 results ["timecode.wmv"] = ["MediaFailed"];
 
+/*
+  ffmpeg -y -vframes 61 -i timecode.wmv -s 208x160 timecode-short.y4m
+  x264 -o timecode-short-h264.mp4 timecode-short.y4m
+  x264 -o timecode-short-h264-baseline.mp4 timecode-short.y4m  --profile baseline
+  x264 -o timecode-short-h264-main.mp4 timecode-short.y4m  --profile main
+  x264 -o timecode-short-h264-high.mp4 timecode-short.y4m  --profile high
+  ffmpeg -y -i timecode-short.wmv timecode-short-mp43.mp4 -vcodec mp43
+  rm -f timecode-short.y4m
+*/
+tests.push ("timecode-short-h264.mp4");
+results ["timecode-short-h264.mp4"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-h264-baseline.mp4");
+results ["timecode-short-h264-baseline.mp4"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-h264-main.mp4");
+results ["timecode-short-h264-main.mp4"] = ["MediaOpened", "MediaEnded"];
+
+tests.push ("timecode-short-h264-high.mp4");
+results ["timecode-short-h264-high.mp4"] = ["MediaOpened", "MediaEnded"];
+
+// MSDN says: "Supports H.264 and MP43 codecs."  http://msdn.microsoft.com/en-us/library/cc189080(VS.95).aspx
+// SL doesn't agree.
+tests.push ("timecode-short-mp43.mp4");
+results ["timecode-short-mp43.mp4"] = ["MediaFailed"];
 
