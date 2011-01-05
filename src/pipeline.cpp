@@ -2022,7 +2022,7 @@ ProgressiveSource::CheckReadRequests ()
 
 	if (size == -1) {
 		/* We can't do byte-range-requests if we don't have a size */
-		printf ("ProgressiveSource::CheckReadRequests (): can't do brr because size is not known\n");
+		LOG_PIPELINE ("ProgressiveSource::CheckReadRequests (): can't do brr because size is not known\n");
 		return;
 	}
 
