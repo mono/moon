@@ -41,14 +41,34 @@ namespace Mono {
 	// <remarks>
 	//   Longer description
 	// </remarks>
-	sealed class EventHandlerData {
+	struct EventHandlerDataKey : IEquatable<EventHandlerDataKey>
+	{
 		public int Token;
+		public int EventId;
+
+		public override bool Equals (object obj)
+		{
+			 return obj is EventHandlerDataKey ? Equals ((EventHandlerDataKey) obj) : false;
+		}
+
+		public bool Equals (EventHandlerDataKey other)
+		{
+			return Token == other.Token && EventId == other.EventId;
+		}
+
+		public override int GetHashCode ()
+		{
+			 return Token << 16 | EventId;
+		}
+	}
+
+	sealed class EventHandlerData {
 		public Delegate ManagedDelegate;
 		public UnmanagedEventHandler NativeHandler;
 		public GDestroyNotify DtorAction;
 	}
 
-	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
+	sealed class EventHandlerList : Dictionary<EventHandlerDataKey, EventHandlerData> {
 
 		public EventHandlerList (INativeEventObjectWrapper wrapper)
 		{
@@ -61,41 +81,19 @@ namespace Mono {
 
 		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, GDestroyNotify dtor_action)
 		{
-			Dictionary<int, EventHandlerData> events;
-
-			if (ContainsKey (eventId)) {
-				events = this[eventId];
-			}
-			else {
-				events = new Dictionary<int, EventHandlerData>();
-				Add (eventId, events);
-			}
-
-			events.Add (token, new EventHandlerData () {
-						Token = token,
-						ManagedDelegate = managedDelegate,
-						NativeHandler = nativeHandler,
-						DtorAction = dtor_action });
+			Add (new EventHandlerDataKey {
+					EventId = eventId,
+					Token = token
+			}, new EventHandlerData {
+					ManagedDelegate = managedDelegate,
+					NativeHandler = nativeHandler,
+					DtorAction = dtor_action
+			});
 		}
 
 		private void RemoveHandler (int eventId, int token)
 		{
-			if (ContainsKey (eventId))
-				this[eventId].Remove (token);
-		}
-
-		private UnmanagedEventHandler LookupHandler (int eventId, Delegate managedDelegate)
-		{
-			if (ContainsKey (eventId)) {
-				Dictionary<int, EventHandlerData> events = this[eventId];
-
-				foreach (EventHandlerData data in events.Values) {
-					if (data.ManagedDelegate == managedDelegate)
-						return data.NativeHandler;
-				}
-			}
-
-			return null;
+			Remove (new EventHandlerDataKey { EventId = eventId, Token = token });
 		}
 
 		public void RegisterEvent (INativeEventObjectWrapper obj, int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
@@ -136,12 +134,12 @@ namespace Mono {
 
 		public void UnregisterEvent (IntPtr obj, int eventId, Delegate managedHandler)
 		{
-			UnmanagedEventHandler nativeHandler = LookupHandler (eventId, managedHandler);
-
-			if (nativeHandler == null)
-				return;
-
-			Events.RemoveHandler (obj, eventId, nativeHandler);
+			foreach (var keypair in this) {
+				if (keypair.Key.EventId == eventId && keypair.Value.ManagedDelegate == managedHandler) {
+					Events.RemoveHandler (obj, eventId, keypair.Value.NativeHandler);
+					return;
+				}
+			}
 		}
 	}
 	
