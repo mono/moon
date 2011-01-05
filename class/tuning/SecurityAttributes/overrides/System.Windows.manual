@@ -70,12 +70,8 @@
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::AddStrongRef(System.IntPtr,System.IntPtr,System.String)
 +SC-M: System.Void Mono.Surface::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
 +SC-M: System.Void System.Windows.Application::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
-#+SC-M: System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)
 +SC-M: System.Void System.Windows.DependencyObject::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
-#+SC-M: System.Void System.Windows.Deployment::AddStrongRef(System.IntPtr,System.String)
 +SC-M: System.Void System.Windows.FrameworkElement::AddStrongRef(System.IntPtr,System.String)
-#+SC-M: System.Void System.Windows.FrameworkTemplate::AddStrongRef(System.IntPtr,System.String)
-#+SC-M: System.Void System.Windows.Media.Animation.Timeline::AddStrongRef(System.IntPtr,System.String)
 +SC-M: System.Void System.Windows.RoutedEventArgs::Mono.IRefContainer.AddStrongRef(System.IntPtr,System.String)
 
 # too many new helpers don't require to be critical so we'll be more precise with them
@@ -105,6 +101,7 @@
 +SC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyC::<>m__C(System.IntPtr,System.IntPtr,System.IntPtr)
 
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(Mono.INativeEventObjectWrapper)
++SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(System.IntPtr)
 +SC-M: System.Boolean Mono.NativeDependencyObjectHelper::AddNativeMapping(System.IntPtr,Mono.INativeEventObjectWrapper)
 +SC-M: System.Object Mono.NativeDependencyObjectHelper::CreateObject(Mono.Kind,System.IntPtr)
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::ClearManagedPeerCallbacks(Mono.INativeEventObjectWrapper)
@@ -201,7 +198,7 @@
 +SC-M: System.Void System.Windows.Media.MediaStreamSource::SetMediaElement(System.Windows.Controls.MediaElement)
 +SC-M: System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
 
-+SC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr&,System.IntPtr)
++SC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUri(System.Int32,System.Int32,System.Int32,System.IntPtr&)
 
 +SC-M: System.Object System.Windows.Data.BindingExpressionBase::ConvertToType(System.Windows.DependencyProperty,System.Object)
 +SC-M: System.Void System.Windows.Data.BindingExpressionBase::PropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)

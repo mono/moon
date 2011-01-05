@@ -95,8 +95,8 @@ namespace System.Windows.Controls
 		{
 			base.OnKeyUp (e);
 			
-			if (e.Handled)
-				NativeMethods.text_box_base_on_key_up (native,e.NativeHandle);
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_key_up (native, e.NativeHandle);
 		}
 		
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)

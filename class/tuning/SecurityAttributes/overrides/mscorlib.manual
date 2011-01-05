@@ -196,7 +196,7 @@
 +SC-M: System.String[] System.Environment::GetLogicalDrives()
 +SC-M: System.String System.Environment::ReadXdgUserDir(System.String,System.String,System.String,System.String)
 +SC-M: System.String System.Environment::ExpandEnvironmentVariables(System.String)
-+SC-M: System.String System.Environment::InternalGetFolderPath(System.Environment/SpecialFolder)
++SC-M: System.String System.Environment::UnixGetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SC-M: System.Void System.GC::Collect(System.Int32)
 +SC-M: System.Void System.GC::Collect(System.Int32,System.GCCollectionMode)
 +SC-M: System.Void System.GC::AddMemoryPressure(System.Int64)

@@ -132,7 +132,7 @@ namespace System.Windows {
 			get {
 				IntPtr dep = NativeMethods.deployment_get_current ();
 				if (dep == IntPtr.Zero)
-					throw null;
+					return null;
 				return (Deployment) (NativeDependencyObjectHelper.Lookup (dep) ?? NativeDependencyObjectHelper.CreateObject (Kind.DEPLOYMENT, dep));
 			}
 
