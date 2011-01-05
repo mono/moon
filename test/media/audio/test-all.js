@@ -51,3 +51,7 @@ results ["miguel.mp3"] = ["MediaOpened", "MediaEnded"];
 
 tests.push ("miguel.wma");
 results ["miguel.wma"] = ["MediaOpened", "MediaEnded"];
+
+// ffmpeg -y -i miguel.mp3 miguel.mp4
+tests.push ("miguel.mp4");
+results ["miguel.mp4"] = ["MediaOpened", "MediaEnded"];
