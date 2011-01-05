@@ -32,7 +32,7 @@ using System.Windows.Media;
 namespace System.Windows.Automation.Peers {
 	public abstract class ItemAutomationPeer : FrameworkElementAutomationPeer {
 
-		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl) uielement)
+		protected ItemAutomationPeer (UIElement item) : base ((ContentControl) item)
 		{
 		}
 

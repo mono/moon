@@ -32,9 +32,9 @@ using System.Windows.Controls.Primitives;
 namespace System.Windows.Automation.Peers {
 	public abstract class SelectorItemAutomationPeer : ItemAutomationPeer, ISelectionItemProvider {
 
-		protected SelectorItemAutomationPeer (UIElement uielement) : base (uielement)
+		protected SelectorItemAutomationPeer (UIElement owner) : base (owner)
 		{
-			ListBoxItem listboxitem = uielement as ListBoxItem;
+			ListBoxItem listboxitem = owner as ListBoxItem;
 			if (listboxitem != null) {
 				// SelectionItem Pattern Automation Events
 				// - SelectionContainerProperty

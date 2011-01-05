@@ -71,14 +71,14 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_resume (native);
 		}
 
-		public void Seek (TimeSpan timespan)
+		public void Seek (TimeSpan offset)
 		{
-			NativeMethods.storyboard_seek (native, timespan.Ticks);
+			NativeMethods.storyboard_seek (native, offset.Ticks);
 		}
 
-		public void SeekAlignedToLastTick (TimeSpan seekTime)
+		public void SeekAlignedToLastTick (TimeSpan offset)
 		{
-			NativeMethods.storyboard_seek_aligned_to_last_tick (native, seekTime.Ticks);
+			NativeMethods.storyboard_seek_aligned_to_last_tick (native, offset.Ticks);
 		}
 		
 		public void SkipToFill ()

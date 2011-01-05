@@ -60,9 +60,9 @@ namespace System.Windows.Media.Imaging
 			Invalidate ();
 		}
 
-		public WriteableBitmap (int width, int height) : base (SafeNativeMethods.writeable_bitmap_new (), true)
+		public WriteableBitmap (int pixelWidth, int pixelHeight) : base (SafeNativeMethods.writeable_bitmap_new (), true)
 		{
-			AllocatePixels (width, height);
+			AllocatePixels (pixelWidth, pixelHeight);
 			PinAndSetBitmapData ();
 
 			Invalidate ();

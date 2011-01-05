@@ -31,7 +31,7 @@ namespace System.Windows.Media {
 
 	public sealed partial class RadialGradientBrush : GradientBrush {
 
-		public RadialGradientBrush (Color startColor, Color stopColor)
+		public RadialGradientBrush (Color startColor, Color endColor)
 			: this ()
 		{
 			GradientStop start = new GradientStop ();
@@ -40,16 +40,16 @@ namespace System.Windows.Media {
 			GradientStops.Add (start);
 
 			GradientStop stop = new GradientStop ();
-			stop.Color = stopColor;
+			stop.Color = endColor;
 			stop.Offset = 1.0d;
 			GradientStops.Add (stop);
 		}
 		
-		public RadialGradientBrush (GradientStopCollection gradientStops)
+		public RadialGradientBrush (GradientStopCollection gradientStopCollection)
 			: this ()
 		{
-			if (gradientStops != null)
-				GradientStops = gradientStops;
+			if (gradientStopCollection != null)
+				GradientStops = gradientStopCollection;
 		}
 	}
 }

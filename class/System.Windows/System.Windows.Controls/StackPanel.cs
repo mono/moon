@@ -48,14 +48,14 @@ namespace System.Windows.Controls {
 			sp.InvalidateArrange ();
 		}
 
-		protected override sealed Size MeasureOverride (Size availableSize)
+		protected override sealed Size MeasureOverride (Size constraint)
 		{
 			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
 			Size measured = new Size (0, 0);
 			
 			if (Orientation == Orientation.Vertical) {
 				// Vertical layout
-				childAvailable.Width = availableSize.Width;
+				childAvailable.Width = constraint.Width;
 				if (!Double.IsNaN (this.Width))
 					childAvailable.Width = this.Width;
 				
@@ -63,7 +63,7 @@ namespace System.Windows.Controls {
 				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
 			} else {
 				// Horizontal layout
-				childAvailable.Height = availableSize.Height;
+				childAvailable.Height = constraint.Height;
 				if (!Double.IsNaN (this.Height))
 					childAvailable.Height = this.Height;
 				
@@ -88,9 +88,9 @@ namespace System.Windows.Controls {
 			return measured;
 		}
 
-		protected override sealed Size ArrangeOverride (Size finalSize)
+		protected override sealed Size ArrangeOverride (Size arrangeSize)
 		{
-			Size arranged = finalSize;
+			Size arranged = arrangeSize;
 			
 			if (Orientation == Orientation.Vertical)
 				arranged.Height = 0;
@@ -102,7 +102,7 @@ namespace System.Windows.Controls {
 				Size size = child.DesiredSize;
 				
 				if (Orientation == Orientation.Vertical) {
-					size.Width = finalSize.Width;
+					size.Width = arrangeSize.Width;
 					
 					Rect childFinal = new Rect (0, arranged.Height, size.Width, size.Height);
 					
@@ -114,7 +114,7 @@ namespace System.Windows.Controls {
 					arranged.Width = Math.Max (arranged.Width, size.Width);
 					arranged.Height += size.Height;
 				} else {
-					size.Height = finalSize.Height;
+					size.Height = arrangeSize.Height;
 					
 					Rect childFinal = new Rect (arranged.Width, 0, size.Width, size.Height);
 					if (childFinal.IsEmpty)
@@ -128,9 +128,9 @@ namespace System.Windows.Controls {
 			}
 			
 			if (Orientation == Orientation.Vertical)
-				arranged.Height = Math.Max (arranged.Height, finalSize.Height);
+				arranged.Height = Math.Max (arranged.Height, arrangeSize.Height);
 			else
-				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
+				arranged.Width = Math.Max (arranged.Width, arrangeSize.Width);
 			
 			return arranged;
 		}

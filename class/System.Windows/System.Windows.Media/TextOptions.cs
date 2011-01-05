@@ -27,15 +27,14 @@
 namespace System.Windows.Media {
 	public static partial class TextOptions {
 
-		public static TextHintingMode GetTextHintingMode (FrameworkElement element)
+		public static TextHintingMode GetTextHintingMode (FrameworkElement target)
 		{
-			return (TextHintingMode) element.GetValue (TextOptions.TextHintingModeProperty);
+			return (TextHintingMode) target.GetValue (TextOptions.TextHintingModeProperty);
 		}
 
-		public static void SetTextHintingMode (FrameworkElement element, TextHintingMode textHintingMode)
+		public static void SetTextHintingMode (FrameworkElement target, TextHintingMode textHintingMode)
 		{
-			element.SetValue (TextOptions.TextHintingModeProperty, textHintingMode);
+			target.SetValue (TextOptions.TextHintingModeProperty, textHintingMode);
 		}
-
 	}
 }

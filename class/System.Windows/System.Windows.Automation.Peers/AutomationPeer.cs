@@ -44,14 +44,14 @@ namespace System.Windows.Automation.Peers {
 			set;
 		}
 
-		public void RaiseAutomationEvent (AutomationEvents events)
+		public void RaiseAutomationEvent (AutomationEvents eventId)
 		{
-			AutomationSingleton.Instance.RaiseAutomationEvent (this, events);
+			AutomationSingleton.Instance.RaiseAutomationEvent (this, eventId);
 		}
 
-		public static bool ListenerExists (AutomationEvents events)
+		public static bool ListenerExists (AutomationEvents eventId)
 		{
-			return AutomationSingleton.Instance.ListenerExists (events);
+			return AutomationSingleton.Instance.ListenerExists (eventId);
 		}
 
 		protected IRawElementProviderSimple ProviderFromPeer (AutomationPeer peer)

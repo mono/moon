@@ -63,9 +63,9 @@ namespace System.Windows.Controls {
 			return panel.TemplateOwner as ItemsControl;
 		}
 
-		public static ItemsControl ItemsControlFromItemContainer (DependencyObject element)
+		public static ItemsControl ItemsControlFromItemContainer (DependencyObject container)
 		{
-			var e = element as FrameworkElement;
+			var e = container as FrameworkElement;
 			if (e == null)
 				return null;
 

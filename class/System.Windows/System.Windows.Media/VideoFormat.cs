@@ -35,8 +35,8 @@ namespace System.Windows.Media {
 		}
 
 		public VideoFormat (PixelFormatType pixelFormat,
-				    int height,
 				    int width,
+				    int height,
 				    float framesPerSecond)
 		{
 			this.framesPerSecond = framesPerSecond;

@@ -72,15 +72,15 @@ namespace System.Windows.Controls
 			ChangeVisualState (false);
 		}
 		
-		protected override void OnKeyDown (KeyEventArgs k)
+		protected override void OnKeyDown (KeyEventArgs e)
 		{
 			// Chain up to our parent first, so that TabNavigation
 			// works as well as allowing developers to filter our
 			// input.
-			base.OnKeyDown (k);
+			base.OnKeyDown (e);
 			
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_key_down (native, e.NativeHandle);
 		}
 
 		internal override void PostOnKeyDown (KeyEventArgs k)
@@ -91,12 +91,12 @@ namespace System.Windows.Controls
 				NativeMethods.text_box_base_post_on_key_down (native, k.NativeHandle);
 		}
 		
-		protected override void OnKeyUp (KeyEventArgs k)
+		protected override void OnKeyUp (KeyEventArgs e)
 		{
-			base.OnKeyUp (k);
+			base.OnKeyUp (e);
 			
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
+			if (e.Handled)
+				NativeMethods.text_box_base_on_key_up (native,e.NativeHandle);
 		}
 		
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)

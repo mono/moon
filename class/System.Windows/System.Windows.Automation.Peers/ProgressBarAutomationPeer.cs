@@ -43,16 +43,16 @@ namespace System.Windows.Automation.Peers {
 			return AutomationControlType.ProgressBar;
 		}
 
-		public override object GetPattern (PatternInterface pattern)
+		public override object GetPattern (PatternInterface patternInterface)
 		{
-			if (pattern == PatternInterface.RangeValue) {
+			if (patternInterface == PatternInterface.RangeValue) {
 				if (!OwningProgressBar.IsIndeterminate)
 					return this;
 				else
 					return null;
 			}
 
-			return base.GetPattern (pattern);
+			return base.GetPattern (patternInterface);
 		}
 
 		protected override string GetClassNameCore ()

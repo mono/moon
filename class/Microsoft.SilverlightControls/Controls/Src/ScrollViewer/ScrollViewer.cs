@@ -369,9 +369,9 @@ namespace System.Windows.Controls
         }
 
         [MonoTODO ("what does this do differently?")]
-        protected override Size MeasureOverride (Size availableSize)
+        protected override Size MeasureOverride (Size constraint)
         {
-            return base.MeasureOverride (availableSize);
+            return base.MeasureOverride (constraint);
         }
 
         void UpdateScrollBar (Orientation orientation, double value)

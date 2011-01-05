@@ -180,7 +180,7 @@ namespace System.Windows.Automation.Peers {
 			return ChildrenCore;
 		}
 
-		public override object GetPattern (PatternInterface pattern)
+		public override object GetPattern (PatternInterface patternInterface)
 		{
 			return null;
 		}

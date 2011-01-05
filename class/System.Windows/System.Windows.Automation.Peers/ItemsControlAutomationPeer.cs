@@ -31,9 +31,9 @@ using System.Linq;
 namespace System.Windows.Automation.Peers {
 
 	public abstract class ItemsControlAutomationPeer : FrameworkElementAutomationPeer {
-		protected ItemsControlAutomationPeer (ItemsControl items) : base (items)
+		protected ItemsControlAutomationPeer (ItemsControl owner) : base (owner)
 		{
-			items.Items.ItemsChanged += (o, e) => {
+			owner.Items.ItemsChanged += (o, e) => {
 				RaiseAutomationEvent (AutomationEvents.StructureChanged);
 			};
 		}
@@ -43,19 +43,19 @@ namespace System.Windows.Automation.Peers {
 			throw new NotImplementedException ();
 		}
 		
-		public override object GetPattern (PatternInterface pattern)
+		public override object GetPattern (PatternInterface patternInterface)
 		{
-			if (pattern == PatternInterface.Scroll) {
+			if (patternInterface == PatternInterface.Scroll) {
 				ScrollViewer patternImplementor = ScrollPatternImplementor;
 				if (patternImplementor != null) {
 					AutomationPeer peer
 						= FrameworkElementAutomationPeer.CreatePeerForElement (patternImplementor);
-					return peer.GetPattern (pattern);
+					return peer.GetPattern (patternInterface);
 				}
 				return null;
 			}
 
-			return base.GetPattern (pattern);
+			return base.GetPattern (patternInterface);
 		}
 
 		protected override List<AutomationPeer> GetChildrenCore ()

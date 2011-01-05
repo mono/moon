@@ -52,7 +52,7 @@ namespace System.Runtime.InteropServices.Automation {
 			throw new NotImplementedException ();
 		}
 
-		public static AutomationEvent GetEvent (object comAutomationObject, string eventName)
+		public static AutomationEvent GetEvent (object automationObject, string eventName)
 		{
 			Console.WriteLine ("System.Runtime.InteropServices.Automation.AutomationFactory.GetEvent: NIEX");
 			throw new NotImplementedException ();

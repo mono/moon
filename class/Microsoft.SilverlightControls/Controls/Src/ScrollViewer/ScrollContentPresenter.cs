@@ -156,26 +156,26 @@ namespace System.Windows.Controls
             sv.InvalidateScrollInfo ();
         }
 
-        protected override Size MeasureOverride(Size availableSize) 
+        protected override Size MeasureOverride(Size constraint)
         { 
             if (null == ScrollOwner || _contentRoot == null)
-                return base.MeasureOverride(availableSize);
+                return base.MeasureOverride(constraint);
 
             Size ideal = new Size (
-                CanHorizontallyScroll ? double.PositiveInfinity : availableSize.Width,
-                CanVerticallyScroll ? double.PositiveInfinity : availableSize.Height
+                CanHorizontallyScroll ? double.PositiveInfinity : constraint.Width,
+                CanVerticallyScroll ? double.PositiveInfinity : constraint.Height
             );
 
             _contentRoot.Measure (ideal);
-            UpdateExtents (availableSize, _contentRoot.DesiredSize);
+            UpdateExtents (constraint, _contentRoot.DesiredSize);
 
-            return availableSize.Min (extents);
+            return constraint.Min (extents);
         } 
 
-        protected override Size ArrangeOverride(Size finalSize)
+        protected override Size ArrangeOverride(Size arrangeSize)
         { 
             if (null == ScrollOwner || _contentRoot == null) 
-                return base.ArrangeOverride(finalSize); 
+                return base.ArrangeOverride(arrangeSize);
 
             if (ClampOffsets ())
                 ScrollOwner.InvalidateScrollInfo ();
@@ -186,10 +186,10 @@ namespace System.Windows.Controls
                 -VerticalOffset
             );
 
-            _contentRoot.Arrange(new Rect (start, desired.Max (finalSize))); 
-            ClippingRectangle.Rect = new Rect (new Point (0, 0), finalSize); 
-            UpdateExtents (finalSize, extents);
-            return finalSize;
+            _contentRoot.Arrange(new Rect (start, desired.Max (arrangeSize)));
+            ClippingRectangle.Rect = new Rect (new Point (0, 0), arrangeSize);
+            UpdateExtents (arrangeSize, extents);
+            return arrangeSize;
         } 
         
         void UpdateExtents (Size viewport, Size extents)

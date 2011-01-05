@@ -30,11 +30,11 @@ namespace System.Windows.Media {
 
 	public sealed partial class LinearGradientBrush : GradientBrush {
 
-		public LinearGradientBrush (GradientStopCollection gradientStops, double angle)
+		public LinearGradientBrush (GradientStopCollection gradientStopCollection, double angle)
 			: this ()
 		{
-			if (gradientStops != null)
-				GradientStops = gradientStops;
+			if (gradientStopCollection != null)
+				GradientStops = gradientStopCollection;
 
 			double radian = angle * Math.PI / 180;
 			EndPoint = new Point (Math.Cos (radian), Math.Sin (radian));

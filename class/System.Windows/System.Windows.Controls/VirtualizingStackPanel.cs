@@ -85,12 +85,12 @@ namespace System.Windows.Controls {
 			return (VirtualizationMode) element.GetValue (VirtualizingStackPanel.VirtualizationModeProperty);
 		}
 		
-		public static void SetVirtualizationMode (DependencyObject element, VirtualizationMode mode)
+		public static void SetVirtualizationMode (DependencyObject element, VirtualizationMode value)
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
 			
-			element.SetValue (VirtualizingStackPanel.VirtualizationModeProperty, mode);
+			element.SetValue (VirtualizingStackPanel.VirtualizationModeProperty, value);
 		}
 
 		bool canHorizontallyScroll;
@@ -154,7 +154,7 @@ namespace System.Windows.Controls {
 		//
 		// Method Overrides
 		//
-		protected override Size MeasureOverride (Size availableSize)
+		protected override Size MeasureOverride (Size constraint)
 		{
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
 			Size measured = new Size (0, 0);
@@ -175,7 +175,7 @@ namespace System.Windows.Controls {
 				GeneratorPosition start;
 				int insertAt;
 				
-				Size childAvailable = availableSize;
+				Size childAvailable = constraint;
 				if (CanHorizontallyScroll || Orientation == Orientation.Horizontal)
 					childAvailable.Width = double.PositiveInfinity;
 				if (CanVerticallyScroll || Orientation == Orientation.Vertical)
@@ -213,13 +213,13 @@ namespace System.Windows.Controls {
 							measured.Width = Math.Max (measured.Width, size.Width);
 							measured.Height += size.Height;
 							
-							if (measured.Height > availableSize.Height)
+							if (measured.Height > constraint.Height)
 								beyond++;
 						} else {
 							measured.Height = Math.Max (measured.Height, size.Height);
 							measured.Width += size.Width;
 							
-							if (measured.Width > availableSize.Width)
+							if (measured.Width > constraint.Width)
 								beyond++;
 						}
 					}
@@ -252,8 +252,8 @@ namespace System.Windows.Controls {
 					invalidate = true;
 				}
 				
-				if (ViewportWidth != availableSize.Width) {
-					ViewportWidth = availableSize.Width;
+				if (ViewportWidth != constraint.Width) {
+					ViewportWidth = constraint.Width;
 					invalidate = true;
 				}
 			} else {
@@ -267,8 +267,8 @@ namespace System.Windows.Controls {
 					invalidate = true;
 				}
 				
-				if (ViewportHeight != availableSize.Height) {
-					ViewportHeight = availableSize.Height;
+				if (ViewportHeight != constraint.Height) {
+					ViewportHeight = constraint.Height;
 					invalidate = true;
 				}
 				
@@ -284,9 +284,9 @@ namespace System.Windows.Controls {
 			return measured;
 		}
 		
-		protected override Size ArrangeOverride (Size finalSize)
+		protected override Size ArrangeOverride (Size arrangeSize)
 		{
-			Size arranged = finalSize;
+			Size arranged = arrangeSize;
 			
 			if (Orientation == Orientation.Vertical)
 				arranged.Height = 0;
@@ -297,7 +297,7 @@ namespace System.Windows.Controls {
 			foreach (UIElement child in Children) {
 				Size size = child.DesiredSize;
 				if (Orientation == Orientation.Vertical) {
-					size.Width = finalSize.Width;
+					size.Width = arrangeSize.Width;
 					Rect childFinal = new Rect (-HorizontalOffset, arranged.Height, size.Width, size.Height);
 
 					if (childFinal.IsEmpty)
@@ -308,7 +308,7 @@ namespace System.Windows.Controls {
 					arranged.Width = Math.Max (arranged.Width, size.Width);
 					arranged.Height += size.Height;
 				} else {
-					size.Height = finalSize.Height;
+					size.Height = arrangeSize.Height;
 					Rect childFinal = new Rect (arranged.Width, -VerticalOffset, size.Width, size.Height);
 
 					if (childFinal.IsEmpty)
@@ -322,9 +322,9 @@ namespace System.Windows.Controls {
 			}
 			
 			if (Orientation == Orientation.Vertical)
-				arranged.Height = Math.Max (arranged.Height, finalSize.Height);
+				arranged.Height = Math.Max (arranged.Height, arrangeSize.Height);
 			else
-				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
+				arranged.Width = Math.Max (arranged.Width, arrangeSize.Width);
 			
 			return arranged;
 		}

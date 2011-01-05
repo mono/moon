@@ -60,9 +60,9 @@ namespace System.Windows {
 			Remove ((T) value);
 		}
 
-		void IList.Insert (int index, object value)
+		void IList.Insert (int index, object item)
 		{
-			Insert (index, (T) value);
+			Insert (index, (T) item);
 		}
 
 		object IList.this [int index] {
@@ -116,29 +116,29 @@ namespace System.Windows {
 			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, oldItem, index);
 		}
 
-		public void Add (T value)
+		public void Add (T item)
 		{
 			Value v;
-			using ((v = Value.FromObject (value)))
+			using ((v = Value.FromObject (item)))
 				Mono.NativeMethods.collection_add (native, ref v);
-			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, value, Count - 1);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, Count - 1);
 		}
 
-		public void Insert (int index, T value)
+		public void Insert (int index, T item)
 		{
 			Value v;
-			using ((v = Value.FromObject (value)))
+			using ((v = Value.FromObject (item)))
 				Mono.NativeMethods.collection_insert (native, index, ref v);
-			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, value, index);
+			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, index);
 		}
 
-		public bool Remove (T value)
+		public bool Remove (T item)
 		{
 			Value v;
-			var oldIndex = IndexOf (value);
-			using ((v = Value.FromObject (value))) {
+			var oldIndex = IndexOf (item);
+			using ((v = Value.FromObject (item))) {
 				if (Mono.NativeMethods.collection_remove (native, ref v)) {
-					CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, value, oldIndex);
+					CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, item, oldIndex);
 					return true;
 				}
 			}
@@ -157,24 +157,24 @@ namespace System.Windows {
 			}
 		}
 
-		public bool Contains (T value)
+		public bool Contains (T item)
 		{
 			Value v;
-			using ((v = Value.FromObject (value)))
+			using ((v = Value.FromObject (item)))
 				return NativeMethods.collection_contains (native, ref v);
 		}
 
-		public int IndexOf (T value)
+		public int IndexOf (T item)
 		{
 			Value v;
-			using ((v = Value.FromObject (value)))
+			using ((v = Value.FromObject (item)))
 				return NativeMethods.collection_index_of (native, ref v);
 		}
 
-		public void CopyTo (T [] array, int index)
+		public void CopyTo (T [] array, int arrayIndex)
 		{
 			foreach (var v in this)
-				array [index ++] = v;
+				array [arrayIndex ++] = v;
 		}
 
 		public IEnumerator<T> GetEnumerator ()

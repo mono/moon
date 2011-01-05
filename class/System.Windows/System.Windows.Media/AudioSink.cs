@@ -39,7 +39,7 @@ namespace System.Windows.Media {
 		protected abstract void OnCaptureStarted ();
 		protected abstract void OnCaptureStopped ();
 		protected abstract void OnFormatChange (AudioFormat audioFormat);
-		protected abstract void OnSamples (long sampleTime, long frameDuration, byte[] sampleData);
+		protected abstract void OnSamples (long sampleTimeInHundredNanoseconds, long sampleDurationInHundredNanoseconds, byte[] sampleData);
 	
 		public CaptureSource CaptureSource {
 			get {

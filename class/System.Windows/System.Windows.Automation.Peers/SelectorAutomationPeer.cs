@@ -63,12 +63,12 @@ namespace System.Windows.Automation.Peers {
 			oldSelectedPeer = GetSelectedAutomationPeer ();
 		}
 
-		public override object GetPattern (PatternInterface pattern)
+		public override object GetPattern (PatternInterface patternInterface)
 		{
-			if (pattern == PatternInterface.Selection)
+			if (patternInterface == PatternInterface.Selection)
 				return this;
 
-			return base.GetPattern (pattern);
+			return base.GetPattern (patternInterface);
 		}
 
 		protected override AutomationControlType GetAutomationControlTypeCore ()

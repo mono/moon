@@ -54,9 +54,9 @@ namespace System.Windows.Controls {
 			return (int) element.GetValue (Canvas.ZIndexProperty);
 		}
 		
-		public static void SetZIndex (UIElement element, int zindex)
+		public static void SetZIndex (UIElement element, int value)
 		{
-			element.SetValue (Canvas.ZIndexProperty, zindex);
+			element.SetValue (Canvas.ZIndexProperty, value);
 		}
 
 		protected sealed override Size ArrangeOverride (Size arrangeSize)

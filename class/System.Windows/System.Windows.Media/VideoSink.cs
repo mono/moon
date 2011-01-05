@@ -37,7 +37,7 @@ namespace System.Windows.Media {
 		protected abstract void OnCaptureStarted ();
 		protected abstract void OnCaptureStopped ();
 		protected abstract void OnFormatChange (VideoFormat videoFormat);
-		protected abstract void OnSample (long sampleTime, long frameDuration, byte[] sampleData);
+		protected abstract void OnSample (long sampleTimeInHundredNanoseconds, long frameDurationInHundredNanoseconds, byte[] sampleData);
 	
 		CaptureSource source;
 		public CaptureSource CaptureSource {

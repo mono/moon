@@ -44,9 +44,9 @@ namespace System.Windows.Controls.Primitives {
 			get; set;
 		}
 		
-		public override bool Equals (object obj)
+		public override bool Equals (object o)
 		{
-			return obj is GeneratorPosition && this == ((GeneratorPosition) obj);
+			return o is GeneratorPosition && this == ((GeneratorPosition) o);
 		}
 		
 		public override int GetHashCode ()

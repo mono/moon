@@ -30,7 +30,7 @@ using System.Collections.Generic;
 namespace System.Windows.Automation.Peers {
 
 	public class ListBoxAutomationPeer : SelectorAutomationPeer {
-		public ListBoxAutomationPeer (ListBox listbox) : base (listbox)
+		public ListBoxAutomationPeer (ListBox owner) : base (owner)
 		{
 		}
 

@@ -31,5 +31,6 @@ namespace System.ComponentModel {
 #endif
 	public enum NewItemPlaceholderPosition {
 		None,
+		AtEnd = 2,
 	}
 }

@@ -53,10 +53,10 @@ namespace System.Windows.Documents {
 			type = FontSourceType.ManagedStream;
 		}
 		
-		public FontSource (GlyphTypeface glyphTypeface)
+		public FontSource (GlyphTypeface glyphtypeface)
 		{
 			type = FontSourceType.GlyphTypeface;
-			typeface = glyphTypeface;
+			typeface = glyphtypeface;
 		}
 	}
 }
