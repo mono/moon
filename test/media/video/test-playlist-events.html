@@ -110,14 +110,6 @@
 					media.Stop ();
 				}
 				break;
-			case 3:
-				if (event == indexOfEvent ("MediaOpened")) {
-					logdebug ("Executing test #" + current);
-					executing = true;
-					setTimeout (Next, 1);
-					media.Source = "inexistent";
-				}
-				break;
 			default:
 				TestLogger.LogDebug ("Test Succeeded");
 				TestLogger.LogResult (1);
