@@ -33,7 +33,7 @@ class UIElement;
  */
 
 /* @Namespace=None */
-class EventArgs : public EventObject {
+class EventArgs : public DependencyObject {
 public:
 	EventArgs ();
 
