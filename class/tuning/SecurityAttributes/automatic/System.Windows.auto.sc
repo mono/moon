@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 592 methods needs to be decorated.
+# 593 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1719,6 +1719,9 @@
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
+
+# overrides 'System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)'.
++SC-M: System.Void System.Windows.ResourceDictionary::AddStrongRef(System.IntPtr,System.String)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)

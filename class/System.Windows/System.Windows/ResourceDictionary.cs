@@ -74,6 +74,7 @@ namespace System.Windows {
 
 		const string INTERNAL_TYPE_KEY_MAGIC_COOKIE = "___internal___moonlight___key___do___not__use___it___will___kill__cats__";
 
+		PresentationFrameworkCollection<ResourceDictionary> mergedDictionaries;
 		Uri source;
 
 		Dictionary<object, object> managedDict;
@@ -204,7 +205,22 @@ namespace System.Windows {
 				}
 			}
 		}
-		
+		internal override void AddStrongRef (IntPtr referent, string name)
+		{
+			if (name == "MergedDictionaries")
+				mergedDictionaries = (PresentationFrameworkCollection<ResourceDictionary>) Value.ToObject (referent);
+			else
+				base.AddStrongRef (referent, name);
+		}
+
+		internal override void ClearStrongRef (IntPtr referent, string name)
+		{
+			if (name == "MergedDictionaries")
+				mergedDictionaries = null;
+			else
+				base.ClearStrongRef (referent, name);
+		}
+
 		public Uri Source {
 			get { return (source = source ?? new Uri ("", UriKind.Relative)); }
 			set {

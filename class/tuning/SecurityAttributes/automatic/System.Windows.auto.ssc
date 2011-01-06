@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 634 methods
+# 635 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -476,6 +476,7 @@
 +SSC-M: System.Void System.Windows.ResourceDictionary::Initialize()
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
++SSC-M: System.Void System.Windows.ResourceDictionary::AddStrongRef(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
