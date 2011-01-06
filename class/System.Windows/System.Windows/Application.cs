@@ -257,7 +257,9 @@ namespace System.Windows {
 		{
 			styles_array = IntPtr.Zero;
 			try {
-				get_default_style_cb (fwe_ptr, out styles_array);
+				var fwe = NativeDependencyObjectHelper.FromIntPtr (fwe_ptr) as FrameworkElement;
+				if (fwe != null)
+					get_default_style_cb (fwe, out styles_array);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_style_cb_safe: {0}", ex);
@@ -266,9 +268,8 @@ namespace System.Windows {
 			}
 		}
 
-		void get_default_style_cb (IntPtr fwe_ptr, out IntPtr styles_array)
+		void get_default_style_cb (FrameworkElement fwe, out IntPtr styles_array)
 		{
-			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
 			Type fwe_type = fwe.GetType();
 			string fwe_type_string = fwe_type.ToString();
 			List<IntPtr> implicit_styles = new List<IntPtr> ();

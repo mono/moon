@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 634 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -387,7 +387,7 @@
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
 +SSC-M: System.Windows.InstallState System.Windows.Application::get_InstallState()
 +SSC-M: System.Boolean System.Windows.Application::Install()
-+SSC-M: System.Void System.Windows.Application::get_default_style_cb(System.IntPtr,System.IntPtr&)
++SSC-M: System.Void System.Windows.Application::get_default_style_cb(System.Windows.FrameworkElement,System.IntPtr&)
 +SSC-M: System.Void System.Windows.Application::convert_setter_values_cb(System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::CheckAndDownloadUpdateAsync()
 +SSC-M: System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
@@ -476,7 +476,6 @@
 +SSC-M: System.Void System.Windows.ResourceDictionary::Initialize()
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
-+SSC-M: System.Void System.Windows.ResourceDictionary::AddStrongRef(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
