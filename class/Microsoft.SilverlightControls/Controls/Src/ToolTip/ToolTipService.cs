@@ -33,9 +33,11 @@ namespace System.Windows.Controls
         private static DispatcherTimer _openTimer;
         private static UIElement _owner;
         private static FrameworkElement _rootVisual; 
-        private static Dictionary<UIElement, ToolTip> _toolTipDictionary = new Dictionary<UIElement, ToolTip>(); 
 
         #endregion Data 
+
+        static readonly DependencyProperty AssignedToolTipProperty =
+            DependencyProperty.Register ("AssignedToolTip", typeof (ToolTip), typeof (UIElement), null);
 
         #region Placement Property
         public static readonly DependencyProperty PlacementProperty =
@@ -213,7 +215,7 @@ namespace System.Windows.Controls
             UIElement senderElement = (UIElement)sender;
             if (ToolTipService._currentToolTip != null)
             { 
-                if (ToolTipService._toolTipDictionary [senderElement] != ToolTipService._currentToolTip)
+                if (senderElement.GetValue (AssignedToolTipProperty) != ToolTipService._currentToolTip)
                 {
                     // first close the previous ToolTip if entering nested elements with tooltips 
                     CloseAutomaticToolTip(null, EventArgs.Empty); 
@@ -397,9 +399,8 @@ namespace System.Windows.Controls
             ToolTipService._openTimer.Stop();
  
             Debug.Assert(ToolTipService._owner != null, "ToolTip owner was not set prior to starting the open timer"); 
-            Debug.Assert(ToolTipService._toolTipDictionary[ToolTipService._owner] != null, "ToolTip must have been registered");
  
-            ToolTipService._currentToolTip = ToolTipService._toolTipDictionary[ToolTipService._owner];
+            ToolTipService._currentToolTip = (ToolTip) ToolTipService._owner.GetValue (AssignedToolTipProperty);
 
             ToolTipService._currentToolTip.PlacementOverride = ToolTipService.GetPlacement (_owner);
             ToolTipService._currentToolTip.PlacementTargetOverride = ToolTipService.GetPlacementTarget (_owner) ?? _owner;
@@ -424,8 +425,7 @@ namespace System.Windows.Controls
         } 
 		 */
         private static void RegisterToolTip(UIElement owner, object toolTip)
-        { 
-            Debug.Assert(!ToolTipService._toolTipDictionary.ContainsKey(owner), "duplicate tooltip for the same owner element"); 
+        {
             Debug.Assert(owner != null, "ToolTip must have an owner");
             Debug.Assert(toolTip != null, "ToolTip can not be null"); 
 
@@ -433,7 +433,7 @@ namespace System.Windows.Controls
             owner.MouseLeave += new MouseEventHandler(OnOwnerMouseLeave); 
             owner.MouseLeftButtonDown += new MouseButtonEventHandler(OnOwnerMouseLeftButtonDown);
             owner.KeyDown += new KeyEventHandler(OnOwnerKeyDown);
-            ToolTipService._toolTipDictionary[owner] = ConvertToToolTip(toolTip); 
+            owner.SetValue (AssignedToolTipProperty, ConvertToToolTip(toolTip));
         } 
 
         private static void SetRootVisual() 
@@ -444,7 +444,7 @@ namespace System.Windows.Controls
                 if (ToolTipService._rootVisual != null)
                 { 
                     // keep caching mouse position because we can't query it from Silverlight 
-		    ToolTipService._rootVisual.MouseMove += new MouseEventHandler(OnRootMouseMove);
+                    ToolTipService._rootVisual.MouseMove += new MouseEventHandler(OnRootMouseMove);
                 }
             }
         } 
@@ -453,7 +453,7 @@ namespace System.Windows.Controls
         {
             Debug.Assert(owner != null, "owner element is required"); 
  
-            if (!ToolTipService._toolTipDictionary.ContainsKey(owner))
+            if (owner.GetValue (AssignedToolTipProperty) == null)
             { 
                 return;
             }
@@ -463,7 +463,7 @@ namespace System.Windows.Controls
             owner.MouseLeftButtonDown -= new MouseButtonEventHandler(OnOwnerMouseLeftButtonDown); 
             owner.KeyDown -= new KeyEventHandler(OnOwnerKeyDown); 
 
-            ToolTip toolTip = ToolTipService._toolTipDictionary[owner]; 
+            ToolTip toolTip = (ToolTip) owner.GetValue (AssignedToolTipProperty);
             if (toolTip.IsOpen)
             {
                 if (toolTip == ToolTipService._currentToolTip) 
@@ -479,9 +479,8 @@ namespace System.Windows.Controls
                 toolTip.IsOpen = false;
             }
  
-            ToolTipService._toolTipDictionary[owner] = null; 
-            ToolTipService._toolTipDictionary.Remove(owner);
-        } 
+            owner.ClearValue (AssignedToolTipProperty);
+        }
 
         #endregion  Private Methods
     } 
