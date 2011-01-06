@@ -88,6 +88,9 @@ namespace System.Windows {
 
 		void InternalResourceDictionaryChanged (InternalResourceDictionaryChangedEventArgs args)
 		{
+			if (managedDict == null)
+				managedDict = new Dictionary<object, object> ();
+
 			switch (args.ChangedAction) {
 			case CollectionChangedAction.Add:
 #if DEBUG_REF
@@ -122,8 +125,6 @@ namespace System.Windows {
 
 		private new void Initialize ()
 		{
-			managedDict = new Dictionary<object,object>();
-
 			int c = Count;
 			for (int i = 0; i < c; i ++) {
 				// FIXME
@@ -151,12 +152,16 @@ namespace System.Windows {
 		
 		public ICollection Keys {
 			get {
+				if (managedDict == null)
+					managedDict = new Dictionary<object, object> ();
 				return managedDict.Keys;
 			}
 		}
 
 		public ICollection Values {
 			get {
+				if (managedDict == null)
+					managedDict = new Dictionary<object, object> ();
 				return managedDict.Values;
 			}
 		}
@@ -167,7 +172,7 @@ namespace System.Windows {
 					throw new ArgumentException ("Key must be a string or Type");
 
 				// check our cache
-				if (managedDict.ContainsKey (key))
+				if (managedDict != null && managedDict.ContainsKey (key))
 					return managedDict[key];
 
 				// now iterate over the merged dictionaries
@@ -191,8 +196,11 @@ namespace System.Windows {
 				
 				using (var val = Value.FromObject (value, true)) {
 					var v = val;
-					if (NativeMethods.resource_dictionary_set (native, str_key, ref v))
+					if (NativeMethods.resource_dictionary_set (native, str_key, ref v)) {
+						if (managedDict == null)
+							managedDict = new Dictionary<object, object> ();
 						managedDict.Add (str_key, value);
+					}
 				}
 			}
 		}
@@ -271,16 +279,18 @@ namespace System.Windows {
 			if (key is string) {
 				if (((string)key).StartsWith (INTERNAL_TYPE_KEY_MAGIC_COOKIE))
 					return false;
-				managedDict.Remove (key);
+				if (managedDict != null)
+					managedDict.Remove (key);
 				return NativeMethods.resource_dictionary_remove (native, (string)key);
 			}
 			else if (key is Type) {
 				bool rv;
 
-				managedDict.Remove (key);
+				if (managedDict != null)
+					managedDict.Remove (key);
 				rv = NativeMethods.resource_dictionary_remove (native, INTERNAL_TYPE_KEY_MAGIC_COOKIE + ((Type)key).AssemblyQualifiedName);
-
-				managedDict.Remove (((Type)key).FullName);
+				if (managedDict != null)
+					managedDict.Remove (((Type)key).FullName);
 				rv = rv || NativeMethods.resource_dictionary_remove (native, ((Type)key).FullName);
 
 				return true;
@@ -306,8 +316,11 @@ namespace System.Windows {
 			
 			using (var val = Value.FromObject (value, true)) {
 				var v = val;
-				if (NativeMethods.resource_dictionary_add (native, key, ref v))
+				if (NativeMethods.resource_dictionary_add (native, key, ref v)) {
+					if (managedDict == null)
+						managedDict = new Dictionary<object, object> ();
 					managedDict[key] = value;
+				}
 			}
 		}
 		
@@ -333,13 +346,15 @@ namespace System.Windows {
 			if (s == null || s.TargetType != key)
 				throw new ArgumentException ("Type as key can only be used with Styles whose target type is the same as the key");
 
-			if (managedDict.ContainsKey (key))
+			if (managedDict != null && managedDict.ContainsKey (key))
 				throw new ArgumentException ("An item with the same key has already been added");
 
 			using (var val = Value.FromObject (value, true)) {
 				var v = val;
 
 				// we have to add this first because in the case of implicit styles the resource_dictionary_add can make us re-enter.
+				if (managedDict == null)
+					managedDict = new Dictionary<object, object> ();
 				managedDict[key] = value;
 
 				if (!NativeMethods.resource_dictionary_add (native,
@@ -353,8 +368,9 @@ namespace System.Windows {
 		{
 			if (IsReadOnly || IsFixedSize)
 				throw new NotSupportedException ();
-			
-			managedDict.Clear ();
+
+			if (managedDict != null)
+					managedDict.Clear ();
 			NativeMethods.resource_dictionary_clear (native);
 		}
 		
@@ -366,7 +382,7 @@ namespace System.Windows {
 			if (!(key is string || key is Type))
 				throw new ArgumentException ("Key must be a string or Type");
 
-			if (managedDict.ContainsKey (key))
+			if (managedDict != null && managedDict.ContainsKey (key))
 				return true;
 			PresentationFrameworkCollection<ResourceDictionary> col = MergedDictionaries;
 			for (int i = col.Count - 1; i >= 0; i --) {
@@ -395,6 +411,8 @@ namespace System.Windows {
 		
 		public IDictionaryEnumerator GetEnumerator ()
 		{
+			if (managedDict == null)
+				managedDict = new Dictionary<object, object> ();
 			return ((IDictionary)managedDict).GetEnumerator ();
 		}
 		
@@ -418,7 +436,7 @@ namespace System.Windows {
 		}
 		
 		object ICollection.SyncRoot {
-			get { return managedDict; }
+			get { return this; }
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator ()
@@ -535,6 +553,8 @@ namespace System.Windows {
 		
 		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator ()
 		{
+			if (managedDict == null)
+				managedDict = new Dictionary<object, object> ();
 			return managedDict.GetEnumerator();
 		}
 	}
