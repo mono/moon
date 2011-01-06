@@ -34,6 +34,7 @@ namespace System.Windows.Browser
 	{
 		HtmlElement document_element;
 		HtmlElement body;
+		HtmlWindow window;
 
 		internal HtmlDocument ()
 		{
@@ -130,6 +131,14 @@ namespace System.Windows.Browser
 			}
 		}
 		
+		HtmlWindow Window {
+			get {
+				if (window == null)
+					window = GetProperty ("defaultView") as HtmlWindow;
+				return window;
+			}
+		}
+
 		public void Submit ()
 		{
 			ScriptObjectCollection forms = GetElementsByTagName ("form") as ScriptObjectCollection;
@@ -151,7 +160,10 @@ namespace System.Windows.Browser
 		}
 		
 		
-		public event EventHandler DocumentReady;
+		public event EventHandler DocumentReady {
+			add { Window.AttachEvent ("load", value); }
+			remove { Window.DetachEvent ("load", value); }
+		}
 	}
 }
 
