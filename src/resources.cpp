@@ -252,15 +252,11 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 		g_hash_table_insert (hash, g_strdup (key), v);
 
 		Value *v_copy = new Value (*v);
+		v->Weaken ();
 
 		EmitChanged (CollectionChangedActionAdd, v_copy, NULL, key);
 
 		delete v_copy;
-
-		if (addManagedRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-			addManagedRef (this, v, key);
-			v->Weaken ();
-		}
 
 		if (!strncmp (key, INTERNAL_TYPE_KEY_MAGIC_COOKIE, sizeof (INTERNAL_TYPE_KEY_MAGIC_COOKIE) - 1)
 		    && v->Is (GetDeployment (), Type::STYLE)) {
@@ -332,8 +328,6 @@ ResourceDictionary::Clear ()
 #endif
 	g_hash_table_foreach_remove (hash, (GHRFunc) _true, NULL);
 
-	// FIXME: we need to clearManagedRef
-
 	from_resource_dictionary_api = true;
 	bool rv = Collection::Clear ();
 	from_resource_dictionary_api = false;
@@ -384,8 +378,6 @@ ResourceDictionary::Remove (const char *key)
 	// No need to strengthen orig_value before clearing
 	// because we copy it first.
 	Value *orig_copy = new Value (*orig_value);
-	if (clearManagedRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
-		clearManagedRef (this, orig_value, key);
 
 	g_hash_table_remove (hash, key);
 
@@ -414,17 +406,12 @@ ResourceDictionary::Set (const char *key, Value *value)
 	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
 	// No need to strengthen orig_value as it's deleted immediately
-	if (clearManagedRef && orig_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ())
-		clearManagedRef (this, orig_value, key);
 	Collection::Add (v);
-	if (addManagedRef && v->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-		addManagedRef (this, v, key);
-		v->Weaken ();
-	}
 	from_resource_dictionary_api = false;
 
 	g_hash_table_replace (hash, g_strdup (key), v);
 
+	v->Weaken ();
 	EmitChanged (CollectionChangedActionReplace, v, orig_copy, key);
 	delete orig_copy;
 
@@ -544,14 +531,9 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		Value *obj_value_copy = new Value (*obj_value);
 
+		obj_value->Weaken ();
 		EmitChanged (CollectionChangedActionAdd, obj_value_copy, NULL, key);
-
 		delete obj_value_copy;
-
-		if (addManagedRef && obj_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-			addManagedRef (this, value, key);
-			obj_value->Weaken ();
-		}
 	}
 
 cleanup:
