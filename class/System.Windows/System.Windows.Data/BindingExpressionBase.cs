@@ -385,14 +385,7 @@ namespace System.Windows.Data {
 				return cachedValue;
 
 			cached = true;
-			if (DataSource == null) {
-				if (Binding.FallbackValue == null) {
-					cachedValue = dp.GetDefaultValue (Target);
-					return cachedValue;
-				}
-				cachedValue = Binding.FallbackValue;
-			}
-			else if (PropertyPathWalker.IsPathBroken) {
+			if (DataSource == null || PropertyPathWalker.IsPathBroken) {
 				// If it the path is broken, don't call the converter unless we use the fallback.
 				// FIXME: Add an explicit test on this.
 				if (Binding.FallbackValue == null) {
@@ -407,8 +400,7 @@ namespace System.Windows.Data {
 			try {
 				cachedValue = ConvertToType (dp, cachedValue);
 			} catch {
-				cachedValue  = dp.GetDefaultValue (Target);
-				throw;
+				cachedValue = dp.GetDefaultValue (Target);
 			}
 			
 			return cachedValue;
@@ -439,12 +431,13 @@ namespace System.Windows.Data {
 
 				if (value != null) {
 					var converter = GetConverterTo ();
-
 					if (converter == null) {
-						if (value == Binding.FallbackValue)
-							value = MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
-						else
-							value = converter.ConvertTo (null, GetConverterCulture (), value, dp.PropertyType);
+						if (DataSource == null || PropertyPathWalker.IsPathBroken) {
+							value = MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
+						}
+					}
+					else {
+						value = converter.ConvertTo (null, GetConverterCulture (), value, dp.PropertyType);
 					}
 				}
 			} catch (Exception ex) {
