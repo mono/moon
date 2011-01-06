@@ -40,7 +40,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		AC_ARG_WITH([mono-basic-path],
 				[  --with-mono-basic-path=/path/to/mono-basic      Path to the mono-basic checkout],
 			[],
-			[with_mono_basic_path=$srcdir/../mono_basic]
+			[with_mono_basic_path=$srcdir/../mono-basic]
 		)
 		if test ! -d "$with_mono_basic_path"; then
 			AC_ERROR($with_mono_basic_path doesn't exist)
