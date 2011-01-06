@@ -334,6 +334,8 @@ namespace System.Windows {
 
 		public BindingExpression GetBindingExpression (DependencyProperty dp)
 		{
+			if (expressions == null)
+				return null;
 			Expression expression;
 			if (expressions.TryGetValue (dp, out expression))
 				return expression as BindingExpression;
