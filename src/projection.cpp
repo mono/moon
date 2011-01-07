@@ -159,7 +159,7 @@ clipmask (const double *clip)
 	return mask;
 }
 
-#define MAX_CLIPPED_VERTICES ((2 * 6) + 1)
+#define MAX_CLIPPED_VERTICES ((2 * 8) + 1)
 
 static Rect
 ClipToBounds (double   *p1,
