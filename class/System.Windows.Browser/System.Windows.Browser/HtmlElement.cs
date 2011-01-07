@@ -101,6 +101,9 @@ namespace System.Windows.Browser
 			if (so == null)
 				return null;
 
+			if (!so.HasPropertyInternal (name))
+				return null;
+
 			string o = so.GetProperty (name) as string;
 			return o ?? String.Empty;
 		}

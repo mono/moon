@@ -243,6 +243,13 @@ namespace System.Windows.Browser {
 				throw new InvalidOperationException ("the NPObject has been invalidated");
 		}
 
+		internal bool HasPropertyInternal (string name)
+		{
+			CheckHandle ();
+			CheckName (name);
+			return NativeMethods.html_object_has_property (PluginHost.Handle, Handle, name);
+		}
+
 		internal static object GetPropertyInternal (IntPtr h, string name)
 		{
 			object result = null;
