@@ -94,9 +94,7 @@ namespace System.Windows.Browser
 				return null;
 
 			string o = so.GetProperty (name) as string;
-			if (o == null || o.Equals (String.Empty))
-				return null;
-			return o;
+			return o ?? String.Empty;
 		}
 
 		public void RemoveAttribute (string name)
