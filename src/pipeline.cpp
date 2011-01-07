@@ -4742,7 +4742,8 @@ IMediaObject::GetMediaReffed ()
 void
 IMediaObject::ReportErrorOccurred (char const *message)
 {
-	g_return_if_fail (media != NULL);
+	if (media == NULL)
+		return;
 	
 	media->ReportErrorOccurred (message);
 }
@@ -4750,9 +4751,11 @@ IMediaObject::ReportErrorOccurred (char const *message)
 void
 IMediaObject::ReportErrorOccurred (ErrorEventArgs *args)
 {
-	g_return_if_fail (media != NULL);
-	
-	media->ReportErrorOccurred (args);
+	if (media != NULL) {
+		media->ReportErrorOccurred (args);
+	} else {
+		args->unref ();
+	}
 }
 
 void
