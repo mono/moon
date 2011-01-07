@@ -56,17 +56,17 @@ class CurlHttpHandler : public HttpHandler {
 	CURL* sharecurl;
 	CURL* multicurl;
 	DOPtr<Closure> closure;
-	int running;
 	bool quit;
 	bool shutting_down;
+	int fds [2]; // file descriptors to select on in addition to curl's file descriptors
 	pthread_t worker_thread;
 	pthread_mutex_t worker_mutex;
 	pthread_cond_t worker_cond;
 
 	// available handles pool
 	Queue* pool;
-	Queue* handles;
-	GList *calls;
+	List handles; // multi-threaded access, needs worker_mutex locked
+	List calls; // multi-threaded access, needs worker_mutex locked
 
 	/* @SkipFactories */
 	CurlHttpHandler ();
@@ -85,13 +85,16 @@ class CurlHttpHandler : public HttpHandler {
 	void AddCallback (CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
 	bool IsDataThread ();
 	bool IsShuttingDown () { return shutting_down; }
+	static bool EmitCallback (gpointer http_handler);
+	void Emit ();
+	void WakeUp ();
 };
 
-class CallData {
+class CallData : public List::Node {
 public:
 	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
 	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req);
-	~CallData ();
+	virtual ~CallData ();
 
 	CurlHttpHandler *bridge;
 	CallHandler func;

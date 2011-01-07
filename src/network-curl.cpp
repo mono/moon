@@ -12,6 +12,8 @@
 
 #include <config.h>
 #include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "network-curl.h"
 #include "pipeline.h"
@@ -165,25 +167,47 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 
 #endif
 
-static bool
-Emit (void* data)
+bool
+CurlHttpHandler::EmitCallback (gpointer http_handler)
 {
+	CurlHttpHandler *handler;
+
 	STARTCALLTIMER (emit_call, "Emit - Call");
 
-	CallData* call = NULL;
-	GList* t;
-	GList* list = (GList*)data;
-	for (t = list; t; t = t->next) {
-		call = (CallData*) t->data;
-		if (!call->bridge->IsShuttingDown ())
-			call->func (call);
-		delete call;
-	}
-	g_list_free (list);
+	handler = (CurlHttpHandler *) http_handler;
+	handler->Emit ();
+	handler->unref ();
 
 	ENDCALLTIMER (emit_call, "Emit - Call");
 
 	return false;
+}
+
+void
+CurlHttpHandler::Emit ()
+{
+	CallData *node;
+	CallData *next;
+	List tmp;
+
+	/* Clone the list and invoke the calls with the mutex unlocked */
+	pthread_mutex_lock (&worker_mutex);
+	node = (CallData *) calls.First ();
+	while (node != NULL) {
+		next = (CallData *) node->next;
+		calls.Unlink (node);
+		tmp.Append (node);
+		node = next;
+	}
+	pthread_mutex_unlock (&worker_mutex);
+
+	/* Invoke the calls */
+	node = (CallData *) tmp.First ();
+	while (node != NULL && !IsShuttingDown ()) {
+		node->func (node);
+		node = (CallData *) node->next;
+	}
+
 }
 
 static size_t
@@ -616,8 +640,6 @@ CurlDownloaderResponse::Finished ()
 		request->Succeeded ();
 }
 
-static bool Emit (void* data);
-
 class CurlNode : public List::Node {
 public:
 	CURL* handle;
@@ -668,22 +690,32 @@ CurlHttpHandler::CurlHttpHandler () :
 	HttpHandler (Type::CURLHTTPHANDLER),
 	sharecurl(NULL),
 	multicurl(NULL),
-	running(0),
 	quit(false),
 	shutting_down(false),
-	pool(NULL),
-	handles(NULL),
-	calls(NULL)
+	pool(NULL)
 {
 	pool = new Queue ();
-	handles = new Queue ();
+
+	// Create our pipe
+	if (pipe (fds) != 0) {
+		fds [0] = -1;
+		fds [1] = -1;
+		LOG_CURL ("BRIDGE CurlHttpHandler pipe (%s).\n", strerror (errno));
+	} else {
+		// Make the writer pipe non-blocking.
+		fcntl (fds [1], F_SETFL, fcntl (fds [1], F_GETFL) | O_NONBLOCK);
+	}
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	sharecurl = curl_share_init();
 	multicurl = curl_multi_init ();
 	curl_share_setopt (sharecurl, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
 
-	pthread_mutex_init (&worker_mutex, NULL);
+	pthread_mutexattr_t attribs;
+	pthread_mutexattr_init (&attribs);
+	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init (&worker_mutex, &attribs);
+	pthread_mutexattr_destroy (&attribs);
 	pthread_cond_init (&worker_cond, NULL);
 }
 
@@ -699,19 +731,32 @@ CurlHttpHandler::CreateRequest (HttpRequest::Options options)
 }
 
 void
+CurlHttpHandler::WakeUp ()
+{
+	int result;
+
+	LOG_CURL ("BRIDGE CurlHttpHandler::WakeUp ()\n");
+
+	pthread_mutex_lock (&worker_mutex);
+	pthread_cond_signal (&worker_cond);
+	pthread_mutex_unlock (&worker_mutex);
+
+	// Write until something has been written.
+	do {
+		result = write (fds [1], "c", 1);
+	} while (result == 0);
+}
+
+void
 CurlHttpHandler::Dispose ()
 {
 	shutting_down = true;
 	if (closure) {
 		pthread_mutex_lock (&worker_mutex);
 		quit = true;
-
-		if (calls)
-			g_list_free (calls);
-		calls = NULL;
-
-		pthread_cond_signal (&worker_cond);
+		calls.Clear (true);
 		pthread_mutex_unlock (&worker_mutex);
+		WakeUp ();
 
 		pthread_join (worker_thread, NULL);
 		closure = NULL;
@@ -737,10 +782,17 @@ CurlHttpHandler::~CurlHttpHandler ()
 {
 	LOG_CURL("BRIDGE ~CurlHttpHandler\n");
 
-	delete handles;
-	handles = NULL;
 	delete pool;
 	pool = NULL;
+
+	if (fds [0] != -1) {
+		close (fds [0]);
+		fds [0] = -1;
+	}
+	if (fds [1] != -1) {
+		close (fds [1]);
+		fds [1] = -1;
+	}
 }
 
 CURL*
@@ -792,11 +844,12 @@ CurlHttpHandler::OpenHandle (CurlDownloaderRequest* res, CURL* handle)
 
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {
-		handles->Push (new HandleNode (res));
+		handles.Append (new HandleNode (res));
 		curl_multi_add_handle (multicurl, handle);
-		pthread_cond_signal (&worker_cond);
 	}
 	pthread_mutex_unlock (&worker_mutex);
+
+	WakeUp ();
 }
 
 void
@@ -806,14 +859,11 @@ CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {
-		handles->Lock ();
-		List* list = handles->LinkedList ();
-		HandleNode* node = (HandleNode*)list->Find (find_handle, res);
+		HandleNode* node = (HandleNode*) handles.Find (find_handle, res);
 		if (node) {
 			curl_multi_remove_handle (multicurl, handle);
-			list->Remove (node);
+			handles.Remove (node);
 		}
-		handles->Unlock ();
 	}
 	pthread_mutex_unlock (&worker_mutex);
 }
@@ -834,84 +884,90 @@ CurlHttpHandler::GetData ()
 
 	fd_set r,w,x;
 	int num, available;
+	int running = 0;
 	long timeout;
 	struct timespec tv;
+	CURLMcode res;
 
 	SetCurrentDeployment (true, true);
 
 	do {
-		if (handles->IsEmpty ()) {
-			pthread_mutex_lock (&worker_mutex);
-			if (!quit) pthread_cond_wait (&worker_cond, &worker_mutex);
-			pthread_mutex_unlock (&worker_mutex);
-			if (quit) break;
-		}
-
+		/* Wait for work */
 		pthread_mutex_lock (&worker_mutex);
-		if (!quit) while (CURLM_CALL_MULTI_PERFORM == curl_multi_perform (multicurl, &num));
+		while (!quit && handles.IsEmpty ()) {
+			pthread_cond_wait (&worker_cond, &worker_mutex);
+		}
 		pthread_mutex_unlock (&worker_mutex);
 		if (quit) break;
 
+		/* Ask curl to do work */
+		do {
+			res = curl_multi_perform (multicurl, &num);
+		} while (!quit && res == CURLM_CALL_MULTI_PERFORM && num == running);
+		if (quit) break;
+
+		/* Check if some handles are done */
 		if (num != running) {
 			running = num;
 			int msgs;
 			CURLMsg* msg;
 			while ((msg = curl_multi_info_read (multicurl, &msgs))) {
 				if (msg->msg == CURLMSG_DONE) {
-
-					handles->Lock ();
-					List* list = handles->LinkedList ();
-					HandleNode* node = (HandleNode*) list->Find (find_easy_handle, msg->easy_handle);
-					if (node) {
-						CallData* data = new CallData (this, _close, node->res);
-						calls = g_list_append (calls, data);
-					}
-					handles->Unlock ();
-				}
-			}
-		}
-
-
-		if (calls) {
-			GList* tmp = g_list_copy (calls);
-			g_list_free (calls);
-			calls = NULL;
-			runtime_get_windowing_system ()->AddIdle (Moonlight::Emit, tmp);
-		}
-
-		if (running > 0) {
-			FD_ZERO(&r);
-			FD_ZERO(&w);
-			FD_ZERO(&x);
-
-			if (curl_multi_fdset (multicurl, &r, &w, &x, &available)) {
-				fprintf(stderr, "E: curl_multi_fdset\n");
-				return;
-			}
-
-			if (curl_multi_timeout (multicurl, &timeout)) {
-				fprintf(stderr, "E: curl_multi_timeout\n");
-				return;
-			}
-
-			if (timeout > 0) {
-				tv.tv_sec = timeout / 1000;
-				tv.tv_nsec = (timeout % 1000) * 1000 * 1000;
-
-				if (available == -1) {
 					pthread_mutex_lock (&worker_mutex);
-					if (!quit) pthread_cond_timedwait (&worker_cond, &worker_mutex, &tv);
-					pthread_mutex_unlock (&worker_mutex);
-				} else {
-					if (pselect (available+1, &r, &w, &x, &tv, NULL) < 0) {
-						fprintf(stderr, "E: select(%i,,,,%li): %i: %s\n", available+1, timeout, errno, strerror(errno));
+					HandleNode* node = (HandleNode*) handles.Find (find_easy_handle, msg->easy_handle);
+					if (node) {
+						calls.Append (new CallData (this, _close, node->res));
 					}
+					pthread_mutex_unlock (&worker_mutex);
 				}
 			}
-		} else {
-			pthread_mutex_lock (&worker_mutex);
-			if (!quit) pthread_cond_wait (&worker_cond, &worker_mutex);
-			pthread_mutex_unlock (&worker_mutex);
+		}
+
+		/* Emit callbacks */
+		pthread_mutex_lock (&worker_mutex);
+		if (!calls.IsEmpty ()) {
+			this->ref ();
+			runtime_get_windowing_system ()->AddIdle (EmitCallback, this);
+		}
+		pthread_mutex_unlock (&worker_mutex);
+
+		if (running == 0)
+			continue;
+
+		/* Wait for something to happen */
+		FD_ZERO(&r);
+		FD_ZERO(&w);
+		FD_ZERO(&x);
+
+		if (curl_multi_fdset (multicurl, &r, &w, &x, &available)) {
+			fprintf(stderr, "Moonlight: Curl Error: curl_multi_fdset\n");
+			return;
+		}
+
+		if (available == -1)
+			continue;
+
+		FD_SET (fds [0], &r);
+		available++;
+
+		if (curl_multi_timeout (multicurl, &timeout)) {
+			fprintf(stderr, "Moonlight: Curl Error: curl_multi_timeout\n");
+			return;
+		}
+
+		if (timeout <= 0)
+			continue;
+
+		tv.tv_sec = timeout / 1000;
+		tv.tv_nsec = (timeout % 1000) * 1000 * 1000;
+
+		LOG_CURL ("BRIDGE CurlHttpHandler::GetData (): Entering select...\n");
+		if (pselect (available + 1, &r, &w, &x, &tv, NULL) < 0) {
+			fprintf(stderr, "Moonlight: Curl Error: select (%i,,,,%li): %i: %s\n", available + 1, timeout, errno, strerror (errno));
+		} else if (FD_ISSET (fds [0], &r)) {
+			/* We need to read a byte from our pipe */
+			guint32 tmp;
+			read (fds [0], &tmp, 1);
 		}
 	} while (!quit);
 }
@@ -921,7 +977,9 @@ CurlHttpHandler::AddCallback (CallData *data)
 {
 	VERIFY_CURL_THREAD
 
-	calls = g_list_append (calls, data);
+	pthread_mutex_lock (&worker_mutex);
+	calls.Append (data);
+	pthread_mutex_unlock (&worker_mutex);
 }
 
 void
