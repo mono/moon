@@ -181,7 +181,7 @@ namespace System.Windows {
 			if (is_nullable)
 				NativeMethods.dependency_property_set_is_nullable (handle, true);
 			
-			result = new CustomDependencyProperty (handle, name, property_type, owner_type);
+			result = new CustomDependencyProperty (handle, name, property_type, owner_type, default_value);
 			result.attached = attached;
 			result.PropertyChangedHandler = handler;
 			result.property_changed_callback = property_changed_callback;
@@ -419,7 +419,7 @@ namespace System.Windows {
 			return GetDefaultValue (Deployment.Current.Types.TypeToNativeKind (ob.GetType ()));
 		}
 		
-		internal object GetDefaultValue (Kind kind)
+		internal virtual object GetDefaultValue (Kind kind)
 		{
 			var ptr = Mono.NativeMethods.dependency_property_get_default_value (native, kind);
 			var result = Value.ToObject (PropertyType, ptr);

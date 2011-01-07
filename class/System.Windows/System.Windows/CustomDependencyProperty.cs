@@ -34,17 +34,23 @@ namespace System.Windows
 {
 	internal sealed class CustomDependencyProperty : DependencyProperty
 	{
+		object defaultValue;
 		private UnmanagedPropertyChangeHandler property_changed_handler;
 		
-		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType)
+		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, object defaultValue)
 			: base (handle, name, propertyType.type, ownerType.type)
 		{
-			
+			this.defaultValue = defaultValue;
 		}
 		
 		internal UnmanagedPropertyChangeHandler PropertyChangedHandler {
 			get { return property_changed_handler; }
 			set { property_changed_handler = value; }		
+		}
+
+		internal override object GetDefaultValue (Kind kind)
+		{
+			return defaultValue;
 		}
 	}
 }
