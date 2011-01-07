@@ -219,9 +219,16 @@ create_window (Deployment *deployment, const char *app_id)
 	moon_window->SetSurface (surface);
 
 	setup_app (deployment, installer->GetBaseInstallDir (), app);
-
+	
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	surface->unref ();
+	
+	/* load the xap and the AppManifest */
+	if (!deployment->InitializeManagedDeployment (NULL, NULL, NULL)) {
+		surface->unref ();
+		delete app;
+		return NULL;
+	}
 	
 	if ((oob = deployment->GetOutOfBrowserSettings ())) {
 		load_window_icons (moon_window, deployment, oob->GetIcons ());
@@ -251,21 +258,14 @@ create_window (Deployment *deployment, const char *app_id)
 		g_free (window_title);
 
 		moon_window->SetStyle (settings->GetWindowStyle ());
-
 	} else if (oob != NULL) {
 		moon_window->SetTitle (oob->GetShortName ());
 	} else {
 		moon_window->SetTitle ("Moonlight");
 	}
 	
-	/* load the xap */
-	if (!deployment->InitializeManagedDeployment (NULL, NULL, NULL)) {
-		surface->unref ();
-		return NULL;
-	}
-
 	delete app;
-
+	
 	return moon_window;
 }
 
