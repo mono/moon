@@ -3652,7 +3652,9 @@ MmsDemuxer::SeekAsyncInternal (guint64 seekToTime)
 	LOG_MMS("MmsDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT "): mms_source: %p\n", MilliSeconds_FromPts (seekToTime), mms_source);
 	if (mms_source == NULL)
 		return;
-	mms_source->SeekToPts (seekToTime);
+
+	if (mms_source->SeekToPts (seekToTime) == MEDIA_SUCCESS)
+		ReportSeekCompleted (seekToTime);
 }
 
 void 
