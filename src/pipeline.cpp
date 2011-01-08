@@ -170,7 +170,7 @@ void
 Media::SetDuration (TimeSpan value)
 {
 	VERIFY_MAIN_THREAD;
-	printf ("Media::SetDuration (%" G_GUINT64_FORMAT " ms)\n", MilliSeconds_FromPts (value));
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "Media::SetDuration (%" G_GUINT64_FORMAT " ms)\n", MilliSeconds_FromPts (value));
 	g_return_if_fail (!initialized);
 	g_return_if_fail (value >= 0);
 	duration = value;
@@ -1781,7 +1781,11 @@ ProgressiveSource::Initialize ()
 
 	application = GetDeployment ()->GetCurrentApplication ();
 	
-	g_return_val_if_fail (application != NULL, MEDIA_FAIL);
+	if (application == NULL) {
+		/* Called after shutdown has started ?!? */
+		return MEDIA_FAIL;
+	}
+
 	g_return_val_if_fail (filename == NULL, MEDIA_FAIL);
 	g_return_val_if_fail (cancellable == NULL, MEDIA_FAIL);
 	g_return_val_if_fail (write_fd == NULL, MEDIA_FAIL);
