@@ -32,6 +32,9 @@ class MediaAttribute : public DependencyObject {
  public:
  	/* @PropertyType=string,GenerateAccessors */
 	const static int ValueProperty;
+	/* We're intentionally overriding the Name property on DependencyObject here to not add this to any namescopes. #7014. */
+	/* @PropertyType=string,GenerateAccessors */
+	const static int NameProperty;
 
 	/* @SkipFactories */
 	MediaAttribute () : DependencyObject (Type::MEDIAATTRIBUTE) { }
@@ -42,6 +45,10 @@ class MediaAttribute : public DependencyObject {
 	/* @GeneratePInvoke */
 	const char *GetValue();
 	void SetValue (const char *value);
+
+	/* @GeneratePInvoke */
+	const char *GetName ();
+	void SetName (const char *value);
 };
 
 /* @Namespace=None */

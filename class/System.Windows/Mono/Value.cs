@@ -399,7 +399,7 @@ namespace Mono {
 					Value *attribute = (Value *) map;
 					if (attribute->k != Kind.MEDIAATTRIBUTE || attribute->u.p == IntPtr.Zero)
 						continue;
-					string name = NativeMethods.dependency_object_get_name (attribute->u.p);
+					string name = NativeMethods.media_attribute_get_name (attribute->u.p);
 					string val = NativeMethods.media_attribute_get_value (attribute->u.p);
 
 					dict.Add (name, val);
