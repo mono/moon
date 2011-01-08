@@ -80,6 +80,7 @@ Media::Media (PlaylistRoot *root)
 	target_pts = 0;
 	start_time = 0;
 	duration = G_MAXINT64;
+	seek_when_opened = true;
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -836,7 +837,10 @@ Media::OpenInternal ()
 	
 	EmitSafe (OpenCompletedEvent);
 
-	SeekAsync (start_time);
+	if (seek_when_opened) {
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "Media::OpenInternal (): seeking to start time %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (start_time));
+		SeekAsync (start_time);
+	}
 
 cleanup:
 	in_open_internal = false;

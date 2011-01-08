@@ -2675,6 +2675,7 @@ MmsSource::CreateCurrentEntry ()
 	Lock ();
 	if (current == NULL) {
 		entry_media = new Media (root);
+		entry_media->SetSeekWhenOpened (false);
 		this->current = new MmsPlaylistEntry (entry_media, this);
 		entry_media->unref ();
 	}

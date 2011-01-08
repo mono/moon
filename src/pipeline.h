@@ -623,6 +623,7 @@ private:
 	IMediaSource *source;
 	IMediaDemuxer *demuxer;
 	List *markers;
+	bool seek_when_opened;
 	bool initialized;
 	bool opened;
 	bool opening;
@@ -749,6 +750,9 @@ public:
 	void ReportErrorOccurred (const char *message);
 	
 	bool HasReportedError () { return error_reported; }
+
+	bool GetSeekWhenOpened () { return seek_when_opened; }
+	void SetSeekWhenOpened (bool value) { seek_when_opened = value; }
 	
 	const static int OpeningEvent;
 	const static int OpenCompletedEvent;
@@ -1796,6 +1800,7 @@ public:
 	
 	virtual bool IsPlaylist () { return true; }
 	virtual Playlist *GetPlaylist () { return playlist; }
+	virtual bool GetCanSeek () { return false; }
 };
 
 class ASXDemuxerInfo : public DemuxerInfo {
