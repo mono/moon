@@ -582,8 +582,10 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		}
 	}
 
+#if DEBUG
 	if (!bridge)
-		g_warning ("Moonlight: probing for browser type failed (or browser bridge was disabled), user agent = `%s'", useragent);
+		printf ("Moonlight: browser bridge not found for your browser (likely not needed). User agent = '%s'\n", useragent);
+#endif
 
 	if (!CreatePluginDeployment ()) { 
 		g_warning ("Couldn't initialize Mono or create the plugin Deployment");
