@@ -4034,6 +4034,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	guint64 buffering_time = 0;
 	guint64 buffered_size = 0;
 	guint64 last_enqueued_pts = 0;
+	guint64 last_decoded_enqueued_pts = 0;
 	guint64 p_last_enqueued_pts = 6666666LL;
 	guint64 target_pts;
 	guint64 end_pts = G_MAXUINT64;
@@ -4042,7 +4043,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	const char *c = NULL;
 	const char *pc = NULL;
 	
-	LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetTypeName () : "NULL");
+	LOG_BUFFERING ("%s::FillBuffersInternal (), %i %s buffering time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, pending_stream: %i %s\n", GetTypeName (), GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetTypeName () : "NULL");
 
 	mutex.Lock ();
 	pending_fill_buffers = false;
@@ -4134,7 +4135,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	}
 
 	if (decode_frame) {
-		LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): decode required for %s with pts %" G_GUINT64_FORMAT "\n", decode_frame->GetStream ()->GetTypeName (), decode_frame->GetPts ());
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): decode required for %s with pts %" G_GUINT64_FORMAT "\n", decode_frame->GetStream ()->GetTypeName (), decode_frame->GetPts ());
 		IMediaDecoder *decoder = decode_frame->GetStream ()->GetDecoder ();
 		if (decoder != NULL) {
 #if SANITY
@@ -4155,7 +4156,7 @@ IMediaDemuxer::FillBuffersInternal ()
 		
 		stream = GetStream (i);
 		if (!stream->GetSelected ()) {
-			LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): stream %i (%s) isn't selected.\n", i, stream->GetTypeName ());
+			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): stream %i (%s) isn't selected.\n", i, stream->GetTypeName ());
 			continue;
 		}
 
@@ -4169,6 +4170,7 @@ IMediaDemuxer::FillBuffersInternal ()
 				stream->GetDecoder ()->ReportInputEnded ();
 
 			ended++;
+			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): %s %i has ended\n", stream->GetTypeName (), i);
 			continue; // this stream has ended.
 		}
 	
@@ -4178,13 +4180,18 @@ IMediaDemuxer::FillBuffersInternal ()
 			continue; // no decoder??
 		}
 	
-		if (!decoder->IsDecoderQueueEmpty ())
+		if (!decoder->IsDecoderQueueEmpty ()) {
+			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): %s %i is waiting for decoder\n", stream->GetTypeName (), i);
 			continue; // this stream is waiting for data to be decoded.
+		}
 		
 		c = NULL;
 		last_enqueued_pts = stream->GetLastEnqueuedDemuxedPts ();
+		last_decoded_enqueued_pts = stream->GetLastEnqueuedDecodedPts ();
+		if (last_decoded_enqueued_pts != G_MAXUINT64 && last_decoded_enqueued_pts > last_enqueued_pts)
+			last_enqueued_pts = last_decoded_enqueued_pts;
 
-		if (stream->GetDemuxedQueueLength () == 0) {
+		if (stream->GetDemuxedQueueLength () == 0 && stream->GetDecodedQueueLength () == 0) {
 			buffered_size = 0;
 			c = "Zero length queue";
 			queue_empty = true;
