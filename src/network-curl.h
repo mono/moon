@@ -162,7 +162,6 @@ class CurlDownloaderResponse : public HttpResponse {
 
 	long status;
 	char* statusText;
-	int delay;
 	DOPtr<ResponseClosure> closure;
 
 	enum State {

@@ -52,7 +52,6 @@ class CurlDownloaderResponse;
 
 static size_t header_received (void *ptr, size_t size, size_t nmemb, void *data);
 static size_t data_received (void *ptr, size_t size, size_t nmemb, void *data);
-static void _open (EventObject *sender);
 static void _abort (EventObject *sender);
 
 // These 4 methods are for asynchronous operation
@@ -226,12 +225,6 @@ data_received (void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 static void
-_open (EventObject *sender)
-{
-	((ResponseClosure*)sender)->res->Open ();
-}
-
-static void
 _abort (EventObject *req)
 {
 	((CurlDownloaderRequest*)req)->Abort ();
@@ -393,7 +386,7 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
 	: HttpResponse (Type::CURLDOWNLOADERRESPONSE, request),
 	  bridge(bridge), request(request),
 	  status(0), statusText(NULL),
-	  delay(2), state(STOPPED), aborted (false), reported_start (false)
+	  state(STOPPED), aborted (false), reported_start (false)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::CurlDownloaderResponse %p request: %p\n", this, request);
 
@@ -419,12 +412,6 @@ CurlDownloaderResponse::Open ()
 
 	if (IsAborted ())
 		return;
-
-	if (delay) {
-		delay--;
-		GetDeployment ()->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
-		return;
-	}
 
 	if (request == NULL)
 		return;
@@ -531,7 +518,6 @@ CurlDownloaderResponse::Close ()
 	bridge->CloseHandle (request, request->GetHandle ());
 
 	if (closure) {
-		GetDeployment ()->GetSurface()->GetTimeManager()->RemoveTickCall (_open, closure);
 		closure = NULL;
 	}
 	state = DONE;
