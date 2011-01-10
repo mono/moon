@@ -725,6 +725,9 @@ MediaElement::GetQualityLevel (int min, int max)
 				}
 			}
 		}
+	} else {
+		LOG_MEDIAELEMENT ("MediaElement::GetQualityLevel (): returning max level since we're not playing\n");
+		return max;
 	}
 	
 	return MIN (max, quality_level + min);
