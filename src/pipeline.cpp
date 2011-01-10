@@ -4181,8 +4181,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	/* We don't have to decode anything right away, check if we need to demux frames */
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaDecoder *decoder = NULL;
-		bool queue_empty = false;
-		
+
 		stream = GetStream (i);
 		if (!stream->GetSelected ()) {
 			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): stream %i (%s) isn't selected.\n", i, stream->GetTypeName ());
@@ -4223,11 +4222,9 @@ IMediaDemuxer::FillBuffersInternal ()
 		if (stream->GetDemuxedQueueLength () == 0 && stream->GetDecodedQueueLength () == 0) {
 			buffered_size = 0;
 			c = "Zero length queue";
-			queue_empty = true;
 		} else if (last_enqueued_pts == G_MAXUINT64) {
 			buffered_size = 0;
 			c = "No last enqueued pts";
-			queue_empty = true;
 		} else if (last_enqueued_pts <= target_pts) {
 			buffered_size = 0;
 			c = "Last enqueued pts <= target_pts";
@@ -4238,11 +4235,6 @@ IMediaDemuxer::FillBuffersInternal ()
 		if (buffered_size >= buffering_time) {
 			/* This stream has enough data buffered. */
 			LOG_BUFFERING ("%s::FillBuffersInternal (): %s has enough data buffered (%" G_GUINT64_FORMAT " ms)\n", GetTypeName (), stream->GetTypeName (), MilliSeconds_FromPts (buffered_size));
-			continue;
-		}
-
-		if (queue_empty && request_stream != NULL && request_stream->IsAudio () && stream->IsVideo ()) {
-			/* If we have an empty audio stream, prefer it over any video stream */
 			continue;
 		}
 
