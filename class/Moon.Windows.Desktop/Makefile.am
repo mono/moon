@@ -34,10 +34,10 @@ EXTRA_DIST = $(system_windows_sources) 	\
 	Moon.Windows.Desktop/ChangeLog
 
 $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
-	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
+	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(assembly).g.resources
-	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
+	$(AM_V_GEN)$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
 	        -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 

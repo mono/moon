@@ -75,17 +75,17 @@ XAML_RESOURCES = \
 	$(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
 
 $(assembly).Resource.resources: $(MSSDKCONTROLS)/Resource.resx
-	resgen $(MSSDKCONTROLS)/Resource.resx $(assembly).Resource.resources
+	$(AM_V_GEN)resgen $(MSSDKCONTROLS)/Resource.resx $(assembly).Resource.resources
 
 $(assembly).g.resources: $(MSSDKCONTROLS)/App.xaml $(MSSDKCONTROLS)/themes/generic.xaml
-	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
+	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(assemblysl): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources
-	$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
-	sn -q -R $@ $(srcdir)/../mono.snk 
+	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk 
 
 $(assemblydesktop): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources
-	$(GMCS) -target:library -out:$@ $(system_windows_controls_sources) -res:$(assembly).g.resources -res:$(assembly).Resource.resources -keyfile:$(srcdir)/../mono.snk
+	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_controls_sources) -res:$(assembly).g.resources -res:$(assembly).Resource.resources -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) 

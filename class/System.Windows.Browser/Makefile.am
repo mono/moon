@@ -72,13 +72,13 @@ CLEANFILES =			\
 	TestResult-net_3_0.xml
 
 $(assembly).g.resources: $(JS_RESOURCES_DEPS)
-	mono $(top_builddir)/tools/respack/respack.exe $@ $(JS_RESOURCES)
+	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(JS_RESOURCES)
 
 $(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll $(assembly).g.resources
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -r:System.ServiceModel.Web \
+	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -r:System.ServiceModel.Web \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(assembly).g.resources
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 LINKER = ../lib/tuner/monolinker.exe
 
@@ -93,11 +93,11 @@ LINKER_FLAGS =	\
 	-m secattrs ../tuning/SecurityAttributes
 
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources
-	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:DESKTOP -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \
+	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:DESKTOP -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \
 		-resource:$(assembly).g.resources \
 		-keyfile:$(srcdir)/../mono.snk
 

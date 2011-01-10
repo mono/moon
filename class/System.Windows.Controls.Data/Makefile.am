@@ -93,10 +93,10 @@ EXTRA_DIST = $(system_windows_controls_data_sources) 			\
 	ChangeLog
 
 System.Windows.Controls.Resource.resources: $(MSSDKCONTROLS)/Resource.resx
-	resgen $(MSSDKCONTROLS)/Resource.resx System.Windows.Controls.Resource.resources
+	$(AM_V_GEN)resgen $(MSSDKCONTROLS)/Resource.resx System.Windows.Controls.Resource.resources
 
 $(assembly).g.resources: $(MSSDKCONTROLS)/themes/generic.xaml
-	mono $(top_builddir)/tools/respack/respack.exe $@ $(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
+	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
 
 RESOURCES = 	\
 	-res:$(MSSDKCONTROLS)/DataGrid/DataGridTextColumn.xaml,System.Windows.Controls.DataGrid.DataGridTextColumn.xaml	\
@@ -104,11 +104,11 @@ RESOURCES = 	\
 	-res:System.Windows.Controls.Resource.resources
 
 $(assemblysl): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources System.Windows.Controls.Resource.resources
-	$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ $(RESOURCES)
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ $(RESOURCES)
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll
-	$(GMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -keyfile:$(srcdir)/../mono.snk
+	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) 

@@ -834,10 +834,10 @@ EXTRA_DIST = $(system_windows_sources)		\
 	System.Windows.Shapes/ChangeLog
 
 $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
-	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
+	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
-	resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
+	$(AM_V_GEN)resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
 LINKER = ../lib/tuner/monolinker.exe
 
@@ -849,17 +849,17 @@ LINKER_FLAGS =	\
 	-m secattrs ../tuning/SecurityAttributes
 
 $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
+	$(AM_V_GEN)$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
+	$(AM_V_GEN)$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
@@ -869,17 +869,17 @@ $(assemblydesktop).config: Makefile $(assembly).dll.config
 bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
 
 $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
+	$(AM_V_GEN)$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
 		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
 		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
-	sn -q -R $@ $(srcdir)/../mono.snk
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
+	$(AM_V_GEN)$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
