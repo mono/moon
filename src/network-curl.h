@@ -64,7 +64,7 @@ class CurlHttpHandler : public HttpHandler {
 	pthread_cond_t worker_cond;
 
 	// available handles pool
-	Queue* pool;
+	List pool; // multi-threaded access, needs worker_mutex locked
 	List handles; // multi-threaded access, needs worker_mutex locked
 	List calls; // multi-threaded access, needs worker_mutex locked
 

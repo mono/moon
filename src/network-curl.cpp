@@ -691,11 +691,8 @@ CurlHttpHandler::CurlHttpHandler () :
 	sharecurl(NULL),
 	multicurl(NULL),
 	quit(false),
-	shutting_down(false),
-	pool(NULL)
+	shutting_down(false)
 {
-	pool = new Queue ();
-
 	// Create our pipe
 	if (pipe (fds) != 0) {
 		fds [0] = -1;
@@ -763,11 +760,13 @@ CurlHttpHandler::Dispose ()
 	}
 
 	curl_share_cleanup(sharecurl);
-	CurlNode* node = NULL;
-	while ((node = (CurlNode*)pool->Pop ())) {
+	CurlNode* node = (CurlNode *) pool.First ();
+	// No need to lock worker_mutex here, since the curl thread isn't running anymore
+	while (node != NULL) {
 		curl_easy_cleanup (node->handle);
-		delete node;
+		node = (CurlNode *) node->next;
 	}
+	pool.Clear (true);
 
 	curl_multi_cleanup(multicurl);
 	curl_global_cleanup ();
@@ -782,9 +781,6 @@ CurlHttpHandler::~CurlHttpHandler ()
 {
 	LOG_CURL("BRIDGE ~CurlHttpHandler\n");
 
-	delete pool;
-	pool = NULL;
-
 	if (fds [0] != -1) {
 		close (fds [0]);
 		fds [0] = -1;
@@ -798,15 +794,20 @@ CurlHttpHandler::~CurlHttpHandler ()
 CURL*
 CurlHttpHandler::RequestHandle ()
 {
-	LOG_CURL ("BRIDGE CurlHttpHandler::RequestHandle pool is %s\n", pool->IsEmpty () ? "empty" : "not empty");
+	LOG_CURL ("BRIDGE CurlHttpHandler::RequestHandle pool is %s: ", pool.IsEmpty () ? "empty" : "not empty");
 
-	CURL* handle;
-	if (!pool->IsEmpty ()) {
-		CurlNode* node = (CurlNode*) pool->Pop ();
+	CURL* handle = NULL;
+	CurlNode *node;
+
+	pthread_mutex_lock (&worker_mutex);
+	node = (CurlNode *) pool.First ();
+	if (node) {
 		handle = node->handle;
-		delete node;
+		pool.Remove (node);
 	}
-	else {
+	pthread_mutex_unlock (&worker_mutex);
+
+	if (handle == NULL) {
 		handle = curl_easy_init ();
 		curl_easy_setopt (handle, CURLOPT_SHARE, sharecurl);
 	}
@@ -824,17 +825,17 @@ CurlHttpHandler::ReleaseHandle (CURL* handle)
 	/* Check that we don't have duplicate handles in the pool */
 	CurlNode *node;
 
-	pool->Lock ();
-	node = (CurlNode *) pool->LinkedList ()->First ();
+	pthread_mutex_lock (&worker_mutex);
+	node = (CurlNode *) pool.First ();
 	while (node) {
 		g_assert (node->handle != handle); /* #if SANITY */
 		node = (CurlNode *) node->next;
 	}
-	pool->Unlock ();
+	pthread_mutex_unlock (&worker_mutex);
 #endif
 
 	curl_easy_reset (handle);
-	pool->Push (new CurlNode (handle));
+	pool.Append (new CurlNode (handle));
 }
 
 void
