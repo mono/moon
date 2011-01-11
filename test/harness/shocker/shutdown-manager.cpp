@@ -83,6 +83,22 @@ send_ctrl_w (gpointer dummy)
 	return false;
 }
 
+
+
+static int xlib_shutdown_error_handler (Display *d, XErrorEvent *error_event)
+{
+	char error_msg [1024];
+
+	printf ("[%i shocker] xlib error while trying to shutdown the browser\n", getpid ());
+	printf ("[%i shocker] type: %i serial: %lu error_code: %d request_code: %d minor_code: %i resourceid: %i\n",
+		getpid (), error_event->type, error_event->serial, error_event->error_code, error_event->request_code, error_event->minor_code, (int) error_event->resourceid);
+
+	XGetErrorText (d, error_event->error_code, error_msg, sizeof (error_msg));
+	printf ("[%i shocker] %s\n", getpid (), error_msg);
+
+	return 0;
+}
+
 static void send_wm_delete (Window window)
 {
 	printf ("[%i shocker] sending WM_DELETE_WINDOW event to %p\n", getpid (), (void*) window);
@@ -91,7 +107,11 @@ static void send_wm_delete (Window window)
 	Atom WM_PROTOCOLS = XInternAtom (display, "WM_PROTOCOLS", False);
 	Atom WM_DELETE_WINDOW = XInternAtom (display, "WM_DELETE_WINDOW", False);
 	XClientMessageEvent ev;
-	
+	int (*previous_handler)(Display *, XErrorEvent *);
+
+	XSynchronize (display, true);
+	previous_handler = XSetErrorHandler (xlib_shutdown_error_handler);
+
 	ev.type = ClientMessage;
 	ev.window = window;
 	ev.message_type = WM_PROTOCOLS;
@@ -101,6 +121,8 @@ static void send_wm_delete (Window window)
 
 	XSendEvent (display, ev.window, False, 0, (XEvent*) &ev);
 	XCloseDisplay (display);
+
+	XSetErrorHandler (previous_handler);
 }
 
 static void
