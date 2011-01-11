@@ -159,15 +159,19 @@ execute_shutdown ()
 		}
 	} else {
 		WindowInfoEx ex;
+		int backup_timeout = 5000;
+		memset (&ex, 0, sizeof (ex));
 		memcpy (ex.wi.title, "IWANTEX", sizeof ("IWANTEX"));
-		if (WindowHelper_GetWindowInfo (getpid (), (WindowInfo *) &ex) == 0) {
+		if (WindowHelper_GetWindowInfo (getpid (), (WindowInfo *) &ex) == 0 && ex.window != 0) {
 			send_wm_delete (ex.window);
+		} else {
+			backup_timeout = 10; // no need for the backup to wait if there is nothing else we can do
 		}
 
 		// have a backup
 		// note that this is racy: the current process might not be the one with the focus.
-		g_timeout_add (5000, send_ctrl_w, NULL); // this doesn't work for oob apps
-		g_timeout_add (5000, send_alt_f4, NULL); // this doesn't work if there is no window manager (inside xvfb while running tests for instance)
+		g_timeout_add (backup_timeout, send_ctrl_w, NULL); // this doesn't work for oob apps
+		g_timeout_add (backup_timeout, send_alt_f4, NULL); // this doesn't work if there is no window manager (inside xvfb while running tests for instance)
 	}
 	
 	// Have a backup in case the above fails.
