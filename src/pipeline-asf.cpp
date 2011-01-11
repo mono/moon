@@ -1659,6 +1659,7 @@ MmsSource::DeleteTemporaryDownloaders (EventObject *obj)
 	temporary_downloaders = NULL;
 	if (request) {
 		request->RemoveAllHandlers (obj);
+		request->Abort ();
 		request->unref ();
 		request = NULL;
 	}
