@@ -2336,7 +2336,11 @@ ProgressiveSource::DownloadComplete ()
 	LOG_PIPELINE ("ProgressiveSource::DownloadComplete () size: %" G_GINT64_FORMAT " write_pos: %" G_GINT64_FORMAT "\n", size, write_pos);
 	
 	mutex.Lock ();
-	complete = true;
+	if (size == -1) {
+		complete = true;
+	} else if (ranges.Contains (0, size)) {
+		complete = true;
+	}
 #if SANITY
 	if (write_pos != size && size != -1) { // what happend here?
 		printf ("ProgressiveSource::DownloadComplete (): the downloaded size (%" G_GINT64_FORMAT ") != the reported size (%" G_GINT64_FORMAT	 ")\n", write_pos, size);
