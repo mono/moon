@@ -3457,7 +3457,6 @@ IMediaStream::SetSelected (bool value)
 
 	if (demuxer != NULL) {
 		demuxer->UpdateSelected (this);
-		demuxer->FillBuffers ();
 		demuxer->unref ();
 	}
 }

@@ -320,6 +320,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 				LOG_MEDIAPLAYER ("\n");
 			}
 	}
+	demuxer->FillBuffers ();
 
 	current_pts = 0;
 	target_pts = 0;
@@ -922,6 +923,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 		next_stream->SetSelected (true);
 		audio->SetAudioStream (next_stream);
 	}
+	demuxer->FillBuffers ();
 
 	audio->unref ();
 	demuxer->unref ();
