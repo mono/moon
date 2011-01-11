@@ -75,17 +75,18 @@ namespace System.Windows.Browser {
 
 		public ScriptObject CreateObject (Type type, object obj = null)
 		{
-			if (obj == null)
-				return new ManagedObject (Activator.CreateInstance (type));
+			if (obj == null) {
+				return ManagedObject.GetManagedObject (Activator.CreateInstance (type));
+			}
 
 			if (obj is double || obj is int) {
 				int size = int.Parse (obj.ToString());
 				Type t = type.GetElementType ();
 				if (t == null)
 					return null;
-				return new ManagedObject (Array.CreateInstance (t, size));
+				return ManagedObject.GetManagedObject (Array.CreateInstance (t, size));
 			}
-			return new ManagedObject (JsonDeserialize (obj, type));
+			return ManagedObject.GetManagedObject (JsonDeserialize (obj, type));
 		}
 
 
