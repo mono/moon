@@ -691,7 +691,7 @@ public:
 	virtual ~HandleNode ()
 	{
 		if (res)
-			res->unref ();
+			res->unref_delayed ();
 	}
 	CURL* GetHandle () { return res->GetHandle (); }
 	void Close () { return res->Close (); }
