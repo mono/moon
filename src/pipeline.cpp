@@ -2346,7 +2346,7 @@ ProgressiveSource::DownloadComplete ()
 		printf ("ProgressiveSource::DownloadComplete (): the downloaded size (%" G_GINT64_FORMAT ") != the reported size (%" G_GINT64_FORMAT	 ")\n", write_pos, size);
 	}
 #endif
-	this->size = write_pos;
+	this->size = MAX (write_pos, this->size);
 	mutex.Unlock ();
 
 	/* We don't close the write handle here: we might get seeks to positions in the file we didn't have causing more writes */
