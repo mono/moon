@@ -1041,7 +1041,8 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 		progress = MAX (progress, GetDownloadProgress ());
 		progress = MIN (progress + 0.00000001, 1.0);
 		SetDownloadProgress (progress);
-		Emit (MediaOpenedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
+		if (HasHandlers (MediaOpenedEvent))
+			Emit (MediaOpenedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 		Emit (DownloadProgressChangedEvent);
 	}
 }
