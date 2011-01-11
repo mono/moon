@@ -863,8 +863,8 @@ Mp3Demuxer::OpenDemuxer (MemoryBuffer *open_source)
 			/* Not enough data, request more */
 			if (!RequestMoreData (OpenDemuxerCallback)) {
 				ReportErrorOccurred ("Could not open Mp3 demuxer: could not seek to end of ID3 tag.");
-				return;
 			}
+			return;
 		}
 		open_source->SeekOffset (stream_start);
 	}
