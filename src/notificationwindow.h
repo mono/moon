@@ -63,6 +63,12 @@ public:
 	/* @GeneratePInvoke */
 	void SetMoonWindow (MoonWindow *window);
 
+	/* @GeneratePInvoke */
+	void SetTitle (const char *title);
+
+	/* @GeneratePInvoke */
+	void SetStyle (const WindowStyle style);
+
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };
 

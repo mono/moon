@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 593 methods needs to be decorated.
+# 596 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -618,6 +618,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_get_matrix_values(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::media_attribute_get_name_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_attribute_get_value_(System.IntPtr)
@@ -1635,6 +1638,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::window_set_moon_window(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::window_set_style(System.IntPtr,System.Windows.WindowStyle)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::window_set_title(System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::writeable_bitmap_lock(System.IntPtr)

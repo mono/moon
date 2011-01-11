@@ -92,4 +92,18 @@ Window::DragResizeWithError (MoonError *error)
 	printf ("NIEX Window::DragResizeWithError\n");
 }
 
+void
+Window::SetTitle (const char *title)
+{
+	if (moon_window)
+		moon_window->SetTitle (title);
+}
+
+void
+Window::SetStyle (const WindowStyle style)
+{
+	if (moon_window)
+		moon_window->SetStyle (style);
+}
+
 };

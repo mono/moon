@@ -444,6 +444,9 @@ class TypeReference {
 				managed_type = "Mono.UriFunctions";
 				IsRef = true;
 				break;
+			case "WindowStyle":
+				managed_type = "WindowStyle";
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";

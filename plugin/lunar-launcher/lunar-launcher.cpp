@@ -201,7 +201,6 @@ create_window (Deployment *deployment, const char *app_id)
 {
 	MoonAppRecord *app;
 	OutOfBrowserSettings *oob;
-	WindowSettings *settings;
 	MoonWindow *moon_window;
 	Surface *surface;
 
@@ -219,53 +218,21 @@ create_window (Deployment *deployment, const char *app_id)
 	moon_window->SetSurface (surface);
 
 	setup_app (deployment, installer->GetBaseInstallDir (), app);
-	
+
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	surface->unref ();
-	
-	/* load the xap and the AppManifest */
+
+	/* load the xap */
 	if (!deployment->InitializeManagedDeployment (NULL, NULL, NULL)) {
 		surface->unref ();
-		delete app;
 		return NULL;
 	}
 	
-	if ((oob = deployment->GetOutOfBrowserSettings ())) {
+	if ((oob = deployment->GetOutOfBrowserSettings ()))
 		load_window_icons (moon_window, deployment, oob->GetIcons ());
-		settings = oob->GetWindowSettings ();
-	} else
-		settings = NULL;
-	
-	if (settings != NULL) {
-		Uri *uri;
-		const char *hostname = NULL;
-
-		uri = Uri::Create (app->origin);
-		if (uri != NULL)
-			hostname = uri->GetHost ();
-
-		if (!hostname || !*hostname)
-			hostname = "localhost";
-
-		char *window_title = g_strdup_printf ("%s - %s",
-						      settings->GetTitle(),
-						      hostname);
-
-		delete uri;
-
-		moon_window->SetTitle (window_title);
-
-		g_free (window_title);
-
-		moon_window->SetStyle (settings->GetWindowStyle ());
-	} else if (oob != NULL) {
-		moon_window->SetTitle (oob->GetShortName ());
-	} else {
-		moon_window->SetTitle ("Moonlight");
-	}
 	
 	delete app;
-	
+
 	return moon_window;
 }
 

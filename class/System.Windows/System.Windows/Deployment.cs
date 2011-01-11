@@ -691,6 +691,7 @@ namespace System.Windows {
 			}
 
 			if (instance.IsRunningOutOfBrowser) {
+				IntPtr window_handle = instance.MainWindow.native;
 				WindowSettings ws = OutOfBrowserSettings.WindowSettings;
 				if (ws != null) {
 					Window w = instance.MainWindow;
@@ -711,6 +712,15 @@ namespace System.Windows {
 						// let the OS decide where to show the window
 						break;
 					}
+
+					Uri source = UriHelper.FromNativeUri (NativeMethods.surface_get_source_location (Surface.Native));
+					string host = source.Host;
+					if (String.IsNullOrEmpty (source.Host))
+						host = "localhost";
+					NativeMethods.window_set_title (window_handle, ws.Title + " - " + source.Host);
+					NativeMethods.window_set_style (window_handle, ws.WindowStyle);
+				} else {
+					NativeMethods.window_set_title (window_handle, OutOfBrowserSettings.ShortName);
 				}
 			}
 
