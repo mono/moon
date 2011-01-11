@@ -33,8 +33,8 @@ namespace Moonlight {
 //
 
 BlockCollection::BlockCollection ()
+	: TextElementCollection (Type::BLOCK_COLLECTION)
 {
-	SetObjectType (Type::BLOCK_COLLECTION);
 }
 
 //
@@ -42,8 +42,13 @@ BlockCollection::BlockCollection ()
 //
 
 TextElementCollection::TextElementCollection ()
+	: DependencyObjectCollection (Type::TEXTELEMENT_COLLECTION)
 {
-	SetObjectType (Type::TEXTELEMENT_COLLECTION);
+}
+
+TextElementCollection::TextElementCollection (Type::Kind object_type)
+	: DependencyObjectCollection (object_type)
+{
 }
 
 //
@@ -51,8 +56,20 @@ TextElementCollection::TextElementCollection ()
 //
 
 Collection::Collection ()
+	: DependencyObject (Type::COLLECTION)
 {
-	SetObjectType (Type::COLLECTION);
+	Init ();
+}
+
+Collection::Collection (Type::Kind object_type)
+	: DependencyObject (object_type)
+{
+	Init ();
+}
+
+void
+Collection::Init ()
+{
 	array = g_ptr_array_new ();
 	generation = 0;
 
@@ -431,14 +448,26 @@ Collection::CanAdd (Value *value)
 //
 
 DependencyObjectCollection::DependencyObjectCollection ()
+	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION)
 {
-	SetObjectType (Type::DEPENDENCY_OBJECT_COLLECTION);
 	sets_parent = true;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (bool sets_parent)
+	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION)
 {
-	SetObjectType (Type::DEPENDENCY_OBJECT_COLLECTION);
+	this->sets_parent = sets_parent;
+}
+
+DependencyObjectCollection::DependencyObjectCollection (Type::Kind object_type)
+	: Collection (object_type)
+{
+	sets_parent = true;
+}
+
+DependencyObjectCollection::DependencyObjectCollection (Type::Kind object_type, bool sets_parent)
+	: Collection (object_type)
+{
 	this->sets_parent = sets_parent;
 }
 
@@ -582,8 +611,8 @@ DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonErro
 //
 
 InlineCollection::InlineCollection ()
+	: DependencyObjectCollection (Type::INLINE_COLLECTION)
 {
-	SetObjectType (Type::INLINE_COLLECTION);
 	for_hyperlink = false;
 }
 
@@ -658,15 +687,14 @@ InlineCollection::AddedToCollection (Value *value, MoonError *error)
 //
 
 UIElementCollection::UIElementCollection ()
+	: DependencyObjectCollection (Type::UIELEMENT_COLLECTION)
 {
-	SetObjectType (Type::UIELEMENT_COLLECTION);
 	z_sorted = g_ptr_array_new ();
 }
 
 UIElementCollection::UIElementCollection (bool sets_parent)
-	: DependencyObjectCollection (sets_parent)
+	: DependencyObjectCollection (Type::UIELEMENT_COLLECTION, sets_parent)
 {
-	SetObjectType (Type::UIELEMENT_COLLECTION);
 	z_sorted = g_ptr_array_new ();
 }
 
@@ -730,8 +758,8 @@ HitTestCollection::HitTestCollection ()
 //
 
 DoubleCollection::DoubleCollection ()
+	: Collection (Type::DOUBLE_COLLECTION)
 {
-	SetObjectType (Type::DOUBLE_COLLECTION);
 }
 
 DoubleCollection::~DoubleCollection ()
@@ -761,8 +789,8 @@ DoubleCollection::FromStr (const char *s)
 //
 
 PointCollection::PointCollection ()
+	: Collection (Type::POINT_COLLECTION)
 {
-	SetObjectType (Type::POINT_COLLECTION);
 }
 
 PointCollection::~PointCollection ()
@@ -798,8 +826,8 @@ PointCollection::FromStr (const char *s)
 //
 
 ItemCollection::ItemCollection ()
+	: Collection (Type::ITEM_COLLECTION)
 {
-	SetObjectType (Type::ITEM_COLLECTION);
 }
 
 ItemCollection::~ItemCollection ()
@@ -811,8 +839,8 @@ ItemCollection::~ItemCollection ()
 //
 
 TriggerCollection::TriggerCollection ()
+	: DependencyObjectCollection (Type::TRIGGER_COLLECTION)
 {
-	SetObjectType (Type::TRIGGER_COLLECTION);
 }
 
 TriggerCollection::~TriggerCollection ()
@@ -824,8 +852,8 @@ TriggerCollection::~TriggerCollection ()
 //
 
 TriggerActionCollection::TriggerActionCollection ()
+	: DependencyObjectCollection (Type::TRIGGERACTION_COLLECTION)
 {
-	SetObjectType (Type::TRIGGERACTION_COLLECTION);
 }
 
 TriggerActionCollection::~TriggerActionCollection ()
@@ -836,8 +864,8 @@ TriggerActionCollection::~TriggerActionCollection ()
 // MultiScaleSubImage Collection
 //
 MultiScaleSubImageCollection::MultiScaleSubImageCollection ()
+	: DependencyObjectCollection (Type::MULTISCALESUBIMAGE_COLLECTION)
 {
-	SetObjectType (Type::MULTISCALESUBIMAGE_COLLECTION);
 	z_sorted = g_ptr_array_new ();
 }
 
@@ -883,8 +911,8 @@ MultiScaleSubImageCollection::Clear ()
 //
 
 ResourceDictionaryCollection::ResourceDictionaryCollection ()
+	: DependencyObjectCollection (Type::RESOURCE_DICTIONARY_COLLECTION)
 {
-	SetObjectType (Type::RESOURCE_DICTIONARY_COLLECTION);
 }
 
 ResourceDictionaryCollection::~ResourceDictionaryCollection ()

@@ -59,7 +59,7 @@ class MediaAttributeCollection : public DependencyObjectCollection {
  public:
 	/* @SkipFactories */
 	/* @GenerateCBinding */
-	MediaAttributeCollection () { SetObjectType (Type::MEDIAATTRIBUTE_COLLECTION); }
+	MediaAttributeCollection () : DependencyObjectCollection (Type::MEDIAATTRIBUTE_COLLECTION) { }
 	
 	virtual Type::Kind GetElementType () { return Type::MEDIAATTRIBUTE; }
 	

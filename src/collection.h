@@ -110,9 +110,13 @@ protected:
 
 	/* @SkipFactories */
 	Collection ();
+	/* @SkipFactories */
+	Collection (Type::Kind object_type);
 	virtual ~Collection ();
 	virtual void Dispose ();
 	
+private:
+	void Init ();
 };
 
 /* @Namespace=System.Windows */
@@ -136,6 +140,11 @@ protected:
 	
 	/* @SkipFactories */
 	DependencyObjectCollection (bool sets_parent);
+
+	/* @SkipFactories */
+	DependencyObjectCollection (Type::Kind object_type);
+	/* @SkipFactories */
+	DependencyObjectCollection (Type::Kind object_type, bool sets_parent);
 
 	virtual void OnMentorChanged (DependencyObject *old_mentor, DependencyObject *new_mentor);
 	virtual ~DependencyObjectCollection ();
@@ -397,6 +406,9 @@ class TextElementCollection : public DependencyObjectCollection {
 protected:
 	/* @GeneratePInvoke,ManagedAccess=Internal */
 	TextElementCollection ();
+
+	/* @SkipFactories */
+	TextElementCollection (Type::Kind object_type);
 
 	virtual ~TextElementCollection () {}
 
