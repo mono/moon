@@ -16,7 +16,7 @@ AC_DEFUN([MOONLIGHT_CHECK_CURL],
 		PKG_CHECK_MODULES(NSS, $mozilla_nss, [has_nss=yes], [has_nss=no])
 
 		if test x$has_nss = xyes; then
-			CUSTOM_SUBDIR_OPTION(curl, [--with-pic --disable-shared --disable-manual --without-libssh2 --disable-ldap --disable-ldaps --without-libidn --without-ssl --with-nss])
+			CUSTOM_SUBDIR_OPTION(curl, [--with-pic --disable-shared --disable-manual --without-libssh2 --disable-ldap --disable-ldaps --without-libidn --without-ssl --with-nss --enable-debug])
 				
 			CURL_CFLAGS='-I$(top_srcdir)/curl/include'
 			CURL_LIBS="\$(top_builddir)/curl/lib/libcurl.la $NSS_LIBS"
