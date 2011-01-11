@@ -2113,7 +2113,12 @@ MmsSource::SetStreamSelectionHeaders (HttpRequest *request)
 
 	entry = GetCurrentReffed ();
 
-	g_return_if_fail (entry != NULL);
+#if DEBUG
+	if (entry == NULL)
+		printf ("MmsSource::SetStreamSelectionHeaders (): no entry. default streams will probably be selected by the server.\n");
+#endif
+	if (entry == NULL)
+		return;
 
 	entry->GetSelectedStreams (streams);
 
