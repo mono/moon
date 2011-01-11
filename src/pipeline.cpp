@@ -2062,7 +2062,7 @@ ProgressiveSource::CheckReadRequests ()
 			request_range = closure->GetOffset ();
 		} else if (write_pos > current_request && write_pos >= closure->GetOffset ()) {
 			/* We're currently downloading what's been requested: wait */
-		} else if (write_pos > current_request && write_pos < closure->GetOffset () && CalculateDownloadSpeed () * 5 > (closure->GetOffset () - write_pos)) {
+		} else if (write_pos > current_request && write_pos < closure->GetOffset () && CalculateDownloadSpeed () * 2 > (closure->GetOffset () - write_pos)) {
 			/* It would take less than 5 seconds to reach the requested position if we just wait: wait */
 		} else {
 			/* It would take more than 5 seconds to reach the requested position if we just wait: seek */
