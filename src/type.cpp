@@ -114,6 +114,35 @@ Type::LookupEvent (const char *event_name)
 	return result;
 }
 
+#if DEBUG
+const char *
+Type::LookupEvent (int event_id)
+{
+	Type *parent_type = Type::Find (deployment, parent);
+	const char *result = NULL	;
+
+	if (events != NULL && total_event_count > event_id && total_event_count - event_count <= event_id) {
+		return events [event_id - (total_event_count - event_count)];
+	}
+
+	if (parent == Type::INVALID || parent_type == NULL) {
+#if SANITY
+		printf ("Event lookup of event '%i' in type '%s' failed.\n", event_id, name);
+#endif
+		return NULL;
+	}
+
+	result = parent_type->LookupEvent (event_id);
+
+#if SANITY
+	if (result == NULL)
+		printf ("Event lookup of event '%i' in (more exactly) type '%s' failed.\n", event_id, name);
+#endif
+
+	return result;
+}
+#endif
+
 bool
 Type::IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super)
 {

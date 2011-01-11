@@ -52,6 +52,9 @@ public:
 	static bool IsAssignableFrom (Deployment *deployment, Type::Kind assignable, Type::Kind type);
 
 	int LookupEvent (const char *event_name);
+#if DEBUG
+	const char *LookupEvent (int id);
+#endif
 	DependencyObject *CreateInstance ();
 	const char *GetContentPropertyName ();
 	
