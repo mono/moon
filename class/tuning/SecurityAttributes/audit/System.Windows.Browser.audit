@@ -12,6 +12,10 @@ System.Boolean System.Windows.Browser.ScriptObject::GetPropertyFromUnmanagedSafe
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
 	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call GetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
+!SSC-1EAA39F908245346743B40AC235A09F2
+System.Boolean System.Windows.Browser.ScriptObject::HasPropertyInternal(System.String)
+	20110112	spouliot - 130ffbf - pinvoke into html_object_has_property using 'PluginHost.Handle', 'Handle' (validated) and 'name' (validated)
+
 !SSC-7A096CC2C59A394BA143A04C409D69AB
 System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
@@ -103,8 +107,9 @@ System.Void System.Windows.Browser.ScriptObject::SetDefaultHandle()
 System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
 	r142142		spouliot - added validations, pinvoke into html_object_get_property
 
-!SSC-F73EDF5A3745D06CA4A90AAB12C31926
+!SSC-FEAD04A52B480183AC5429C4C66FB438
 System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
+	20110112	spouliot - no source change / compiler?
 	r142142		spouliot - pinvoke into plugin_instance_get_browser_host
 
 !SSC-AE9FE1D2F71DAEC404CF5177B5251525
