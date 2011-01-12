@@ -717,7 +717,7 @@ namespace System.Windows {
 					string host = source.Host;
 					if (String.IsNullOrEmpty (source.Host))
 						host = "localhost";
-					NativeMethods.window_set_title (window_handle, ws.Title + " - " + source.Host);
+					NativeMethods.window_set_title (window_handle, ws.Title + " - " + host);
 					NativeMethods.window_set_style (window_handle, ws.WindowStyle);
 				} else {
 					NativeMethods.window_set_title (window_handle, OutOfBrowserSettings.ShortName);
