@@ -713,6 +713,31 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 #endif
 
 		switch (this->input_bytes_per_sample) {
+		case 1: {
+			switch (this->output_bytes_per_sample) {
+			case 2: {
+				// 8bit audio -> 16bit audio
+				// note that 8bit audio is unsigned, and we need to conver to signed 16bit
+				guint8 *read_ptr = ((guint8 *) current_frame->frame->GetBuffer ()) + current_frame->bytes_used;
+				memcpy (write_ptr [0], read_ptr, frames_to_write);
+
+				for (guint32 i = 0; i < frames_to_write; i++) {
+					for (guint32 channel = 0; channel < channels; channel++) {
+						value = (((gint16) (*read_ptr)) - 128) << 8;
+						value = (value * volumes [channel]) >> 13;
+						*(write_ptr [channel]) = (gint16) CLAMP (value, -32768, 32767);
+						write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
+						read_ptr++;
+					}
+				}
+				break;
+			}
+			default: // implement others as needed
+				LOG_AUDIO ("AudioSource::Write (): Invalid output_bytes_per_sample, expected 1, got: %i\n", this->output_bytes_per_sample);
+				break;
+			}
+			break;
+		}
 		case 2: {
 			switch (this->output_bytes_per_sample) {
 			case 2: {

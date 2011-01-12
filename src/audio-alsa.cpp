@@ -325,6 +325,10 @@ AlsaSource::SetupHW ()
 
 	// set audio format
 	switch (GetInputBytesPerSample ()) {
+	case 1: // 8 bit audio
+		err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
+		SetOutputBytesPerSample (2);
+		break;
 	case 2: // 16 bit audio
 		err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
 		SetOutputBytesPerSample (2);
@@ -335,7 +339,7 @@ AlsaSource::SetupHW ()
 		SetOutputBytesPerSample (4);
 		break;
 	default:
-		LOG_AUDIO ("AlsaSource::SetupHW (): Invalid input bytes per sample, expected 2 or 3, got %i\n", GetInputBytesPerSample ());
+		LOG_AUDIO ("AlsaSource::SetupHW (): Invalid input bytes per sample, expected 1, 2 or 3, got %i\n", GetInputBytesPerSample ());
 		goto cleanup;
 	}
 	

@@ -196,6 +196,10 @@ PulseSource::InitializePA ()
 	player->LockLoop ();
 	
 	switch (GetInputBytesPerSample ()) {
+	case 1:
+		format.format = PA_SAMPLE_S16NE;
+		SetOutputBytesPerSample (2);
+		break;
 	case 2:
 		format.format = PA_SAMPLE_S16NE;
 		SetOutputBytesPerSample (2);
