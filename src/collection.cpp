@@ -1196,7 +1196,9 @@ VisualTreeWalker::Step ()
 			uiecollection = (UIElementCollection *)collection;
 			
 			if ((int)uiecollection->z_sorted->len != count) {
-				g_warning ("VisualTreeWalker: unexpectedly got an unsorted UIElementCollection");
+#if SANITY
+				printf ("VisualTreeWalker: unexpectedly got an unsorted UIElementCollection\n");
+#endif
 				uiecollection->ResortByZIndex ();
 			}
 		}
