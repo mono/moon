@@ -146,8 +146,6 @@
     <File subtype="Code" buildaction="Nothing" name="alpha-premul-table.inc" />
     <File subtype="Code" buildaction="Compile" name="yuv-converter.cpp" />
     <File subtype="Code" buildaction="Nothing" name="yuv-converter.h" />
-    <File subtype="Code" buildaction="Compile" name="layout.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="layout.h" />
     <File subtype="Code" buildaction="Compile" name="type-generated.cpp" />
     <File subtype="Code" buildaction="Nothing" name="http-streaming.h" />
     <File subtype="Code" buildaction="Compile" name="http-streaming.cpp" />
