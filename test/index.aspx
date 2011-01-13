@@ -16,6 +16,9 @@
 	
 	public string ReadDirectory (string path, string basePath)
 	{
+		bool skip_xaml = !string.IsNullOrEmpty (Request ["skip_xaml"]);
+		bool skip_html = !string.IsNullOrEmpty (Request ["skip_html"]);
+
 		StringBuilder sb = new StringBuilder ();
 		foreach (string sdir in Directory.GetDirectories (path)) {
 			string s = ReadDirectory (sdir, basePath + Path.GetFileName (sdir) + "/");
@@ -25,11 +28,11 @@
 		foreach (string file in Directory.GetFiles (path)) {
 			string fileName = basePath + Path.GetFileName (file);
 			string extension = Path.GetExtension (file);
-			if (extension == ".xaml") {
+			if (!skip_xaml && extension == ".xaml") {
 				sb.AppendFormat ("<li><a class=\"{2}\" href=\"xamlize.aspx?xaml={1}\">{0}</a></li>\n",
 						Path.GetFileName (fileName), fileName, extension.Substring (1));
 			}
-			if (extension == ".htm" || extension == ".html") {
+			if (!skip_html && (extension == ".htm" || extension == ".html")) {
 			        sb.AppendFormat ("<li><a class=\"{2}\" href=\"{1}\">{0}</a></li>\n",
 						Path.GetFileName (fileName), fileName, extension.Substring (1));
   	   
