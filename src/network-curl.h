@@ -67,6 +67,7 @@ class CurlHttpHandler : public HttpHandler {
 	List pool; // multi-threaded access, needs worker_mutex locked
 	List handles; // multi-threaded access, needs worker_mutex locked
 	List calls; // multi-threaded access, needs worker_mutex locked
+	List handle_actions; // multi-threaded access, needs worker_mutex locked
 
 	/* @SkipFactories */
 	CurlHttpHandler ();
@@ -88,6 +89,7 @@ class CurlHttpHandler : public HttpHandler {
 	static bool EmitCallback (gpointer http_handler);
 	void Emit ();
 	void WakeUp ();
+	void ExecuteHandleActions ();
 };
 
 class CallData : public List::Node {
@@ -198,7 +200,8 @@ class CurlDownloaderResponse : public HttpResponse {
 	void Finished ();
 	void Visitor (const char *name, const char *val);
 	void Close ();
-	CURL* GetHandle () { return request->GetHandle (); }
+	CURL* GetHandle () { return request ? request->GetHandle () : NULL; }
+	void ClearRequest ();
 };
 
 class ResponseClosure : public EventObject {

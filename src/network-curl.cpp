@@ -373,8 +373,10 @@ void CurlDownloaderRequest::SendImpl ()
 
 CurlDownloaderRequest::~CurlDownloaderRequest ()
 {
-	if (response)
+	if (response) {
+		response->ClearRequest ();
 		response->unref ();
+	}
 }
 
 CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
@@ -395,6 +397,13 @@ CurlDownloaderResponse::~CurlDownloaderResponse ()
 }
 
 void
+CurlDownloaderResponse::ClearRequest ()
+{
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::ClearRequest () request: %p\n", request);
+	request = NULL;
+}
+
+void
 CurlDownloaderResponse::Open ()
 {
 	VERIFY_MAIN_THREAD
@@ -407,6 +416,10 @@ CurlDownloaderResponse::Open ()
 		GetDeployment ()->GetSurface()->GetTimeManager()->AddDispatcherCall (_open, closure);
 		return;
 	}
+
+	if (request == NULL)
+		return;
+
 	bridge->OpenHandle (request, request->GetHandle ());
 }
 
@@ -451,6 +464,7 @@ CurlDownloaderRequest::Close ()
 			response->Abort ();
 		else
 			response->Close ();
+		response->ClearRequest ();
 		response->unref ();
 		response = NULL;
 	}
@@ -526,7 +540,7 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n%s", this, (char *) ptr);
 
-	if (IsAborted () || request->aborting)
+	if (IsAborted () || request == NULL || request->aborting)
 		return;
 
 	if (!ptr || size <= 2)
@@ -572,6 +586,9 @@ CurlDownloaderResponse::DataReceived (void *ptr, size_t size)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::DataReceived %p\n", this);
 
+	if (request == NULL)
+		return -1;
+
 	if (request->aborting)
 		return -1;
 
@@ -598,6 +615,9 @@ CurlDownloaderResponse::Started ()
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Started %p state: %s\n", this, get_state_name (state));
 
+	if (request == NULL)
+		return;
+
 	SetCurrentDeployment ();
 	state = HEADER;
 	request->Started ();
@@ -618,6 +638,10 @@ void
 CurlDownloaderResponse::Available (char* buffer, size_t size)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Available %p\n", this);
+
+	if (request == NULL)
+		return;
+
 	SetCurrentDeployment ();
 	request->Write (-1, buffer, size);
 }
@@ -626,6 +650,9 @@ void
 CurlDownloaderResponse::Finished ()
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Finished %p state: %s IsAborted: %i\n", this, get_state_name (state), IsAborted ());
+
+	if (request == NULL)
+		return;
 
 	SetCurrentDeployment ();
 
@@ -642,8 +669,16 @@ CurlDownloaderResponse::Finished ()
 
 class CurlNode : public List::Node {
 public:
+	enum Action {
+		None,
+		Add,
+		Remove,
+		Release,
+	};
 	CURL* handle;
-	CurlNode (CURL* handle) : Node (), handle(handle) {};
+	Action action;
+	CurlNode (CURL* handle) : Node (), handle(handle), action (None) {};
+	CurlNode (CURL* handle, Action action) : handle (handle), action (action) {};
 };
 
 class HandleNode : public List::Node {
@@ -759,6 +794,8 @@ CurlHttpHandler::Dispose ()
 		closure = NULL;
 	}
 
+	ExecuteHandleActions ();
+
 	curl_share_cleanup(sharecurl);
 	CurlNode* node = (CurlNode *) pool.First ();
 	// No need to lock worker_mutex here, since the curl thread isn't running anymore
@@ -834,8 +871,44 @@ CurlHttpHandler::ReleaseHandle (CURL* handle)
 	pthread_mutex_unlock (&worker_mutex);
 #endif
 
-	curl_easy_reset (handle);
-	pool.Append (new CurlNode (handle));
+	pthread_mutex_lock (&worker_mutex);
+	handle_actions.Append (new CurlNode (handle, CurlNode::Release));
+	pthread_mutex_unlock (&worker_mutex);
+}
+
+void
+CurlHttpHandler::ExecuteHandleActions ()
+{
+	CurlNode *node;
+
+	// LOG_CURL ("BRIDGE CurlHttpHandler::InvokeHandleActions () IsDataThread: %i quit: %i\n", IsDataThread (), quit);
+
+	/* Here we should either be quitting or in the curl thread */
+#if SANITY
+	g_assert (IsDataThread () || quit); /* #if SANITY */
+#endif
+
+	pthread_mutex_lock (&worker_mutex);
+	node = (CurlNode *) handle_actions.First ();
+	while (node != NULL) {
+		switch (node->action) {
+		case CurlNode::Release:
+			curl_easy_reset (node->handle);
+			pool.Append (new CurlNode (node->handle));
+			break;
+		case CurlNode::Add:
+			curl_multi_add_handle (multicurl, node->handle);
+			break;
+		case CurlNode::Remove:
+			curl_multi_remove_handle (multicurl, node->handle);
+			break;
+		case CurlNode::None:
+			break;
+		}
+		node = (CurlNode *) node->next;
+	}
+	handle_actions.Clear (true);
+	pthread_mutex_unlock (&worker_mutex);
 }
 
 void
@@ -846,7 +919,7 @@ CurlHttpHandler::OpenHandle (CurlDownloaderRequest* res, CURL* handle)
 	pthread_mutex_lock (&worker_mutex);
 	if (!quit) {
 		handles.Append (new HandleNode (res));
-		curl_multi_add_handle (multicurl, handle);
+		handle_actions.Append (new CurlNode (handle, CurlNode::Add));
 	}
 	pthread_mutex_unlock (&worker_mutex);
 
@@ -862,7 +935,7 @@ CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 	if (!quit) {
 		HandleNode* node = (HandleNode*) handles.Find (find_handle, res);
 		if (node) {
-			curl_multi_remove_handle (multicurl, handle);
+			handle_actions.Append (new CurlNode (handle, CurlNode::Remove));
 			handles.Remove (node);
 		}
 	}
@@ -900,6 +973,9 @@ CurlHttpHandler::GetData ()
 		}
 		pthread_mutex_unlock (&worker_mutex);
 		if (quit) break;
+
+		/* Check if handles needs work */
+		ExecuteHandleActions ();
 
 		/* Ask curl to do work */
 		do {
