@@ -353,8 +353,10 @@ void CurlDownloaderRequest::SendImpl ()
 
 	state = OPENED;
 
-	if (isPost ())
+	if (isPost ()) {
 		curl_easy_setopt(curl, CURLOPT_POST, 1);
+		curl_easy_setopt (curl, CURLOPT_POSTFIELDSIZE, 0);
+	}
 
 	if (response)
 		response->unref ();
