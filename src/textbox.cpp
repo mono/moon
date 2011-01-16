@@ -3034,8 +3034,13 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				undo->Push (action);
 				redo->Clear ();
 				g_free (text);
-				
-				emit |= TEXT_CHANGED;
+
+				Value *oldv = args->GetOldValue ();
+				const char *olds = oldv && oldv->AsString () ? oldv->AsString () : "";
+				// no PasswordChanged event is emitted if the password text has not changed (DRT #2003)
+				if (strcmp (olds, str) != 0)
+					emit |= TEXT_CHANGED;
+
 				ClearSelection (0);
 				ResetIMContext ();
 				
