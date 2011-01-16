@@ -10,8 +10,6 @@
 
 #include <config.h>
 
-#define GL_GLEXT_PROTOTYPES
-
 #include "projection.h"
 #include "effect.h"
 #include "context-gl.h"

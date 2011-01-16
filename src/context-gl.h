@@ -66,6 +66,33 @@ public:
 	void Flush ();
 
 protected:
+	PFNGLCREATESHADERPROC glCreateShader;
+	PFNGLSHADERSOURCEPROC glShaderSource;
+	PFNGLCOMPILESHADERPROC glCompileShader;
+	PFNGLGETSHADERIVPROC glGetShaderiv;
+	PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
+	PFNGLDELETESHADERPROC glDeleteShader;
+	PFNGLCREATEPROGRAMPROC glCreateProgram;
+	PFNGLATTACHSHADERPROC glAttachShader;
+	PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
+	PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
+	PFNGLUNIFORM4FPROC glUniform4f;
+	PFNGLUNIFORM4FVPROC glUniform4fv;
+	PFNGLUNIFORM1IPROC glUniform1i;
+	PFNGLLINKPROGRAMPROC glLinkProgram;
+	PFNGLUSEPROGRAMPROC glUseProgram;
+	PFNGLDELETEPROGRAMPROC glDeleteProgram;
+	PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
+	PFNGLENABLEVERTEXATTRIBARRAYARBPROC glEnableVertexAttribArray;
+	PFNGLDISABLEVERTEXATTRIBARRAYARBPROC glDisableVertexAttribArray;
+	PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+	PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+	PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+	PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
+	PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
+	PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
+	PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+
 	virtual void SetFramebuffer ();
 	virtual void SetScissor ();
 	void SetViewport ();
@@ -78,9 +105,9 @@ protected:
 				      double       height);
 
 	void GetDeviceMatrix (double *out);
-	static GLuint CreateShader (GLenum       shaderType,
-				    GLsizei      count,
-				    const GLchar **str);
+	GLuint CreateShader (GLenum       shaderType,
+			     GLsizei      count,
+			     const GLchar **str);
 	GLuint GetVertexShader ();
 	GLuint GetProjectProgram (double alpha);
 	GLuint GetConvolveProgram (unsigned size);
