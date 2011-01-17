@@ -987,8 +987,10 @@ CurlHttpHandler::GetData ()
 	VERIFY_CURL_THREAD
 
 	fd_set r,w,x;
-	int num, available;
-	int running = 0;
+	int running;
+	int available;
+	int msgs;
+	CURLMsg* msg;
 	long timeout;
 	struct timespec tv;
 	CURLMcode res;
@@ -1009,24 +1011,19 @@ CurlHttpHandler::GetData ()
 
 		/* Ask curl to do work */
 		do {
-			res = curl_multi_perform (multicurl, &num);
-		} while (!quit && res == CURLM_CALL_MULTI_PERFORM && num == running);
+			res = curl_multi_perform (multicurl, &running);
+		} while (!quit && res == CURLM_CALL_MULTI_PERFORM);
 		if (quit) break;
 
 		/* Check if some handles are done */
-		if (num != running) {
-			running = num;
-			int msgs;
-			CURLMsg* msg;
-			while ((msg = curl_multi_info_read (multicurl, &msgs))) {
-				if (msg->msg == CURLMSG_DONE) {
-					pthread_mutex_lock (&worker_mutex);
-					HandleNode* node = (HandleNode*) handles.Find (find_easy_handle, msg->easy_handle);
-					if (node) {
-						calls.Append (new CallData (this, _close, node->res));
-					}
-					pthread_mutex_unlock (&worker_mutex);
+		while ((msg = curl_multi_info_read (multicurl, &msgs))) {
+			if (msg->msg == CURLMSG_DONE) {
+				pthread_mutex_lock (&worker_mutex);
+				HandleNode* node = (HandleNode*) handles.Find (find_easy_handle, msg->easy_handle);
+				if (node) {
+					calls.Append (new CallData (this, _close, node->res));
 				}
+				pthread_mutex_unlock (&worker_mutex);
 			}
 		}
 
