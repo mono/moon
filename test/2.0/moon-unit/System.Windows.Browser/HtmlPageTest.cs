@@ -17,23 +17,25 @@
 //OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-// Copyright (c) 2009-2010 Novell, Inc.
+// Copyright (c) 2009-2011 Novell, Inc.
 //
 // Authors:
 //	Moonlight List (moonlight-list@lists.ximian.com)
 //
 
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Controls;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Browser {
 
 	[TestClass]
-	public class HtmlPageTest {
+	public class HtmlPageTest : SilverlightTest {
 
 		public class Ok {
 
@@ -355,6 +357,57 @@ namespace MoonTest.System.Windows.Browser {
 
 			Uri https = new Uri ("https://mono-project.com");
 			Assert.IsNull (HtmlPage.PopupWindow (https, "_blank", null), "https");
+		}
+
+		[TestMethod]
+		public void IsEnabled ()
+		{
+			Assert.IsTrue (HtmlPage.IsEnabled, "IsEnabled");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsEnabled_Dispatched ()
+		{
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Application.Current.RootVisual.Dispatcher.BeginInvoke (() => {
+				try {
+					Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					IsEnabled ();
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsEnabled_UserThread ()
+		{
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					IsEnabled ();
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
 		}
 	}
 }

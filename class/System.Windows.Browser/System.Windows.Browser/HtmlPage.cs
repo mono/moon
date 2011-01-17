@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using System.Windows.Interop;
 
 using Mono;
@@ -43,6 +44,7 @@ namespace System.Windows.Browser {
 		static HtmlDocument document;
 		static HtmlElement plugin;
 		static int last_user_initiated_event;
+		static bool enabled;
 
 		static HtmlPage ()
 		{
@@ -51,6 +53,10 @@ namespace System.Windows.Browser {
 				ScriptObject services = new ManagedObject (HostServices.Current);
 				NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, "services", services.Handle);
 			}
+
+			// IsRunningOutOfBrowser and EnableHTMLAccess must be run on the main thread
+			// but IsEnabled can be called from any thread and it's value won't change
+			enabled = !Application.Current.IsRunningOutOfBrowser && Application.Current.Host.Settings.EnableHTMLAccess;
 		}
 
 		public static BrowserInformation BrowserInformation {
@@ -65,9 +71,7 @@ namespace System.Windows.Browser {
 		}
 		
 		public static bool IsEnabled {		
-			get {
-				return !Application.Current.IsRunningOutOfBrowser && Application.Current.Host.Settings.EnableHTMLAccess;
-			}
+			get { return enabled; }
 		}
 		
 		public static HtmlDocument Document {
