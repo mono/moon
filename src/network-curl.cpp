@@ -295,6 +295,7 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequ
 	VERIFY_MAIN_THREAD
 
 	curl = bridge->RequestHandle ();
+	body_set = false;
 
 #if !(ds(0))
 	config.trace_ascii = 1;
@@ -340,6 +341,7 @@ void CurlDownloaderRequest::SetBodyImpl (void *ptr, guint32 size)
 	memcpy(body, ptr, size);
 	curl_easy_setopt (curl, CURLOPT_POSTFIELDS, body);
 	curl_easy_setopt (curl, CURLOPT_POSTFIELDSIZE, size);
+	body_set = true;
 }
 
 void CurlDownloaderRequest::SendImpl ()
@@ -355,7 +357,8 @@ void CurlDownloaderRequest::SendImpl ()
 
 	if (isPost ()) {
 		curl_easy_setopt(curl, CURLOPT_POST, 1);
-		curl_easy_setopt (curl, CURLOPT_POSTFIELDSIZE, 0);
+		if (!body_set)
+			curl_easy_setopt (curl, CURLOPT_POSTFIELDSIZE, 0);
 	}
 
 	if (response)

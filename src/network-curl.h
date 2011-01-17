@@ -117,6 +117,7 @@ class CurlDownloaderRequest : public HttpRequest {
 	curl_httppost *postlast;
 	void *body;
 	CURL* curl;
+	bool body_set;
 
 	enum State {
 		NONE = 0,
