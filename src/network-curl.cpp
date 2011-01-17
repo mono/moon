@@ -483,11 +483,15 @@ CurlDownloaderRequest::Close ()
 	bridge->ReleaseHandle (curl);
 	curl = NULL;
 
-	if (body)
+	if (body) {
 		g_free (body);
+		body = NULL;
+	}
 
-	if (headers)
+	if (headers) {
 		curl_slist_free_all (headers);
+		headers = NULL;
+	}
 
 }
 
