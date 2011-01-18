@@ -26,6 +26,7 @@ class convert {
  * See the LICENSE file included with the distribution for details.
  * 
  */", sourcefile));
+			dest.Add ("/* @SkipFile */\n");
 
 			dest.Add (string.Format ("static guchar {0}[] = {{", cpp_symbol));
 
