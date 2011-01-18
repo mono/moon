@@ -21,8 +21,6 @@ class PlaylistRoot;
 
 };
 
-#include <expat.h>
-
 #include "value.h"
 #include "error.h"
 #include "dependencyobject.h"
@@ -368,30 +366,22 @@ public:
 #endif
 };
 
-class PlaylistParserInternal {
-public:
-	XML_Parser parser;
-	AsxParser *asxparser;
-
-	PlaylistParserInternal ();
-	~PlaylistParserInternal ();
-};
-
+/*
+ * PlaylistParser
+ */
 class PlaylistParser {
 private:
+	AsxParser *asxparser;
 	PlaylistRoot *root;
 	Playlist *playlist;
 	PlaylistEntry *current_entry;
-	PlaylistParserInternal *internal;
 	MemoryBuffer *source;
-	bool was_playlist;
 	ErrorEventArgs *error_args;
 	// For <ASX* files, this is 3 (or 0 if no version attribute was found).
 	// for [Ref* files, this is 2.
 	// The presence of a version does not guarantee that the playlist
 	// was parsed correctly.
 	int playlist_version;
-	bool use_internal_asxparser;
 
 	enum XmlType {
 		XML_TYPE_NONE,
@@ -438,8 +428,6 @@ private:
 	bool AssertParentKind (int kind);
 
 	void Setup (XmlType type);
-	void Cleanup ();
-	bool TryFixError (gint8 **buffer, guint32 *size, bool *free_buffer);
 
 public:
 	PlaylistParser (PlaylistRoot *root, MemoryBuffer *source);
@@ -450,15 +438,10 @@ public:
 	MediaResult Parse ();
 	bool ParseASX2 ();
 	bool ParseASX3 ();
-	bool ParseASX3Internal ();
 	static bool Is (MemoryBuffer *source, const char *header);
 	static bool IsASX2 (MemoryBuffer *source);
 	static bool IsASX3 (MemoryBuffer *source);
 
-	// This value determines if the data we parsed
-	// actually was a playlist. It may be true even
-	// if the playlist wasn't parsed correctly.
-	bool WasPlaylist () { return was_playlist; }
 	void ParsingError (ErrorEventArgs *args = NULL);
 	
 	ErrorEventArgs *GetErrorEventArgs () { return error_args; }

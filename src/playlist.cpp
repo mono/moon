@@ -11,7 +11,6 @@
  */
 
 #include <config.h>
-#include <expat.h>
 #include <string.h>
 #include <math.h>
 #include <glib.h>
@@ -25,24 +24,6 @@
 #include "factory.h"
 
 namespace Moonlight {
-
-/*
- * PlaylistParserInternal
- */
-
-PlaylistParserInternal::PlaylistParserInternal ()
-{
-	parser = XML_ParserCreate (NULL);
-	asxparser = new AsxParser ();
-}
-
-PlaylistParserInternal::~PlaylistParserInternal ()
-{
-	XML_ParserFree (parser);
-	parser = NULL;
-
-	delete asxparser;
-}
 
 /*
  * PlaylistNode
@@ -1612,14 +1593,12 @@ PlaylistParser::PlaylistParser (PlaylistRoot *root, MemoryBuffer *source)
 {
 	this->root = root;
 	this->source = source;
-	this->internal = NULL;
 	this->kind_stack = NULL;
 	this->playlist = NULL;
 	this->current_entry = NULL;
 	this->current_text = NULL;
 	this->error_args = NULL;
-
-	this->use_internal_asxparser = getenv ("MOONLIGHT_USE_EXPAT_ASXPARSER") == NULL;
+	this->asxparser = new AsxParser ();
 }
 
 void
@@ -1629,37 +1608,25 @@ PlaylistParser::Setup (XmlType type)
 	current_entry = NULL;
 	current_text = NULL;
 
-	was_playlist = false;
-
-	internal = new PlaylistParserInternal ();
 	kind_stack = new List ();
 	PushCurrentKind (PlaylistKind::Root);
 
 	if (type == XML_TYPE_ASX3) {
-		if (use_internal_asxparser) {
-			internal->asxparser->SetUserData (this);
-			internal->asxparser->SetElementStartHandler (on_start_element_internal_asxparser);
-			internal->asxparser->SetElementEndHandler (on_end_element_internal_asxparser);
-			internal->asxparser->SetTextHandler (on_text_internal_asxparser);
-		} else {
-			XML_SetUserData (internal->parser, this);
-			XML_SetElementHandler (internal->parser, on_asx_start_element, on_asx_end_element);
-			XML_SetCharacterDataHandler (internal->parser, on_asx_text);
-		}
+		asxparser->SetUserData (this);
+		asxparser->SetElementStartHandler (on_start_element_internal_asxparser);
+		asxparser->SetElementEndHandler (on_end_element_internal_asxparser);
+		asxparser->SetTextHandler (on_text_internal_asxparser);
 	}
-	
 }
 
-void
-PlaylistParser::Cleanup ()
+PlaylistParser::~PlaylistParser ()
 {
 	if (kind_stack) {
-		kind_stack->Clear (true);
 		delete kind_stack;
 		kind_stack = NULL;
 	}
-	delete internal;
-	internal = NULL;
+	delete asxparser;
+	asxparser = NULL;
 	if (playlist) {
 		playlist->unref ();
 		playlist = NULL;
@@ -1668,11 +1635,6 @@ PlaylistParser::Cleanup ()
 		error_args->unref ();
 		error_args = NULL;
 	}
-}
-
-PlaylistParser::~PlaylistParser ()
-{
-	Cleanup ();
 }
 
 static bool
@@ -2225,8 +2187,6 @@ PlaylistParser::OnASXEndElement (const char *name)
 			GetCurrentContent ()->SetTitle (current_text);
 		break;
 	case PlaylistKind::Asx:
-		if (playlist_version == 3)
-			was_playlist = true;
 		if (!AssertParentKind (PlaylistKind::Root))
 			break;
 		break;
@@ -2405,68 +2365,6 @@ PlaylistParser::ParseASX2 ()
 	current_entry = entry;
 
 	return true;
-}
-
-bool
-PlaylistParser::TryFixError (gint8 **buffer, guint32 *buffer_size, bool *free_buffer)
-{
-	gint8 *current_buffer = *buffer;
-	
-	if (XML_GetErrorCode (internal->parser) != XML_ERROR_INVALID_TOKEN)
-		return false;
-
-	guint32 index = XML_GetErrorByteIndex (internal->parser);
-
-	// check that the index is within the buffer
-	if (index >= *buffer_size)
-		return false;
-
-	LOG_PLAYLIST ("Attempting to fix invalid token error  index: %d\n", index);
-
-	// OK, so we are going to guess that we are in an attribute here and walk back
-	// until we hit a control char that should be escaped.
-	const char * escape = NULL;
-	while (index >= 0) {
-		switch (current_buffer [index]) {
-		case '&':
-			escape = "&amp;";
-			break;
-		case '<':
-			escape = "&lt;";
-			break;
-		case '>':
-			escape = "&gt;";
-			break;
-		case '\"':
-			break;
-		}
-		if (escape)
-			break;
-		index--;
-	}
-
-	if (!escape) {
-		LOG_PLAYLIST ("Unable to find an invalid escape character to fix in ASX: %s.\n", current_buffer);
-		return false;
-	}
-
-	int escape_len = strlen (escape);
-	int new_size = *buffer_size + escape_len - 1;
-	gint8 * new_buffer = (gint8 *) g_malloc (new_size);
-
-	memcpy (new_buffer, current_buffer, index);
-	memcpy (new_buffer + index, escape, escape_len);
-	memcpy (new_buffer + index + escape_len, current_buffer + index + 1, *buffer_size - index - 1); 
-
-	*buffer = new_buffer;
-	*free_buffer = true;
-	*buffer_size = new_size;
-
-	if (error_args) {
-		// Clear out errors in the old buffer
-		error_args->unref ();
-		error_args = NULL;
-	}
 
 	return true;
 }
@@ -2483,7 +2381,7 @@ PlaylistParser::Parse ()
 		Setup (XML_TYPE_NONE);
 		result = this->ParseASX2 ();
 	} else if (this->IsASX3 (source)) {
-		result = use_internal_asxparser ? this->ParseASX3Internal () : this->ParseASX3 ();
+		result = this->ParseASX3 ();
 	} else {
 		result = false;
 	}
@@ -2494,80 +2392,14 @@ PlaylistParser::Parse ()
 bool
 PlaylistParser::ParseASX3 ()
 {
-	guint32 buffer_size;
-	gint8 *buffer;
-	bool result = true;
-	bool reparse = false;
-	bool free_buffer = false;
-
-	/* We have the entire asx document in memory here */
-	buffer = (gint8 *) source->GetCurrentPtr ();
-	buffer_size = source->GetRemainingSize ();
-
-	if (buffer_size <= 0) {
-		fprintf (stderr, "Moonlight: ASX playlist is empty.\n");
-		return false;
-	}
-
-	do {
-		reparse = false;
-		Setup (XML_TYPE_ASX3);
-		if (!XML_Parse (internal->parser, (const char *) buffer, buffer_size, true)) {
-			if (error_args != NULL) {
-				result = false;
-				break;
-			}
-			
-			switch (XML_GetErrorCode (internal->parser)) {
-			case XML_ERROR_NO_ELEMENTS:
-				ParsingError (new ErrorEventArgs (MediaError,
-								  MoonError (MoonError::EXCEPTION, 7000, "unexpected end of input")));
-				result = false;
-				break;
-			case XML_ERROR_DUPLICATE_ATTRIBUTE:
-				ParsingError (new ErrorEventArgs (MediaError,
-								  MoonError (MoonError::EXCEPTION, 7031, "wfc: unique attribute spec")));
-				result = false;
-				break;
-			case XML_ERROR_INVALID_TOKEN:
-				// save error args in case the error fixing fails (in which case we want this error, not the error the error fixing caused)
-				error_args = new ErrorEventArgs (MediaError,
-								 MoonError (MoonError::EXCEPTION, 7007, "quote expected"));
-				if (TryFixError (&buffer, &buffer_size, &free_buffer)) {
-					reparse = true;
-					break;
-				}
-				// fall through
-			default:
-				char *msg = g_strdup_printf ("%s %d (%d, %d)", 
-					XML_ErrorString (XML_GetErrorCode (internal->parser)), (int) XML_GetErrorCode (internal->parser),
-					(int) XML_GetCurrentLineNumber (internal->parser), (int) XML_GetCurrentColumnNumber (internal->parser));
-				ParsingError (new ErrorEventArgs (MediaError,
-								  MoonError (MoonError::EXCEPTION, 3000, msg)));
-				g_free (msg);
-				result = false;
-				break;
-			}
-		}
-	} while (reparse);
-
-	if (free_buffer)
-		g_free (buffer);
-
-	return result && playlist != NULL;
-}
-
-bool
-PlaylistParser::ParseASX3Internal ()
-{
 	Setup (XML_TYPE_ASX3);
 
-	bool result = internal->asxparser->ParseBuffer (source);
+	bool result = asxparser->ParseBuffer (source);
 
 	if (result)
 		return true;
 
-	switch (internal->asxparser->GetErrorCode ()) {
+	switch (asxparser->GetErrorCode ()) {
 	case ASXPARSER_ERROR_NO_ELEMENTS:
 		ParsingError (new ErrorEventArgs (MediaError,
 				MoonError (MoonError::EXCEPTION, 7000, "unexpected end of input")));
@@ -2585,10 +2417,10 @@ PlaylistParser::ParseASX3Internal ()
 		break;
 	default:
 		char *msg = g_strdup_printf ("%s %d (%d, %d)", 
-				internal->asxparser->GetErrorMessage (),
-				internal->asxparser->GetErrorCode (),
-				internal->asxparser->GetCurrentLineNumber (),
-				internal->asxparser->GetCurrentColumnNumber ());
+				asxparser->GetErrorMessage (),
+				asxparser->GetErrorCode (),
+				asxparser->GetCurrentLineNumber (),
+				asxparser->GetCurrentColumnNumber ());
 
 		ParsingError (new ErrorEventArgs (MediaError,
 				MoonError (MoonError::EXCEPTION, 3000, msg)));
@@ -2668,10 +2500,7 @@ PlaylistParser::ParsingError (ErrorEventArgs *args)
 {
 	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->GetErrorMessage());
 
-	if (use_internal_asxparser)
-		internal->asxparser->Stop ();
-	else
-		XML_StopParser (internal->parser, false);
+	asxparser->Stop ();
 
 	if (error_args) {
 		if (args)
@@ -2680,7 +2509,6 @@ PlaylistParser::ParsingError (ErrorEventArgs *args)
 	}
 	error_args = args; // don't ref, this method is called like this: ParsingError (new ErrorEventArgs (...));, so the caller gives us the ref he has
 }
-
 
 PlaylistKind PlaylistParser::playlist_kinds [] = {
 	/* ASX3 */
