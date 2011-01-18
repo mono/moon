@@ -1588,6 +1588,11 @@ class Generator {
 			//Console.WriteLine ("ParseType: Found {0}'s base class: {1}", type.Name, type.Base);
 		}
 
+		if (tokenizer.Accept (Token2Type.Punctuation, "<")) {
+			while (!tokenizer.Accept (Token2Type.Punctuation, ">")) {
+				tokenizer.Advance (true);
+			}
+		}
 		tokenizer.AcceptOrThrow (Token2Type.Punctuation, "{");
 
 		//Console.WriteLine ("ParseType: Found a type: {0} in {1}", type.Name, type.Header);

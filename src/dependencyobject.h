@@ -296,6 +296,26 @@ private:
 	friend class WeakRefBase;
 };
 
+template<typename EO>
+class EventObjectNode : public List::GenericNode<EO*> {
+public:
+	EventObjectNode (EO *obj)
+		: List::GenericNode<EO*> (obj)
+	{
+		if (obj)
+			obj->ref ();
+	}
+	EventObjectNode ()
+		: List::GenericNode<EO*> (NULL)
+	{
+	}
+	virtual ~EventObjectNode ()
+	{
+		if (this->element)
+			this->element->unref ();
+	}
+};
+
 /* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
 public:

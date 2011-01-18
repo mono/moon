@@ -29,6 +29,16 @@ public:
 		Node ();
 		virtual ~Node () { }
 	};
+
+	template<typename T>
+	class GenericNode : public Node {
+	protected:
+		T element;
+	public:
+		GenericNode () {}
+		GenericNode (T element) : element (element) {}
+		T GetElement () { return element; }
+	};
 	
 	typedef bool (* NodeAction) (Node *node, void *data);
 
