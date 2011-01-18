@@ -982,14 +982,32 @@ MediaElement::OpenCompletedHandler (Playlist *playlist, EventArgs *args)
 	g_return_if_fail (mplayer != NULL);
 	
 	entry = playlist->GetCurrentEntryLeaf ();
-	
-	g_return_if_fail (entry != NULL);
-	
+
+	if (entry == NULL) {
+#if SANITY
+		printf ("Moonlight: no playlist entry in MediaElement::OpenCompletedHandler\n");
+#endif
+		return;
+	}
+
 	media = entry->GetMedia ();
-	
-	g_return_if_fail (media != NULL);
-	
+
+	if (media == NULL) {
+#if SANITY
+		printf ("Moonlight: no media in MediaElement::OpenCompletedHandler\n");
+#endif
+		return;
+	}
+
 	demuxer = media->GetDemuxerReffed ();
+
+	if (demuxer == NULL) {
+#if SANITY
+		printf ("Moonlight: no demuxer in MediaElement::OpenCompletedHandler\n");
+#endif
+		return;
+	}
+
 	demuxer_name = demuxer->GetTypeName ();
 	
 	if (demuxer->IsDrm ()) {
