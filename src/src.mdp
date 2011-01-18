@@ -285,8 +285,6 @@
     <File subtype="Code" buildaction="Nothing" name="projection.h" />
     <File subtype="Code" buildaction="Nothing" name="textoptions.h" />
     <File subtype="Code" buildaction="Nothing" name="xaml-to-header.cs" />
-    <File subtype="Code" buildaction="Compile" name="pal/gtk/debug-ui.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="pal/gtk/debug-ui.h" />
     <File subtype="Code" buildaction="Nothing" name="pipeline-mp4.h" />
     <File subtype="Code" buildaction="Compile" name="pipeline-mp4.cpp" />
     <File subtype="Code" buildaction="Compile" name="printing.cpp" />
@@ -306,8 +304,6 @@
     <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-capture.h" />
     <File subtype="Code" buildaction="Compile" name="pal/messaging/glib/pal-glib-msg.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/messaging/glib/pal-glib-msg.h" />
-    <File subtype="Code" buildaction="Compile" name="pal/gtk/install-dialog.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="pal/gtk/install-dialog.h" />
     <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
     <File subtype="Code" buildaction="Nothing" name="inputmethod.h" />
     <File subtype="Code" buildaction="Nothing" name="inputscope.h" />
@@ -377,6 +373,30 @@
     <File subtype="Code" buildaction="Compile" name="textselection.cpp" />
     <File subtype="Code" buildaction="Nothing" name="icon128.h" />
     <File subtype="Code" buildaction="Nothing" name="png-to-header.cs" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/clipboard-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/clipboard-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/config-dialog-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/config-dialog-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/debug-ui-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/debug-ui-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/im-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/im-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/install-dialog-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/install-dialog-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLEvent.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLEvent.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLTimer.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLTimer.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLView.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLView.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/pal-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/pal-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/pixbuf-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/pixbuf-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/window-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/window-cocoa.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/windowless-cocoa.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/windowless-cocoa.m" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
