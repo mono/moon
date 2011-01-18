@@ -311,7 +311,6 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequ
 	curl_easy_setopt(curl,CURLOPT_CAINFO, NULL);
 	curl_easy_setopt(curl,CURLOPT_CAPATH, NULL);
 
-	curl_easy_setopt (curl, CURLOPT_USERAGENT, "NSPlayer/11.08.0005.0000");
 	curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
 }
 
