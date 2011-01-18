@@ -178,6 +178,22 @@ namespace System.Windows.Controls.Primitives
 					}
 					break;
 				case SelectionMode.Extended:
+					if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift) {
+						int selectedIndex = Owner.Items.IndexOf (SelectedItem);
+						if (SelectedItems.Count == 0)
+							SelectRange (0, Owner.Items.IndexOf (item));
+						else
+							SelectRange (selectedIndex, Owner.Items.IndexOf (item));
+					} else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+						if (!selected)
+							AddToSelected (item);
+					} else {
+						if (selected)
+							RemoveFromSelected (item);
+						else
+							AddToSelected (item);
+					}
+					break;
 				case SelectionMode.Multiple:
 					if (SelectedItems.Contains (item))
 						UpdateSelectorProperties (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.SelectedValue);
@@ -191,6 +207,41 @@ namespace System.Windows.Controls.Primitives
 				Updating = false;
 			}
 
+		}
+
+		public void SelectRange (int startIndex, int endIndex)
+		{
+			// First get all the objects which should be selected
+			List<object> toSelect = new List<object> ();
+			for (int i = startIndex; i <= endIndex; i ++)
+				toSelect.Add (Owner.Items [i]);
+
+			// Then get all the existing selected items which need to be unselected
+			List<object> toUnselect = new List<object> ();
+			foreach (object o in SelectedItems)
+				if (!toSelect.Contains (o))
+					toUnselect.Add (o);
+
+			// Then remove items from 'toSelect' which are already selected
+			foreach (object o in SelectedItems)
+				if (toSelect.Contains (o))
+					toSelect.Remove (o);
+
+			// Now we have the diff between what needs to be selected and unselected
+			// so make the changes
+			foreach (object o in toUnselect)
+				SelectedItems.Remove (o);
+
+			foreach (object o in toSelect)
+				SelectedItems.Add (o);
+
+			if (!SelectedItems.Contains (SelectedItem)) {
+				SelectedItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
+				UpdateSelectorProperties (SelectedItem, SelectedItem == null ? -1 : Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
+			}
+
+			UpdateOwnerSelectedItems ();
+			Owner.RaiseSelectionChanged (toUnselect, toSelect);
 		}
 
 		public void SelectAll (ItemCollection items)
