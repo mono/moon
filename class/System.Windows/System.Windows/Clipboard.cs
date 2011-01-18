@@ -58,7 +58,7 @@ namespace System.Windows {
 		{
 			CheckUserInitiated ();
 			IntPtr clipboard = GetClipboard();
-			return NativeMethods.moon_clipboard_get_text (clipboard);
+			return NativeMethods.moon_clipboard_get_text (clipboard) ?? String.Empty;
 		}
 
 		public static void SetText (string text)
