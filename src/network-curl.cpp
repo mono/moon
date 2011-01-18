@@ -497,6 +497,12 @@ CurlDownloaderRequest::Write (gint64 offset, void *buffer, gint32 length)
 }
 
 void
+CurlDownloaderRequest::NotifyFinalUri (const char *value)
+{
+	HttpRequest::NotifyFinalUri (value);
+}
+
+void
 CurlDownloaderResponse::Abort ()
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Abort request:%p response:%p\n", request, this);
@@ -549,6 +555,8 @@ const char * CurlDownloaderResponse::GetResponseStatusText ()
 void
 CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 {
+	char *final_url = NULL;
+
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::HeaderReceived %p\n%s", this, (char *) ptr);
 
 	if (IsAborted () || request == NULL || request->aborting)
@@ -559,6 +567,9 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 
 	if (state == STOPPED) {
 		curl_easy_getinfo (request->GetHandle (), CURLINFO_RESPONSE_CODE, &status);
+		curl_easy_getinfo (request->GetHandle (), CURLINFO_EFFECTIVE_URL, &final_url);
+
+		request->NotifyFinalUri (final_url);
 
 		// The first line
 		// Parse status line: "HTTP/1.X # <status>"

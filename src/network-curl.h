@@ -152,6 +152,7 @@ class CurlDownloaderRequest : public HttpRequest {
 	void Succeeded ();
 
 	void Write (gint64 offset, void *buffer, gint32 length);
+	void NotifyFinalUri (const char *value);
 };
 
 class CurlDownloaderResponse : public HttpResponse {
