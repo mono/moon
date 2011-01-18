@@ -481,6 +481,7 @@ CurlDownloaderRequest::Close ()
 	}
 
 	bridge->ReleaseHandle (curl);
+	curl = NULL;
 
 	if (body)
 		g_free (body);
@@ -523,11 +524,6 @@ CurlDownloaderResponse::Close ()
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Close request:%p response:%p\n", request, this);
 
 	VERIFY_MAIN_THREAD
-
-	curl_easy_setopt(request->GetHandle (), CURLOPT_HTTPHEADER, NULL);
-	curl_easy_setopt(request->GetHandle (), CURLOPT_WRITEFUNCTION, NULL);
-	curl_easy_setopt(request->GetHandle (), CURLOPT_WRITEDATA, NULL);
-	curl_easy_setopt(request->GetHandle (), CURLOPT_HEADERFUNCTION, NULL);
 
 	bridge->CloseHandle (request, request->GetHandle ());
 
@@ -699,8 +695,14 @@ public:
 	};
 	CURL* handle;
 	Action action;
-	CurlNode (CURL* handle) : Node (), handle(handle), action (None) {};
-	CurlNode (CURL* handle, Action action) : handle (handle), action (action) {};
+	EventObject *keep_alive;
+	CurlNode (CURL* handle) : Node (), handle(handle), action (None), keep_alive (NULL) {};
+	CurlNode (CURL* handle, Action action) : handle (handle), action (action), keep_alive (NULL) {};
+	virtual ~CurlNode ()
+	{
+		if (keep_alive)
+			keep_alive->unref_delayed ();
+	}
 };
 
 class HandleNode : public List::Node {
@@ -960,7 +962,10 @@ CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 	if (!quit) {
 		HandleNode* node = (HandleNode*) handles.Find (find_handle, res);
 		if (node) {
-			handle_actions.Append (new CurlNode (handle, CurlNode::Remove));
+			CurlNode *cn = new CurlNode (handle, CurlNode::Remove);
+			cn->keep_alive = res;
+			res->ref ();
+			handle_actions.Append (cn);
 			handles.Remove (node);
 		}
 	}
