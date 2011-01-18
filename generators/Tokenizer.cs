@@ -71,6 +71,13 @@ public class Tokenizer {
 		this.files = new Queue <string> (files);
 	}
 
+	public void SkipFile ()
+	{
+		if (current_stream != null)
+			current_stream.Close ();
+		current_stream = null;
+	}
+
 	public char ReadNextChar ()
 	{
 		StringBuilder line = new StringBuilder ();
@@ -244,7 +251,12 @@ public class Tokenizer {
 					throw new Exception (string.Format ("Expected '/', got '{0}'", current));
 
 				if (builder.Length != 0) {
-					current_token = new Token2 (Token2Type.CommentProperty, builder.ToString ());
+					string comment = builder.ToString ();
+					if (comment == "SkipFile") {
+						SkipFile ();
+						return AdvanceInternal (throw_on_end);
+					}
+					current_token = new Token2 (Token2Type.CommentProperty, comment);
 					return true;
 				}
 				// We've skipped the comment, start again

@@ -166,7 +166,6 @@ moon.pc
 moonlight.spec
 Makefile
 m4/Makefile
-generators/Generator.cs
 src/Makefile
 runtime/Makefile
 gallium/Makefile

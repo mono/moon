@@ -9,6 +9,8 @@
  *
  */
 
+/* @SkipFile */
+
 #ifndef __MONO_PTR_H__
 #define __MONO_PTR_H__
 // debug

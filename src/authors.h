@@ -11,6 +11,8 @@
  *
  */
 
+/* @SkipFile */
+
 #ifndef MOON_AUTHORS_H
 #define MOON_AUTHORS_H
 

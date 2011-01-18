@@ -1347,15 +1347,15 @@ class Generator {
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
 		string paldir = Path.Combine (srcdir, "pal");
-		string pal@PAL@dir = Path.Combine (paldir, "@PAL@");
+		string palgtkdir = Path.Combine (paldir, "gtk");
+		string palcocoadir = Path.Combine (paldir, "cocoa");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
-		all_files.AddRange (Directory.GetFiles (pal@PAL@dir, "*.h"));
-
-		RemoveExcludedSrcFiles (srcdir, plugindir, paldir, pal@PAL@dir, all_files);
+		all_files.AddRange (Directory.GetFiles (palgtkdir, "*.h"));
+		all_files.AddRange (Directory.GetFiles (palcocoadir, "*.h"));
 
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
@@ -2184,6 +2184,19 @@ class Generator {
 		Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Types.g.cs"), text.ToString ());
 	}
 
+	private static void WritePalConditional (string header, StringBuilder file, out string endif)
+	{
+		endif = string.Empty;
+
+		if (header.Contains ("pal/gtk/")) {
+			endif = "#endif\n";
+			file.AppendLine ("#if PAL_GTK_WINDOWING");
+		} else if (header.Contains ("pal/cocoa/")) {
+			endif = "#endif\n";
+			file.AppendLine ("#if PAL_COCOA_WINDOWING");
+		}
+	}
+
 	private static void GenerateCBindings (GlobalInfo info, string dir)
 	{
 		List<MethodInfo> methods;
@@ -2200,6 +2213,7 @@ class Generator {
 		Helper.WriteWarningGenerated (header);;
 		Helper.WriteWarningGenerated (impl);
 
+		header.AppendLine ("/* @SkipFile */");
 		header.AppendLine ("#ifndef __MOONLIGHT_C_BINDING_H__");
 		header.AppendLine ("#define __MOONLIGHT_C_BINDING_H__");
 		header.AppendLine ();
@@ -2207,7 +2221,11 @@ class Generator {
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
 		header.AppendLine ("#include \"pal.h\"");
-		header.AppendLine ("#include \"pal/@PAL@/window-@PAL@.h\"");
+		header.AppendLine ("#if PAL_COCOA_WINDOWING");
+		header.AppendLine ("#  include \"pal/coca/window-cocoa.h\"");
+		header.AppendLine ("#elif PAL_GTK_WINDOWING");
+		header.AppendLine ("#  include \"pal/gtk/window-gtk.h\"");
+		header.AppendLine ("#endif");
 		header.AppendLine ("#include \"enums.h\"");
 		header.AppendLine ();
 		header.AppendLine ("namespace Moonlight {");
@@ -2244,7 +2262,7 @@ class Generator {
 			if (!method.Header.StartsWith (dir))
 				continue;
 
-			h = Path.GetFileName (method.Header);
+			h = method.Header.Substring (dir.Length + 1);
 
 			if (!headers.Contains (h))
 				headers.Add (h);
@@ -2270,6 +2288,7 @@ class Generator {
 		header.AppendLine ("G_BEGIN_DECLS");
 		header.AppendLine ();
 
+		impl.AppendLine ("/* @SkipFile */");
 		impl.AppendLine ("#include <config.h>");
 		impl.AppendLine ();
 		impl.AppendLine ("#include <stdio.h>");
@@ -2281,9 +2300,12 @@ class Generator {
 		impl.AppendLine ();
 		headers.Sort ();
 		foreach (string h in headers) {
+			string endif;
+			WritePalConditional (h, impl, out endif);
 			impl.Append ("#include \"");
 			impl.Append (h);
 			impl.AppendLine ("\"");
+			impl.Append (endif);
 		}
 
 		impl.AppendLine ();
@@ -2291,6 +2313,7 @@ class Generator {
 
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;
+			string endif;
 
 			if (!method.Header.StartsWith (dir))
 				continue;
@@ -2305,10 +2328,15 @@ class Generator {
 				}
 			}
 
+
+			WritePalConditional (method.Header, header, out endif);
 			WriteHeaderMethod (method.CMethod, method, header, info);
+			header.Append (endif);
 			header.AppendLine ();
 
+			WritePalConditional (method.Header, impl, out endif);
 			WriteImplMethod (method.CMethod, method, impl, info);
+			impl.Append (endif);
 			impl.AppendLine ();
 			impl.AppendLine ();
 		}
@@ -2349,6 +2377,7 @@ class Generator {
 
 		Helper.WriteWarningGenerated (header);;
 
+		header.AppendLine ("/* @SkipFile */");
 		header.AppendLine ("#ifndef __MOONLIGHT_FACTORY_H__");
 		header.AppendLine ("#define __MOONLIGHT_FACTORY_H__");
 		header.AppendLine ();
@@ -2367,8 +2396,6 @@ class Generator {
 			h = method.Header.Substring (dir.Length);
 
 			if (!headers.Contains (h) &&
-			    h != "pipeline-ui.h" &&
-			    h != "pipeline-nocodec-ui.h" &&
 			    !h.Contains ("pal/")) {
 				headers.Add (h);
 			}
@@ -3168,19 +3195,4 @@ class Generator {
 			text.AppendLine ();
 		}
 	}
-
-
-	static void RemoveExcludedSrcFiles (string srcdir, string plugindir, string paldir, string pal@PAL@dir, List<string> files)
-	{
-		files.Remove (Path.Combine (srcdir, "icon128.h"));
-		files.Remove (Path.Combine (srcdir, "authors.h"));
-		files.Remove (Path.Combine (srcdir, "cbinding.h"));
-		files.Remove (Path.Combine (srcdir, "factory.h"));
-		files.Remove (Path.Combine (srcdir, "ptr.h"));
-		files.Remove (Path.Combine (plugindir, "plugin-domevents.h"));
-		files.Remove (Path.Combine (pal@PAL@dir, "MLView.h"));
-		files.Remove (Path.Combine (pal@PAL@dir, "MLEvent.h"));
-		files.Remove (Path.Combine (pal@PAL@dir, "MLTimer.h"));
-	}
-
 }
