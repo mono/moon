@@ -2377,8 +2377,7 @@ class Generator {
 		List<MethodInfo> methods;
 		StringBuilder header = new StringBuilder ();
 		List <string> headers = new List<string> ();
-
-		methods = info.AllCtors;
+		Dictionary<MethodInfo, bool> ensures = new Dictionary<MethodInfo, bool> ();
 
 		Helper.WriteWarningGenerated (header);;
 
@@ -2389,6 +2388,48 @@ class Generator {
 		header.AppendLine ("#include <glib.h>");
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
+
+		methods = new List<MethodInfo> ();
+		foreach (MemberInfo member in info.AllCtors) {
+			MethodInfo method = (MethodInfo) member;
+			TypeInfo type = method.ParentType;
+			bool emit = false;
+			bool ensure = false;
+
+			if (!method.Header.StartsWith (dir))
+				continue;
+
+			if (!method.CMethod.IsConstructor)
+				continue;
+
+			if (method.Annotations.ContainsKey ("SkipFactories"))
+				continue;
+
+			do {
+				if (type.Name == "EventObject") {
+					emit = true;
+					break;
+				}
+				else if (type.Name == "DependencyObject") {
+					emit = true;
+					ensure = true;
+					break;
+				}
+
+				MemberInfo m = null;
+				if (type.Base != null && type.Base.Value != null && info.Children.TryGetValue (type.Base.Value, out m))
+					type = (TypeInfo) m;
+				else
+					break;
+			} while (type != null);
+
+			if (!emit)
+				continue;
+
+			ensures [method] = ensure;
+
+			methods.Add (method);
+		}
 
 		foreach (MemberInfo method in methods) {
 			string h;
@@ -2422,38 +2463,9 @@ class Generator {
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;
 
-			if (!method.Header.StartsWith (dir))
-				continue;
+			WriteFactoryHeaderMethod (method.CMethod, method, header, info, ensures [method]);
 
-			if (method.CMethod.IsConstructor) {
-				TypeInfo type = method.ParentType;
-				bool emit = false;
-				bool ensure = false;
-
-				do {
-					if (type.Name == "EventObject") {
-						emit = true;
-						break;
-					}
-					else if (type.Name == "DependencyObject") {
-						emit = true;
-						ensure = true;
-						break;
-					}
-
-					MemberInfo m = null;
-					if (type.Base != null && type.Base.Value != null && info.Children.TryGetValue (type.Base.Value, out m))
-						type = (TypeInfo) m;
-					else
-						break;
-				} while (type != null);
-
-				if (emit && !method.Annotations.ContainsKey ("SkipFactories")) {
-					WriteFactoryHeaderMethod (method.CMethod, method, header, info, ensure);
-
-					header.AppendLine ();
-				}
-			}
+			header.AppendLine ();
 		}
 
 		header.AppendLine ("};");
@@ -2465,32 +2477,8 @@ class Generator {
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;
 
-			if (!method.Header.StartsWith (dir))
-				continue;
-
-			if (method.CMethod.IsConstructor) {
-				TypeInfo type = method.ParentType;
-				bool emit = false;
-
-				do {
-					if (type.Name == "EventObject") {
-						emit = true;
-						break;
-					}
-
-					MemberInfo m = null;
-					if (type.Base != null && type.Base.Value != null && info.Children.TryGetValue (type.Base.Value, out m))
-						type = (TypeInfo) m;
-					else
-						break;
-				} while (type != null);
-
-				if (emit && !method.Annotations.ContainsKey ("SkipFactories")) {
-					WriteFactoryHeaderMethod (method.CMethod, method, header, info, false);
-
-					header.AppendLine ();
-				}
-			}
+			WriteFactoryHeaderMethod (method.CMethod, method, header, info, false);
+			header.AppendLine ();
 		}
 
 		header.AppendLine ("};");
