@@ -884,12 +884,12 @@ PlaylistEntry::OnEntryFailed (ErrorEventArgs *args)
 
 	// media or playlist 404: fatal
 	// invalid playlist (playlist parsing failed): fatal
-	// invalid media (gif, swf): play next
+	// invalid media (gif, swf): play next (#78)
 	if (args == NULL) {
 		fatal = true;
 	} else {
 		// check if we're in a playlist
-		if (IsASXDemuxer ()) {
+		if (parent != NULL && parent->IsASXDemuxer ()) {
 			// we're a playlist
 			if (args->GetExtendedCode() == MEDIA_UNKNOWN_CODEC) {
 				fatal = false;
