@@ -40,7 +40,7 @@ class MediaElement : public FrameworkElement {
 	MediaElementState detached_state;
 	
 	MediaPlayer *mplayer;
-	PlaylistRoot *playlist;
+	Playlist *playlist;
 	
 	// 
 	guint32 marker_timeout;
@@ -77,21 +77,21 @@ class MediaElement : public FrameworkElement {
 	
 	// Media event handlers	
 		
-	EVENTHANDLER (MediaElement, Opening, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, OpenCompleted,  PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, Seeking, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, SeekCompleted, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, Seek,    PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, CurrentStateChanged, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, MediaError,   PlaylistRoot, ErrorEventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, MediaEnded, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, DownloadProgressChanged, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, BufferingProgressChanged, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, Play, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, Pause, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, Stop, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, BufferUnderflow, PlaylistRoot, EventArgs); // Not thread-safe
-	EVENTHANDLER (MediaElement, EntryChanged, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Opening, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, OpenCompleted,  Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Seeking, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, SeekCompleted, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Seek,    Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, CurrentStateChanged, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, MediaError,   Playlist, ErrorEventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, MediaEnded, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, DownloadProgressChanged, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, BufferingProgressChanged, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Play, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Pause, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, Stop, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, BufferUnderflow, Playlist, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, EntryChanged, Playlist, EventArgs); // Not thread-safe
 	
 	EVENTHANDLER (MediaElement, ShuttingDown, Deployment, EventArgs); // Not thread-safe
 	
@@ -127,7 +127,7 @@ class MediaElement : public FrameworkElement {
 	void PlayOrStop (); // Not thread-safe. To the right thing if we can pause, if we have to autoplay, etc.
 		
 	void CreatePlaylist ();
-	void SetPlaylist (PlaylistRoot *playlist); // Adds/removes event handlers
+	void SetPlaylist (Playlist *playlist); // Adds/removes event handlers
 
  protected:
 	virtual ~MediaElement () {}
@@ -268,7 +268,7 @@ class MediaElement : public FrameworkElement {
 	static const char *GetStateName (MediaElementState state); // Thread-safe
 	static const char *GetFlagNames (guint32 flags); // Not thread-safe.
 	
-	PlaylistRoot *GetPlaylist () { return playlist; }
+	Playlist *GetPlaylist () { return playlist; }
 	TimeSpan GetStartTime ();
 	
 	int GetFlags () { return flags; }

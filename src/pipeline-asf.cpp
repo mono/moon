@@ -2659,7 +2659,7 @@ MmsSource::CreateCurrentEntry ()
 {
 	Media *media;
 	Media *entry_media;
-	PlaylistRoot *root;
+	PlaylistEntry *parent;
 	MmsPlaylistEntry *result = NULL;
 
 	LOG_MMS ("MmsSource::CreateCurrentEntry (): current: %p\n", current);
@@ -2668,13 +2668,13 @@ MmsSource::CreateCurrentEntry ()
 	if (media == NULL)
 		goto cleanup;
 
-	root = media->GetPlaylistRoot ();
-	if (root == NULL)
+	parent = media->GetPlaylistEntry ();
+	if (parent == NULL)
 		goto cleanup;
 
 	Lock ();
 	if (current == NULL) {
-		entry_media = new Media (root);
+		entry_media = new Media (parent);
 		entry_media->SetSeekWhenOpened (false);
 		this->current = new MmsPlaylistEntry (entry_media, this);
 		entry_media->unref ();
@@ -2697,7 +2697,7 @@ MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id
 {
 	MmsPlaylistEntry *entry = NULL;
 	Media *media = NULL;
-	PlaylistRoot *root = NULL;
+	PlaylistEntry *playlist;
 
 	LOG_MMS ("MmsSource::SetMmsMetadata ('%s', '%s', %i)\n", playlist_gen_id, broadcast_id, (int) features);
 
@@ -2707,8 +2707,8 @@ MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id
 	if (media == NULL)
 		goto cleanup;
 
-	root = media->GetPlaylistRoot ();
-	if (root == NULL)
+	playlist = media->GetPlaylistEntry ();
+	if (playlist == NULL)
 		goto cleanup;
 
 	entry = CreateCurrentEntry ();
@@ -2721,7 +2721,7 @@ MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id
 
 	if (features & HttpStreamingPlaylist) {
 		is_sspl = true;
-		root->SetIsDynamic ();
+		playlist->SetIsDynamic ();
 	}
 
 	LOG_MMS ("MmsSource::SetMmsMetadata ('%s', '%s', %i)\n", playlist_gen_id, broadcast_id, (int) features);
@@ -2841,11 +2841,17 @@ MmsSource::NotifyFinished (guint32 reason)
 		finished = true;
 		
 		Media *media = GetMediaReffed ();
-		PlaylistRoot *root;
+		Playlist *root;
+		PlaylistEntry *entry;
 		if (media != NULL) {
 			root = media->GetPlaylistRoot ();
-			if (root != NULL)
-				root->SetHasDynamicEnded ();
+			if (root != NULL) {
+				entry = root->GetCurrentEntryLeaf ();
+				if (entry != NULL) {
+					entry->SetHasDynamicEnded ();
+				}
+			}
+
 			media->unref ();
 		}
 		/* Fall through */
@@ -3388,8 +3394,7 @@ void
 MmsPlaylistEntry::AddEntry ()
 {
 	Media *media = NULL;
-	PlaylistRoot *root;
-	Playlist *playlist;
+	PlaylistEntry *playlist;
 	PlaylistEntry *entry = NULL;
 	MmsDemuxer *mms_demuxer = NULL;
 
@@ -3416,7 +3421,7 @@ MmsPlaylistEntry::AddEntry ()
 	if (playlist == NULL)
 		goto cleanup;
 	
-	entry = new PlaylistEntry (playlist);
+	entry = new PlaylistEntry (playlist->GetRoot (), playlist);
 	entry->SetIsLive (features & HttpStreamingBroadcast);
 	if (playlist->HasStartTime ())
 		entry->SetStartTime (playlist->GetStartTime ());
@@ -3427,10 +3432,9 @@ MmsPlaylistEntry::AddEntry ()
 	
 	entry->InitializeWithSource (this);
 
-	root = entry->GetRoot ();
-	if (root != NULL && root->GetIsDynamicWaiting ()) {
+	if (playlist->GetIsDynamicWaiting ()) {
 		LOG_MMS ("MmsPlaylistEntry::AddEntry (): we were waiting for this entry, calling PlayNext.\n");
-		root->SetIsDynamicWaiting (false);
+		playlist->SetIsDynamicWaiting (false);
 		playlist->PlayNext ();
 	}
 
@@ -3439,6 +3443,8 @@ cleanup:
 		media->unref ();
 	if (mms_demuxer)
 		mms_demuxer->unref ();
+	if (entry)
+		entry->unref ();
 }
 
 MediaResult
@@ -3619,7 +3625,7 @@ MmsDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 void 
 MmsDemuxer::OpenDemuxerAsyncInternal ()
 {
-	PlaylistRoot *root;
+	Playlist *root;
 	Media *media;
 	
 	LOG_MMS ("MmsDemuxer::OpenDemuxerAsyncInternal ().\n");
@@ -3631,9 +3637,9 @@ MmsDemuxer::OpenDemuxerAsyncInternal ()
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (root != NULL);
 	
+	playlist = new PlaylistEntry (root, media->GetPlaylistEntry ());
 	if (mms_source != NULL && mms_source->IsSSPL ())
-		root->SetIsDynamic ();
-	playlist = new Playlist (root);
+		playlist->SetIsDynamic ();
 	ReportOpenDemuxerCompleted ();
 	media->unref ();
 }
@@ -3667,7 +3673,7 @@ MmsDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *stream)
 void 
 MmsDemuxer::Dispose ()
 {
-	Playlist *pl;
+	PlaylistEntry *pl;
 	MmsSource *src;
 	
 	mutex.Lock ();

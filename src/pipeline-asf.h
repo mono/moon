@@ -346,7 +346,7 @@ public:
  */
 class MmsDemuxer : public IMediaDemuxer {
 private:
-	Playlist *playlist;
+	PlaylistEntry *playlist;
 	MmsSource *mms_source;
 	Mutex mutex;
 
@@ -364,7 +364,7 @@ public:
 	virtual void Dispose ();
 
 	virtual bool IsPlaylist () { return true; }
-	virtual Playlist *GetPlaylist () { return playlist; }
+	virtual PlaylistEntry *GetPlaylist () { return playlist; }
 };
 
 /*

@@ -53,12 +53,12 @@ DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
 
-Media::Media (PlaylistRoot *root)
+Media::Media (PlaylistEntry *entry)
 	: IMediaObject (Type::MEDIA, this)
 {
 	LOG_PIPELINE ("Media::Media (), id: %i\n", GET_OBJ_ID (this));
 
-	playlist = root;
+	this->entry = entry;
 	buffering_time = 0;
 	file = NULL;
 	uri = NULL;
@@ -81,6 +81,7 @@ Media::Media (PlaylistRoot *root)
 	start_time = 0;
 	duration = G_MAXINT64;
 	seek_when_opened = true;
+	final_uri = NULL;
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -134,6 +135,8 @@ Media::Dispose ()
 	uri = NULL;
 	delete resource_base;
 	resource_base = NULL;
+	delete final_uri;
+	final_uri = NULL;
 
 	src = this->source;
 	this->source = NULL;
@@ -177,6 +180,26 @@ Media::SetDuration (TimeSpan value)
 	duration = value;
 }
 
+void
+Media::SetFinalUri (const Uri *value)
+{
+	VERIFY_MAIN_THREAD;
+
+	delete final_uri;
+	final_uri = NULL;
+
+	if (value != NULL) {
+		final_uri = Uri::Clone (value);
+	}
+}
+
+const Uri *
+Media::GetFinalUri ()
+{
+	VERIFY_MAIN_THREAD;
+	return final_uri;
+}
+
 bool
 Media::IsMSCodecsInstalled ()
 {
@@ -217,10 +240,16 @@ Media::GetBufferingTime ()
 	return result;
 }
 
-PlaylistRoot *
+Playlist *
 Media::GetPlaylistRoot ()
 {
-	return playlist;
+	return entry ? entry->GetRoot () : NULL;
+}
+
+PlaylistEntry *
+Media::GetPlaylistEntry ()
+{
+	return entry;
 }
 
 IMediaDemuxer *
@@ -1290,7 +1319,7 @@ void
 ASXDemuxer::OpenDemuxerAsyncInternal ()
 {
 	MediaResult result;
-	PlaylistRoot *root;
+	PlaylistEntry *entry;
 	ErrorEventArgs *args = NULL;
 	Media *media = GetMediaReffed ();
 	
@@ -1305,15 +1334,15 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 		return;
 	}
 
-	root = media->GetPlaylistRoot ();
+	entry = media->GetPlaylistEntry ();
 	
-	g_return_if_fail (root != NULL);
+	g_return_if_fail (entry != NULL);
 
-	PlaylistParser *parser = new PlaylistParser (root, buffer);
+	PlaylistParser *parser = new PlaylistParser (entry, buffer);
 
 	if (MEDIA_SUCCEEDED (parser->Parse ())) {
 		result = MEDIA_SUCCESS;
-		playlist = parser->GetPlaylist ();
+		playlist = entry;
 		playlist->ref ();
 	} else {
 		result = MEDIA_FAIL;

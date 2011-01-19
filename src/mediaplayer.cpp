@@ -325,7 +325,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	target_pts = 0;
 	start_pts = 0;
 
-	if (entry != NULL && !entry->GetRoot ()->GetIsDynamic ()) {
+	if (entry != NULL && !entry->GetIsDynamic ()) {
 		start_pts =  TimeSpan_ToPts (entry->GetStartTime ());
 		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %" G_GUINT64_FORMAT " (%" G_GUINT64_FORMAT " ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
 

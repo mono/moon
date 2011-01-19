@@ -52,6 +52,8 @@ class Type;
 class DependencyProperty;
 class Surface;
 class AnimationStorage;
+class Playlist;
+class PlaylistEntry;
 
 /*DO_FWD_DECLS*/
 

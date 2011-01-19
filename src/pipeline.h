@@ -619,6 +619,7 @@ private:
 	bool is_disposed; // Access must be protected with mutex. This is used to ensure that we don't add work to the thread pool after having been disposed.
 	Uri *uri;
 	Uri *resource_base;
+	Uri *final_uri; // main thread only
 	char *file;
 	IMediaSource *source;
 	IMediaDemuxer *demuxer;
@@ -636,7 +637,7 @@ private:
 	TimeSpan start_time;
 	TimeSpan duration;
 	
-	PlaylistRoot *playlist;
+	PlaylistEntry *entry;
 
 	// Determines the container type and selects a demuxer. We have support for mp3 and asf demuxers.
 	// Also opens the demuxer.
@@ -670,7 +671,7 @@ protected:
 	virtual ~Media ();
 
 public:
-	Media (PlaylistRoot *root);
+	Media (PlaylistEntry *entry);
 	
 	virtual void Dispose ();
 	
@@ -737,7 +738,8 @@ public:
 	double GetBufferingProgress () { return buffering_progress; }
 	void ClearBufferingProgress (); /* Thread-safe */
 	
-	PlaylistRoot *GetPlaylistRoot ();
+	Playlist *GetPlaylistRoot ();
+	PlaylistEntry *GetPlaylistEntry ();
 	
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
@@ -753,6 +755,9 @@ public:
 
 	bool GetSeekWhenOpened () { return seek_when_opened; }
 	void SetSeekWhenOpened (bool value) { seek_when_opened = value; }
+
+	void SetFinalUri (const Uri *value); // main thread only
+	const Uri *GetFinalUri (); // main thread only
 	
 	const static int OpeningEvent;
 	const static int OpenCompletedEvent;
@@ -1092,7 +1097,7 @@ public:
 	
 	virtual bool GetCanSeek () { return true; }
 	virtual bool IsPlaylist () { return false; }
-	virtual Playlist *GetPlaylist () { return NULL; }
+	virtual PlaylistEntry *GetPlaylist () { return NULL; }
 
 	/* @GeneratePInvoke */
 	void SetIsDrm (bool value) { drm = value; }
@@ -1780,7 +1785,7 @@ public:
  */ 
 class ASXDemuxer : public IMediaDemuxer {
 private:
-	Playlist *playlist;
+	PlaylistEntry *playlist;
 	MemoryBuffer *buffer;
 
 	static MediaResult DataCallback (MediaClosure *closure);
@@ -1799,7 +1804,7 @@ public:
 	virtual void Dispose ();
 	
 	virtual bool IsPlaylist () { return true; }
-	virtual Playlist *GetPlaylist () { return playlist; }
+	virtual PlaylistEntry *GetPlaylist () { return playlist; }
 	virtual bool GetCanSeek () { return false; }
 };
 

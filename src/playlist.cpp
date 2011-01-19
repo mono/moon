@@ -26,72 +26,52 @@
 namespace Moonlight {
 
 /*
- * PlaylistNode
- */
-
-PlaylistNode::PlaylistNode (PlaylistEntry *entry) : List::Node () 
-{
-	if (entry)
-		entry->ref ();
-	this->entry = entry;
-}
-
-PlaylistNode::~PlaylistNode ()
-{
-	if (entry) {
-		entry->unref ();
-		entry = NULL;
-	}
-}
-
-/*
  * PlaylistEntry
  */
 
-PlaylistEntry::PlaylistEntry (Playlist *parent)
+PlaylistEntry::PlaylistEntry (Playlist *root, PlaylistEntry *parent)
 	: EventObject (Type::PLAYLISTENTRY, false)
 {
-	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p)\n", parent);
+	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (root: %p = %i, parent: %p = %i) id: %i\n", root, GET_OBJ_ID (root), parent, GET_OBJ_ID (parent), GET_OBJ_ID (this));
 
-	Init (parent);
-	g_return_if_fail (parent != NULL); // should ge a g_warn..., but glib 2.10 doesn't have g_warn.
-}
+	base = NULL;
+	title = NULL;
+	author = NULL;
+	abstract = NULL;
+	copyright = NULL;
+	source_name = NULL;
+	info_target = NULL;
+	info_url = NULL;
+	client_skip = true;
+	is_entry_ref = false;
+	start_time = 0;
+	duration = NULL;
+	params = NULL;
 
-PlaylistEntry::PlaylistEntry (Type::Kind kind, Playlist *parent)
-	: EventObject (kind, false)
-{
-	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p)\n", parent);
+	set_values = (PlaylistKind::Kind) 0;
 
-	Init (parent);
-	g_return_if_fail (parent != NULL); // should ge a g_warn..., but glib 2.10 doesn't have g_warn.
-}
+	full_source_name = NULL;
+	is_live = false;
+	play_when_available = false;
+	this->parent = parent; // might be null if we're the root entry
+	this->root = root;
+	media = NULL;
+	opened = false;
 
+	current_node = NULL;
 
-PlaylistEntry::PlaylistEntry (Type::Kind kind)
-	: EventObject (kind, false)
-{
-	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry ()\n");
-
-	Init (NULL);
+	dynamic = false;
+	dynamic_ended = false;
+	dynamic_waiting = false;
 }
 
 void
 PlaylistEntry::Dispose ()
 {
+	PlaylistNode *node;
+	PlaylistEntry *entry;
+
 	LOG_PLAYLIST ("PlaylistEntry::Dispose () id: %i media: %i\n", GET_OBJ_ID (this), GET_OBJ_ID (media));
-	
-	if (media) {
-		Media *tmp = media;
-		media = NULL;
-		tmp->RemoveSafeHandlers (this);
-		tmp->DisposeObject (tmp);
-		tmp->unref ();
-	}
-	
-	delete source_name;
-	source_name = NULL;
-	delete full_source_name;
-	full_source_name = NULL;
 
 	delete base;
 	base = NULL;
@@ -103,44 +83,50 @@ PlaylistEntry::Dispose ()
 	abstract = NULL;
 	g_free (copyright);
 	copyright = NULL;
+	delete source_name;
+	source_name = NULL;
 	g_free (info_target);
 	info_target = NULL;
 	g_free (info_url);
 	info_url = NULL;
-	
-	parent = NULL;
+	delete duration;
+	duration = NULL;
+
 	if (params != NULL) {
 		g_hash_table_destroy (params);
 		params = NULL;
 	}
-	
-	EventObject::Dispose ();
-}
 
-void
-PlaylistEntry::Init (Playlist *parent)
-{
-	// Parent might be null
-	this->parent = parent;
-	this->media = NULL;
-	source_name = NULL;
+	delete full_source_name;
 	full_source_name = NULL;
-	start_time = 0;
-	duration = NULL;
-	play_when_available = false;
-	base = NULL;
-	title = NULL;
-	author = NULL;
-	abstract = NULL;
-	copyright = NULL;
-	info_target = NULL;
-	info_url = NULL;
-	client_skip = true;
-	is_live = false;
-	set_values = (PlaylistKind::Kind) 0;
-	opened = false;
-	params = NULL;
-	is_entry_ref = false;
+
+	parent = NULL;
+	root = NULL;
+
+	if (media) {
+		Media *tmp = media;
+		media = NULL;
+		tmp->RemoveSafeHandlers (this);
+		tmp->DisposeObject (tmp);
+		tmp->unref ();
+	}
+
+	current_node = NULL;
+
+
+	LOG_PLAYLIST ("Playlist::Dispose () id: %i\n", GET_OBJ_ID (this));
+	
+	current_node = NULL;
+
+	node = (PlaylistNode *) entries.First ();
+	while (node != NULL) {
+		entry = node->GetElement ();
+		if (entry != NULL)
+			entry->Dispose ();
+		node = (PlaylistNode *) node->next;
+	}
+
+	EventObject::Dispose ();
 }
 
 void
@@ -178,12 +164,10 @@ PlaylistEntry::InitializeWithStream (ManagedStreamCallbacks *callbacks)
 {
 	Media *media;
 	ManagedStreamSource *source;
-	PlaylistRoot *root = GetRoot ();
-	
+
 	g_return_if_fail (callbacks != NULL);
-	g_return_if_fail (root != NULL);
-	
-	media = new Media (root);
+
+	media = new Media (this);
 	Initialize (media);
 	
 	source = new ManagedStreamSource (media, callbacks);
@@ -198,11 +182,9 @@ void
 PlaylistEntry::InitializeWithSource (IMediaSource *source)
 {
 	Media *media;
-	PlaylistRoot *root = GetRoot ();
-	
+
 	g_return_if_fail (source != NULL);
-	g_return_if_fail (root != NULL);
-	
+
 	media = source->GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
@@ -219,12 +201,10 @@ void
 PlaylistEntry::InitializeWithUri (const Uri *resource_base, const Uri *uri)
 {
 	Media *media;
-	PlaylistRoot *root = GetRoot ();
-	
+
 	g_return_if_fail (uri != NULL);
-	g_return_if_fail (root != NULL);
-	
-	media = new Media (root);
+
+	media = new Media (this);
 	Initialize (media);
 	media->Initialize (resource_base, uri);
 	if (!media->HasReportedError ())
@@ -236,12 +216,10 @@ void
 PlaylistEntry::InitializeWithDownloader (Downloader *dl, const char *PartName)
 {
 	Media *media;
-	PlaylistRoot *root = GetRoot ();
 	
 	g_return_if_fail (dl != NULL);
-	g_return_if_fail (root != NULL);
-	
-	media = new Media (root);
+
+	media = new Media (this);
 	Initialize (media);
 	media->Initialize (dl, PartName);
 	if (!media->HasReportedError ())
@@ -253,11 +231,9 @@ void
 PlaylistEntry::InitializeWithDemuxer (IMediaDemuxer *demuxer)
 {
 	Media *media;
-	PlaylistRoot *root = GetRoot ();
 	
 	g_return_if_fail (demuxer != NULL);
-	g_return_if_fail (root != NULL);
-	
+
 	media = demuxer->GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
@@ -272,20 +248,20 @@ PlaylistEntry::InitializeWithDemuxer (IMediaDemuxer *demuxer)
 void
 PlaylistEntry::OpeningHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root = GetRoot ();
+	Playlist *root = GetRoot ();
 	
-	LOG_PLAYLIST ("PlaylistEntry::OpeningHandler (%p, %p) current entry: %i\n", media, args, root->GetCurrentPlaylistEntry () == this);
+	LOG_PLAYLIST ("PlaylistEntry::OpeningHandler (%p, %p) current entry: %i\n", media, args, root->GetCurrentEntryLeaf () == this);
 	
 	g_return_if_fail (root != NULL);
 	
-	if (root->GetCurrentPlaylistEntry () == this)
-		root->Emit (PlaylistRoot::OpeningEvent, args);
+	if (root->GetCurrentEntryLeaf () == this)
+		root->Emit (Playlist::OpeningEvent, args);
 }
 
 void
 PlaylistEntry::OpenMediaPlayer ()
 {
-	PlaylistRoot *root = GetRoot ();
+	Playlist *root = GetRoot ();
 	MediaPlayer *mplayer;
 	
 	g_return_if_fail (opened == true);
@@ -296,55 +272,77 @@ PlaylistEntry::OpenMediaPlayer ()
 
 	mplayer->Open (media, this);
 	
-	root->Emit (PlaylistRoot::OpenCompletedEvent, NULL);
+	root->Emit (Playlist::OpenCompletedEvent, NULL);
 }
 
 void
 PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root = GetRoot ();
-	IMediaDemuxer *demuxer = NULL;
-	Playlist *playlist;
-		
-	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p)\n", media, args);
-	opened = true;
-	
-	g_return_if_fail (media != NULL);
-	g_return_if_fail (root != NULL);
-	g_return_if_fail (parent != NULL);
-	
-	demuxer = media->GetDemuxerReffed ();
-	
-	g_return_if_fail (demuxer != NULL);
-	
-	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p) demuxer: %i %s\n", media, args, GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
-		
-	if (demuxer->IsPlaylist ()) {
-		playlist = demuxer->GetPlaylist ();
-		
-		if (playlist == NULL || parent == NULL) {
-			goto cleanup;
+	IMediaDemuxer *demuxer;
+	bool is_mms_demuxer;
+
+	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p = %i, %p) id: %i entries: %i opened: %i\n", media, GET_OBJ_ID (media), args, GET_OBJ_ID (this), entries.Length (), opened);
+
+	if (entries.Length () == 0) {
+		if (parent == NULL && !root->IsSingleFile ()) {
+			/* ASX file with nothing in it. our playlist test #656 (empty.asx) */
+			return;
 		}
-		
-		parent->ReplaceCurrentEntry (playlist);
-		playlist->Open ();
-	} else {
-		if (parent->GetCurrentEntry () == this) {
+
+		demuxer = media->GetDemuxerReffed ();
+		if (demuxer) {
+			is_mms_demuxer = demuxer->Is (Type::MMSDEMUXER);
+			demuxer->unref ();
+			if (is_mms_demuxer) {
+				/* Mms demuxers should not propagate the open event, its entries will also raise open events */
+				return;
+			}
+		}
+
+		opened = true;
+
+		if (parent == NULL || parent->GetCurrentEntry () == this) {
 			OpenMediaPlayer ();
 		} else {
-			LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p): opened entry in advance, waiting for current entry to finish.\n", media, args);
+			LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p = %i, %p): id: %i opened entry in advance, waiting for current entry to finish.\n", media, GET_OBJ_ID (media), args, GET_OBJ_ID (this));
 		}
+	} else {
+		// check for too many nested playlists
+		int counter = 0;
+		PlaylistEntry *e = this;
+		while (e != NULL && !e->GetIsDynamic ()) {
+			counter++;
+
+			if (counter > 6) {
+				ErrorEventArgs *args = new ErrorEventArgs (MediaError,
+									   MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
+				OnEntryFailed (args);
+				args->unref ();
+				return;
+			}
+
+			e = e->GetParent ();
+		}
+
+		demuxer = media->GetDemuxerReffed ();
+		if (demuxer) {
+			is_mms_demuxer = demuxer->Is (Type::MMSDEMUXER);
+			demuxer->unref ();
+			if (is_mms_demuxer) {
+				/* Mms demuxers should not propagate the open event, its entries will also raise open events */
+				return;
+			}
+		}
+
+		opened = true;
+		Open (); // open any nested elements
 	}
-	
-cleanup:
-	if (demuxer)
-		demuxer->unref ();
 }
 
 void
 PlaylistEntry::SeekingHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root = GetRoot ();
+	Playlist *root = GetRoot ();
 	
 	LOG_PLAYLIST ("PlaylistEntry::SeekingHandler (%p, %p)\n", media, args);
 	
@@ -352,13 +350,13 @@ PlaylistEntry::SeekingHandler (Media *media, EventArgs *args)
 	
 	if (args)
 		args->ref ();
-	root->Emit (PlaylistRoot::SeekingEvent, args);
+	root->Emit (Playlist::SeekingEvent, args);
 }
 
 void
 PlaylistEntry::SeekCompletedHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root = GetRoot ();
+	Playlist *root = GetRoot ();
 	
 	LOG_PLAYLIST ("PlaylistEntry::SeekCompletedHandler (%p, %p)\n", media, args);
 	
@@ -366,7 +364,7 @@ PlaylistEntry::SeekCompletedHandler (Media *media, EventArgs *args)
 	
 	if (args)
 		args->ref ();
-	root->Emit (PlaylistRoot::SeekCompletedEvent, args);
+	root->Emit (Playlist::SeekCompletedEvent, args);
 }
 
 void
@@ -379,24 +377,14 @@ void
 PlaylistEntry::MediaErrorHandler (Media *media, ErrorEventArgs *args)
 {
 	LOG_PLAYLIST ("PlaylistEntry::MediaErrorHandler (%p, %p): %s '%s'\n", media, args, GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL, args ? args->GetErrorMessage() : "?");
-	
-	if (parent == NULL) {
-#if DEBUG
-		if (args) {
-			printf ("Moonlight: there was an error in the media pipeline which couldn't be delivered to the plugin (most likely because MediaElement's source has changed): %i %s %s\n",
-				args->GetErrorCode (), args->GetErrorMessage (), args->GetExtendedMessage ());
-		}
-#endif
-		return;
-	}
-	
-	parent->OnEntryFailed (args);
+
+	OnEntryFailed (args);
 }
 
 void
 PlaylistEntry::DownloadProgressChangedHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root;
+	Playlist *root;
 	
 	LOG_PLAYLIST ("PlaylistEntry::DownloadProgressChanged (%p, %p %.2f). Disposed: %i\n", media, args, args ? ((ProgressEventArgs *) args)->progress : -1.0, IsDisposed ());
 	
@@ -407,7 +395,7 @@ PlaylistEntry::DownloadProgressChangedHandler (Media *media, EventArgs *args)
 	
 	g_return_if_fail (root != NULL);
 	
-	if (root->GetCurrentPlaylistEntry () != this) {
+	if (root->GetCurrentEntryLeaf () != this) {
 		/* FIXME: we should stop any running downloads when we advance from one playlistentry
 		 * to the next. Currently this will fail because we won't ever resume downloads if the
 		 * user decides to stop&replay the media */
@@ -417,13 +405,13 @@ PlaylistEntry::DownloadProgressChangedHandler (Media *media, EventArgs *args)
 
 	if (args)
 		args->ref ();
-	root->Emit (PlaylistRoot::DownloadProgressChangedEvent, args);
+	root->Emit (Playlist::DownloadProgressChangedEvent, args);
 }
 
 void
 PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root = GetRoot ();
+	Playlist *root = GetRoot ();
 	
 	LOG_PLAYLIST ("PlaylistEntry::BufferingProgressChanged (%p, %p) %.2f\n", media, args, args ? ((ProgressEventArgs *) args)->progress : -1.0);
 	
@@ -432,17 +420,7 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 	
 	if (args)
 		args->ref ();
-	root->Emit (PlaylistRoot::BufferingProgressChangedEvent, args);
-}
-
-void
-PlaylistEntry::Seek (guint64 pts)
-{	
-	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "PlaylistEntry::Seek (%" G_GUINT64_FORMAT ")\n", pts);
-	
-	g_return_if_fail (media != NULL);
-	
-	media->SeekAsync (pts);
+	root->Emit (Playlist::BufferingProgressChangedEvent, args);
 }
 
 void
@@ -624,7 +602,8 @@ void
 PlaylistEntry::SetDuration (Duration *duration)
 {
 	if (!(set_values & PlaylistKind::Duration)) {
-		this->duration = duration;
+		delete this->duration;
+		this->duration = new Duration (*duration);
 		set_values = (PlaylistKind::Kind) (set_values | PlaylistKind::Duration);
 	}
 }
@@ -670,9 +649,10 @@ PlaylistEntry::SetClientSkip (bool value)
 MediaElement *
 PlaylistEntry::GetElement ()
 {
-	g_return_val_if_fail (parent != NULL, NULL);
-	
-	return parent->GetElement ();
+	if (root == NULL)
+		return NULL;
+
+	return root->GetElement ();
 }
 
 void
@@ -686,20 +666,28 @@ PlaylistEntry::ClearMedia ()
 MediaPlayer *
 PlaylistEntry::GetMediaPlayer ()
 {
-	PlaylistRoot *root = GetRoot ();
-	
 	g_return_val_if_fail (root != NULL, NULL);
-	
+
 	return root->GetMediaPlayer ();
 }
 
 static void
 add_attribute (MediaAttributeCollection *attributes, const char *name, const char *attr)
 {
+	MediaAttribute *attribute;
+
 	if (!attr)
 		return;
 
-	MediaAttribute *attribute = new MediaAttribute ();
+	for (int i = 0; i < attributes->GetCount (); i++) {
+		attribute = attributes->GetValueAt (i)->AsMediaAttribute ();
+		if (strcmp (attribute->GetName (), name) == 0)
+			return;
+	}
+
+	LOG_PLAYLIST ("PlaylistEntry::AddAttribute () added '%s'='%s'\n", name, attr);
+
+	attribute = new MediaAttribute ();
 	attribute->SetValue (attr);
 	attribute->SetName (name);
 	
@@ -713,10 +701,322 @@ add_attribute_glib (const char *name, const char *value, MediaAttributeCollectio
 	add_attribute (attributes, name, value);
 }
 
+const Uri *
+PlaylistEntry::GetLocation ()
+{
+	if (media != NULL)
+		return media->GetFinalUri ();
+	if (parent != NULL)
+		return parent->GetLocation ();
+	return NULL;
+}
+
+const Uri *
+PlaylistEntry::GetFullSourceName ()
+{
+	if (full_source_name == NULL) {
+		Uri *base = GetBaseInherited ();
+		Uri *current = GetSourceName ();
+		const Uri *location = GetLocation ();
+		
+		LOG_PLAYLIST ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s location: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL", location ? location->ToString () : NULL);
+		
+		if (current == NULL) {
+			full_source_name = NULL;
+		} else if (current->IsAbsolute ()) {
+			full_source_name = Uri::Clone (current);
+		} else if (base != NULL) {
+			full_source_name = Uri::Create (base, current);
+		} else if (location != NULL) {
+			full_source_name = Uri::Create (location, current);
+		} else {
+			full_source_name = Uri::Clone (current);
+		}
+	}
+	return full_source_name;
+}
+
+void
+PlaylistEntry::Open ()
+{
+	PlaylistEntry *current_entry;
+
+	LOG_PLAYLIST ("PlaylistEntry::Open () id: %i media = %p entries: %i FullSourceName = %s\n", GET_OBJ_ID (this), media, entries.Length (), GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL);
+
+	if (entries.Length () == 0) {
+		if (!media) {
+			if (GetFullSourceName () == NULL) {
+				fprintf (stderr, "Moonlight: An entry in the playlist didn't specify a url.\n");
+				return;
+			}
+			InitializeWithUri (GetElement ()->GetResourceBase (), GetFullSourceName ());
+		} else if (opened) {
+			OpenMediaPlayer ();
+		} else {
+			media->OpenAsync ();
+		}
+	} else {
+		current_node = (PlaylistNode *) entries.First ();
+		current_entry = current_node->GetElement ();
+
+		/* Skip elements with a zero duration */
+		while (current_entry && current_entry->HasDuration () && current_entry->GetDuration ()->HasTimeSpan() && current_entry->GetDuration ()->GetTimeSpan () == 0) {
+			LOG_PLAYLIST ("PlaylistEntry::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
+			current_node = (PlaylistNode *) current_node->next;
+			current_entry = current_node ? current_node->GetElement () : NULL;
+		}
+
+		if (current_entry)
+			current_entry->Open ();
+		opened = true;
+	}
+
+	LOG_PLAYLIST ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ());
+}
+
+Media *
+PlaylistEntry::GetMedia ()
+{
+	return media;
+}
+
+Playlist *
+PlaylistEntry::GetRoot ()
+{
+	return root;
+}
+
+bool
+PlaylistEntry::PlayNext ()
+{
+	PlaylistEntry *current_entry;
+
+	LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i current_node: %p %i length: %i\n", GET_OBJ_ID (this), current_node, current_node ? GET_OBJ_ID (current_node->GetElement ()) : 0, entries.Length ());
+	VERIFY_MAIN_THREAD;
+
+	if (root == NULL)
+		return false;
+
+	if (entries.Length () == 0) {
+		LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i no entries and we're the root element, opening myself.\n", GET_OBJ_ID (this));
+		GetElement ()->SetPlayRequested ();
+		root->Emit (Playlist::EntryChangedEvent);
+		Open ();
+		return true;
+	}
+
+	current_entry = GetCurrentEntry ();
+
+	if (!current_entry) {
+		/* We've already played beyond the end */
+		LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i we've already played beyond the end.\n", GET_OBJ_ID (this));
+		return false;
+	}
+
+	if (current_entry->IsPlaylist () && current_entry->PlayNext ()) {
+		/* We've already played beyond the end */
+		LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i nested element/playlist.\n", GET_OBJ_ID (this));
+		return true;
+	}
+
+	/* Go to next element */
+	current_node = (PlaylistNode *) current_node->next;
+	current_entry = current_node ? current_node->GetElement () : NULL;
+
+	/* Skip elements with a zero duration */
+	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration ()->HasTimeSpan() && current_entry->GetDuration ()->GetTimeSpan () == 0) {
+		LOG_PLAYLIST ("PlaylistEntry::PlayNext (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
+		current_node = (PlaylistNode *) current_node->next;
+		current_entry = current_node ? current_node->GetElement () : NULL;
+	}
+
+	if (!current_node) {
+		LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i nothing to play. is root element: %i\n", GET_OBJ_ID (this), parent == NULL);
+		if (parent == NULL)
+			EmitMediaEnded ();
+		return false;
+	}
+
+	if (!current_entry->IsPlaylist ()) {
+		LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i playing next entry: %i\n", GET_OBJ_ID (this), GET_OBJ_ID (current_entry));
+		GetElement ()->SetPlayRequested ();
+		root->Emit (Playlist::EntryChangedEvent);
+		current_entry->Open ();
+		return true;
+	}
+
+	LOG_PLAYLIST ("PlaylistEntry::PlayNext () %i entering next entry, which is a playlist: %i.\n", GET_OBJ_ID (this), GET_OBJ_ID (current_entry));
+
+	return current_entry->PlayNext ();
+}
+
+void
+PlaylistEntry::OnEntryEnded ()
+{
+	LOG_PLAYLIST ("PlaylistEntry::OnEntryEnded () %i\n", GET_OBJ_ID (this));
+
+	if (!root)
+		return;
+
+	if (root->GetFirstEntry () == this) {
+		EmitMediaEnded ();
+	} else {
+		root->GetFirstEntry ()->PlayNext ();
+	}
+}
+
+void
+PlaylistEntry::OnEntryFailed (ErrorEventArgs *args)
+{	
+	bool fatal = true;
+	
+	LOG_PLAYLIST ("PlaylistEntry::OnEntryFailed () extended_code: %i\n", args ? args->GetExtendedCode() : 0);
+
+	if (root == NULL) {
+#if DEBUG
+		if (args) {
+			printf ("Moonlight: there was an error in the media pipeline which couldn't be delivered to the plugin (most likely because MediaElement's source has changed): %i %s %s\n",
+				args->GetErrorCode (), args->GetErrorMessage (), args->GetExtendedMessage ());
+		}
+#endif
+		return;
+	}
+
+	// media or playlist 404: fatal
+	// invalid playlist (playlist parsing failed): fatal
+	// invalid media (gif, swf): play next
+	if (args == NULL) {
+		fatal = true;
+	} else {
+		// check if we're in a playlist
+		if (IsASXDemuxer ()) {
+			// we're a playlist
+			if (args->GetExtendedCode() == MEDIA_UNKNOWN_CODEC) {
+				fatal = false;
+			} else {
+				fatal = true;
+			}
+		} else {
+			// we're not a playlist
+			fatal = true;
+		}
+	}
+	
+	if (fatal) {
+		if (args)
+			args->ref ();
+		root->Emit (Playlist::MediaErrorEvent, args);
+	} else {
+		root->GetFirstEntry ()->PlayNext ();
+	}
+}
+
+void
+PlaylistEntry::Seek (guint64 pts)
+{
+	PlaylistEntry *current_entry;
+	
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "Playlist::Seek (%" G_GUINT64_FORMAT ") id: %i entries: %i\n", pts, GET_OBJ_ID (this), entries.Length ());
+
+	if (entries.Length () == 0) {
+		g_return_if_fail (media != NULL);
+		media->SeekAsync (pts);
+	} else {
+		current_entry = GetCurrentEntry ();
+		g_return_if_fail (current_entry != NULL);
+		current_entry->Seek (pts);
+	}
+}
+
+void
+PlaylistEntry::Play ()
+{
+	PlaylistEntry *current_entry;
+
+	LOG_PLAYLIST ("PlaylistEntry::Play () id: %i entries: %i\n", GET_OBJ_ID (this), entries.Length ());
+
+	if (entries.Length () == 0) {
+		MediaPlayer *mplayer = GetMediaPlayer ();
+
+		LOG_PLAYLIST ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL");
+
+		g_return_if_fail (media != NULL);
+		g_return_if_fail (mplayer != NULL);
+		g_return_if_fail (root != NULL);
+
+		media->PlayAsync ();
+		mplayer->Play ();
+
+		root->Emit (Playlist::PlayEvent);
+	} else {
+	 	current_entry = GetCurrentEntry ();
+
+	 	g_return_if_fail (current_entry != NULL);
+
+		if (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
+			LOG_PLAYLIST ("PlaylistEntry::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
+			OnEntryEnded ();
+		} else {
+			current_entry->Play ();
+		}
+	}
+}
+
+void
+PlaylistEntry::Pause ()
+{
+	PlaylistEntry *current_entry;
+
+	LOG_PLAYLIST ("Playlist::Pause () id: %i entries: %i\n", GET_OBJ_ID (this), entries.Length ());
+
+	if (entries.Length () == 0) {
+		MediaPlayer *mplayer = GetMediaPlayer ();
+
+		g_return_if_fail (media != NULL);
+		g_return_if_fail (mplayer != NULL);
+		g_return_if_fail (root != NULL);
+		
+		play_when_available = false;
+		media->PauseAsync ();
+		mplayer->Pause ();
+		
+		root->Emit (Playlist::PauseEvent);
+	} else {
+		current_entry = GetCurrentEntry ();
+
+		g_return_if_fail (current_entry != NULL);
+
+		current_entry->Pause ();
+	}
+}
+
+void
+PlaylistEntry::Stop ()
+{
+	PlaylistNode *node;
+
+	LOG_PLAYLIST ("Playlist::Stop () id: %i entries: %i\n", GET_OBJ_ID (this), entries.Length ());
+
+	if (entries.Length () == 0) {
+		play_when_available = false;
+		if (media != NULL)
+			media->StopAsync ();
+	} else {
+		node = (PlaylistNode *) entries.First ();
+		current_node = node;  // reset to first node
+		while (node != NULL) {
+			node->GetElement ()->Stop ();
+			node = (PlaylistNode *) node->next;
+		}
+	}
+}
+
 void
 PlaylistEntry::PopulateMediaAttributes ()
 {
-	LOG_PLAYLIST ("PlaylistEntry::PopulateMediaAttributes ()\n");
+	MediaElement *element;
+	PlaylistEntry *current;
+	MediaAttributeCollection *attributes;
 
 	const char *abstract = NULL;
 	const char *author = NULL;
@@ -726,10 +1026,23 @@ PlaylistEntry::PopulateMediaAttributes ()
 	const char *infourl = NULL;
 	const char *baseurl = NULL;
 
-	MediaElement *element = GetElement ();
-	PlaylistEntry *current = this;
-	MediaAttributeCollection *attributes;
-	
+	PlaylistEntry *current_entry;
+
+	LOG_PLAYLIST ("Playlist::PopulateMediaAttributes () id: %i entries: %i\n", GET_OBJ_ID (this), entries.Length ());
+
+	if (entries.Length () != 0) {
+		current_entry = GetCurrentEntry ();
+
+		if (!current_entry)
+			return;
+
+		current_entry->PopulateMediaAttributes ();
+		return;
+	}
+
+	element = GetElement ();
+	current = this;
+
 	g_return_if_fail (element != NULL);
 	
 	if (!(attributes = element->GetAttributes ())) {
@@ -738,7 +1051,7 @@ PlaylistEntry::PopulateMediaAttributes ()
 	} else {
 		attributes->Clear ();
 	}
-	
+
 	while (current != NULL) {
 		if (abstract == NULL)
 			abstract = current->GetAbstract ();
@@ -767,561 +1080,67 @@ PlaylistEntry::PopulateMediaAttributes ()
 	add_attribute (attributes, "TITLE", title);
 	
 	current = this;
-	while (current != NULL && !current->GetIsEntryRef ()) {
+	while (current != NULL) {
 		if (current->params != NULL)
 			g_hash_table_foreach (current->params, (GHFunc) add_attribute_glib, attributes);
+		if (current->GetIsEntryRef () && current->IsASXDemuxer ())
+			break;
 		current = current->GetParent ();
 	}
 }
 
-const Uri *
-PlaylistEntry::GetFullSourceName ()
-{
-	if (full_source_name == NULL) {
-		Uri *base = GetBaseInherited ();
-		Uri *current = GetSourceName ();
-		
-		//printf ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL");
-		
-		if (current == NULL) {
-			full_source_name = NULL;
-		} else if (current->IsAbsolute ()) {
-			full_source_name = Uri::Clone (current);
-		} else if (base != NULL) {
-			full_source_name = Uri::Create (base, current);
-		} else {
-			full_source_name = Uri::Clone (current);
-		}
-	}
-	return full_source_name;
-}
-
-void
-PlaylistEntry::Open ()
-{
-	LOG_PLAYLIST ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL);
-
-	if (!media) {
-		g_return_if_fail (GetFullSourceName () != NULL);
-		InitializeWithUri (GetElement ()->GetResourceBase (), GetFullSourceName ());
-	} else if (opened) {
-		OpenMediaPlayer ();
-	} else {
-		media->OpenAsync ();
-	}
-}
-
-void
-PlaylistEntry::Play ()
-{
-	MediaPlayer *mplayer = GetMediaPlayer ();
-	PlaylistRoot *root = GetRoot ();
-	
-	LOG_PLAYLIST ("PlaylistEntry::Play (), play_when_available: %s, media: %p, source name: %s\n", play_when_available ? "true" : "false", media, source_name ? source_name->ToString () : "NULL");
-
-	g_return_if_fail (media != NULL);
-	g_return_if_fail (mplayer != NULL);
-	g_return_if_fail (root != NULL);
-
-	media->PlayAsync ();
-	mplayer->Play ();
-	
-	root->Emit (PlaylistRoot::PlayEvent);
-}
-
-void
-PlaylistEntry::Pause ()
-{
-	MediaPlayer *mplayer = GetMediaPlayer ();
-	PlaylistRoot *root = GetRoot ();
-	
-	LOG_PLAYLIST ("PlaylistEntry::Pause ()\n");
-
-	g_return_if_fail (media != NULL);
-	g_return_if_fail (mplayer != NULL);
-	g_return_if_fail (root != NULL);
-	
-	play_when_available = false;
-	media->PauseAsync ();
-	mplayer->Pause ();
-	
-	root->Emit (PlaylistRoot::PauseEvent);
-}
-
-void
-PlaylistEntry::Stop ()
-{
-	LOG_PLAYLIST ("PlaylistEntry::Stop ()\n");
-
-	play_when_available = false;
-	if (media != NULL)
-		media->StopAsync ();
-}
-
-Media *
-PlaylistEntry::GetMedia ()
-{
-	return media;
-}
-
 bool
-PlaylistEntry::IsSingleFile ()
+PlaylistEntry::IsASXDemuxer ()
 {
-	return parent ? parent->IsSingleFile () : false;
-}
+	bool result = false;
+	IMediaDemuxer *demuxer;
 
-PlaylistRoot *
-PlaylistEntry::GetRoot ()
-{
-	Playlist *pl;
-	
-	if (IsDisposed ())
-		return NULL;
-	
-	if (parent == NULL) {
-		g_return_val_if_fail (GetObjectType () == Type::PLAYLISTROOT, NULL);
-		return (PlaylistRoot *) this;
-	}
-	
-	pl = parent;
-	
-	while (pl->parent != NULL)
-		pl = pl->parent;
-	
-	g_return_val_if_fail (pl->GetObjectType () == Type::PLAYLISTROOT, NULL);
-	
-	return (PlaylistRoot *) pl;
-}
-
-/*
- * Playlist
- */
-
-Playlist::Playlist (Playlist *parent)
-	: PlaylistEntry (Type::PLAYLIST, parent)
-{
-	is_single_file = false;
-	Init ();
-}
-
-Playlist::Playlist (Type::Kind kind)
-	: PlaylistEntry (kind)
-{
-	LOG_PLAYLIST ("Playlist::Playlist ()\n");
-	is_single_file = true;
-	Init ();
-
-	AddEntry (new PlaylistEntry (this));
-}
-
-void
-Playlist::Init ()
-{
-	LOG_PLAYLIST ("Playlist::Init ()\n");
-
-	waiting = false;
-	opened = false;
-	entries = new List ();
-	current_node = NULL;
-}
-
-void
-Playlist::Dispose ()
-{
-	PlaylistNode *node;
-	PlaylistEntry *entry;
-
-	LOG_PLAYLIST ("Playlist::Dispose () id: %i\n", GET_OBJ_ID (this));
-	
-	current_node = NULL;
-	
-	if (entries != NULL) {
-		node = (PlaylistNode *) entries->First ();
-		while (node != NULL) {
-			entry = node->GetEntry ();
-			if (entry != NULL)
-				entry->Dispose ();
-			node = (PlaylistNode *) node->next;
-		}
-		delete entries;
-		entries = NULL;
-	}
-	PlaylistEntry::Dispose ();
-}
-
-
-bool
-Playlist::IsCurrentEntryLastEntry ()
-{
-	PlaylistEntry *entry;
-	Playlist *pl;
-	
-	if (entries->Last () == NULL)
-		return false;
-		
-	if (current_node != entries->Last ())
-		return false;
-		
-	entry = GetCurrentEntry ();
-	
-	if (!entry->IsPlaylist ())
-		return true;
-		
-	pl = (Playlist *) entry;
-	
-	return pl->IsCurrentEntryLastEntry ();
-}
-
-void
-Playlist::Open ()
-{
-	PlaylistEntry *current_entry;
-
-	LOG_PLAYLIST ("Playlist::Open ()\n");
-	
-	current_node = (PlaylistNode *) entries->First ();
-
-	current_entry = GetCurrentEntry ();	
-	
-	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration ()->HasTimeSpan() &&
-	       current_entry->GetDuration ()->GetTimeSpan () == 0) {
-		LOG_PLAYLIST ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
-		current_node = (PlaylistNode *) current_node->next;
-		current_entry = GetCurrentEntry ();
-	}
-	
-	if (current_entry)
-		current_entry->Open ();
-
-	opened = true;
-
-	LOG_PLAYLIST ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ());
-}
-
-bool
-Playlist::PlayNext ()
-{
-	PlaylistEntry *current_entry;
-	PlaylistRoot *root = GetRoot ();
-	
-	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p\n", current_node);
-	g_return_val_if_fail (root != NULL, false);
-	VERIFY_MAIN_THREAD;
-	
-	if (!current_node)
+	if (media == NULL)
 		return false;
 
-	SetWaiting (false);
-
-	current_entry = GetCurrentEntry ();
-
-	if (current_entry->HasDuration() && current_entry->GetDuration()->IsForever ()) {
-		GetElement ()->SetPlayRequested ();
-		current_entry->Play ();
-		return true;
+	demuxer = media->GetDemuxerReffed ();
+	if (demuxer != NULL) {
+		result = demuxer->Is (Type::ASXDEMUXER);
+		demuxer->unref ();
 	}
 
-	if (current_entry->IsPlaylist ()) {
-		LOG_PLAYLIST ("Playlist::PlayNext (): calling nested playlist.\n");
-		Playlist *current_playlist = (Playlist *) current_entry;
-		if (current_playlist->PlayNext ())
-			return true;
-	}
-	
-	if (current_node->next) {
-		current_node = (PlaylistNode *) current_node->next;
-	
-		current_entry = GetCurrentEntry ();
-		if (current_entry) {
-			LOG_PLAYLIST ("Playlist::PlayNext () playing entry: %p %s\n", current_entry, current_entry->GetFullSourceName () != NULL ? current_entry->GetFullSourceName ()->GetOriginalString () : NULL);
-			GetElement ()->SetPlayRequested ();
-			root->Emit (PlaylistRoot::EntryChangedEvent);
-			current_entry->Open ();
-			return true;
-		} else {
-			LOG_PLAYLIST ("Playlist::PlayNext (): no next entry.\n");
-		}
-	}
-	
-	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p, nothing to play (is root: %i)\n", current_node, GetObjectType () == Type::PLAYLISTROOT);
-	
-	if (GetObjectType () == Type::PLAYLISTROOT) {
-		PlaylistRoot *root = (PlaylistRoot *) this;
-		root->EmitMediaEnded ();
-	}
-	
-	return false;
+	return result;
 }
 
 void
-Playlist::OnEntryEnded ()
-{
-	LOG_PLAYLIST ("Playlist::OnEntryEnded ()\n");
-	PlayNext ();
-}
-
-void
-Playlist::OnEntryFailed (ErrorEventArgs *args)
-{	
-	bool fatal = true;
-	PlaylistRoot *root = GetRoot ();
-	
-	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->GetExtendedCode() : 0, is_single_file);
-	
-	g_return_if_fail (root != NULL);
-	
-	// media or playlist 404: fatal
-	// invalid playlist (playlist parsing failed): fatal
-	// invalid media (gif, swf): play next
-	if (args == NULL) {
-		fatal = true;
-	} else {
-		// check if we're in a playlist
-		IMediaDemuxer *demuxer = NULL;
-		if (GetMedia () != NULL)
-			demuxer = GetMedia ()->GetDemuxerReffed ();
-			
-		if (demuxer != NULL && demuxer->GetObjectType () == Type::ASXDEMUXER) {
-			// we're a playlist
-			if (args->GetExtendedCode() == MEDIA_UNKNOWN_CODEC) {
-				fatal = false;
-			} else {
-				fatal = true;
-			}
-		} else {
-			// we're not a playlist
-			fatal = true;
-		}
-
-		if (demuxer)
-			demuxer->unref ();
-	}
-	
-	if (fatal) {
-		if (args)
-			args->ref ();
-		root->Emit (PlaylistRoot::MediaErrorEvent, args);
-	} else {
-		root->PlayNext ();
-	}
-}
-
-void
-Playlist::Seek (guint64 pts)
-{
-	PlaylistEntry *current_entry;
-	
-	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "Playlist::Seek (%" G_GUINT64_FORMAT ")\n", pts);
-	
-	current_entry = GetCurrentEntry ();
-	
-	g_return_if_fail (current_entry != NULL);
-	
-	current_entry->Seek (pts);
-}
-
-void
-Playlist::Play ()
-{
-	PlaylistEntry *current_entry;
-
-	LOG_PLAYLIST ("Playlist::Play ()\n");
-	
- 	current_entry = GetCurrentEntry ();
- 	
- 	g_return_if_fail (current_entry != NULL);
- 	
-	if (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
-		LOG_PLAYLIST ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
-		OnEntryEnded ();
-	} else {
-		if (current_entry)
-			current_entry->Play ();
-	}
-}
-
-void
-Playlist::Pause ()
-{
-	PlaylistEntry *current_entry;
-
-	LOG_PLAYLIST ("Playlist::Pause ()\n");
-
-	current_entry = GetCurrentEntry ();
-	
-	g_return_if_fail (current_entry != NULL);
-
-	current_entry->Pause ();
-}
-
-void
-Playlist::Stop ()
-{
-	PlaylistNode *node;
-
-	LOG_PLAYLIST ("Playlist::Stop ()\n");
-
-	node = (PlaylistNode *) entries->First ();
-	current_node = node;  // reset to first node
-	while (node != NULL) {
-		node->GetEntry ()->Stop ();
-		node = (PlaylistNode *) node->next;
-	}
-}
-
-void
-Playlist::PopulateMediaAttributes ()
-{
-	PlaylistEntry *current_entry = GetCurrentEntry ();
-
-	LOG_PLAYLIST ("Playlist::PopulateMediaAttributes ()\n");
-
-	if (!current_entry)
-		return;
-
-	current_entry->PopulateMediaAttributes ();
-}
-
-void
-Playlist::AddEntry (PlaylistEntry *entry)
+PlaylistEntry::AddEntry (PlaylistEntry *entry)
 {
 	PlaylistNode *node;
 	
-	LOG_PLAYLIST ("Playlist::AddEntry (%p) Count: %i\n", entry, entries->Length ());
+	LOG_PLAYLIST ("PlaylistEntry::AddEntry (%p) Count: %i\n", entry, entries.Length ());
 
 	node = new PlaylistNode (entry);
-	entries->Append (node);
-	entry->unref ();
+	entries.Append (node);
 	
-	if (entries->Length () == 1) {
-		g_return_if_fail (current_node == NULL);
+	if (entries.Length () == 1) {
 		current_node = node;
 	}
 }
 
-bool
-Playlist::ReplaceCurrentEntry (Playlist *pl)
-{
-	bool result;
-	
-	PlaylistEntry *current_entry = GetCurrentEntry ();
-
-	LOG_PLAYLIST ("Playlist::ReplaceCurrentEntry (%p)\n", pl);
-
-	// check for too nested playlist
-	int counter = 0;
-	PlaylistEntry *e = this;
-	while (e != NULL && e->IsPlaylist ()) {
-		IMediaDemuxer *demuxer = NULL;
-
-		if (e->GetMedia () != NULL)
-			demuxer = e->GetMedia ()->GetDemuxerReffed ();
-
-		if (e->GetObjectType () != Type::PLAYLISTROOT && demuxer != NULL && demuxer->GetObjectType () == Type::ASXDEMUXER)
-			counter++;
-
-		if (demuxer)
-			demuxer->unref ();
-
-		e = e->GetParent ();
-		
-		if (counter > 5) {
-			ErrorEventArgs *args = new ErrorEventArgs (MediaError,
-								   MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
-			OnEntryFailed (args);
-			args->unref ();
-			return false;
-		}
-	}
-	
-	if (current_entry->IsPlaylist ()) {
-		result = ((Playlist *) current_entry)->ReplaceCurrentEntry (pl);
-	} else {
-		PlaylistNode *pln = new PlaylistNode (pl);
-		pl->MergeWith (current_entry);
-		entries->InsertBefore (pln, current_node);
-		entries->Remove (current_node);
-		pl->SetParent (this);
-		current_node = pln;
-		result = true;
-	}
-	
-	LOG_PLAYLIST ("Playlist::ReplaceCurrentEntrY (%p) [DONE]\n", pl);
-	
-	return result;
-}
-
-void
-Playlist::MergeWith (PlaylistEntry *entry)
-{
-	LOG_PLAYLIST ("Playlist::MergeWith (%p)\n", entry);
-
-	SetBase (entry->GetBase () ? new Uri (*entry->GetBase ()) : NULL);
-	SetTitle (entry->GetTitle ());
-	SetAuthor (entry->GetAuthor ());
-	SetAbstract (entry->GetAbstract ());
-	SetCopyright (entry->GetCopyright ());
-
-	SetSourceName (entry->GetSourceName () ? new Uri (*entry->GetSourceName ()) : NULL);
-	if (entry->HasDuration ()) 
-		SetDuration (entry->GetDuration ());
-	if (entry->HasStartTime ())
-		SetStartTime (entry->GetStartTime ());
-	SetIsEntryRef (entry->GetIsEntryRef ());
-	Initialize (entry->GetMedia ());
-	entry->ClearMedia ();
-}
-
 PlaylistEntry *
-Playlist::GetCurrentPlaylistEntry () 
+PlaylistEntry::GetCurrentEntryLeaf ()
 {
-	PlaylistEntry *result = NULL;
-	
 	if (current_node)
-		result = current_node->GetEntry () ->GetCurrentPlaylistEntry ();
+		return current_node->GetElement ()->GetCurrentEntryLeaf ();
 	
-	return result;
-}
-/*
- * PlaylistRoot
- */
-
-PlaylistRoot::PlaylistRoot (MediaElement *element)
-	: Playlist (Type::PLAYLISTROOT)
-{
-	dynamic = false;
-	dynamic_ended = false;
-	dynamic_waiting = false;
-	this->element = element;
-	
-	mplayer = element->GetMediaPlayer ();
-	mplayer->AddHandler (MediaPlayer::MediaEndedEvent, MediaEndedCallback, this);
-	mplayer->AddHandler (MediaPlayer::BufferUnderflowEvent, BufferUnderflowCallback, this);
-	mplayer->ref ();
+	return this;
 }
 
 void
-PlaylistRoot::Dispose ()
+PlaylistEntry::SetHasDynamicEndedCallback (EventObject *obj)
 {
-	if (mplayer != NULL) {
-		mplayer->RemoveAllHandlers (this);
-		mplayer->unref ();
-		mplayer = NULL;
-	}
-		
-	Playlist::Dispose ();
+	((PlaylistEntry *) obj)->SetHasDynamicEnded ();
 }
 
 void
-PlaylistRoot::SetHasDynamicEndedCallback (EventObject *obj)
+PlaylistEntry::SetHasDynamicEnded ()
 {
-	((PlaylistRoot *) obj)->SetHasDynamicEnded ();
-}
-
-void
-PlaylistRoot::SetHasDynamicEnded ()
-{
-	LOG_PLAYLIST ("PlaylistRoot::SetHasDynamicEnded () InMainThread: %i\n", Surface::InMainThread ());
+	LOG_PLAYLIST ("PlaylistEntry::SetHasDynamicEnded () InMainThread: %i\n", Surface::InMainThread ());
 
 	if (!Surface::InMainThread ()) {
 		AddTickCall (SetHasDynamicEndedCallback);
@@ -1331,174 +1150,275 @@ PlaylistRoot::SetHasDynamicEnded ()
 	dynamic_ended = true;
 	if (dynamic_waiting) {
 		dynamic_waiting = false;
-		EmitMediaEnded ();
+
+		if (root)
+			EmitMediaEnded ();
+	}
+}
+
+void
+PlaylistEntry::EmitMediaEnded ()
+{
+	/* We only emit MediaEnded if we're a static playlist, or a dynamic whose end has been signalled */
+	LOG_PLAYLIST ("PlaylistEntry::EmitMediaEnded () %i dynamic: %i dynamic_ended: %i parent: %i\n", GET_OBJ_ID (this), dynamic, dynamic_ended, GET_OBJ_ID (parent));
+
+	if (root == NULL)
+		return;
+
+	if (dynamic) {
+		if (!dynamic_ended) {
+			/* dynamic playlist, wait for more */
+			dynamic_waiting = true;
+			LOG_PLAYLIST ("PlaylistRoot::EmitMediaEnded (): dynamic playlist hasn't ended yet.\n");
+		} else if (parent == NULL) {
+			/* we're the root entry of a (ended) dynamic playlist, raise MediaEnded */
+			root->Emit (Playlist::MediaEndedEvent);
+		} else {
+			/* let the parent decide */
+			parent->EmitMediaEnded ();
+		}
+	} else {
+		if (parent == NULL) {
+			/* we're the root entry, raise MediaEnded */
+			root->Emit (Playlist::MediaEndedEvent);
+		} else {
+			/* let the parent decide */
+			parent->EmitMediaEnded ();
+		}
 	}
 }
 
 bool
-PlaylistRoot::IsSingleFile ()
+PlaylistEntry::IsCurrent ()
 {
-	PlaylistEntry *entry;
-	
-	if (GetCount () != 1)
+	if (parent == NULL)
+		return true; /* Only 1 top-level entry */
+
+	if (parent->GetCurrentEntry () != this)
 		return false;
+
+	return parent->IsCurrent ();
+}
+
+
+/*
+ * Playlist
+ */
+
+Playlist::Playlist (MediaElement *element)
+	: EventObject (Type::PLAYLIST)
+{
+	this->element = element;
 	
-	entry = GetCurrentEntry ();
-	if (entry == NULL)
-		return false;
-	
-	if (entry->GetObjectType () == Type::PLAYLISTENTRY)
-		return true;
-	
-	return entry->IsSingleFile ();
+	mplayer = element->GetMediaPlayer ();
+	mplayer->AddHandler (MediaPlayer::MediaEndedEvent, MediaEndedCallback, this);
+	mplayer->AddHandler (MediaPlayer::BufferUnderflowEvent, BufferUnderflowCallback, this);
+	mplayer->ref ();
+
+	entry = new PlaylistEntry (this, NULL);
+}
+
+void
+Playlist::Dispose ()
+{
+	element = NULL;
+
+	if (mplayer != NULL) {
+		mplayer->RemoveAllHandlers (this);
+		mplayer->unref ();
+		mplayer = NULL;
+	}
+
+	if (entry != NULL) {
+		entry->Dispose ();
+		entry->unref ();
+		entry = NULL;
+	}
+
+	EventObject::Dispose ();
+}
+
+
+bool
+Playlist::Emit (int event_id, EventArgs *calldata)
+{
+	return EventObject::Emit (event_id, calldata);
+}
+
+bool
+Playlist::IsSingleFile ()
+{
+	return !entry->IsASXDemuxer ();
 }
 
 #if DEBUG
 void
-PlaylistEntry::DumpInternal (int tabs)
+PlaylistEntry::Dump (int tabs, bool is_current, GString *fmt, bool html)
 {
-	printf ("%*s%s %i %s\n", tabs, "", GetTypeName (), GET_OBJ_ID (this), GetIsEntryRef () ? "EntryRef" : "Entry");
+	int ps = html ? 4 : 4;
+	char pad [tabs * ps + 1];
+	char pad2 [(tabs + 1) * ps + 1];
+	for (int i = 0; i < tabs; i++)
+		memcpy (pad + i * ps, !html ? "     " : "    ", ps);
+	for (int i = 0; i < tabs + 1; i++)
+		memcpy (pad2 + i * ps, !html ? "     " : "    ", ps);
+	pad [tabs * ps] = 0;
+	pad2 [(tabs + 1) * ps] = 0;
+
+	if (is_current) {
+		g_string_append (fmt, html ? "<span foreground='blue'>" : "\033[34;49m");
+	}
+	g_string_append_printf (fmt, "%s%s %i Dynamic: %s [CURRENT NODE]", pad, GetIsEntryRef () ? "EntryRef" : "Entry", GET_OBJ_ID (this), GetIsDynamic () ? "yes" : "no");
+	if (is_current) {
+		g_string_append (fmt, html ? "</span>" : "\033[39;49m");
+	}
+	g_string_append_printf (fmt, "\n");
 	tabs++;
-	printf ("%*sParent: %p %s\n", tabs, "", parent, parent ? parent->GetTypeName () : NULL);
-	printf ("%*sFullSourceName: %s\n", tabs, "", GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL);
-	printf ("%*sDuration: %s %.2f seconds StartTime: %" G_GUINT64_FORMAT " ms\n", tabs, "", HasDuration () ? "yes" : "no", HasDuration () ? GetDuration ()->ToSecondsFloat () : 0.0, MilliSeconds_FromPts (GetStartTime ()));
-	printf ("%*sMedia: %i %s\n", tabs, "", GET_OBJ_ID (media), media ? "" : "(null)");
+	g_string_append_printf (fmt, "%sParent: %p %s %i\n", pad2, parent, parent ? parent->GetTypeName () : NULL, GET_OBJ_ID (parent));
+	g_string_append_printf (fmt, "%sFullSourceName: %s\n", pad2, GetFullSourceName () != NULL ? GetFullSourceName ()->GetOriginalString () : NULL);
+	g_string_append_printf (fmt, "%sDuration: %s %.2f seconds StartTime: %" G_GUINT64_FORMAT " ms\n", pad2, HasDuration () ? "yes" : "no", HasDuration () ? GetDuration ()->ToSecondsFloat () : 0.0, MilliSeconds_FromPts (GetStartTime ()));
+	g_string_append_printf (fmt, "%sMedia: %i %s\n", pad2, GET_OBJ_ID (media), media ? "" : "(null)");
 	if (media) {
 		IMediaDemuxer *demuxer = media->GetDemuxerReffed ();
-		printf ("%*sUri: %s\n", tabs, "", media->GetUri () ? media->GetUri ()->GetOriginalString () : NULL);
-		printf ("%*sDemuxer: %i %s\n", tabs, "", GET_OBJ_ID (demuxer), demuxer ? demuxer->GetTypeName () : "N/A");
-		printf ("%*sSource:  %i %s\n", tabs, "", GET_OBJ_ID (media->GetSource ()), media->GetSource () ? media->GetSource ()->GetTypeName () : "N/A");
+		g_string_append_printf (fmt, "%sUri: %s\n", pad2, media->GetUri () ? media->GetUri ()->GetOriginalString () : NULL);
+		g_string_append_printf (fmt, "%sDemuxer: %i %s Pending stream: %s\n", pad2, GET_OBJ_ID (demuxer), demuxer ? demuxer->GetTypeName () : "N/A", demuxer && demuxer->GetPendingStream () ? demuxer->GetPendingStream ()->GetTypeName () : "None");
+		g_string_append_printf (fmt, "%sSource:  %i %s\n", pad2, GET_OBJ_ID (media->GetSource ()), media->GetSource () ? media->GetSource ()->GetTypeName () : "N/A");
 		if (demuxer)
 			demuxer->unref ();
 	}
-	
-}
 
-void 
-Playlist::DumpInternal (int tabs)
-{
-	PlaylistNode *node;
-	
-	PlaylistEntry::DumpInternal (tabs);
-	printf ("%*s %i entries:\n", tabs, "", entries->Length ());
-	node = (PlaylistNode *) entries->First ();
-	while (node != NULL) {
-		if (node == current_node)
-			printf ("*%*s * CURRENT NODE *\n", tabs, "");
-		node->GetEntry ()->DumpInternal (tabs + 2);
-		node = (PlaylistNode *) node->next;
+	if (entries.Length () > 0) {
+		PlaylistNode *node;
+
+		g_string_append_printf (fmt, "%s %i entries:\n", pad2, entries.Length ());
+		node = (PlaylistNode *) entries.First ();
+		while (node != NULL) {
+			node->GetElement ()->Dump (tabs + 1, node == current_node && is_current, fmt, html);
+			node = (PlaylistNode *) node->next;
+		}
 	}
 }
+
 void
-PlaylistRoot::Dump ()
+Playlist::Dump ()
 {
-	printf ("\n\nDUMP OF PLAYLIST\n\n");
-	DumpInternal (0);
-	printf ("\n\nDUMP OF PLAYLIST DONE\n\n");
+	GString *fmt = g_string_new ("");
+	Dump (fmt, false);
+	printf (fmt->str);
+	g_string_free (fmt, true);
+}
+
+void
+Playlist::Dump (GString *fmt, bool html)
+{
+	int flags = debug_flags;
+	debug_flags &= ~RUNTIME_DEBUG_PLAYLIST;
+	entry->Dump (0, true, fmt, html);
+	debug_flags = flags;
 }
 #endif
 
 void
-PlaylistRoot::SeekCallback (EventObject *obj)
+Playlist::SeekCallback (EventObject *obj)
 {
-	PlaylistRoot *playlist = (PlaylistRoot *) obj;
-	PtsNode *pts_node;
+	Playlist *playlist = (Playlist *) obj;
+	List::GenericNode<guint64> *pts_node;
 	
-	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "PlaylistRoot::SeekCallback ()\n");
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "Playlist::SeekCallback ()\n");
 
 	if (playlist->IsDisposed ())
 		return;
 
-	pts_node = (PtsNode *) playlist->seeks.First ();
+	pts_node = (List::GenericNode<guint64> *) playlist->seeks.First ();
 	if (pts_node != NULL) {
 		playlist->seeks.Unlink (pts_node);
-		playlist->Seek (pts_node->pts);
+		playlist->entry->Seek (pts_node->GetElement ());
 		delete pts_node;
 	}
 }
 
 void
-PlaylistRoot::SeekAsync (guint64 pts)
+Playlist::SeekAsync (guint64 pts)
 {
-	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "PlaylistRoot::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
-	seeks.Append (new PtsNode (pts));
+	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PLAYLIST, "Playlist::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
+	seeks.Append (new List::GenericNode<guint64> (pts));
 	AddTickCall (SeekCallback);
 }
 
 void
-PlaylistRoot::PlayCallback (EventObject *obj)
+Playlist::PlayCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("PlaylistRoot::PlayCallback ()\n");
+	LOG_PLAYLIST ("Playlist::PlayCallback ()\n");
 
-	PlaylistRoot *root = (PlaylistRoot *) obj;
+	Playlist *root = (Playlist *) obj;
 	if (root->IsDisposed ())
 		return;
-	root->Play ();
+	root->entry->Play ();
 }
 
 void
-PlaylistRoot::PlayAsync ()
+Playlist::PlayAsync ()
 {
-	LOG_PLAYLIST ("PlaylistRoot::PlayAsync ()\n");
+	LOG_PLAYLIST ("Playlist::PlayAsync ()\n");
 	AddTickCall (PlayCallback);
 }
 
 void
-PlaylistRoot::PauseCallback (EventObject *obj)
+Playlist::PauseCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("PlaylistRoot::PauseCallback ()\n");
+	LOG_PLAYLIST ("Playlist::PauseCallback ()\n");
 
-	PlaylistRoot *root = (PlaylistRoot *) obj;
+	Playlist *root = (Playlist *) obj;
 	if (root->IsDisposed ())
 		return;
-	root->Pause ();
+	root->entry->Pause ();
 }
 
 void
-PlaylistRoot::PauseAsync ()
+Playlist::PauseAsync ()
 {
-	LOG_PLAYLIST ("PlaylistRoot::PauseAsync ()\n");
+	LOG_PLAYLIST ("Playlist::PauseAsync ()\n");
 	AddTickCall (PauseCallback);
 }
 
 void
-PlaylistRoot::OpenCallback (EventObject *obj)
+Playlist::OpenCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("PlaylistRoot::OpenCallback ()\n");
+	LOG_PLAYLIST ("Playlist::OpenCallback ()\n");
 
-	PlaylistRoot *root = (PlaylistRoot *) obj;
+	Playlist *root = (Playlist *) obj;
 	if (root->IsDisposed ())
 		return;
-	root->Open ();
+	root->entry->Open ();
 }
 
 void
-PlaylistRoot::OpenAsync ()
+Playlist::OpenAsync ()
 {
-	LOG_PLAYLIST ("PlaylistRoot::OpenAsync ()\n");
+	LOG_PLAYLIST ("Playlist::OpenAsync ()\n");
 	AddTickCall (OpenCallback);
 }
 
 void
-PlaylistRoot::StopCallback (EventObject *obj)
+Playlist::StopCallback (EventObject *obj)
 {
-	LOG_PLAYLIST ("PlaylistRoot::StopCallback ()\n");
+	LOG_PLAYLIST ("Playlist::StopCallback ()\n");
 
-	PlaylistRoot *root = (PlaylistRoot *) obj;
+	Playlist *root = (Playlist *) obj;
 	if (root->IsDisposed ())
 		return;
 	root->Stop ();
 }
 
 void
-PlaylistRoot::StopAsync ()
+Playlist::StopAsync ()
 {
 	LOG_PLAYLIST ("PlaylistRoot::StopAsync ()\n");
 	AddTickCall (StopCallback);
 }
 
 void
-PlaylistRoot::Stop ()
+Playlist::Stop ()
 {
 	MediaPlayer *mplayer;
 	
@@ -1506,7 +1426,7 @@ PlaylistRoot::Stop ()
 	
 	mplayer = GetMediaPlayer ();
 	
-	Playlist::Stop ();
+	entry->Stop ();
 	if (mplayer != NULL)
 		mplayer->Stop ();
 	// Stop is called async, and if we now emit Open async, we'd possibly not get events in the right order 
@@ -1517,66 +1437,41 @@ PlaylistRoot::Stop ()
 	//  StopAsync (); -> enqueue Stop
 	//  PlayAsync (); -> enqueue Play
 	//  Stop is called, enqueue Open
-	Open ();
+	entry->Open ();
 	Emit (StopEvent); // we emit the event after enqueuing the Open request, do avoid funky side-effects of event emission.
 }
 
 void
-PlaylistRoot::EmitMediaEnded ()
+Playlist::EmitBufferUnderflowEvent (EventObject *obj)
 {
-	/* We only emit MediaEnded if we're a static playlist, or a dynamic whose end has been signalled */
-	LOG_PLAYLIST ("PlaylistRoot::EmitMediaEnded () dynamic: %i dynamic_ended: %i\n", dynamic, dynamic_ended);
-
-	if (!(dynamic && !dynamic_ended)) {
-		Emit (MediaEndedEvent);
-	} else {
-		dynamic_waiting = true;
-		LOG_PLAYLIST ("PlaylistRoot::EmitMediaEnded (): dynamic playlist hasn't ended yet.\n");
-	}
-}
-
-void
-PlaylistRoot::EmitBufferUnderflowEvent (EventObject *obj)
-{
-	PlaylistRoot *root = (PlaylistRoot *) obj;
+	Playlist *root = (Playlist *) obj;
 	root->Emit (BufferUnderflowEvent);
 }
 
 MediaPlayer *
-PlaylistRoot::GetMediaPlayer ()
+Playlist::GetMediaPlayer ()
 {
 	return mplayer;
 }
 
-Media *
-PlaylistRoot::GetCurrentMedia ()
-{
-	PlaylistEntry *entry = GetCurrentEntry ();
-	
-	if (entry == NULL)
-		return NULL;
-	
-	return entry->GetMedia ();
-}
-
 MediaElement *
-PlaylistRoot::GetElement ()
+Playlist::GetElement ()
 {
 	return element;
 }
 
 void
-PlaylistRoot::MediaEndedHandler (MediaPlayer *mplayer, EventArgs *args)
+Playlist::MediaEndedHandler (MediaPlayer *mplayer, EventArgs *args)
 {
-	LOG_PLAYLIST ("PlaylistRoot::MediaEndedHandler (%p, %p)\n", mplayer, args);
+	LOG_PLAYLIST ("Playlist::MediaEndedHandler (%p, %p)\n", mplayer, args);
 	
-	OnEntryEnded ();
+	GetCurrentEntryLeaf ()->OnEntryEnded ();
 }
 
 void
-PlaylistRoot::BufferUnderflowHandler (MediaPlayer *mplayer, EventArgs *args)
+Playlist::BufferUnderflowHandler (MediaPlayer *mplayer, EventArgs *args)
 {
-	LOG_PLAYLIST ("PlaylistRoot::BufferUnderflowHandler (%p, %p)\n", mplayer, args);
+	LOG_PLAYLIST ("Playlist::BufferUnderflowHandler (%p, %p)\n", mplayer, args);
 	
 	if (Surface::InMainThread ()) {
 		EmitBufferUnderflowEvent (this);
@@ -1589,12 +1484,11 @@ PlaylistRoot::BufferUnderflowHandler (MediaPlayer *mplayer, EventArgs *args)
  * PlaylistParser
  */
 
-PlaylistParser::PlaylistParser (PlaylistRoot *root, MemoryBuffer *source)
+PlaylistParser::PlaylistParser (PlaylistEntry *parent, MemoryBuffer *source)
 {
-	this->root = root;
+	this->parent = parent;
 	this->source = source;
 	this->kind_stack = NULL;
-	this->playlist = NULL;
 	this->current_entry = NULL;
 	this->current_text = NULL;
 	this->error_args = NULL;
@@ -1604,7 +1498,6 @@ PlaylistParser::PlaylistParser (PlaylistRoot *root, MemoryBuffer *source)
 void
 PlaylistParser::Setup (XmlType type)
 {
-	playlist = NULL;
 	current_entry = NULL;
 	current_text = NULL;
 
@@ -1627,10 +1520,6 @@ PlaylistParser::~PlaylistParser ()
 	}
 	delete asxparser;
 	asxparser = NULL;
-	if (playlist) {
-		playlist->unref ();
-		playlist = NULL;
-	}
 	if (error_args) {
 		error_args->unref ();
 		error_args = NULL;
@@ -1854,8 +1743,6 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			return;
 		}
 
-		playlist = new Playlist (root);
-
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VERSION")) {
 				if (str_match (attrs [i+1], "3")) {
@@ -1931,7 +1818,7 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 							  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::Duration: {
-		Duration *dur;
+		Duration *dur = NULL;
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VALUE")) {
 				if (duration_from_asx_str (this, attrs [i+1], &dur)) {
@@ -1939,6 +1826,7 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
 						GetCurrentEntry ()->SetDuration (dur);
 					}
+					delete dur;
 				}
 			} else {
 				ParsingError (new ErrorEventArgs (MediaError,
@@ -1972,10 +1860,11 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 				break;
 			}
 		}
-		PlaylistEntry *entry = new PlaylistEntry (playlist);
+		PlaylistEntry *entry = new PlaylistEntry (parent->GetRoot (), GetCurrentContent ());
 		entry->SetClientSkip (client_skip);
-		playlist->AddEntry (entry);
+		GetCurrentContent ()->AddEntry (entry);
 		current_entry = entry;
+		entry->unref ();
 		break;
 	}
 	case PlaylistKind::EntryRef: {
@@ -2002,13 +1891,14 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			}
 		}
 
-		PlaylistEntry *entry = new PlaylistEntry (playlist);
+		PlaylistEntry *entry = new PlaylistEntry (parent->GetRoot (), GetCurrentContent ());
 		entry->SetIsEntryRef (true);
 		if (uri)
 			entry->SetSourceName (uri);
 		uri = NULL;
-		playlist->AddEntry (entry);
+		GetCurrentContent ()->AddEntry (entry);
 		current_entry = entry;
+		entry->unref ();
 		break;
 	}
 	case PlaylistKind::LogUrl:
@@ -2032,14 +1922,17 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 		}
 		break;
 	case PlaylistKind::StartTime: {
-		Duration *dur;
+		Duration *dur = NULL;
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VALUE")) {
-				if (duration_from_asx_str (this, attrs [i+1], &dur) && dur->HasTimeSpan ()) {
-					if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistKind::Ref) {
-						LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
-						GetCurrentEntry ()->SetStartTime (dur->GetTimeSpan ());
+				if (duration_from_asx_str (this, attrs [i+1], &dur)) {
+					if (dur->HasTimeSpan ()) {
+						if (GetCurrentEntry () != NULL && GetParentKind () != PlaylistKind::Ref) {
+							LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), found VALUE/timespan = %f s\n", name, attrs, TimeSpan_ToSecondsFloat (dur->GetTimeSpan()));
+							GetCurrentEntry ()->SetStartTime (dur->GetTimeSpan ());
+						}
 					}
+					delete dur;
 				}
 			} else {
 				ParsingError (new ErrorEventArgs (MediaError,
@@ -2087,12 +1980,7 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			}
 		}
 		if (value != NULL && value [0] != 0 && name != NULL && name [0] != 0) {
-			PlaylistEntry *entry = GetCurrentEntry ();
-			if (entry == NULL)
-				entry = playlist;
-			if (entry == NULL)
-				entry = root;
-			entry->AddParams (name, value);
+			GetCurrentContent ()->AddParams (name, value);
 		} else {
 			// TODO: add test
 		}
@@ -2159,6 +2047,7 @@ PlaylistParser::OnASXEndElement (const char *name)
 		duration_from_asx_str (this, current_text, &dur);
 		if (GetCurrentEntry () != NULL)
 			GetCurrentEntry ()->SetDuration (dur);
+		delete dur;
 		break;
 	case PlaylistKind::Entry:
 		if (!AssertParentKind (PlaylistKind::Asx))
@@ -2227,6 +2116,7 @@ PlaylistParser::OnASXEndElement (const char *name)
 	}
 
 	switch (GetCurrentKind ()) {
+	case PlaylistKind::EntryRef:
 	case PlaylistKind::Entry:
 		EndEntry ();
 		break;
@@ -2353,18 +2243,14 @@ PlaylistParser::ParseASX2 ()
 	g_free (ref);
 	g_key_file_free (key_file);
 
-
-	playlist = new Playlist (root);
-
-	PlaylistEntry *entry = new PlaylistEntry (playlist);
+	PlaylistEntry *entry = new PlaylistEntry (parent->GetRoot (), parent);
 	uri = Uri::Create (mms_uri);
 	if (uri != NULL) {
 		entry->SetSourceName (uri);
 	}
-	playlist->AddEntry (entry);
+	parent->AddEntry (entry);
 	current_entry = entry;
-
-	return true;
+	entry->unref ();
 
 	return true;
 }
@@ -2438,7 +2324,7 @@ PlaylistParser::GetCurrentContent ()
 	if (current_entry != NULL)
 		return current_entry;
 
-	return playlist;
+	return parent;
 }
 
 PlaylistEntry *
@@ -2450,7 +2336,7 @@ PlaylistParser::GetCurrentEntry ()
 void 
 PlaylistParser::EndEntry ()
 {
-	this->current_entry = NULL;
+	current_entry = current_entry->GetParent ();
 }
 
 void

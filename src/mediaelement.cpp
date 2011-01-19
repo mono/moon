@@ -852,7 +852,7 @@ MediaElement::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
-MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
+MediaElement::BufferUnderflowHandler (Playlist *sender, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms\n", 
 		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()));
@@ -916,11 +916,11 @@ MediaElement::CreatePlaylist ()
 	g_return_if_fail (mplayer == NULL);
 	
 	mplayer = new MediaPlayer (this);
-	SetPlaylist (new PlaylistRoot (this));
+	SetPlaylist (new Playlist (this));
 }
 
 void
-MediaElement::SetPlaylist (PlaylistRoot *value)
+MediaElement::SetPlaylist (Playlist *value)
 {
 	// if playlist is something, then value must be null (and vice versa)
 	g_return_if_fail ((playlist == NULL) != (value == NULL));
@@ -934,32 +934,32 @@ MediaElement::SetPlaylist (PlaylistRoot *value)
 		playlist = NULL;
 	} else {
 		playlist = value; // We assume the caller gives us a reference to the playlist
-		playlist->AddHandler (PlaylistRoot::OpeningEvent, OpeningCallback, this);
-		playlist->AddHandler (PlaylistRoot::OpenCompletedEvent, OpenCompletedCallback, this);
-		playlist->AddHandler (PlaylistRoot::SeekingEvent, SeekingCallback, this);
-		playlist->AddHandler (PlaylistRoot::SeekCompletedEvent, SeekCompletedCallback, this);
-		playlist->AddHandler (PlaylistRoot::CurrentStateChangedEvent, CurrentStateChangedCallback, this);
-		playlist->AddHandler (PlaylistRoot::MediaErrorEvent, MediaErrorCallback, this);
-		playlist->AddHandler (PlaylistRoot::MediaEndedEvent, MediaEndedCallback, this);
-		playlist->AddHandler (PlaylistRoot::BufferUnderflowEvent, BufferUnderflowCallback, this);
-		playlist->AddHandler (PlaylistRoot::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
-		playlist->AddHandler (PlaylistRoot::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
-		playlist->AddHandler (PlaylistRoot::PlayEvent, PlayCallback, this);
-		playlist->AddHandler (PlaylistRoot::PauseEvent, PauseCallback, this);
-		playlist->AddHandler (PlaylistRoot::StopEvent, StopCallback, this);
-		playlist->AddHandler (PlaylistRoot::EntryChangedEvent, EntryChangedCallback, this);
+		playlist->AddHandler (Playlist::OpeningEvent, OpeningCallback, this);
+		playlist->AddHandler (Playlist::OpenCompletedEvent, OpenCompletedCallback, this);
+		playlist->AddHandler (Playlist::SeekingEvent, SeekingCallback, this);
+		playlist->AddHandler (Playlist::SeekCompletedEvent, SeekCompletedCallback, this);
+		playlist->AddHandler (Playlist::CurrentStateChangedEvent, CurrentStateChangedCallback, this);
+		playlist->AddHandler (Playlist::MediaErrorEvent, MediaErrorCallback, this);
+		playlist->AddHandler (Playlist::MediaEndedEvent, MediaEndedCallback, this);
+		playlist->AddHandler (Playlist::BufferUnderflowEvent, BufferUnderflowCallback, this);
+		playlist->AddHandler (Playlist::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
+		playlist->AddHandler (Playlist::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
+		playlist->AddHandler (Playlist::PlayEvent, PlayCallback, this);
+		playlist->AddHandler (Playlist::PauseEvent, PauseCallback, this);
+		playlist->AddHandler (Playlist::StopEvent, StopCallback, this);
+		playlist->AddHandler (Playlist::EntryChangedEvent, EntryChangedCallback, this);
 	}
 }
 
 void
-MediaElement::EntryChangedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::EntryChangedHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::EntryChangedHandler ()\n");
 	flags &= ~MediaOpenedEmitted;
 }
 
 void
-MediaElement::OpeningHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::OpeningHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::OpeningHandler ()\n");
 	VERIFY_MAIN_THREAD;
@@ -969,7 +969,7 @@ MediaElement::OpeningHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::OpenCompletedHandler (Playlist *playlist, EventArgs *args)
 {
 	IMediaDemuxer *demuxer;
 	const char *demuxer_name;
@@ -981,7 +981,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	g_return_if_fail (playlist != NULL);
 	g_return_if_fail (mplayer != NULL);
 	
-	entry = playlist->GetCurrentPlaylistEntry ();
+	entry = playlist->GetCurrentEntryLeaf ();
 	
 	g_return_if_fail (entry != NULL);
 	
@@ -1062,7 +1062,7 @@ MediaElement::SetProperties (Media *media)
 	seeked_to_position = 0;
 	
 	demuxer = media->GetDemuxerReffed ();
-	entry = playlist->GetCurrentPlaylistEntry ();
+	entry = playlist->GetCurrentEntryLeaf ();
 	
 	if (demuxer == NULL || entry == NULL) {
 #if SANITY
@@ -1110,7 +1110,7 @@ cleanup:
 }
 
 void
-MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::SeekingHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::SeekingHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
@@ -1124,7 +1124,7 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::SeekCompletedHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
@@ -1134,7 +1134,7 @@ MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::PlayHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::PlayHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::PlayHandler ()\n");
 	VERIFY_MAIN_THREAD;
@@ -1145,7 +1145,7 @@ MediaElement::PlayHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::PauseHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::PauseHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::PauseHandler ()\n");
 	VERIFY_MAIN_THREAD;
@@ -1156,7 +1156,7 @@ MediaElement::PauseHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::StopHandler (Playlist *playlist, EventArgs *args)
 {
 	PlaylistEntry *entry;
 	
@@ -1165,7 +1165,7 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	g_return_if_fail (playlist != NULL);
 	
-	entry = playlist->GetCurrentPlaylistEntry ();
+	entry = playlist->GetCurrentEntryLeaf ();
 	
 	g_return_if_fail (entry != NULL);
 	seeked_to_position = 0;
@@ -1179,14 +1179,14 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::CurrentStateChangedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::CurrentStateChangedHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::CurrentStateChangedHandler ()\n");
 	VERIFY_MAIN_THREAD;
 }
 
 void
-MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
+MediaElement::MediaErrorHandler (Playlist *playlist, ErrorEventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s Initializing: %i Uri: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL, flags & Initializing, GetSource ()->ToString ());
 	VERIFY_MAIN_THREAD;
@@ -1228,7 +1228,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 }
 
 void
-MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::MediaEndedHandler (Playlist *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler () state: %s position: %" G_GUINT64_FORMAT "\n", GetStateName (state), MilliSeconds_FromPts (GetPosition ()));
 	VERIFY_MAIN_THREAD;
@@ -1240,7 +1240,7 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 }
 
 void
-MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::DownloadProgressChangedHandler (Playlist *playlist, EventArgs *args)
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
@@ -1255,7 +1255,7 @@ MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs 
 }
 
 void
-MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
+MediaElement::BufferingProgressChangedHandler (Playlist *playlist, EventArgs *args)
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
@@ -1311,7 +1311,7 @@ MediaElement::SetUriSource (const Uri *uri)
 	
 	if (!Uri::IsNullOrEmpty (uri)) {
 		CreatePlaylist ();
-		playlist->GetCurrentEntry ()->InitializeWithUri (GetResourceBase (), uri);
+		playlist->GetFirstEntry ()->InitializeWithUri (GetResourceBase (), uri);
 	} else {
 		UpdateBounds ();
 		InvalidateMeasure ();
@@ -1335,7 +1335,7 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	flags |= Initializing;
 	
 	CreatePlaylist ();
-	playlist->GetCurrentEntry ()->InitializeWithDownloader (downloader, PartName);
+	playlist->GetFirstEntry ()->InitializeWithDownloader (downloader, PartName);
 	
 	flags &= ~Initializing;
 }
@@ -1354,7 +1354,7 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	flags |= Initializing;
 	
 	CreatePlaylist ();
-	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
+	playlist->GetFirstEntry ()->InitializeWithStream (callbacks);
 	
 	SetDownloadProgress (1.0);
 	
@@ -1381,9 +1381,9 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	flags |= BufferingDisabled;
 	
 	CreatePlaylist ();
-	media = new Media (playlist);
+	media = new Media (playlist->GetFirstEntry ());
 	demuxer = new ExternalDemuxer (media, context, close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
-	playlist->GetCurrentEntry ()->InitializeWithDemuxer (demuxer);
+	playlist->GetFirstEntry ()->InitializeWithDemuxer (demuxer);
 	media->unref ();
 	
 	SetDownloadProgress (1.0);
@@ -1567,7 +1567,7 @@ MediaElement::Seek (TimeSpan to, bool force)
 	case MediaElementStatePaused:
 	case MediaElementStateStopped:
 		Duration *duration = GetNaturalDuration ();
-		TimeSpan start_time = playlist->GetCurrentPlaylistEntry ()->GetStartTime ();
+		TimeSpan start_time = playlist->GetCurrentEntryLeaf ()->GetStartTime ();
 		TimeSpan really_to;
 		
 		if (duration->HasTimeSpan () && to > duration->GetTimeSpan ())
@@ -1743,7 +1743,7 @@ MediaElement::GetStartTime ()
 	TimeSpan start_time = 0;
 
 	if (playlist != NULL) {
-		entry = playlist->GetCurrentPlaylistEntry ();
+		entry = playlist->GetCurrentEntryLeaf ();
 		if (entry != NULL) {
 			start_time = entry->GetStartTime ();
 		}

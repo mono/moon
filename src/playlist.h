@@ -13,14 +13,6 @@
 #ifndef __PLAYLIST_H__
 #define __PLAYLIST_H__
 
-namespace Moonlight {
-
-class PlaylistEntry;
-class Playlist;
-class PlaylistRoot;
-
-};
-
 #include "value.h"
 #include "error.h"
 #include "dependencyobject.h"
@@ -67,15 +59,17 @@ public:
 	}
 };
 
-class PlaylistNode : public List::Node {
-private:
-	PlaylistEntry *entry;
-
+/*
+ * PlaylistNode
+ */
+class PlaylistNode : public EventObjectNode<PlaylistEntry> {
 public:
-	PlaylistNode (PlaylistEntry *entry);
-	virtual ~PlaylistNode ();
-	PlaylistEntry *GetEntry () { return entry; }
+	PlaylistNode (PlaylistEntry *entry) : EventObjectNode<PlaylistEntry> (entry) {}
 };
+
+/*
+ * PlaylistEntry
+ */
 
 class PlaylistEntry : public EventObject {
 private:
@@ -100,22 +94,33 @@ private:
 	Uri *full_source_name;
 	bool is_live;
 	bool play_when_available;
-	Playlist *parent;
+	PlaylistEntry *parent;
+	Playlist *root;
 	Media *media;
 	bool opened; // if OpenCompleted event has been received
 
-	void Init (Playlist *parent);
+	List entries; // list of child elements
+	PlaylistNode *current_node; // current node
+
+	bool dynamic; /* If the playlist can change during playback. This is true for mms/server-side playlists. */
+	bool dynamic_ended; /* If a dynamic playlist has ended transmission (it might still be playing due to buffers, etc). Note that a dynamic playlist which has ended can't modify the playlist anymore. */
+	bool dynamic_waiting; /* if we finished playing what we have in the playlist, and are waiting for more playlist entries */
+
 	void OpenMediaPlayer ();
-	
+
+	void EmitMediaEnded ();
+	bool HasMediaSource ();
+	void OnMediaDownloaded ();
+	static void SetHasDynamicEndedCallback (EventObject *obj);
+
 protected:
 	/* @SkipFactories */
-	PlaylistEntry (Type::Kind kind);
-	/* @SkipFactories */
-	PlaylistEntry (Type::Kind kind, Playlist *parent);
+	PlaylistEntry ();
 	virtual ~PlaylistEntry () {}
 
 public:
-	PlaylistEntry (Playlist *parent);
+	/* @SkipFactories */
+	PlaylistEntry (Playlist *root, PlaylistEntry *parent);
 
 	void Initialize (Media *media);
 	void InitializeWithUri (const Uri *resource_base, const Uri *uri);
@@ -175,9 +180,8 @@ public:
 	
 	// non-ASX properties
 
-	Playlist *GetParent () { return parent; }
-	void SetParent (Playlist *value) { parent = value; }
-	PlaylistRoot *GetRoot ();
+	PlaylistEntry *GetParent () { return parent; }
+	Playlist *GetRoot ();
 	
 	Media *GetMedia ();
 	void ClearMedia ();
@@ -186,24 +190,21 @@ public:
 	MediaPlayer *GetMediaPlayer ();
 
 	const Uri *GetFullSourceName ();
-	virtual bool IsPlaylist () { return false; }
+	const Uri *GetLocation ();
+
+	bool IsPlaylist () { return entries.Length () > 0; }
 
 	bool GetIsLive () { return is_live; }
 	void SetIsLive (bool value) { is_live = value; }
 
 	// Playback methods
 
-	virtual void Play ();
-	virtual void Pause ();
-	virtual void Stop ();
-	virtual void Seek (guint64 pts);
-	virtual void Open ();
-	virtual void PopulateMediaAttributes ();
-	
-	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
-	virtual bool IsSingleFile ();
-
-	void Print (int depth);
+	void Play ();
+	void Pause ();
+	void Stop ();
+	void Seek (guint64 pts);
+	void Open ();
+	void PopulateMediaAttributes ();
 	
 	EVENTHANDLER (PlaylistEntry, Opening,             Media, EventArgs);
 	EVENTHANDLER (PlaylistEntry, OpenCompleted,       Media, EventArgs);
@@ -213,91 +214,45 @@ public:
 	EVENTHANDLER (PlaylistEntry, MediaError,          Media, ErrorEventArgs);
 	EVENTHANDLER (PlaylistEntry, DownloadProgressChanged, Media, EventArgs);
 	EVENTHANDLER (PlaylistEntry, BufferingProgressChanged, Media, EventArgs);
-	
-#if DEBUG
-	virtual void DumpInternal (int tabs);
-#endif
-};
-
-class Playlist : public PlaylistEntry {
-private:
-	List *entries;
-	PlaylistNode *current_node;
-	bool is_single_file;
-	bool waiting;
-	bool opened;
-
-	void Init ();
-
-	bool HasMediaSource ();
-	void OnMediaDownloaded ();
-
-	void MergeWith (PlaylistEntry *entry);
-
-protected:
-	/* @SkipFactories */
-	Playlist (Type::Kind kind);
-	virtual ~Playlist () {}
-
-
-public:
-	Playlist (Playlist *parent);
-	
-	virtual void Dispose ();
-
-	virtual void Play ();
-	virtual void Pause ();
-	virtual void Stop ();
-	virtual void Seek (guint64 to);
-	virtual void Open ();
-	virtual void PopulateMediaAttributes ();
-	
 	void AddEntry (PlaylistEntry *entry);
 
 	bool PlayNext (); // returns false if nothing more to play
 
-	List *GetEntries () { return entries;  }
 	/* non recursive */
-	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
+	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetElement () : NULL; }
 	/* recursive */
-	virtual PlaylistEntry *GetCurrentPlaylistEntry ();
-	bool ReplaceCurrentEntry (Playlist *entry);
+	PlaylistEntry *GetCurrentEntryLeaf ();
+	PlaylistNode *GetFirstNode () { return (PlaylistNode *) entries.First (); }
 
-	virtual bool IsPlaylist () { return true; }
-	virtual bool IsSingleFile () { return is_single_file; }
-	void SetWaiting (bool value) { waiting = value; }
-	bool GetWaiting (void) { return waiting; }
-
-	bool IsCurrentEntryLastEntry ();
 	void OnEntryEnded ();
 	void OnEntryFailed (ErrorEventArgs *args);
 
-	void Print (int depth);
-	
-	gint32 GetCount () { return entries ? entries->Length () : 0; }
+	gint32 GetCount () { return entries.Length (); }
+
+	void SetIsDynamicWaiting (bool value) { dynamic_waiting = value; }
+	bool GetIsDynamicWaiting () { return dynamic_waiting; } // TODO: this should be recursive
+	/* This method should only be called during opening, not after playback has started
+	 * - in which case it's thread-safe. (write from media thread during opening, read
+	 * from main thread after media has been opened) */
+	void SetIsDynamic () { dynamic = true; }
+	bool GetIsDynamic () { return dynamic; } // TODO: this should be recursive
+	/* Thread-safe (calls are marshalled to the main thread) */
+	void SetHasDynamicEnded ();
+
+	bool IsASXDemuxer ();
+	bool IsCurrent ();
 
 #if DEBUG
-	virtual void DumpInternal (int tabs);
+	void Dump (int tabs, bool is_current, GString *fmt, bool html);
 #endif
 };
 
 /* @Namespace=None,ManagedEvents=Manual */
-class PlaylistRoot : public Playlist {
+class Playlist : public EventObject {
 private:
-	class PtsNode : public List::Node {
-	public:
-		guint64 pts;
-		PtsNode (guint64 pts)
-		{
-			this->pts = pts;
-		}
-	};
 	MediaElement *element;
 	MediaPlayer *mplayer;
-	bool dynamic; /* If the playlist can change during playback. This is true for mms/server-side playlists. */
-	bool dynamic_ended; /* If a dynamic playlist has ended transmission (it might still be playing due to buffers, etc). Note that a dynamic playlist which has ended can't modify the playlist anymore. */
-	bool dynamic_waiting; /* if we finished playing what we have in the playlist, and are waiting for more playlist entries */
-
+	PlaylistEntry *entry;
 	List seeks; // the pts to seek to when SeekCallback is called. Main thread only.
 
 	static void EmitBufferUnderflowEvent (EventObject *obj);
@@ -306,40 +261,29 @@ private:
 	static void PauseCallback (EventObject *obj);
 	static void OpenCallback (EventObject *obj);
 	static void SeekCallback (EventObject *obj);
-	static void SetHasDynamicEndedCallback (EventObject *obj);
-	
-protected:
-	virtual ~PlaylistRoot () {}
-	
-	virtual void Stop ();
-	
+
+	void Stop ();
+
 public:
-	PlaylistRoot (MediaElement *element);
+	/* @SkipFactories */
+	Playlist (MediaElement *element);
 	virtual void Dispose (); // not thread-safe
-	virtual MediaElement *GetElement ();
-	
-	void EmitMediaEnded ();
-	
+
+	MediaElement *GetElement ();
+
 	void StopAsync ();
 	void OpenAsync ();
 	void PlayAsync ();
 	void PauseAsync ();
 	void SeekAsync (guint64 pts);
 	
-	virtual bool IsSingleFile ();
+	bool IsSingleFile ();
 	
-	Media *GetCurrentMedia ();
 	MediaPlayer *GetMediaPlayer ();
-	
-	void SetIsDynamicWaiting (bool value) { dynamic_waiting = value; }
-	bool GetIsDynamicWaiting () { return dynamic_waiting; }
-	/* This method should only be called during opening, not after playback has started
-	 * - in which case it's thread-safe. (write from media thread during opening, read
-	 * from main thread after media has been opened) */
-	void SetIsDynamic () { dynamic = true; }
-	bool GetIsDynamic () { return dynamic; }
-	/* Thread-safe (calls are marshalled to the main thread) */
-	void SetHasDynamicEnded ();
+
+	/* recursive */
+	PlaylistEntry *GetCurrentEntryLeaf () { return entry->GetCurrentEntryLeaf (); }
+	PlaylistEntry *GetFirstEntry () { return entry; }
 
 	// Events
 	const static int OpeningEvent;
@@ -358,11 +302,14 @@ public:
 	const static int EntryChangedEvent;
 	
 	// Event handlers
-	EVENTHANDLER (PlaylistRoot, MediaEnded, MediaPlayer, EventArgs);
-	EVENTHANDLER (PlaylistRoot, BufferUnderflow, MediaPlayer, EventArgs);
-	
+	EVENTHANDLER (Playlist, MediaEnded, MediaPlayer, EventArgs);
+	EVENTHANDLER (Playlist, BufferUnderflow, MediaPlayer, EventArgs);
+
+	bool Emit (int event_id, EventArgs *calldata = NULL);
+
 #if DEBUG
 	void Dump ();
+	void Dump (GString *fmt, bool html);
 #endif
 };
 
@@ -372,8 +319,7 @@ public:
 class PlaylistParser {
 private:
 	AsxParser *asxparser;
-	PlaylistRoot *root;
-	Playlist *playlist;
+	PlaylistEntry *parent;
 	PlaylistEntry *current_entry;
 	MemoryBuffer *source;
 	ErrorEventArgs *error_args;
@@ -387,7 +333,6 @@ private:
 		XML_TYPE_NONE,
 		XML_TYPE_ASX3,
 	};
-
 
 	char *current_text;
 
@@ -430,10 +375,8 @@ private:
 	void Setup (XmlType type);
 
 public:
-	PlaylistParser (PlaylistRoot *root, MemoryBuffer *source);
+	PlaylistParser (PlaylistEntry *parent, MemoryBuffer *source);
 	~PlaylistParser ();
-
-	Playlist *GetPlaylist () { return playlist; }
 
 	MediaResult Parse ();
 	bool ParseASX2 ();
