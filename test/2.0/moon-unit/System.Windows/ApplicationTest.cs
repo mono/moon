@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008-2010 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008-2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -211,7 +211,7 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		[Asynchronous]
 		[MinRuntimeVersion (3)]
-		public void IsRunningOutOfBrowser_UserThread ()
+		public void Properties_UserThread ()
 		{
 			Application app = Application.Current;
 			if (app.IsRunningOutOfBrowser)
@@ -223,10 +223,25 @@ namespace MoonTest.System.Windows {
 			Thread t = new Thread (() => {
 				try {
 					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					// testing instance properties (not Application.Current)
 					Assert.Throws<UnauthorizedAccessException> (delegate {
-						// testing IsRunningOutOfBrowser (not Application.Current)
+						Assert.IsNotNull (app.ApplicationLifetimeObjects);
+					}, "ApplicationLifetimeObjects");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.IsNotNull (app.Host);
+					}, "Host");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.AreEqual (InstallState.NotInstalled, app.InstallState);
+					}, "InstallState");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
 						Assert.IsFalse (app.IsRunningOutOfBrowser);
 					}, "IsRunningOutOfBrowser");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.IsNotNull (app.Resources);
+					}, "Resources");
+					Assert.Throws<UnauthorizedAccessException> (delegate {
+						Assert.IsNotNull (app.RootVisual);
+					}, "RootVisual");
 					status = true;
 				}
 				finally {

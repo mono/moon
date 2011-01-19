@@ -186,6 +186,8 @@ namespace System.Windows {
 
 		public InstallState InstallState {
 			get {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
 				return NativeMethods.application_get_install_state (NativeHandle);
 			}
 		}
@@ -202,7 +204,11 @@ namespace System.Windows {
 		}
 
 		public IList ApplicationLifetimeObjects {
-			get { return lifetime_objects; }
+			get {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
+				return lifetime_objects;
+			}
 		}
 
 
@@ -718,19 +724,27 @@ namespace System.Windows {
 		
 		public ResourceDictionary Resources {
 			get {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
 				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);
 			}
 			set {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
 				((INativeDependencyObjectWrapper) this).SetValue (ResourcesProperty, value);
 			}
 		}
 
 		public UIElement RootVisual {
 			get {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
 				return root_visual;
 			}
 
 			set {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
 				if (value == null)
 					throw new InvalidOperationException ();
 
@@ -749,7 +763,11 @@ namespace System.Windows {
 		}
 
 		public SilverlightHost Host {
-			get { return host ?? (host = new SilverlightHost ()); }
+			get {
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ("Must be called from the main thread");
+				return host ?? (host = new SilverlightHost ());
+			}
 		}
 
 		//used by A11Y infrastructure
