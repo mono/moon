@@ -187,6 +187,14 @@ private:
 	guint64 requested_pts; /* must be thread-safe */
 	MmsWaitingState waiting_state; /* write in ctor, rw in main thread: thread-safe, no locks required */
 	List *temporary_downloaders; /* must be thread-safe, unrefs are done on the media thread */
+	/*
+	 * 0: Nothing done
+	 * 1: MmsSource::OpenedHandler called
+	 * 2: MmsDemuxer::OpenDemuxerAsync called
+	 * 4: MmsDemuxer::ReportOpenDemuxerCompleted called
+	 * This value must be thread-safe
+	 */
+	int open_demuxer_state;
 
 	/* Packet pair experiment data */
 	TimeSpan p_packet_times[3]; /* write in ctor, rw in main thread: thread-safe, no locks required */
@@ -272,6 +280,11 @@ public:
 	bool IsSSPL () { return is_sspl; }
 
 	guint64 GetMaxBitRate (); /* thread-safe */
+
+
+	/* The MmsDemuxer calls this function when OpenDemuxerAsync is called.
+	 * This function returns true if the caller must call ReportOpenDemuxerCompleted. */
+	bool OpenMmsDemuxerCalled (); /* thread-safe */
 };
 
 /*

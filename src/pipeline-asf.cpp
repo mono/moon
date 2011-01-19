@@ -1580,6 +1580,7 @@ MmsSource::MmsSource (Media *media, const Uri *uri)
 	waiting_state = MmsInitialization;
 	requested_pts = G_MAXUINT64;
 	temporary_downloaders = NULL;
+	open_demuxer_state = 0;
 
 	p_packet_count = 0;
 	p_packet_times [0] = 0;
@@ -2542,12 +2543,50 @@ MmsSource::ProcessEndPacket (MmsHeader *header, MmsPacket *packet, char *payload
 	return true;
 }
 
+bool
+MmsSource::OpenMmsDemuxerCalled ()
+{
+	/* thread-safe */
+	bool result = false;
+	Lock ();
+	if (open_demuxer_state == 1) {
+		/* MmsSource::OpenedHandler has been called */
+		result = true;
+		open_demuxer_state |= 4; // MmsDemuxer::ReportOpenDemuxerCompleted called (caller will call it upon return)
+	}
+	open_demuxer_state |= 2; // MmsDemuxer::OpenDemuxerAsync called
+	Unlock ();
+	return result;
+}
+
 void
 MmsSource::OpenedHandler (IMediaDemuxer *demuxer, EventArgs *args)
 {
+	MmsDemuxer *mms_demuxer;
+	bool report_open = false;
+
+
 	LOG_MMS ("MmsSource::OpenedHandler () state: %i\n", waiting_state);
 	VERIFY_MAIN_THREAD;
 
+	mms_demuxer = GetDemuxerReffed ();
+	Lock ();
+	if (open_demuxer_state == 2) { // MmsDemuxer::OpenDemuxerAsync called
+		if (mms_demuxer != NULL) {
+			open_demuxer_state |= 4;
+			report_open = true;
+		}
+	}
+	open_demuxer_state |= 1; // MmsSource::OpenedHandler called
+	Unlock ();
+	if (mms_demuxer) {
+		if (report_open) {
+			LOG_MMS ("MmsSource::OpenedHandler (): the mms demuxer has already been requested to open, call ReportOpenDemuxerCompleted\n");
+			mms_demuxer->ReportOpenDemuxerCompleted ();
+		}
+		mms_demuxer->unref ();
+	}
+	
 	switch (waiting_state) {
 	case MmsDescribeResponse:
 		waiting_state = MmsInitialSeek;
@@ -3627,23 +3666,28 @@ MmsDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 void 
 MmsDemuxer::OpenDemuxerAsyncInternal ()
 {
-	Playlist *root;
 	Media *media;
 	
 	LOG_MMS ("MmsDemuxer::OpenDemuxerAsyncInternal ().\n");
+	VERIFY_MEDIA_THREAD;
 	
 	media = GetMediaReffed ();
-	root = media ? media->GetPlaylistRoot () : NULL;
 	
 	g_return_if_fail (playlist == NULL);
 	g_return_if_fail (media != NULL);
-	g_return_if_fail (root != NULL);
 	
-	playlist = new PlaylistEntry (root, media->GetPlaylistEntry ());
+	playlist = media->GetPlaylistEntry ();
+	playlist->ref ();
+
 	if (mms_source != NULL && mms_source->IsSSPL ())
 		playlist->SetIsDynamic ();
-	ReportOpenDemuxerCompleted ();
 	media->unref ();
+
+	if (mms_source->OpenMmsDemuxerCalled ()) {
+		/* OpenMmsDemuxerCalled returns true if ReportOpenDemuxerCompleted needs to be called */
+		LOG_MMS ("MmsDemuxer::OpenDemuxerAsyncInternal (): the mms source has already been opened, call ReportOpenDemuxerCompleted\n");
+		ReportOpenDemuxerCompleted ();
+	}
 }
 
 MediaResult
