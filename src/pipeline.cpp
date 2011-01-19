@@ -495,6 +495,11 @@ Media::SeekAsync (guint64 pts)
 {
 	LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "Media::SeekAsync (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
 
+	if (!opened) {
+		LOG_CUSTOM (RUNTIME_DEBUG_SEEK | RUNTIME_DEBUG_PIPELINE, "Media::SeekAsync (%" G_GUINT64_FORMAT "), id: %i not open yet\n", pts, GET_OBJ_ID (this));
+		return;
+	}
+
 	if (demuxer == NULL) {
 		ReportErrorOccurred ("Media::SeekAsync was called, but there is no demuxer to seek on.\n");
 		return;
