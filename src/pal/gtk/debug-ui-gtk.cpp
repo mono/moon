@@ -939,11 +939,14 @@ struct debug_media_data {
 	
 	static char *fetch_info (MediaElement *element)
 	{
+		int current_debug_flags = debug_flags;
+		debug_flags = 0;
+
 		element->SetCurrentDeployment ();
 
 		MediaPlayer *mplayer = element->GetMediaPlayer ();
-		PlaylistRoot *playlist = element->GetPlaylist ();
-		PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
+		Playlist *playlist = element->GetPlaylist ();
+		PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentEntryLeaf ();
 		Media *media = entry == NULL ? NULL : entry->GetMedia ();
 		IMediaDemuxer *demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
 		ASFDemuxer *asf_demuxer = NULL;
@@ -1028,67 +1031,16 @@ struct debug_media_data {
 			g_string_append_printf (fmt, "\t(No demuxer)\n");
 		}
 		if (playlist != NULL) {
-			g_string_append_printf (fmt, "\tPlaylistRoot: %i IsDynamic: %i\n", GET_OBJ_ID (playlist), playlist->GetIsDynamic ());
-			Playlist *cur_pl = playlist;
-			PlaylistNode *cur_node;
-			List *entries;
-			int indent = 1;
-
-			GQueue *queue = g_queue_new ();
-			entries = cur_pl->GetEntries ();
-			cur_node = entries == NULL ? NULL : (PlaylistNode *) entries->First ();
-			while (cur_node != NULL) {
-				if (cur_node->GetEntry ()->Is (Type::PLAYLIST)) {
-					entries = ((Playlist *) cur_node->GetEntry ())->GetEntries ();
-
-					g_string_append_printf (fmt, "\t%*sPlaylist: %i Entries: %i\n", indent * 4, "", GET_OBJ_ID (cur_node->GetEntry ()), entries != NULL ? entries->Length () : 0);
-					
-					if (entries != NULL) {
-						PlaylistNode *tmp = (PlaylistNode *) entries->First ();
-						if (tmp != NULL) {
-							g_queue_push_tail (queue, cur_node);
-							cur_node = tmp;
-							indent++;
-							continue;
-						}
-					}
-				} else {
-					PlaylistEntry *entry = cur_node->GetEntry ();
-					media = entry->GetMedia ();
-					demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
-					g_string_append_printf (fmt, "\t%*sEntry: %i Media: %i %s: %i\n",
-						indent * 4, "", GET_OBJ_ID (entry), GET_OBJ_ID (media), demuxer ? demuxer->GetTypeName () : NULL, GET_OBJ_ID (demuxer));
-					if (demuxer != NULL && demuxer->Is (Type::ASFDEMUXER)) {
-						asf_demuxer = (ASFDemuxer *) demuxer;
-						for (int i = 0; i < 127; i++) {
-							IMediaStream *stream = asf_demuxer->GetStream (i);
-							if (stream == NULL)
-								continue;
-							g_string_append_printf (fmt, "\t%*s\t%s: %i entries in frame reader\n", indent * 4, "", stream->GetTypeName (), asf_demuxer->GetPayloadCount (stream));
-						}
-					}
-					if (demuxer)
-						demuxer->unref ();
-				}
-				
-				cur_node = (PlaylistNode *) cur_node->next;
-				while (cur_node == NULL) {
-					cur_node = (PlaylistNode *) g_queue_pop_tail (queue);
-					if (cur_node != NULL) {
-						cur_node = (PlaylistNode *) cur_node->next;
-						indent--;
-					} else {
-						break;
-					}
-				}
-			}
-			g_queue_free (queue);
+			playlist->Dump (fmt, true);
 		} else {
 			g_string_append_printf (fmt, "\t(No playlist)\n");
 		}
 
 		char *result = fmt->str;
 		g_string_free (fmt, false);
+
+		debug_flags = current_debug_flags;		
+
 		return result;
 	}
 
@@ -1100,8 +1052,8 @@ struct debug_media_data {
 			if (element == NULL)
 				continue;
 			element->SetCurrentDeployment ();
-			PlaylistRoot *playlist = element->GetPlaylist ();
-			PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
+			Playlist *playlist = element->GetPlaylist ();
+			PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentEntryLeaf ();
 			Media *media = entry == NULL ? NULL : entry->GetMedia ();
 			IMediaDemuxer *demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
 	
@@ -1123,7 +1075,7 @@ struct debug_media_data {
 	
 			char *fmt = fetch_info (element);
 
-			gtk_label_set_text (GTK_LABEL (labels [i]), fmt);
+			gtk_label_set_markup (GTK_LABEL (labels [i]), fmt);
 			if (copy)
 				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt, strlen (fmt) );
 			g_free (fmt);
@@ -1180,6 +1132,9 @@ debug_media_dialog_response (GtkWidget *dialog, int response, debug_media_data *
 	case 8:
 	case 16:
 		data->command = response;
+		break;
+	case 1337:
+		dump_media_elements ();
 		break;
 	default:
 		g_source_remove (data->timeout);

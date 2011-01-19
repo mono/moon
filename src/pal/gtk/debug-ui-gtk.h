@@ -22,7 +22,7 @@ void show_sources (MoonWindowGtk *window);
 void debug_info (MoonWindowGtk *window);
 #if OBJECT_TRACKING
 void debug_media (MoonWindowGtk *window);
-void dump_media_elements ();
+void dump_media_elements () __attribute__ ((used));
 #endif
 
 G_END_DECLS
