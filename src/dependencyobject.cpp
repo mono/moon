@@ -505,8 +505,8 @@ EventObject::unref ()
 	// TODO: do we need some sort of gcc foo (volatile variables, memory barries)
 	// to ensure that gcc does not optimize the fetches below away
 	GCHandle managed_handle = this->managed_handle;
-	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
 #if OBJECT_TRACKING
+	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
 	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
 #endif	
 

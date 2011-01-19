@@ -155,6 +155,7 @@ TextPointer::CompareToWithError (TextPointer *pointer, MoonError *error)
 			return child_index >= this->GetLocation () ? -1 : 1;
 		}
 	}
+	return -1;
 }
 
 int
