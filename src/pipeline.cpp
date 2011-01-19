@@ -750,7 +750,7 @@ Media::GetTargetPts ()
 }
 
 void
-Media::RetryHttp (ErrorEventArgs *args)
+Media::RetryHttp ()
 {
 	Uri *resource_base = NULL;
 	Uri *http_uri = NULL;
@@ -761,7 +761,7 @@ Media::RetryHttp (ErrorEventArgs *args)
 	g_return_if_fail (source != NULL);
 	
 	if (http_retried) {
-		ReportErrorOccurred (args);
+		ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 		return;
 	}
 	
@@ -770,7 +770,7 @@ Media::RetryHttp (ErrorEventArgs *args)
 	if (uri->IsScheme ("mms") || uri->IsScheme ("rtsp") || uri->IsScheme ("rtsps")) {
 		http_uri = Uri::CloneWithScheme (uri, "http");
 	} else {
-		ReportErrorOccurred (args);
+		ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 		return;
 	}
 	
@@ -787,8 +787,14 @@ Media::RetryHttp (ErrorEventArgs *args)
 	DisposeObject (source);
 	source->unref ();
 	source = NULL;
+	if (demuxer != NULL) {
+		DisposeObject (demuxer);
+		demuxer->unref ();
+		demuxer = NULL;
+	}
 	initialized = false;
 	error_reported = false;
+	opened = false;
 	
 	Initialize (resource_base, http_uri);
 	delete resource_base; // Initialize has cloned the resource base now, we can delete it

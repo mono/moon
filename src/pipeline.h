@@ -746,7 +746,7 @@ public:
 	bool IsStopped () { return stopped; }
 	bool IsInitialized () { return initialized; }
 	
-	void RetryHttp (ErrorEventArgs *args);
+	void RetryHttp ();
 	
 	void ReportErrorOccurred (ErrorEventArgs *args);
 	void ReportErrorOccurred (const char *message);

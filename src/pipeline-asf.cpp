@@ -2285,7 +2285,6 @@ MmsSource::Write (void *buf, gint32 n)
 			request = GetRequestReffed ();
 			if (request != NULL) {
 				request->Abort ();
-				ReportErrorOccurred ("invalid mms source");
 				request->unref ();
 			}
 			return;
@@ -2802,7 +2801,6 @@ void
 MmsSource::StoppedHandler (HttpRequest *request, HttpRequestStoppedEventArgs *args)
 {
 	Media *media = GetMediaReffed ();
-	ErrorEventArgs *eea;
 	bool is_temporary;
 
 	LOG_MMS ("MmsSource::DownloadStoppedHandler () IsSuccess: %i Error message: %s\n", args->IsSuccess (), args->GetErrorMessage ());
@@ -2818,9 +2816,7 @@ MmsSource::StoppedHandler (HttpRequest *request, HttpRequestStoppedEventArgs *ar
 
 	g_return_if_fail (media != NULL);
 
-	eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
-	media->RetryHttp (eea);
-	eea->unref ();
+	media->RetryHttp ();
 
 cleanup:
 	if (media != NULL)
