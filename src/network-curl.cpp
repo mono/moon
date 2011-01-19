@@ -466,8 +466,14 @@ CurlDownloaderRequest::Close ()
 		response = NULL;
 	}
 
-	bridge->ReleaseHandle (curl);
-	curl = NULL;
+	if (curl) {
+		bridge->ReleaseHandle (curl);
+		curl = NULL;
+	} else {
+#if SANITY
+		printf ("CurlDownloaderRequest::Close () was called with no curl handle (state: %i)\n", state);
+#endif
+	}
 
 	if (body) {
 		g_free (body);
