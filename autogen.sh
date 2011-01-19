@@ -159,7 +159,7 @@ fi
 
 configure_mono=1
 build_mono=1
-mono_flags="--with-sgen=yes"
+mono_flags="--with-sgen=no"
 mono_path=../mono
 mcs_path=../mono/mcs
 configure_gallium=1
