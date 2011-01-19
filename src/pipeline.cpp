@@ -3887,6 +3887,7 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 {
 	Media *media = NULL;
 	guint64 end_pts;
+	gint64 duration;
 	bool ended;
 	
 	LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (%p) %s InMediaThread: %i\n", stream, stream->GetTypeName (), Media::InMediaThread ());
@@ -3917,9 +3918,23 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 		ended = false;
 		if (media->GetDuration () < G_MAXINT64) {
 			end_pts = media->GetStartTime () + media->GetDuration ();
-			if (end_pts < stream->GetLastEnqueuedDemuxedPts () && stream->GetLastEnqueuedDemuxedPts () != G_MAXUINT64) {
-				LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (): reached end of fixed duration, last enqueued demuxed pts: %" G_GUINT64_FORMAT " ms, end_pts: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (stream->GetLastEnqueuedDemuxedPts ()), MilliSeconds_FromPts (end_pts));
-				ended = true;
+			duration = 0;
+			if (stream->GetLastEnqueuedDemuxedPts () != G_MAXUINT64) {
+				duration = stream->GetLastEnqueuedDemuxedPts () - stream->GetFirstPts ();
+				//if (end_pts < stream->GetLastEnqueuedDemuxedPts ()) {
+				if (duration >= media->GetStartTime () + media->GetDuration ()) {
+					printf ("IMediaDemuxer::GetFrameAsync (): reached end of fixed duration, "
+					"last enqueued demuxed pts: %" G_GUINT64_FORMAT " ms "
+					"- first pts: %" G_GUINT64_FORMAT " ms "
+					"= %" G_GUINT64_FORMAT " ms "
+					" end_pts: %" G_GUINT64_FORMAT " ms\n",
+					MilliSeconds_FromPts (stream->GetLastEnqueuedDemuxedPts ()),
+					MilliSeconds_FromPts (stream->GetFirstPts ()),
+					MilliSeconds_FromPts (duration),
+					MilliSeconds_FromPts (end_pts));
+
+					ended = true;
+				}
 			}
 		}
 
