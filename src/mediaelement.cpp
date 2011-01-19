@@ -227,7 +227,7 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 	
 	markers = MoonUnmanagedFactory::CreateTimelineMarkerCollection ();
 	while (current != NULL) {
-		TimelineMarker *new_marker = new TimelineMarker ();
+		TimelineMarker *new_marker = MoonUnmanagedFactory::CreateTimelineMarker ();
 		MediaMarker *marker = current->marker;
 		
 		new_marker->SetText (marker->Text ());
