@@ -98,6 +98,7 @@ $(assemblysl): $(assemblysl_raw) $(sl_secattr)
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:DESKTOP -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \
+		-r:System.Runtime.Serialization \
 		-resource:$(assembly).g.resources \
 		-keyfile:$(srcdir)/../mono.snk
 
