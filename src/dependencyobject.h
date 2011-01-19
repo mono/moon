@@ -51,8 +51,11 @@ typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_dat
 
 typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
 
+/* @CBindingRequisite */
 typedef void (* ManagedRefCallback) (EventObject *referer, Value *referent, const char *name);
+/* @CBindingRequisite */
 typedef void (* AttachCallback) (EventObject *object);
+/* @CBindingRequisite */
 typedef void (* MentorChangedCallback) (EventObject *object, EventObject *mentor);
 
 class EventLists;

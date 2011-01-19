@@ -53,6 +53,7 @@ typedef _MonoProfiler MonoProfiler;
 
 namespace Moonlight {
 
+/* @CBindingRequisite */
 typedef void (*EnsureManagedPeerCallback)(EventObject *forObj, Type::Kind kind);
 
 /* @Namespace=System.Windows,CallInitialize */

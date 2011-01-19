@@ -1689,7 +1689,8 @@ class Generator {
 					tokenizer.Advance (true);
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
 						requisite.Append (tokenizer.CurrentToken.value);
-						requisite.Append (' ');
+						if (tokenizer.CurrentToken.value != ":")
+							requisite.Append (' ');
 						if (tokenizer.CurrentToken.value == "{") {
 							tokenizer.Advance (true);
 							while (!tokenizer.Accept (Token2Type.Punctuation, "}")) {
