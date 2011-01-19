@@ -774,11 +774,29 @@ char_class (gunichar c)
 static bool
 is_start_of_word (TextBuffer *buffer, int index)
 {
-	// A 'word' starts with an AlphaNumeric immediately preceeded by lwsp
+	// A 'word' starts with an AlphaNumeric or some punctuation symbols immediately preceeded by lwsp
 	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
 		return false;
 	
-	return g_unichar_isalnum (buffer->text[index]);
+	switch (g_unichar_type (buffer->text[index])) {
+	case G_UNICODE_LOWERCASE_LETTER:
+	case G_UNICODE_TITLECASE_LETTER:
+	case G_UNICODE_UPPERCASE_LETTER:
+	case G_UNICODE_DECIMAL_NUMBER:
+	case G_UNICODE_LETTER_NUMBER:
+	case G_UNICODE_OTHER_NUMBER:
+	case G_UNICODE_DASH_PUNCTUATION:
+	case G_UNICODE_INITIAL_PUNCTUATION:
+	case G_UNICODE_OPEN_PUNCTUATION:
+	case G_UNICODE_CURRENCY_SYMBOL:
+	case G_UNICODE_MATH_SYMBOL:
+		return true;
+	case G_UNICODE_OTHER_PUNCTUATION:
+		// words cannot start with '.', but they can start with '&' or '*' (for example)
+		return g_unichar_break_type (buffer->text[index]) == G_UNICODE_BREAK_ALPHABETIC;
+	default:
+		return false;
+	}
 }
 #endif
 
