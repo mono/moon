@@ -2549,7 +2549,7 @@ MediaThreadPool::WaitForCompletion (Deployment *deployment)
 		if (!waiting && queue != NULL) {
 			current = (MediaWork *) queue->First ();	
 			while (current != NULL) {
-				if (current->closure->GetDeployment () == deployment) {
+				if (current->closure->GetUnsafeDeployment () == deployment) {
 					waiting = true;
 					break;
 				}
