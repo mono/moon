@@ -169,28 +169,6 @@ namespace System.Windows.Browser
 				return GetProperty ("tagName").ToString().ToLower ();
 			}
 		}
-
-		public override bool Equals (object obj)
-		{
-			return this == (obj as HtmlElement);
-		}
-
-		public static bool operator == (HtmlElement left, HtmlElement right)
-		{
-			if ((object)left == (object)right)
-				return true;
-
-			if ((object)left == null || (object)right == null)
-				return false;
-
-			return (bool) comparer.InvokeSelf (left, right);
-		}
-
-		public static bool operator != (HtmlElement left, HtmlElement right)
-		{
-			return !(left == right);
-		}
-
 	}
 }
 

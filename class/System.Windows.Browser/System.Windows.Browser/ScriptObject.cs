@@ -83,6 +83,7 @@ namespace System.Windows.Browser {
 		{
 			this.handleIsScriptableNPObject = handleIsScriptableNPObject;
 			this.Handle = handle;
+			ScriptObject.SetPropertyInternal (handle, "_internal_moonlight_marker", (int)handle);
 		}
 
 		void SetDefaultHandle ()

@@ -153,6 +153,15 @@ namespace Mono {
 					if (reference != null)
 						return reference;
 
+					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker")) {
+						Value val;
+						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker", out val);
+						reference = ScriptObject.LookupScriptObject (new IntPtr (val.u.i32));
+						if (reference != null) {
+							return reference;
+						}
+					}
+
 					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "nodeType")) {
 						Value val;
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
