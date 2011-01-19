@@ -104,6 +104,7 @@ struct NotifyCtx {
 
 static void application_downloader_abort (HttpRequest *request, void *ctx);
 static void application_downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void application_downloader_started (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void application_downloader_stopped (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void application_downloader_write (EventObject *sender, EventArgs *calldata, gpointer closure);
 
@@ -191,8 +192,10 @@ Application::GetResource (const Uri *resourceBase, const Uri *uri,
 	ctx->write_cb = write_cb;
 	ctx->request = request;
 
-	if (notify_cb)
+	if (notify_cb) {
 		request->AddHandler (HttpRequest::ProgressChangedEvent, application_downloader_progress_changed, ctx);
+		request->AddHandler (HttpRequest::StartedEvent, application_downloader_started, ctx);
+	}
 
 	if (cancellable) {
 		cancellable->SetCancelFuncAndData (application_downloader_abort, request, ctx);
@@ -227,6 +230,14 @@ application_downloader_progress_changed (EventObject *sender, EventArgs *calldat
 	HttpRequestProgressChangedEventArgs *args = (HttpRequestProgressChangedEventArgs *) calldata;
 	if (ctx->notify_cb)
 		ctx->notify_cb (NotifyProgressChanged, (gint64) (100 * args->GetProgress ()), ctx->user_data);
+}
+
+static void
+application_downloader_started (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	if (ctx->notify_cb)
+		ctx->notify_cb (NotifyStarted, 0, ctx->user_data);
 }
 
 static void

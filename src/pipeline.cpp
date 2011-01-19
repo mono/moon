@@ -1911,6 +1911,8 @@ ProgressiveSource::NotifyCallback (NotifyType type, gint64 args, void *closure)
 void
 ProgressiveSource::Notify (NotifyType type, gint64 args)
 {
+	Media *media;
+
 	LOG_PIPELINE ("ProgressiveSource::Notify (%i = %s, %" G_GINT64_FORMAT ") current range request: %" G_GINT64_FORMAT "\n",
 		type, 
 			(type == NotifyCompleted ? "NotifyCompleted" :
@@ -1919,9 +1921,20 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 			(type == NotifyProgressChanged ? "NotifyProgressChanged" : "unknown")))),
 		args, current_request);
 		
+	VERIFY_MAIN_THREAD;
+
 	if (current_request != 0) {
 		/* We have range requests going on and we've cancelled the main http request: do nothing */
 		return;
+	}
+
+	if (cancellable != NULL && cancellable->GetRequest () != NULL) {
+		media = GetMediaReffed ();
+		if (media != NULL) {
+			if (media->GetFinalUri () == NULL)
+				media->SetFinalUri (cancellable->GetRequest ()->GetFinalUri ());
+			media->unref ();
+		}
 	}
 
 	switch (type) {
