@@ -77,7 +77,7 @@ class CurlHttpHandler : public HttpHandler {
 	virtual void Dispose ();
 
 	CURL* RequestHandle ();
-	void ReleaseHandle (CURL* handle);
+	void ReleaseHandle (CurlDownloaderRequest *res, CURL* handle);
 	void OpenHandle (CurlDownloaderRequest* res, CURL* handle);
 	void CloseHandle (CurlDownloaderRequest* res, CURL* handle);
 

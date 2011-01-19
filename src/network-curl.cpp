@@ -379,6 +379,20 @@ CurlDownloaderRequest::~CurlDownloaderRequest ()
 		response->unref ();
 		response = NULL;
 	}
+
+	// the body and headers variables can't be freed until curl_easy_reset is called on the curl handle
+	// we ref ourselves until curl_easy_reset has been called, thereby making sure that we don't end up
+	// freeing them too early.
+
+	if (body) {
+		g_free (body);
+		body = NULL;
+	}
+
+	if (headers) {
+		curl_slist_free_all (headers);
+		headers = NULL;
+	}
 }
 
 CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
@@ -467,24 +481,15 @@ CurlDownloaderRequest::Close ()
 	}
 
 	if (curl) {
-		bridge->ReleaseHandle (curl);
+		// we need to keep a ref to ourselves so that we're not destroyed until the handle has been released,
+		// since we can't free the body and headers until then (and they're freed in the dtor).
+		bridge->ReleaseHandle (this, curl);
 		curl = NULL;
 	} else {
 #if SANITY
 		printf ("CurlDownloaderRequest::Close () was called with no curl handle (state: %i)\n", state);
 #endif
 	}
-
-	if (body) {
-		g_free (body);
-		body = NULL;
-	}
-
-	if (headers) {
-		curl_slist_free_all (headers);
-		headers = NULL;
-	}
-
 }
 
 void
@@ -693,6 +698,11 @@ public:
 	EventObject *keep_alive;
 	CurlNode (CURL* handle) : Node (), handle(handle), action (None), keep_alive (NULL) {};
 	CurlNode (CURL* handle, Action action) : handle (handle), action (action), keep_alive (NULL) {};
+	CurlNode (CURL* handle, Action action, EventObject *keep_alive) : handle (handle), action (action), keep_alive (keep_alive)
+	{
+		if (keep_alive)
+			keep_alive->ref ();
+	}
 	virtual ~CurlNode ()
 	{
 		if (keep_alive)
@@ -875,12 +885,12 @@ CurlHttpHandler::RequestHandle ()
 }
 
 void
-CurlHttpHandler::ReleaseHandle (CURL* handle)
+CurlHttpHandler::ReleaseHandle (CurlDownloaderRequest *res, CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::ReleaseHandle handle:%p\n", handle);
 
 	pthread_mutex_lock (&worker_mutex);
-	handle_actions.Append (new CurlNode (handle, CurlNode::Release));
+	handle_actions.Append (new CurlNode (handle, CurlNode::Release, res));
 	pthread_mutex_unlock (&worker_mutex);
 }
 
@@ -957,10 +967,7 @@ CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 	if (!quit) {
 		HandleNode* node = (HandleNode*) handles.Find (find_handle, res);
 		if (node) {
-			CurlNode *cn = new CurlNode (handle, CurlNode::Remove);
-			cn->keep_alive = res;
-			res->ref ();
-			handle_actions.Append (cn);
+			handle_actions.Append (new CurlNode (handle, CurlNode::Remove, res));
 			handles.Remove (node);
 		}
 	}
