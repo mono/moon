@@ -318,7 +318,7 @@ namespace Mono.Xaml {
 		{
 			string str = (string) value;
 
-			if (str == "Auto")
+			if (StringComparer.OrdinalIgnoreCase.Equals (str, "Auto"))
 				return Double.NaN;
 
 			return null;
