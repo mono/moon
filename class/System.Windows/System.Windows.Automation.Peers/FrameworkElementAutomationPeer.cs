@@ -43,7 +43,7 @@ namespace System.Windows.Automation.Peers {
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			if (owner == null)
-				throw new NullReferenceException ("owner");
+				throw new ArgumentNullException ("owner");
 			this.owner = owner;
 			isKeyboardFocusable = null;
 
