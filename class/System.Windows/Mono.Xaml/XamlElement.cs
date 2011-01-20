@@ -504,6 +504,11 @@ namespace Mono.Xaml {
 			if (getMethod == null)
 				return null;
 
+			// If the method is private we won't be able to generate an optimised delegate for it
+			// so just return delegate which invokes the MethodInfo.
+			if (!getMethod.IsPublic)
+				return (t) => InvokeGetter (getMethod, t);
+
 			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
 			System.Linq.Expressions.Expression getter =
 				System.Linq.Expressions.Expression.Call(
@@ -523,6 +528,11 @@ namespace Mono.Xaml {
 		{
 			if (getMethod == null)
 				return null;
+
+			// If the method is private we won't be able to generate an optimised delegate for it
+			// so just return delegate which invokes the MethodInfo.
+			if (!getMethod.IsPublic)
+				return (t) => InvokeAttachedGetter (getMethod, t);
 
 			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
 			System.Linq.Expressions.Expression getter =
@@ -551,7 +561,7 @@ namespace Mono.Xaml {
 			// If the object we're setting the value on is a value type we need to use
 			// the PropertyInfo to set the value, otherwise we'll end up modifying a
 			// copy of the value type instead of the actual one.
-			if (parameterType.IsValueType)
+			if (parameterType.IsValueType || !setMethod.IsPublic)
 				return (t, v) => InvokeSetter (setMethod, t, v);
 
 			var setter = System.Linq.Expressions.Expression.Call (
@@ -571,6 +581,11 @@ namespace Mono.Xaml {
 		{
 			if (setMethod == null)
 				return null;
+
+			// If the method is private we won't be able to generate an optimised delegate for it
+			// so just return delegate which invokes the MethodInfo.
+			if (!setMethod.IsPublic)
+				return (t, v) => InvokeAttachedSetter (setMethod, t, v);
 
 			var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "a");
 			var value = System.Linq.Expressions.Expression.Parameter(typeof(object), "b");
