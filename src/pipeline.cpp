@@ -501,7 +501,9 @@ Media::SeekAsync (guint64 pts)
 	}
 
 	if (demuxer == NULL) {
-		ReportErrorOccurred ("Media::SeekAsync was called, but there is no demuxer to seek on.\n");
+#if SANITY
+		printf ("Media::SeekAsync was called, but there is no demuxer to seek on.\n");
+#endif
 		return;
 	}
 
