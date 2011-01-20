@@ -1728,6 +1728,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 			geometry->Draw (cr);
 			cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 1.0);
 			cairo_stroke (cr);
+			geometry->unref ();
 		}
 
 		cairo_restore (cr);
