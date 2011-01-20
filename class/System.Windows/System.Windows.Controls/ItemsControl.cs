@@ -41,6 +41,8 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty DisplayMemberPathProperty =
 			DependencyProperty.RegisterCore ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (DisplayMemberPathChanged)));
+		static readonly DependencyProperty ItemsProperty =
+			DependencyProperty.RegisterCore ("Items", typeof (ItemCollection), typeof (ItemsControl), null);
 		public static readonly DependencyProperty ItemsPanelProperty =
 			DependencyProperty.RegisterCore ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
 		public static readonly DependencyProperty ItemsSourceProperty =
@@ -79,7 +81,6 @@ namespace System.Windows.Controls {
 
 		DataTemplate displayMemberTemplate;
 		private bool itemsIsDataBound;
-		private ItemCollection items;
 		private ItemsPresenter _presenter;
 		
 		DataTemplate DisplayMemberTemplate {
@@ -124,9 +125,12 @@ namespace System.Windows.Controls {
 
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
-			if (_presenter != null)
+			if (_presenter != null) {
 				_presenter._elementRoot.Children.Clear ();
+				NativeMethods.dependency_object_collection_set_alternate_parent (presenter._elementRoot.Children.native, IntPtr.Zero);
+			}
 			_presenter = presenter;
+			NativeMethods.dependency_object_collection_set_alternate_parent (presenter._elementRoot.Children.native, Items.native);
 			AddItemsToPresenter (new GeneratorPosition (-1, 1), Items.Count);
 		}
 
@@ -206,7 +210,7 @@ namespace System.Windows.Controls {
 
 			int count = Items.Count;
 			for (int i = 0; i < count; i ++) {
-				UpdateContentTemplateOnContainer (ItemContainerGenerator.ContainerFromIndex (i), items [i]);
+				UpdateContentTemplateOnContainer (ItemContainerGenerator.ContainerFromIndex (i), Items [i]);
 			}
 		}
 
@@ -391,11 +395,13 @@ namespace System.Windows.Controls {
 
 		public ItemCollection Items {
 			get {
+				var items = (ItemCollection) GetValue (ItemsProperty);
 				if (items == null) {
 					items = new ItemCollection ();
 					itemsIsDataBound = false;
 					items.ItemsChanged += InvokeItemsChanged;
 					items.Clearing +=  OnItemsClearing;
+					SetValue (ItemsProperty, items);
 				}
 				return items;
 			}

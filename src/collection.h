@@ -130,7 +130,12 @@ public:
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
-	
+
+	/* @GeneratePInvoke */
+	DependencyObject *GetAlternateParent () { return alternate_parent; }
+	/* @GeneratePInvoke */
+	void SetAlternateParent (DependencyObject *parent) { alternate_parent = parent; }
+
 protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
@@ -153,6 +158,8 @@ protected:
 	friend class MoonManagedFactory;
 
 	bool sets_parent;
+private:
+	WeakRef<DependencyObject> alternate_parent;
 };
 
 /* @Namespace=System.Windows.Media */
@@ -339,7 +346,11 @@ class ItemCollection : public Collection {
 	ItemCollection ();
 	
 	virtual ~ItemCollection ();
-	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	virtual void RemovedFromCollection (Value *value, bool is_value_safe);
+	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
+	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
+
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 

@@ -448,25 +448,25 @@ Collection::CanAdd (Value *value)
 //
 
 DependencyObjectCollection::DependencyObjectCollection ()
-	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION)
+	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION), alternate_parent ()
 {
 	sets_parent = true;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (bool sets_parent)
-	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION)
+	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION), alternate_parent ()
 {
 	this->sets_parent = sets_parent;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (Type::Kind object_type)
-	: Collection (object_type)
+	: Collection (object_type), alternate_parent ()
 {
 	sets_parent = true;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (Type::Kind object_type, bool sets_parent)
-	: Collection (object_type)
+	: Collection (object_type), alternate_parent ()
 {
 	this->sets_parent = sets_parent;
 }
@@ -502,7 +502,7 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 
 	if (sets_parent) {
 		if (parent) {
-			if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
+			if ((!alternate_parent || alternate_parent != obj->GetParent ()) && parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
 				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
 				return false;
 			}
@@ -537,7 +537,7 @@ DependencyObjectCollection::RemovedFromCollection (Value *value, bool is_value_s
 
 		if (obj) {
 			obj->RemovePropertyChangeListener (this);
-			if (sets_parent)
+			if (sets_parent && obj->GetParent () == this)
 				obj->SetParent (NULL, NULL);
 			obj->SetMentor (NULL);
 			obj->SetIsAttached (false);
@@ -832,6 +832,102 @@ ItemCollection::ItemCollection ()
 
 ItemCollection::~ItemCollection ()
 {
+}
+
+bool
+ItemCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *obj = value->AsDependencyObject ();
+	
+		obj->SetMentor (GetMentor ());
+		DependencyObject *parent = obj->GetParent();
+	
+		if (parent) {
+			if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
+				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "1 Element is already a child of another element.");
+				return false;
+			}
+		}
+		else {
+			obj->SetParent (this, error);
+			if (error->number)
+				return false;
+		}
+
+		obj->AddPropertyChangeListener (this);
+	
+		// Only set the IsAttached state when the object has successfully been
+		// added to the collection.
+		bool rv = Collection::AddedToCollection (value, error);
+		obj->SetIsAttached (rv && IsAttached ());
+	
+		if (!rv && parent == NULL) {
+			/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
+			obj->SetParent (NULL, error);
+		}
+		return rv;
+	} else {
+		return Collection::AddedToCollection (value, error);
+	}
+}
+
+void
+ItemCollection::RemovedFromCollection (Value *value, bool is_value_safe)
+{
+	if (is_value_safe && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *obj = value->AsDependencyObject ();
+
+		if (obj) {
+			obj->RemovePropertyChangeListener (this);
+			obj->SetParent (NULL, NULL);
+			obj->SetMentor (NULL);
+			obj->SetIsAttached (false);
+		}
+	}
+	
+	Collection::RemovedFromCollection (value, is_value_safe);
+}
+
+void
+ItemCollection::UnregisterAllNamesRootedAt (NameScope *from_ns)
+{
+	DependencyObject *obj;
+	Value *value;
+	
+	Types *types = GetDeployment()->GetTypes ();
+	for (guint i = 0; i < array->len; i++) {
+		value = (Value *) array->pdata[i];
+		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+			obj = value->AsDependencyObject (types);
+			if (obj)
+				obj->UnregisterAllNamesRootedAt (from_ns);
+		}
+	}
+	
+	Collection::UnregisterAllNamesRootedAt (from_ns);
+}
+
+void
+ItemCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
+{
+	DependencyObject *obj;
+	Value *value;
+	
+	Types *types = GetDeployment()->GetTypes ();
+	for (guint i = 0; i < array->len; i++) {
+		if (error->number)
+			break;
+
+		value = (Value *) array->pdata[i];
+		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+			obj = value->AsDependencyObject (types);
+			if (obj)
+				obj->RegisterAllNamesRootedAt (to_ns, error);
+		}
+	}
+	
+	Collection::RegisterAllNamesRootedAt (to_ns, error);
 }
 
 //

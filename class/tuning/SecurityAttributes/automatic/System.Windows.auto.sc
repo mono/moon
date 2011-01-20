@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 596 methods needs to be decorated.
+# 599 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -506,6 +506,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::control_get_template_root(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_collection_get_alternate_parent(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_find_name(System.IntPtr,System.String,Mono.Kind&)
 
 # p/invoke declaration
@@ -666,6 +669,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_default_capture_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_window_cocoa_get_native_widget(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_clipboard(System.IntPtr,System.Int32)
@@ -1149,6 +1155,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::dependency_object_collection_set_alternate_parent(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_remove_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandler)
