@@ -5,7 +5,6 @@ LINKER = ../lib/tuner/monolinker.exe
 
 TUNER_DESCS =	\
 	$(srcdir)/Descriptors/mscorlib.xml	\
-	$(srcdir)/Descriptors/smcs.xml	\
 	$(srcdir)/Descriptors/System.xml	\
 	$(srcdir)/Descriptors/System.Net.xml	\
 	$(srcdir)/Descriptors/System.Xml.xml	\
@@ -60,10 +59,10 @@ MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/moonlight
 
 DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll)
 
-FILES = smcs.exe $(DLLFILES)
+FILES = $(DLLFILES)
 WORKING_FILES = $(FILES:%=$(WORKING_DIR)/%)
 OUTPUT_FILES = $(FILES:%=$(OUTPUT_DIR)/%)
-INPUT_FILES = $(MCS_PATH)/class/lib/moonlight_raw/smcs.exe $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
+INPUT_FILES = $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
 
 TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
 
