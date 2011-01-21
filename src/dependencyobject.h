@@ -425,6 +425,9 @@ public:
 	void SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error);
 	DependencyObject* GetParent () { return parent; }
 
+	void SetSecondaryParent (DependencyObject *value) { secondary_parent = value; }
+	DependencyObject* GetSecondaryParent () { return secondary_parent; }
+
 	virtual bool PermitsMultipleParents () { return true; }
 
 	/* @GeneratePInvoke */
@@ -567,6 +570,7 @@ private:
 	GSList            *listener_list;
 	WeakRef<DependencyObject> mentor;
 	WeakRef<DependencyObject> parent;
+	WeakRef<DependencyObject> secondary_parent;
 	WeakRef<DependencyObject> template_owner;
 
 	bool is_frozen;

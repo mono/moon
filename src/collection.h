@@ -131,10 +131,8 @@ public:
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
-	/* @GeneratePInvoke */
-	DependencyObject *GetAlternateParent () { return alternate_parent; }
-	/* @GeneratePInvoke */
-	void SetAlternateParent (DependencyObject *parent) { alternate_parent = parent; }
+	bool GetIsSecondaryParent () { return is_secondary_parent; }
+	void SetIsSecondaryParent (bool value) { is_secondary_parent = value; }
 
 protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);
@@ -157,9 +155,8 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
+	bool is_secondary_parent;
 	bool sets_parent;
-private:
-	WeakRef<DependencyObject> alternate_parent;
 };
 
 /* @Namespace=System.Windows.Media */

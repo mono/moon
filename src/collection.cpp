@@ -448,26 +448,30 @@ Collection::CanAdd (Value *value)
 //
 
 DependencyObjectCollection::DependencyObjectCollection ()
-	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION), alternate_parent ()
+	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION)
 {
+	is_secondary_parent = false;
 	sets_parent = true;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (bool sets_parent)
-	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION), alternate_parent ()
+	: Collection (Type::DEPENDENCY_OBJECT_COLLECTION)
 {
+	is_secondary_parent = false;
 	this->sets_parent = sets_parent;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (Type::Kind object_type)
-	: Collection (object_type), alternate_parent ()
+	: Collection (object_type)
 {
+	is_secondary_parent = false;
 	sets_parent = true;
 }
 
 DependencyObjectCollection::DependencyObjectCollection (Type::Kind object_type, bool sets_parent)
-	: Collection (object_type), alternate_parent ()
+	: Collection (object_type)
 {
+	is_secondary_parent = false;
 	this->sets_parent = sets_parent;
 }
 
@@ -502,13 +506,23 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 
 	if (sets_parent) {
 		if (parent) {
-			if ((!alternate_parent || alternate_parent != obj->GetParent ()) && parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
+			if (GetIsSecondaryParent ()) {
+				if (obj->GetSecondaryParent ()) {
+					MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
+					return false;
+				} else {
+					obj->SetSecondaryParent (this);
+				}
+			} else if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
 				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
 				return false;
 			}
 		}
 		else {
 			obj->SetParent (this, error);
+			if (GetIsSecondaryParent ())
+				obj->SetSecondaryParent (this);
+
 			if (error->number)
 				return false;
 		}
@@ -537,6 +551,9 @@ DependencyObjectCollection::RemovedFromCollection (Value *value, bool is_value_s
 
 		if (obj) {
 			obj->RemovePropertyChangeListener (this);
+			if (GetIsSecondaryParent ())
+				obj->SetSecondaryParent (NULL);
+
 			if (sets_parent && obj->GetParent () == this)
 				obj->SetParent (NULL, NULL);
 			obj->SetMentor (NULL);

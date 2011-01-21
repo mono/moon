@@ -38,6 +38,7 @@ Value *
 Panel::CreateChildren (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
 	UIElementCollection *col = MoonUnmanagedFactory::CreateUIElementCollection ();
+	col->SetIsSecondaryParent (true);
 	if (forObj)
 		((Panel*)forObj)->SetSubtreeObject (col);
 	return Value::CreateUnrefPtr (col);

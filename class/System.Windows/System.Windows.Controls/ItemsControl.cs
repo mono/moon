@@ -127,10 +127,8 @@ namespace System.Windows.Controls {
 		{
 			if (_presenter != null) {
 				_presenter._elementRoot.Children.Clear ();
-				NativeMethods.dependency_object_collection_set_alternate_parent (presenter._elementRoot.Children.native, IntPtr.Zero);
 			}
 			_presenter = presenter;
-			NativeMethods.dependency_object_collection_set_alternate_parent (presenter._elementRoot.Children.native, Items.native);
 			AddItemsToPresenter (new GeneratorPosition (-1, 1), Items.Count);
 		}
 
