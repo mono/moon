@@ -861,7 +861,7 @@ ItemCollection::AddedToCollection (Value *value, MoonError *error)
 		DependencyObject *parent = obj->GetParent();
 	
 		if (parent) {
-			if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
+			if (parent != this && parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
 				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "1 Element is already a child of another element.");
 				return false;
 			}
