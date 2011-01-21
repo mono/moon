@@ -68,16 +68,20 @@ TextSelection::ClearSelection ()
 				Run *run = (Run*)anchor.GetParent();
 				char *run_text = g_strdup (run->GetText());
 
-				int length_to_remove = moving.ResolveLocation() - anchor.ResolveLocation();
+				if (run_text) {
+					int length_to_remove = moving.ResolveLocation() - anchor.ResolveLocation();
+					
+					memmove (run_text + anchor.ResolveLocation(), run_text + moving.ResolveLocation (), strlen (run_text + moving.ResolveLocation()));
+					*(run_text + strlen(run_text) - length_to_remove) = 0;
 
-				memmove (run_text + anchor.ResolveLocation(), run_text + moving.ResolveLocation (), strlen (run_text + moving.ResolveLocation()));
-				*(run_text + strlen(run_text) - length_to_remove) = 0;
+					run->SetText (run_text);
 
-				run->SetText (run_text);
-
-				// we need to remove the run if we've cleared all the text in it
-				remove_element = !*run_text;
-
+					// we need to remove the run if we've cleared all the text in it
+					remove_element = !*run_text;
+				} 
+				else {
+					remove_element = true;
+				}
 				g_free (run_text);
 			}
 			else {
@@ -218,6 +222,9 @@ TextSelection::SetText (const char *text)
 	if (text && *text) {
 		if (anchor.GetParent()->Is (Type::RUN)) {
 			const char *run_text = ((Run*)anchor.GetParent())->GetText();
+			if (run_text == NULL)
+				run_text = "\0";
+
 			char *new_text = (char*)g_malloc0 (strlen (run_text) + strlen (text) + 1);
 				
 			strncpy (new_text, run_text, anchor.ResolveLocation());

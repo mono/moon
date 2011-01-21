@@ -468,7 +468,11 @@ TextPointer::ResolveLocation ()
 		return 0;
 
 	if (parent->Is (Type::RUN)) {
-		return strlen (((Run*)parent)->GetText());
+		const char *text = ((Run*)parent)->GetText();
+		if (text == NULL)
+			return 0;
+
+		return strlen (text);
 	}
 	else {
 		IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
