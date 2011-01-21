@@ -463,6 +463,10 @@ TextPointer::ResolveLocation ()
 	if (location != (guint32)-1)
 		return location;
 
+	// FIXME double check this case
+	if (parent == NULL)
+		return 0;
+
 	if (parent->Is (Type::RUN)) {
 		return strlen (((Run*)parent)->GetText());
 	}
@@ -477,7 +481,10 @@ bool
 TextPointer::GetIsAtInsertionPosition ()
 {
 	// FIXME we need a bunch more tests to see if this is correct, but it seems to work for the tests we have..
-	return parent->Is (Type::RUN);
+	if (parent != NULL)
+		return parent->Is (Type::RUN);
+
+	return false;
 }
 
 
