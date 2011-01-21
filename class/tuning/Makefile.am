@@ -82,6 +82,7 @@ TUNER_FLAGS =	\
 	-o $(OUTPUT_DIR)	\
 	-l none		\
 	-c link		\
+	-a smcs		\
 	-b true		\
 	-g true		\
 	-m secattrs SecurityAttributes	\
