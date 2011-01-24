@@ -38,7 +38,7 @@ using System.Windows.Automation;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows {
-	public abstract partial class FrameworkElement : UIElement, IListenLayoutUpdated {
+	public abstract partial class FrameworkElement : UIElement {
 				static UnmanagedEventHandler template_applied = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
 			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ());
@@ -61,15 +61,23 @@ namespace System.Windows {
 
 		public event EventHandler LayoutUpdated {
 			add {
-				if (layoutUpdatedListener == null)
-					layoutUpdatedListener = new WeakLayoutUpdatedListener (Deployment.Current, this);
-				layoutUpdated += value;
+				if (layoutUpdatedListeners == null)
+					layoutUpdatedListeners = new List<KeyValuePair<EventHandler, WeakLayoutUpdatedListener>> ();
+
+				// Store each delegate and weak listener here so that the delegate lives as long as
+				// the FE its attached to and also so that we can easily disable the weak listeners later.
+				var listener = new WeakLayoutUpdatedListener (Deployment.Current, value);
+				layoutUpdatedListeners.Add (new KeyValuePair <EventHandler, WeakLayoutUpdatedListener> (value, listener));
 			}
 			remove {
-				layoutUpdated -= value;
-				if (layoutUpdated == null && layoutUpdatedListener != null) {
-					layoutUpdatedListener.Detach ();
-					layoutUpdatedListener = null;
+				if (layoutUpdatedListeners == null)
+					return;
+
+				for (int i = 0; i < layoutUpdatedListeners.Count; i++) {
+					if (layoutUpdatedListeners [i].Key == value) {
+						layoutUpdatedListeners [i].Value.Detach ();
+						layoutUpdatedListeners.RemoveAt (i);
+					}
 				}
 			}
 		}
@@ -78,8 +86,7 @@ namespace System.Windows {
 		static ArrangeOverrideCallback arrange_cb = InvokeArrangeOverride;
 		static GetDefaultTemplateCallback get_default_template_cb = InvokeGetDefaultTemplate;
 		static LoadedCallback loaded_hook_cb = InvokeLoadedHook;
-		EventHandler layoutUpdated;
-		IWeakListener layoutUpdatedListener;
+		List<KeyValuePair <EventHandler, WeakLayoutUpdatedListener>> layoutUpdatedListeners;
 
 		private static bool UseNativeLayoutMethod (Type type)
 		{
@@ -309,14 +316,6 @@ namespace System.Windows {
 		{
 			// according to doc this is not fully implemented since SL templates applies
 			// to Control/ContentPresenter and is defined here for WPF compatibility
-		}
-
-		void IListenLayoutUpdated.OnLayoutUpdated (object sender, EventArgs e)
-		{
-			// Explicitly use null as the sender in this event, as per docs
-			var h = layoutUpdated;
-			if (h != null)
-				h (null, EventArgs.Empty);
 		}
 
 		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)

@@ -7,8 +7,8 @@ namespace Mono {
 
 		WeakReference listener;
 
-		IListenLayoutUpdated Listener {
-			get { return (IListenLayoutUpdated) listener.Target; }
+		EventHandler Listener {
+			get { return (EventHandler) listener.Target; }
 			set { listener = new WeakReference (value); }
 		}
 
@@ -16,7 +16,7 @@ namespace Mono {
 			get; set;
 		}
 
-		public WeakLayoutUpdatedListener (Deployment source, IListenLayoutUpdated listener)
+		public WeakLayoutUpdatedListener (Deployment source, EventHandler listener)
 		{
 			Source = source;
 			Listener = listener;
@@ -29,7 +29,7 @@ namespace Mono {
 			if (l == null)
 				Detach ();
 			else
-				l.OnLayoutUpdated (sender, e);
+				l (sender, e);
 		}
 
 		public void Detach ()
