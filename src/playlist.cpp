@@ -345,8 +345,9 @@ PlaylistEntry::SeekingHandler (Media *media, EventArgs *args)
 	Playlist *root = GetRoot ();
 	
 	LOG_PLAYLIST ("PlaylistEntry::SeekingHandler (%p, %p)\n", media, args);
-	
-	g_return_if_fail (root != NULL);
+
+	if (root == NULL)
+		return;
 	
 	if (args)
 		args->ref ();
@@ -359,9 +360,10 @@ PlaylistEntry::SeekCompletedHandler (Media *media, EventArgs *args)
 	Playlist *root = GetRoot ();
 	
 	LOG_PLAYLIST ("PlaylistEntry::SeekCompletedHandler (%p, %p)\n", media, args);
-	
-	g_return_if_fail (root != NULL);
-	
+
+	if (root == NULL)
+		return;
+
 	if (args)
 		args->ref ();
 	root->Emit (Playlist::SeekCompletedEvent, args);

@@ -935,8 +935,11 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 			demuxer->OpenDemuxerAsync ();
 		return demuxer->IsOpened ();
 	}
-	
-	g_return_val_if_fail (source != NULL, false);
+
+	if (source == NULL) {
+		/* We've probably been disposed */
+		return false;
+	}
 	
 	// Check if the source knows how to create the demuxer
 	demuxer = source->CreateDemuxer (this, NULL);
