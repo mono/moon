@@ -25,7 +25,7 @@ REFERENCES = \
 
 CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -d:MOONLIGHT -target:library -debug+ -noconfig $(REFERENCES)
 
-SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
+SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 FILES = $(shell cat $(srcdir)/ControlsExtended.Test.sources)
 SOURCES = $(foreach file,$(FILES),$(SDK_SRCDIR)/$(file))

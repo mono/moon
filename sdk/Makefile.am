@@ -45,9 +45,6 @@ install-sdk-assemblies:
 #	$(INSTALL) -c $(CLASS_DIR)/Microsoft.VisualBasic.dll.mdb $(SDK2_DIR)/Microsoft.VisualBasic.dll.mdb
 
 install-sdk-tools:
-	$(INSTALL) -c $(SCRIPTS_DIR)/smcs $(SDK2_DIR)/smcs
-	$(INSTALL) -c $(CLASS_DIR)/smcs.exe $(SDK2_DIR)/smcs.exe
-	-$(INSTALL) -c $(CLASS_DIR)/smcs.exe.mdb $(SDK2_DIR)/smcs.exe.mdb
 	$(INSTALL) -c $(TOOLS_DIR)/respack/respack.exe $(SDK2_DIR)/respack.exe
 	-$(INSTALL) -c $(TOOLS_DIR)/respack/respack.exe.mdb $(SDK2_DIR)/respack.exe.mdb
 

@@ -15,7 +15,7 @@ noinst_DATA = $(assemblies)
 CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe -r:System.Core.dll
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
-SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
+SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 

@@ -1,4 +1,4 @@
-SMCS = $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 noinst_DATA= Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
@@ -15,5 +15,6 @@ EXTRA_DIST =			\
 KEYFILE=$(srcdir)/../moonlight.snk
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: $(wildcard */*.cs)
-	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll -debug:full -delaysign+ -keyfile:$(KEYFILE)
+	$(SMCS) -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
+		-debug:full -delaysign+ -keyfile:$(KEYFILE) 
 	sn -q -R $@ $(KEYFILE)

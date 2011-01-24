@@ -1,4 +1,4 @@
-SMCS = $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 noinst_DATA= Mono.Moonlight.UnitTesting.dll
 
@@ -29,7 +29,7 @@ REFERENCES = \
 	-r:$(top_builddir)/test/2.0/Mono.Moonlight.UnitTesting/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight	
 
 Mono.Moonlight.UnitTesting.dll: $(SOURCES) Makefile.am Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
-	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(REFERENCES) -delaysign+ -keyfile:$(KEYFILE) -target:library -out:$@ -debug:full
+	$(SMCS) $(SOURCES) $(REFERENCES) -delaysign+ -keyfile:$(KEYFILE) -target:library -out:$@ -debug:full -r:System.Net.dll -r:System.Windows.dll -r:System.Windows.Browser.dll
 	sn -q -R $@ $(KEYFILE)
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll

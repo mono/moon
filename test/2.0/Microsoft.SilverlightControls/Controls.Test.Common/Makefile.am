@@ -17,7 +17,7 @@ REFERENCES = \
 
 CSCFLAGS = /codepage:65001  -d:SILVERLIGHT -debug+ -noconfig $(REFERENCES)
 
-SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
+SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 sources =							\
 	$(SDK_SRCDIR)/Common.cs				\
@@ -30,6 +30,6 @@ sources =							\
 KEYFILE = $(SDK_SRCDIR)/../../MixControls.snk
 
 $(assembly).dll: $(sources)
-	$(SMCS) -target:library -out:$@ $(sources) -keyfile:$(KEYFILE)
+	$(SMCS) -target:library -out:$@ $(sources) -keyfile:$(KEYFILE) -r:System.Windows.dll
 
 all-local: $(assembly).dll
