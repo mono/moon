@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 450 methods needs to be decorated.
+# 444 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -1022,9 +1022,6 @@
 +SC-M: System.Type System.Type::MakePointerType(System.Type)
 
 # internal call
-+SC-M: System.Type[] System.Reflection.FieldInfo::GetTypeModifiers(System.Boolean)
-
-# internal call
 +SC-M: System.Type[] System.Reflection.Module::InternalGetTypes()
 
 # internal call
@@ -1041,9 +1038,6 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.UInt32 Mono.Globalization.Unicode.MSCompatUnicodeTable::UInt32FromBytePtr(System.Byte*,System.UInt32)
-
-# implements 'System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Close()'.
-+SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()
 
 # implements 'System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Initialize(System.IntPtr,System.String,System.Boolean)'.
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)
@@ -1108,9 +1102,6 @@
 # internal call
 +SC-M: System.Void System.Delegate::SetMulticastInvoke()
 
-# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()'.
-+SC-M: System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Close()
-
 # Promoting interface member to [SecurityCritical] because of 'System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)'.
 +SC-M: System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Initialize(System.IntPtr,System.String,System.Boolean)
 
@@ -1151,9 +1142,6 @@
 +SC-M: System.Void System.Reflection.Assembly::FillName(System.Reflection.Assembly,System.Reflection.AssemblyName)
 
 # internal call
-+SC-M: System.Void System.Reflection.CustomAttributeData::ResolveArgumentsInternal(System.Reflection.ConstructorInfo,System.Reflection.Assembly,System.IntPtr,System.UInt32,System.Object[]&,System.Object[]&)
-
-# internal call
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::basic_init(System.Reflection.Emit.AssemblyBuilder)
 
 # internal call
@@ -1175,16 +1163,10 @@
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::basic_init(System.Reflection.Emit.ModuleBuilder)
 
 # internal call
-+SC-M: System.Void System.Reflection.Emit.ModuleBuilder::build_metadata(System.Reflection.Emit.ModuleBuilder)
-
-# internal call
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::RegisterToken(System.Object,System.Int32)
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::set_wrappers_type(System.Reflection.Emit.ModuleBuilder,System.Type)
-
-# internal call
-+SC-M: System.Void System.Reflection.Emit.ModuleBuilder::WriteToFile(System.IntPtr)
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.TypeBuilder::create_generic_class()

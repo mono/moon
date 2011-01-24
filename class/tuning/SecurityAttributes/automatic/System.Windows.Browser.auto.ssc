@@ -2,11 +2,11 @@
 # 28 methods
 
 +SSC-M: System.Windows.Browser.ScriptObject System.Windows.Browser.HostServices::get_JsonSerializer()
-+SSC-M: System.Void System.Windows.Browser.HtmlPage::.cctor()
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
 +SSC-M: System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
 +SSC-M: System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
 +SSC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::PopupWindow(System.Uri,System.String,System.Windows.Browser.HtmlPopupWindowOptions)
++SSC-M: System.Void System.Windows.Browser.HtmlPage::.cctor()
 +SSC-M: System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
 +SSC-M: System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
 +SSC-M: System.Void System.Windows.Browser.ManagedObject::SetProperty(System.String,System.Object[])

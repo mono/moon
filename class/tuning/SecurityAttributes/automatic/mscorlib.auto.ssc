@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 466 methods
+# 465 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -224,7 +224,6 @@
 +SSC-M: System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 +SSC-M: System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
 +SSC-M: System.Void System.Reflection.AssemblyName::.ctor(System.String)
-+SSC-M: System.Void System.Reflection.CustomAttributeData::ResolveArguments()
 +SSC-M: System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Type System.Reflection.Emit.AssemblyBuilder::GetType(System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Reflection.AssemblyName[] System.Reflection.Emit.AssemblyBuilder::GetReferencedAssemblies()

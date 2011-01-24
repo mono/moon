@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 64 methods needs to be decorated.
+# 63 methods needs to be decorated.
 
 # internal call
 +SC-M: System.Boolean System.Net.Dns::GetHostByAddr_internal(System.String,System.String&,System.String[]&,System.String[]&)
@@ -69,9 +69,6 @@
 
 # internal call
 +SC-M: System.Int32 System.Net.Sockets.SocketException::WSAGetLastError_internal()
-
-# internal call
-+SC-M: System.Int64 System.Diagnostics.Stopwatch::GetTimestamp()
 
 # overrides 'System.Int64 System.Net.WebRequest::get_ContentLength()'.
 +SC-M: System.Int64 System.Net.HttpWebRequest::get_ContentLength()
