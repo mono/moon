@@ -236,7 +236,7 @@ _abort (EventObject *req)
 static void
 _started (CallData *sender)
 {
-	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
+	CurlDownloaderResponse* res = ((CallData*)sender)->res;
 	res->Started ();
 }
 
@@ -244,7 +244,7 @@ static void
 _visitor (CallData *sender)
 {
 	CallData* data = ((CallData*)sender);
-	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
+	CurlDownloaderResponse* res = data->res;
 	res->Visitor (data->name, data->val);
 }
 
@@ -252,7 +252,7 @@ static void
 _available (CallData *sender)
 {
 	CallData* data = ((CallData*)sender);
-	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
+	CurlDownloaderResponse* res = data->res;
 	res->Available (data->buffer, data->size);
 }
 
