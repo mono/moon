@@ -678,7 +678,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		/* the event listener was added with a JS function object */
 		if (MOON_NPN_InvokeDefault (proxy->GetInstance (), (NPObject *) proxy->callback, args, argcount, &result))
 			MOON_NPN_ReleaseVariantValue (&result);
-	} else {
+	} else if (proxy->callback != NULL && ((char *) proxy->callback) [0] != 0) {
 		/* the event listener was added with a JS string (the function name) */
 		NPObject *object = NULL;
 		
