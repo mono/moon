@@ -837,7 +837,7 @@ namespace Mono.Xaml {
 				try {
 					value = property.ConvertTextValue (ai.Value);
 				} catch (Exception ex) {
-					throw ParseException ("Could not convert attribute value '{0}' on element {1}.", ai.Value, element.Name, ex);
+					throw ParseException ("Could not convert attribute value '{0}' on element {1} for property {2}.", ai.Value, element.Name, property.Name);
 				}
 			}
 			return value;
@@ -853,7 +853,7 @@ namespace Mono.Xaml {
 			try {
 				o = parser.ParseExpression (ref expression);
 			} catch (Exception e) {
-				throw ParseException ("Could not convert attribute value '{0}' on element {1}.", ai.Value, element.Name, e);
+				throw ParseException ("Could not convert attribute value '{0}' on element {1} for property {2}.", ai.Value, element.Name, property.Name);
 			}
 
 			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression))
