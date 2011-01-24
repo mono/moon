@@ -60,10 +60,10 @@ MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/moonlight
 
 DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll)
 
-FILES = smcs.exe $(DLLFILES)
+FILES = $(DLLFILES)
 WORKING_FILES = $(FILES:%=$(WORKING_DIR)/%)
 OUTPUT_FILES = $(FILES:%=$(OUTPUT_DIR)/%)
-INPUT_FILES = $(MCS_PATH)/class/lib/moonlight_raw/smcs.exe $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
+INPUT_FILES = $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
 
 TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
 
@@ -83,7 +83,6 @@ TUNER_FLAGS =	\
 	-o $(OUTPUT_DIR)	\
 	-l none		\
 	-c link		\
-	-a smcs		\
 	-b true		\
 	-g true		\
 	-m secattrs SecurityAttributes	\

@@ -30,5 +30,11 @@
 		<type fullname="System.Security.SecurityCriticalAttribute" preserve="all" />
 		<type fullname="System.Security.SecuritySafeCriticalAttribute" preserve="all" />
 		<type fullname="System.Security.SecurityTransparentAttribute" preserve="all" />
+
+		<type fullname="Mono.CompilerServices.SymbolWriter.LocalVariableEntry" preserve="all" />
+		<type fullname="Mono.CompilerServices.SymbolWriter.CodeBlockEntry" preserve="all" />
+		<type fullname="Mono.CompilerServices.SymbolWriter.ScopeVariable" preserve="all" />
+		<type fullname="Mono.CompilerServices.SymbolWriter.IMethodDef" preserve="all" />
+		<type fullname="Mono.CompilerServices.SymbolWriter.LineNumberEntry" preserve="all" />
 	</assembly>
 </linker>
