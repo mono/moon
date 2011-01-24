@@ -404,7 +404,9 @@ PositionAtOffsetIterator::Step (int *offset)
 
 					IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
 					(*offset) --;
-					location = parent_node->GetDocumentChildren()->IndexOf (Value (element));
+					location = parent_node->GetDocumentChildren()->IndexOf (Value (element)) + 1;
+					if (location == children_count - 1)
+						location = CONTENT_END;
 					element = parent;
 					return true;
 				}
@@ -427,7 +429,9 @@ PositionAtOffsetIterator::Step (int *offset)
 
 				IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
 				(*offset) --;
-				location = parent_node->GetDocumentChildren()->IndexOf (Value (element));
+				location = parent_node->GetDocumentChildren()->IndexOf (Value (element)) + 1;
+				if (location == children_count - 1)
+					location = CONTENT_END;
 				element = parent;
 				return true;
 			}
