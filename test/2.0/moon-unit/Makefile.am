@@ -152,7 +152,7 @@ moon-unit.g.resources:
 
 moon-unit.dll: moon-unit.sources moon-unit.g.resources $(CODE_BEHINDS) $(DLLS_TO_EMBED)
 	@echo Compiling moon-unit.dll
-	$(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS) -d:TEST -d:NET_2_1 -debug+ -target:library -out:moon-unit.dll -r:System.Net.dll $(BROWSER_ASSEMBLIES) $(REFERENCES) @$(top_builddir)/test/2.0/moon-unit/moon-unit.sources $(CODE_BEHINDS) -resource:moon-unit.g.resources -warnaserror+
+	mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS) -d:TEST -d:NET_2_1 -debug+ -target:library -out:moon-unit.dll -r:System.Net.dll $(BROWSER_ASSEMBLIES) $(REFERENCES) @$(top_builddir)/test/2.0/moon-unit/moon-unit.sources $(CODE_BEHINDS) -resource:moon-unit.g.resources -warnaserror+
 
 
 define XAP_TEMPLATE
