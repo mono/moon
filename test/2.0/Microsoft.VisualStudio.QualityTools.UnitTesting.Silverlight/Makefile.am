@@ -16,5 +16,5 @@ KEYFILE=$(srcdir)/../moonlight.snk
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: $(wildcard */*.cs)
 	$(SMCS) -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
-		-debug:full -delaysign+ -keyfile:$(KEYFILE) 
+		-debug:full -delaysign+ -keyfile:$(KEYFILE) -r:System.Windows.dll
 	sn -q -R $@ $(KEYFILE)
