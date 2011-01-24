@@ -5,7 +5,6 @@ LINKER = ../lib/tuner/monolinker.exe
 
 TUNER_DESCS =	\
 	$(srcdir)/Descriptors/mscorlib.xml	\
-	$(srcdir)/Descriptors/smcs.xml	\
 	$(srcdir)/Descriptors/System.xml	\
 	$(srcdir)/Descriptors/System.Net.xml	\
 	$(srcdir)/Descriptors/System.Xml.xml	\
