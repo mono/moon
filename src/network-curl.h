@@ -153,6 +153,7 @@ class CurlDownloaderRequest : public HttpRequest {
 
 	void Write (gint64 offset, void *buffer, gint32 length);
 	void NotifyFinalUri (const char *value);
+	void Failed (const char *error_message);
 };
 
 class CurlDownloaderResponse : public HttpResponse {
@@ -200,6 +201,7 @@ class CurlDownloaderResponse : public HttpResponse {
 	void Available (char* buffer, size_t size);
 	void Finished ();
 	void Visitor (const char *name, const char *val);
+	void Failed (const char *error_message);
 	void Close ();
 	CURL* GetHandle () { return request ? request->GetHandle () : NULL; }
 	void ClearRequest ();
