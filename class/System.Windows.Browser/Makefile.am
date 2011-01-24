@@ -23,7 +23,7 @@ CSCFLAGS += -d:SANITY
 endif
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
-SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 

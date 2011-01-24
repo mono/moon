@@ -1,4 +1,4 @@
-SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 noinst_DATA= Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 

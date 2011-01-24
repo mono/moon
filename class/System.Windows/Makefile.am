@@ -41,7 +41,7 @@ CSCFLAGS += -d:HEAPVIZ
 endif
 
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
-SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
+SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls

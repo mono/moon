@@ -17,7 +17,7 @@ REFERENCES = \
 
 CSCFLAGS = /codepage:65001  -d:SILVERLIGHT -debug+ -noconfig $(REFERENCES)
 
-SMCS = $(prefix)/bin/mono $(prefix)/lib/mono/2.0/mcs.exe -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 sources =							\
 	$(SDK_SRCDIR)/Common.cs				\
