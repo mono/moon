@@ -159,13 +159,23 @@ namespace System.Windows.Controls
         public void ScrollIntoView(object item)
         {
             if ((null != TemplateScrollViewer) && Items.Contains(item)) 
-            { 
+            {
+
+                // If the element is virtualizing we have to scroll to the index of the element
+                // we've selected. This will force the virtualizing panel to rerender the required
+                // elements.
                 Rect itemsHostRect;
-                Rect listBoxItemRect; 
+                Rect listBoxItemRect;
+                bool virtualizing = VirtualizingStackPanel.GetIsVirtualizing (this);
                 if (!IsOnCurrentPage(item, out itemsHostRect, out listBoxItemRect))
                 {
                     if (IsVerticalOrientation()) 
                     {
+                        if (virtualizing)
+                        {
+                            this.TemplateScrollViewer.ScrollToVerticalOffset (SelectedIndex);
+                            return;
+                        }
                         // Scroll into view vertically (first make the right bound visible, then the left)
                         double verticalOffset = TemplateScrollViewer.VerticalOffset; 
                         double verticalDelta = 0; 
@@ -182,6 +192,11 @@ namespace System.Windows.Controls
                     } 
                     else
                     {
+                        if (virtualizing)
+                        {
+                            this.TemplateScrollViewer.ScrollToHorizontalOffset (SelectedIndex);
+                            return;
+                        }
                         // Scroll into view horizontally (first make the bottom bound visible, then the top) 
                         double horizontalOffset = TemplateScrollViewer.HorizontalOffset;
                         double horizontalDelta = 0;
@@ -364,11 +379,14 @@ namespace System.Windows.Controls
         /// <returns>True if the orientation is vertical; false otherwise.</returns>
         private bool IsVerticalOrientation()
         {
-            DependencyObject x = VisualTreeHelper.GetChild (this, 0);
-            x = VisualTreeHelper.GetChild(x, 0);
-            StackPanel stackPanel = x as StackPanel; 
-            return (null == stackPanel) ? true : (stackPanel.Orientation == Orientation.Vertical);
-        } 
+            var p = Panel;
+            if (p is StackPanel)
+                return ((StackPanel) p).Orientation == Orientation.Vertical;
+            else if (p is VirtualizingStackPanel)
+                return ((VirtualizingStackPanel) p).Orientation == Orientation.Vertical;
+            else
+                return true;
+        }
 
         /// <summary>
         /// Indicate whether the specified item is currently visible. 
