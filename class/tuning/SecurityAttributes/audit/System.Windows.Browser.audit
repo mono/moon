@@ -7,8 +7,9 @@ System.Boolean System.Windows.Browser.ScriptObject::AddNativeMapping(System.IntP
 	20101108	spouliot - no source change / compiler (lock related) change?
 	r153088		spouliot - add/track a new ScriptObjectToggleRef [SecurityCritical] (unexposed) based on the IntPtr and ScriptObject
 
-!SSC-AF37BB0F533EC2A0AE8EDE68ADE01FCC
+!SSC-83213808039B3381057EE404E7FB18E1
 System.Boolean System.Windows.Browser.ScriptObject::GetPropertyFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
+	20110125	spouliot - no source change / likely compiler related
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
 	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call GetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
@@ -16,13 +17,15 @@ System.Boolean System.Windows.Browser.ScriptObject::GetPropertyFromUnmanagedSafe
 System.Boolean System.Windows.Browser.ScriptObject::HasPropertyInternal(System.String)
 	20110112	spouliot - 130ffbf - pinvoke into html_object_has_property using 'PluginHost.Handle', 'Handle' (validated) and 'name' (validated)
 
-!SSC-7A096CC2C59A394BA143A04C409D69AB
+!SSC-32C51B4E2AC55E7F2DA85A7216F5CA50
 System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
+	20110125	spouliot - no source change / likely compiler related
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
 	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call InvokeFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
-!SSC-AEE352D4C8CE0076B15558E47F11677E
+!SSC-E31F2AF28196C223FE2AF6F360E30341
 System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanagedSafe(System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&,System.String&)
+	20110125	spouliot - no source change / likely compiler related
 	r157803		spouliot - call LookupScriptObject without a 'false' parameter (previously used to 'createIfNotFound)
 	r153088		spouliot - lookup the ScriptObject corresponding to the 'obj_handle' parameter and call SetPropertyFromUnmanaged on it (using the other parameters) all wrapped in a catch(Exception)
 
@@ -70,16 +73,18 @@ System.Object System.Windows.Browser.ScriptObject::InvokeSelfInternal(System.Obj
 	r142747		spouliot - visibility changed to internal (to match SL2 API)
 	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
 
-!SSC-627868E191EC1F54388196A467CDAC17
+!SSC-817A7D608E14172B80DD49513C03937F
 System.Void System.Windows.Browser.HtmlPage::.cctor()
+	20110125	spouliot - ec76419 - 'IsEnabled' is now determined (and cached) from here
 	r143068		spouliot - calls ScriptableObjectGenerator.Generate
 
 !SSC-4B645AA0E8244C1D74EF0B760CF7A9F8
 System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
 	r143068		spouliot - calls ScriptableObjectGenerator.Generate
 
-!SSC-FFCBCB43A737C83D2DB4985400F92B9E
+!SSC-A1FDF2DF0E2408F777284A3CBF13C92B
 System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
+	20110125	spouliot - no source change / likely compiler related
 	20101108	spouliot - no source change / compiler (lock related) change?
 	20101013	spouliot - 7795670 - Dictionary changed from <int,IntPtr> to <object,WeakReference>
 	20101004	spouliot - d225a6f4 - cache ManagedObject / b320e418 - fix ToString registration (to make sure the parameter-less overload is used)
@@ -107,8 +112,9 @@ System.Void System.Windows.Browser.ScriptObject::SetDefaultHandle()
 System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
 	r142142		spouliot - added validations, pinvoke into html_object_get_property
 
-!SSC-FEAD04A52B480183AC5429C4C66FB438
+!SSC-F73EDF5A3745D06CA4A90AAB12C31926
 System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
+	20110125	spouliot - no source change / compiler?
 	20110112	spouliot - no source change / compiler?
 	r142142		spouliot - pinvoke into plugin_instance_get_browser_host
 

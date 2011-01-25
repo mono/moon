@@ -2123,11 +2123,6 @@ System.Void System.NumberFormatter::.cctor()
 System.Void System.Reflection.AssemblyName::.ctor(System.String)
 	r142142		spouliot - call ParseName (icall) and throw if it return false
 
-!SSC-FEBE0256AFCAF8727486A0B58BA563B3
-System.Void System.Reflection.CustomAttributeData::ResolveArguments()
-	20110104	spouliot - no source change, compiler changed !!0 to T[] on calls to Array::AsReadOnly
-	20100826	spouliot - 2913acfc - lazy revolve - calls ResolveArgumentsInternal (icall) using parameters acquired by the internal ctor
-
 !SSC-74D7B977EE89A5E7C818A32D115628CB
 System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
 	20101203	spouliot - 80e7e4d - validate that null is not provided for ValueType
