@@ -36,38 +36,19 @@ namespace System.Windows.Media.Animation {
 
 	public abstract partial class Timeline : DependencyObject {
 
-		DependencyObject manualTarget;
-
 		internal DependencyObject ManualTarget {
 			get {
-				return manualTarget;
-			}
-			set {
+				return (DependencyObject) NativeDependencyObjectHelper.FromIntPtr (NativeMethods.timeline_get_manual_target (native));
+			} set {
 				NativeMethods.timeline_set_manual_target (native, value == null ? IntPtr.Zero : value.native);
 			}
-		}
-
-		internal override void AddStrongRef (IntPtr referent, string name)
-		{
-			if (name == "ManualTarget") {
-				// Do Nothing!
-			} else
-				base.AddStrongRef (referent, name);
-		}
-
-		internal override void ClearStrongRef (IntPtr referent, string name)
-		{
-			if (name == "ManualTarget") {
-				// Do Nothing
-			} else
-				base.ClearStrongRef (referent, name);
 		}
 
 #if HEAPVIZ
 		internal override void AccumulateManagedRefs (List<HeapRef> refs)
 		{
-			refs.Add (new HeapRef (true,
-					       manualTarget,
+			refs.Add (new HeapRef (false,
+					       ManualTarget,
 					       "ManualTarget"));
 			base.AccumulateManagedRefs (refs);
 		}

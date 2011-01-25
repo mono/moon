@@ -311,6 +311,8 @@ protected:
 	const static int SelectionChangedEvent;
 	/* @GenerateManagedEvent=false */
 	const static int CursorPositionChangedEvent;
+
+	const static void *ViewWeakRef;
 };
 
 

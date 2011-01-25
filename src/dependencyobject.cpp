@@ -1393,6 +1393,7 @@ public:
 class WildcardListener : public Listener {
 public:
 	WildcardListener (DependencyObject *obj, DependencyProperty *prop)
+		: obj (NULL, 0, false)
 	{
 		this->obj = obj;
 		this->prop = prop;
@@ -1744,14 +1745,14 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (current_value) {
 			if (clearManagedRef && current_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
 					current_value->Strengthen ();
-					clearManagedRef (this, current_value, property->GetName());
+					clearManagedRef (this, current_value, property);
 			}
 		}
 
 		// replace it with the new value
 		if (new_value) {
 			if (addManagedRef && new_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-				addManagedRef (this, new_value, property->GetName());
+				addManagedRef (this, new_value, property);
 				new_value->Weaken ();
 			}
 
@@ -2532,21 +2533,21 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 
 DependencyObject::DependencyObject ()
 	: EventObject (Type::DEPENDENCY_OBJECT),
-	mentor (this, "Mentor", false), parent (this, "Parent", false), template_owner (this, "TemplateOwner", false), secondary_parent (this, "SecondaryParent", false)
+	mentor (this, MentorWeakRef, false), parent (this, ParentWeakRef, false), template_owner (this, TemplateOwnerWeakRef, false), secondary_parent (this, SecondaryParentWeakRef, false)
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
 	: EventObject (deployment, object_type),
-	mentor (this, "Mentor", false), parent (this, "Parent", false), template_owner (this, "TemplateOwner", false), secondary_parent (this, "SecondaryParent", false)
+	mentor (this, MentorWeakRef, false), parent (this, ParentWeakRef, false), template_owner (this, TemplateOwnerWeakRef, false), secondary_parent (this, SecondaryParentWeakRef, false)
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Type::Kind object_type)
 	: EventObject (object_type),
-	mentor (this, "Mentor", false), parent (this, "Parent", false), template_owner (this, "TemplateOwner", false), secondary_parent (this, "SecondaryParent", false)
+	mentor (this, MentorWeakRef, false), parent (this, ParentWeakRef, false), template_owner (this, TemplateOwnerWeakRef, false), secondary_parent (this, SecondaryParentWeakRef, false)
 {
 	Initialize ();
 }

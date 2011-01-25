@@ -487,6 +487,7 @@ public:
 	/* @GeneratePInvoke */
 	Deployment ();
 	
+	const static void *CurrentApplicationWeakRef;
 
 protected:
 	virtual ~Deployment ();

@@ -101,7 +101,7 @@ namespace System.Windows {
 				break;
 			case CollectionChangedAction.Remove:
 #if DEBUG_REF
-				Console.WriteLine ("rd {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, managedDict[args.Key].GetHashCode(), managedList[args.Key]);
+				Console.WriteLine ("rd {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, managedDict[args.Key].GetHashCode(), managedDict[args.Key]);
 #endif
 				managedDict.Remove (args.Key);
 				break;
@@ -205,20 +205,20 @@ namespace System.Windows {
 				}
 			}
 		}
-		internal override void AddStrongRef (IntPtr referent, string name)
+		internal override void AddStrongRef (IntPtr id, object value)
 		{
-			if (name == "MergedDictionaries")
-				mergedDictionaries = (PresentationFrameworkCollection<ResourceDictionary>) Value.ToObject (referent);
+			if (id == ResourceDictionary.MergedDictionariesProperty.Native)
+				mergedDictionaries = (PresentationFrameworkCollection<ResourceDictionary>) value;
 			else
-				base.AddStrongRef (referent, name);
+				base.AddStrongRef (id, value);
 		}
 
-		internal override void ClearStrongRef (IntPtr referent, string name)
+		internal override void ClearStrongRef (IntPtr id, object value)
 		{
-			if (name == "MergedDictionaries")
+			if (id == ResourceDictionary.MergedDictionariesProperty.Native)
 				mergedDictionaries = null;
 			else
-				base.ClearStrongRef (referent, name);
+				base.ClearStrongRef (id, value);
 		}
 
 		public Uri Source {

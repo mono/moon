@@ -61,14 +61,28 @@ namespace Mono {
 
 		public static MentorChangedCallback mentor_changed = new MentorChangedCallback (MentorChanged);
 
-		static void AddStrongRef (IntPtr referer, IntPtr referent, string name)
+#if DEBUG_REF
+		internal static string IdToName (IntPtr id)
+		{
+			var dp = DependencyProperty.Lookup (id);
+			if (dp != null)
+				return dp.Name;
+
+			if (Enum.IsDefined (typeof (WeakRefs), id.ToInt32 ()))
+				return Enum.GetName (typeof (WeakRefs), id.ToInt32 ());
+
+			return "???";
+		}
+#endif
+
+		static void AddStrongRef (IntPtr referer, IntPtr referent, IntPtr id)
 		{
 			try {
 				IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
 				if (container == null)
 					return;
 	
-				container.AddStrongRef (referent, string.Intern (name));
+				container.AddStrongRef (id, Value.ToObject (referent));
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
@@ -77,14 +91,14 @@ namespace Mono {
 			}
 		}
 
-		static void ClearStrongRef (IntPtr referer, IntPtr referent, string name)
+		static void ClearStrongRef (IntPtr referer, IntPtr referent, IntPtr id)
 		{
 			try {
 				IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
 				if (container == null)
 					return;
 	
-				container.ClearStrongRef (referent, name);
+				container.ClearStrongRef (id, Value.ToObject (referent));
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);

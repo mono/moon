@@ -940,7 +940,7 @@ TileBrush::Stroke (cairo_t *cr, bool preserve)
 //
 
 VideoBrush::VideoBrush ()
-	: TileBrush (Type::VIDEOBRUSH), source (this, "Source")
+	: TileBrush (Type::VIDEOBRUSH), source (this, SourceWeakRef)
 {
 	video_format = NULL;
 }

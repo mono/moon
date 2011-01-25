@@ -248,7 +248,7 @@ class TextBoxBase : public Control, public ITextAttributes {
  public:
 	/* @SkipFactories */
 	TextBoxBase ()
-		: view (this, "View") { }
+		: view (this, ViewWeakRef) { }
 	
 	//
 	// Overrides
@@ -330,6 +330,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 	// Events
 	//
 	const static int CursorPositionChangedEvent;
+
+	const static void *ViewWeakRef;
 };
 
 

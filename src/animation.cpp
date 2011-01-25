@@ -303,7 +303,7 @@ AnimationStorage::~AnimationStorage ()
 }
 
 AnimationClock::AnimationClock (Animation *timeline)
-  : Clock (timeline), timeline (this, NULL, false)
+  : Clock (timeline), timeline (this, TimelineWeakRef, false)
 {
 	SetObjectType (Type::ANIMATIONCLOCK);
 

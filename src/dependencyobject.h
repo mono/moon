@@ -52,7 +52,7 @@ typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_dat
 typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
 
 /* @CBindingRequisite */
-typedef void (* ManagedRefCallback) (EventObject *referer, Value *referent, const char *name);
+typedef void (* ManagedRefCallback) (EventObject *referer, Value *referent, const void *id);
 /* @CBindingRequisite */
 typedef void (* AttachCallback) (EventObject *object);
 /* @CBindingRequisite */
@@ -510,6 +510,11 @@ public:
 	void SetIsBeingParsed (bool v) { is_being_parsed = v; }
 	bool IsBeingParsed () { return is_being_parsed; }
 
+	const static void *MentorWeakRef;
+	const static void *ParentWeakRef;
+	const static void *SecondaryParentWeakRef;
+	const static void *TemplateOwnerWeakRef;
+
 protected:
  	/* @GeneratePInvoke */
 	DependencyObject ();
@@ -570,8 +575,8 @@ private:
 	GSList            *listener_list;
 	WeakRef<DependencyObject> mentor;
 	WeakRef<DependencyObject> parent;
-	WeakRef<DependencyObject> secondary_parent;
 	WeakRef<DependencyObject> template_owner;
+	WeakRef<DependencyObject> secondary_parent;
 
 	bool is_frozen;
 	bool is_hydrated;

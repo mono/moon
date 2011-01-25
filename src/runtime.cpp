@@ -354,7 +354,7 @@ runtime_flags_set_show_fps (gboolean flag)
 /* FIXME More flag setters here */
 
 Surface::Surface (MoonWindow *window)
-	: EventObject (Type::SURFACE), layers (this, "Layers"), toplevel (this, "Toplevel")
+	: EventObject (Type::SURFACE), layers (this, LayersWeakRef), toplevel (this, ToplevelWeakRef)
 {
 	GetDeployment ()->SetSurface (this);
 

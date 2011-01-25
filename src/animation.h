@@ -1178,6 +1178,8 @@ public:
 	virtual void Stop ();
 	virtual void Begin (TimeSpan parentTime);
 
+	const static void *TimelineWeakRef;
+
 protected:
 	virtual ~AnimationClock ();
 

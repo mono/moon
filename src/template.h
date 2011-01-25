@@ -36,6 +36,7 @@ public:
 	/* @GeneratePInvoke */
 	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer, bool holdManagedRef);
 
+	const static void *XamlContextWeakRef;
 protected:
 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkTemplate ();

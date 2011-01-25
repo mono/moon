@@ -75,13 +75,13 @@ FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 };
 
 FrameworkElement::FrameworkElement ()
-	: UIElement (Type::FRAMEWORKELEMENT), logical_parent (this, "LogicalParent"), default_template (this, "DefaultTemplate")
+	: UIElement (Type::FRAMEWORKELEMENT), logical_parent (this, LogicalParentWeakRef), default_template (this, DefaultTemplateWeakRef)
 {
 	Init ();
 }
 
 FrameworkElement::FrameworkElement (Type::Kind object_type)
-	: UIElement (object_type), logical_parent (this, "LogicalParent"), default_template (this, "DefaultTemplate")
+	: UIElement (object_type), logical_parent (this, LogicalParentWeakRef), default_template (this, DefaultTemplateWeakRef)
 {
 	Init ();
 }

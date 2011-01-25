@@ -667,6 +667,9 @@ public:
 	Projection *GetRenderProjection ();
 	CacheMode *GetRenderCacheMode ();
 
+	const static void *SubtreeObjectWeakRef;
+	const static void *VisualParentWeakRef;
+
 protected:
 	virtual ~UIElement ();
 	/* @SkipFactories */

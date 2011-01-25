@@ -426,6 +426,8 @@ class VideoBrush : public TileBrush {
 	//
 	void SetSourceName (const char *name);
 	const char *GetSourceName ();
+
+	const static void *SourceWeakRef;
 };
 
 

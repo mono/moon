@@ -31,7 +31,7 @@ namespace Moonlight {
 /* timeline */
 
 Timeline::Timeline ()
-	: DependencyObject (Type::TIMELINE), manual_target (this, "ManualTarget")
+	: DependencyObject (Type::TIMELINE), manual_target (this, ManualTargetWeakRef, false)
 {
 	had_parent = false;
 	timeline_status = TIMELINE_STATUS_OK;

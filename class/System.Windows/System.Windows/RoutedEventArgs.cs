@@ -56,38 +56,34 @@ namespace System.Windows {
 			return NativeMethods.event_object_get_object_type (NativeHandle);
 		}
 
-		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
-			if (StringComparer.Ordinal.Equals (name, "Source")) {
-				source = Value.ToObject (referent);
-				return;
-			}
+			if (id == (IntPtr) WeakRefs.RoutedEventArgs_Source) {
+				source = value;
+			} else {
+				if (strongRefs == null)
+					strongRefs = new Dictionary<IntPtr, object> ();
+				else if (strongRefs.ContainsKey (id))
+					return;
 
-			if (strongRefs == null)
-				strongRefs = new Dictionary<IntPtr, object> ();
-			else if (strongRefs.ContainsKey (referent))
-				return;
-
-			var o = Value.ToObject (referent);
-			if (o != null) {
+				if (value != null) {
 #if DEBUG_REF
-				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+					Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
 #endif
-				strongRefs.Add (referent, o);
+					strongRefs.Add (id, value);
+				}
 			}
 		}
 
-		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
 		{
-			if (StringComparer.Ordinal.Equals (name, "Source")) {
+			if (id == (IntPtr) WeakRefs.RoutedEventArgs_Source) {
 				source = null;
-				return;
 			} else if (strongRefs != null) {
 #if DEBUG_REF
-				var o = Value.ToObject (referent);
-				Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+				Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
 #endif
-				strongRefs.Remove (referent);
+				strongRefs.Remove (id);
 			}
 		}
 
@@ -96,9 +92,9 @@ namespace System.Windows {
 		{
 			List<HeapRef> refs = new List<HeapRef> ();
 			if (strongRefs != null)
-			foreach (IntPtr nativeref in strongRefs.Keys)
-				if (strongRefs[nativeref] is INativeEventObjectWrapper)
-					refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
+				foreach (var keypair in strongRefs)
+					if (keypair.Value is INativeEventObjectWrapper)
+						refs.Add (new HeapRef (true, (INativeEventObjectWrapper)keypair.Value, NativeDependencyObjectHelper.IdToName (keypair.Key)));
 			return refs;
 		}
 #endif

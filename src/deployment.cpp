@@ -424,14 +424,14 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 }
 
 Deployment::Deployment (MonoDomain *domain)
-	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, "CurrentApplication")
+	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, CurrentApplicationWeakRef)
 {
 	this->domain = domain;
 	InnerConstructor ();
 }
 
 Deployment::Deployment()
-	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, "CurrentApplication")
+	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, CurrentApplicationWeakRef)
 {
 	MonoDomain *current = mono_domain_get ();
 #if MONO_ENABLE_APP_DOMAIN_CONTROL

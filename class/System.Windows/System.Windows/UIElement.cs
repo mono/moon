@@ -96,6 +96,11 @@ namespace System.Windows {
 			NativeMethods.uielement_measure (native, availableSize);
 		}
 
+
+		internal DependencyObject SubtreeObject {
+			get; private set;
+		}
+
 		public void InvalidateMeasure ()
 		{
 			NativeMethods.uielement_invalidate_measure (native);
@@ -186,6 +191,24 @@ namespace System.Windows {
 			if (//Int32.Parse (Deployment.Current.RuntimeVersion.Split('.')[0]) < 4 &&
 			    !DesignerProperties.GetIsInDesignMode (Application.Current.RootVisual))
 				throw new NotImplementedException ();
+		}
+
+		internal override void AddStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr) WeakRefs.UIElement_SubtreeObject) {
+				SubtreeObject = (DependencyObject) value;
+			} else {
+				base.AddStrongRef (id, value);
+			}
+		}
+
+		internal override void ClearStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr) WeakRefs.UIElement_SubtreeObject) {
+				SubtreeObject = null;
+			} else {
+				base.ClearStrongRef (id, value);
+			}
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]

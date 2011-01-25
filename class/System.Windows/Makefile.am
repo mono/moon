@@ -767,6 +767,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/DependencyObject.g.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
 	$(srcdir)/System.Windows/Events.g.cs					\
+	$(srcdir)/System.Windows/WeakRefs.g.cs					\
 \
 	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\

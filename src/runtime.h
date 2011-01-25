@@ -361,6 +361,9 @@ public:
 	void AddGPUSurface (gint64 size);
 	void RemoveGPUSurface (gint64 size);
 
+	const static void *LayersWeakRef;
+	const static void *ToplevelWeakRef;
+
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;

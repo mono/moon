@@ -37,6 +37,7 @@ namespace Mono
 
 	internal partial class NameScope : INativeEventObjectWrapper, IRefContainer {
 
+		Dictionary<IntPtr, object> strongRefs;
 		private IntPtr _native;
 		private bool free_mapping;
 
@@ -94,18 +95,30 @@ namespace Mono
 
 		public Kind GetKind () { return Kind.NAMESCOPE; }
 
-		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
+			if (strongRefs == null)
+				strongRefs = new Dictionary<IntPtr, object>();
+			if (!strongRefs.ContainsKey (id))
+				strongRefs.Add (id, value);
 		}
 
-		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
 		{
+			if (strongRefs != null)
+				strongRefs.Remove (id);
 		}
 
 #if HEAPVIZ
 		System.Collections.ICollection IRefContainer.GetManagedRefs ()
 		{
-			return new List<HeapRef> ();
+			List<HeapRef> refs = new List<HeapRef> ();
+			if (strongRefs != null) {
+				foreach (var keypair in strongRefs)
+					if (keypair.Value is INativeEventObjectWrapper)
+						refs.Add (new HeapRef (true, (INativeEventObjectWrapper)keypair.Value, NativeDependencyObjectHelper.IdToName (keypair.Key)));
+			}
+			return refs;
 		}
 #endif
 

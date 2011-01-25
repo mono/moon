@@ -197,6 +197,9 @@ class Shape : public FrameworkElement {
 	
 	void SetStrokeThickness (double thickness);
 	double GetStrokeThickness ();
+
+	const static void *StrokeWeakRef;
+	const static void *FillWeakRef;
 };
 
 

@@ -232,7 +232,7 @@ DownloadProgressEventArgs::GetProgress ()
 }
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
-	: EventArgs (Type::ROUTEDEVENTARGS), source (this, "Source")
+	: EventArgs (Type::ROUTEDEVENTARGS), source (this, SourceWeakRef)
 {
 	EnsureManagedPeer ();
 	this->source = source;
@@ -240,21 +240,21 @@ RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 }
 
 RoutedEventArgs::RoutedEventArgs ()
-	: EventArgs (Type::ROUTEDEVENTARGS), source (this, "Source")
+	: EventArgs (Type::ROUTEDEVENTARGS), source (this, SourceWeakRef)
 {
 	source = NULL;
 	handled = false;
 }
 
 RoutedEventArgs::RoutedEventArgs (Type::Kind kind)
-	: EventArgs (kind), source (this, "Source")
+	: EventArgs (kind), source (this, SourceWeakRef)
 {
 	source = NULL;
 	handled = false;
 }
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source, Type::Kind kind)
-	: EventArgs (Type::ROUTEDEVENTARGS), source (this, "Source")
+	: EventArgs (Type::ROUTEDEVENTARGS), source (this, SourceWeakRef)
 {
 	EnsureManagedPeer ();
 	this->source = source;
@@ -592,7 +592,7 @@ SendCompletedEventArgs::~SendCompletedEventArgs ()
 
 CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error)
 	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS),
-	  source (this, "Source")
+	  source (this, SourceWeakRef)
 {
 	this->error = error ? new MoonError (*error) : NULL;
 }
@@ -637,7 +637,7 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 //
 
 TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs (TimelineMarker *marker)
-	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS), marker (this, "Marker")
+	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS), marker (this, MarkerWeakRef)
 {
 	this->marker = marker;
 }

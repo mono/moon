@@ -124,67 +124,40 @@ namespace System.Windows {
 		}
 
 		Dictionary<IntPtr,object> strongRefs;
-		Dictionary<string,object> namedRefs;
 
-		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
-			AddStrongRef (referent, name);
+			AddStrongRef (id, value);
 		}
 
-		internal virtual void AddStrongRef (IntPtr referent, string name)
+		internal virtual void AddStrongRef (IntPtr id, object value)
 		{
-			var o = Value.ToObject (null, referent);
-
-			if (name == "" && strongRefs != null && strongRefs.ContainsKey (referent))
-				return;
-			if (namedRefs != null && namedRefs.ContainsKey (name))
+			if (strongRefs != null && strongRefs.ContainsKey (id))
 				return;
 
-			if (o != null) {
-
-				if (name == "") {
+			if (value != null) {
 #if DEBUG_REF
-					Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3} (referent = {4:x})", GetHashCode(), this, o.GetHashCode(), o, (int) referent);
+				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5})", GetHashCode(), this, value.GetHashCode(), value, NativeDependencyObjectHelper.IdToName (id), value);
 #endif
-					if (strongRefs == null) {
-						strongRefs = new Dictionary<IntPtr, object> ();
-					}
-					strongRefs.Add (referent, o);
-				}
-				else {
-#if DEBUG_REF
-					Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (refrent = {5:x})", GetHashCode(), this, o.GetHashCode(), o, name, (int)referent);
-#endif
-					if (namedRefs == null)
-						namedRefs = new Dictionary<string,object> (StringComparer.Ordinal);
-					namedRefs.Add (name, o);
-				}
+				if (strongRefs == null)
+					strongRefs = new Dictionary<IntPtr,object> ();
+				strongRefs.Add (id, value);
 			}
 		}
 
-		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
 		{
-			ClearStrongRef (referent, name);
+			ClearStrongRef (id, value);
 			
 		}
 
-		internal virtual void ClearStrongRef (IntPtr referent, string name)
+		internal virtual void ClearStrongRef (IntPtr id, object value)
 		{
-			if (name == "") {
-
 #if DEBUG_REF
-				Console.WriteLine ("Clearing ref from {0}/{1} to referent = {2:x}", GetHashCode(), this, (int) referent);
+			Console.WriteLine ("Clearing ref from {0}/{1} to referent = {2:x}", GetHashCode(), this, value);
 #endif
-				if (strongRefs != null)
-					strongRefs.Remove (referent);
-			}
-			else {
-#if DEBUG_REF
-				Console.WriteLine ("Clearing ref named `{4}' from {0}/{1} to referent = {2:x}", GetHashCode(), this, name, (int)referent);
-#endif
-				if (namedRefs != null)
-					namedRefs.Remove (name);
-			}
+			if (strongRefs != null)
+				strongRefs.Remove (id);
 		}
 
 #if HEAPVIZ
@@ -200,17 +173,12 @@ namespace System.Windows {
 		internal virtual void AccumulateManagedRefs (List<HeapRef> refs)
 		{
 			if (strongRefs != null)
-				foreach (IntPtr nativeref in strongRefs.Keys)
-					if (strongRefs[nativeref] is INativeEventObjectWrapper)
-						refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
-
-			if (namedRefs != null)
-			foreach (string name in namedRefs.Keys)
-				if (namedRefs[name] is INativeEventObjectWrapper)
-					refs.Add (new HeapRef (true, (INativeEventObjectWrapper)namedRefs[name], name));
+				foreach (var keypair in strongRefs)
+					if (keypair.Value is INativeEventObjectWrapper)
+						refs.Add (new HeapRef (true, (INativeEventObjectWrapper)keypair.Value, NativeDependencyObjectHelper.IdToName (keypair.Key)));
 
 			if (TemplateOwner != null)
-				refs.Add (new HeapRef (true,
+				refs.Add (new HeapRef (false,
 						       TemplateOwner,
 						       "TemplateOwner"));
 		}

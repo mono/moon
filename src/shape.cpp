@@ -93,7 +93,7 @@ convert_fill_rule (FillRule fill_rule)
 //
 
 Shape::Shape ()
-	: stroke (this, "cachedStroke"), fill (this, "cachedFill")
+	: stroke (this, StrokeWeakRef), fill (this, FillWeakRef)
 {
 	SetObjectType (Type::SHAPE);
 

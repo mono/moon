@@ -74,7 +74,7 @@ CallRaiseAccumulatedCompleted (Clock *clock)
 }
 
 Clock::Clock (Timeline *tl)
-  : natural_duration (Duration::Automatic), timeline (this, "Timeline")
+  : natural_duration (Duration::Automatic), timeline (this, TimelineWeakRef)
 {
 	SetObjectType (Type::CLOCK);
 

@@ -18,13 +18,13 @@ class WeakRefBase {
 protected:
 	EventObject *obj;
 	Value *field;
-	const char *name;
+	const void *id;
 	bool storeInManaged;
 
-	WeakRefBase (EventObject *obj = NULL, const char *name = NULL, bool storeInManaged = true)
+	WeakRefBase (EventObject *obj = NULL, const void *id = NULL, bool storeInManaged = true)
 	{
 		this->obj = obj;
-		this->name = name;
+		this->id = id;
 		this->field = NULL;
 		this->storeInManaged = storeInManaged;
 	}
@@ -45,8 +45,8 @@ template<typename EO>
 class WeakRef : public WeakRefBase {
 public:
 
-	WeakRef (EventObject *obj = NULL, const char *name = NULL, bool storeInManaged = true)
-		: WeakRefBase (obj, name, storeInManaged)
+	WeakRef (EventObject *obj = NULL, const void *id = NULL, bool storeInManaged = true)
+		: WeakRefBase (obj, id, storeInManaged)
 	{
 	}
 

@@ -242,6 +242,8 @@ public:
 	const static int CurrentStateInvalidatedEvent;
 	const static int CompletedEvent;
 
+	const static void *TimelineWeakRef;
+
 protected:
 	virtual ~Clock ();
 

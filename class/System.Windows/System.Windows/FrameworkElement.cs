@@ -194,28 +194,20 @@ namespace System.Windows {
 			get; private set;
 		}
 
-		internal DependencyObject SubtreeObject {
-			get; private set;
-		}		
-
-		internal override void AddStrongRef (IntPtr referent, string name)
+		internal override void AddStrongRef (IntPtr id, object value)
 		{
-			if (name == "LogicalParent")
-				Parent = Value.ToObject (referent) as DependencyObject;
-			else if (name == "SubtreeObject")
-				SubtreeObject = Value.ToObject (referent) as DependencyObject;
+			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent)
+				Parent = (DependencyObject) value;
 			else
-				base.AddStrongRef (referent, name);
+				base.AddStrongRef (id, value);
 		}
 
-		internal override void ClearStrongRef (IntPtr referent, string name)
+		internal override void ClearStrongRef (IntPtr id, object value)
 		{
-			if (name == "LogicalParent")
+			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent)
 				Parent = null;
-			else if (name == "SubtreeObject")
-				SubtreeObject = null;
 			else
-				base.ClearStrongRef (referent, name);
+				base.ClearStrongRef (id, value);
 		}
 
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;

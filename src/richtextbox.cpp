@@ -195,6 +195,7 @@ GetClipboard (RichTextBox *textbox, MoonClipboardType clipboardType)
 }
 
 RichTextBox::RichTextBox ()
+	: view (this, ViewWeakRef)
 {
 	SetObjectType (Type::RICHTEXTBOX);
 	
@@ -228,7 +229,6 @@ RichTextBox::RichTextBox ()
 	selecting = false;
 	captured = false;
 	focused = false;
-	view = NULL;
 
 	selection = NULL;
 

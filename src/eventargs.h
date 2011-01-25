@@ -277,6 +277,8 @@ public:
 	/* @SkipFactories */
 	RoutedEventArgs (DependencyObject *source);
 
+	const static void *SourceWeakRef;
+
 protected:
  	/* @GeneratePInvoke */
 	RoutedEventArgs ();
@@ -571,6 +573,8 @@ public:
 
 	void SetSource (BitmapSource *source);
 
+	const static void *SourceWeakRef;
+
 protected:
 	virtual ~CaptureImageCompletedEventArgs ();
 
@@ -609,6 +613,8 @@ class TimelineMarkerRoutedEventArgs : public RoutedEventArgs {
 
 	/* @GeneratePInvoke */
 	TimelineMarker *GetMarker () { return marker; }
+
+	const static void *MarkerWeakRef;
 };
 
 /* @Namespace=None */

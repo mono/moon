@@ -33,8 +33,8 @@ void
 WeakRefBase::ClearWeakRef ()
 {
 #ifdef DEBUG_WEAKREF
-	printf ("WeakRefBase::ClearWeakRef () %p clearing field '%s::%s' whose value is %p = %i = %s\n",
-		this, obj ? obj->GetTypeName () : NULL, name, field, GET_OBJ_ID (field), field ? field->GetTypeName () : NULL);
+	printf ("WeakRefBase::ClearWeakRef () %p clearing field '%s::%p' whose value is %p = %i = %s\n",
+		this, obj ? obj->GetTypeName () : NULL, id, field, GET_OBJ_ID (field), field ? field->GetTypeName () : NULL);
 #endif
 
 	Clear ();
@@ -52,7 +52,7 @@ WeakRefBase::Clear ()
 		if (storeInManaged && obj && obj->clearManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since clearManagedRef is a managed callback */
 			// Don't strengthen the Value* because we're going to delete it next.
-			obj->clearManagedRef (obj, field, name);
+			obj->clearManagedRef (obj, field, id);
 		}
 	}
 	delete field;
@@ -70,8 +70,8 @@ WeakRefBase::Set (const EventObject *ptr)
 			return;
 
 #ifdef DEBUG_WEAKREF
-	printf ("WeakRefBase::Set () %p changing field '%s::%s' from %p = %i = %s to %p = %i = %s\n",
-		this, obj ? obj->GetTypeName () : NULL, name,
+	printf ("WeakRefBase::Set () %p changing field '%s::%p' from %p = %i = %s to %p = %i = %s\n",
+		this, obj ? obj->GetTypeName () : NULL, id,
 		field, GET_OBJ_ID (((EventObject *) field)), field ? ((EventObject *) field)->GetTypeName () : NULL,
 		ptr, GET_OBJ_ID (((EventObject *) ptr)), ptr ? ((EventObject *) ptr)->GetTypeName () : NULL);
 #endif
@@ -87,7 +87,7 @@ WeakRefBase::Set (const EventObject *ptr)
 
 		if (storeInManaged && obj && obj->addManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since addManagedRef is a managed callback */
-			obj->addManagedRef (obj, field, name);
+			obj->addManagedRef (obj, field, id);
 		}
 		field->AsEventObject ()->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 	}

@@ -167,7 +167,9 @@ public:
 	const static int VerticalContentAlignmentProperty;
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
 	const static int DefaultStyleKeyProperty;
-	
+
+	const static void *TemplateRootWeakRef;
+
 protected:
 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Control ();

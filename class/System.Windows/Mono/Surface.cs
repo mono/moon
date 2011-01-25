@@ -91,36 +91,34 @@ namespace Mono
 
 		Dictionary<IntPtr,object> strongRefs;
 
-		void IRefContainer.AddStrongRef (IntPtr referent, string name)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
-			if (strongRefs.ContainsKey (referent))
+			if (strongRefs.ContainsKey (id))
 				return;
 
-			var o = Value.ToObject (referent);
-			if (o != null) {
+			if (value != null) {
 #if DEBUG_REF
-				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
 #endif
-				strongRefs.Add (referent, o);
+				strongRefs.Add (id, value);
 			}
 		}
 
-		void IRefContainer.ClearStrongRef (IntPtr referent, string name)
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
 		{
 #if DEBUG_REF
-			var o = Value.ToObject (referent);
-			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
+			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
 #endif
-			strongRefs.Remove (referent);
+			strongRefs.Remove (id);
 		}
 
 #if HEAPVIZ
 		System.Collections.ICollection IRefContainer.GetManagedRefs ()
 		{
 			List<HeapRef> refs = new List<HeapRef> ();
-			foreach (IntPtr nativeref in strongRefs.Keys)
-				if (strongRefs[nativeref] is INativeEventObjectWrapper)
-					refs.Add (new HeapRef ((INativeEventObjectWrapper)strongRefs[nativeref]));
+				foreach (var keypair in strongRefs)
+					if (keypair.Value is INativeEventObjectWrapper)
+						refs.Add (new HeapRef (true, (INativeEventObjectWrapper)keypair.Value, NativeDependencyObjectHelper.IdToName (keypair.Key)));
 				
 			return refs;
 		}

@@ -28,7 +28,7 @@
 namespace Moonlight {
 
 Control::Control ()
-	: template_root (this, "TemplateRoot")
+	: template_root (this, TemplateRootWeakRef)
 {
 	SetObjectType (Type::CONTROL);
 

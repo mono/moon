@@ -196,6 +196,9 @@ public:
 	FlowDirection GetFlowDirection ();
 	void SetFlowDirection (FlowDirection value);
 
+	const static void *LogicalParentWeakRef;
+	const static void *DefaultTemplateWeakRef;
+
 protected:
 	GetDefaultTemplateCallback get_default_template_cb;
 	Rect bounds_with_children;

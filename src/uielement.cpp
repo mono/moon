@@ -39,14 +39,14 @@ namespace Moonlight {
 //#define DEBUG_INVALIDATE 0
 
 UIElement::UIElement ()
-	: DependencyObject (Type::UIELEMENT), visual_parent (this, "VisualParent"), subtree_object (this, "SubtreeObject")
+	: DependencyObject (Type::UIELEMENT), visual_parent (this, VisualParentWeakRef), subtree_object (this, SubtreeObjectWeakRef)
 {
 	Init ();
 }
 
 
 UIElement::UIElement (Type::Kind object_type)
-	: DependencyObject (object_type), visual_parent (this, "VisualParent"), subtree_object (this, "SubtreeObject")
+	: DependencyObject (object_type), visual_parent (this, VisualParentWeakRef), subtree_object (this, SubtreeObjectWeakRef)
 {
 	Init ();
 }
