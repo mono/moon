@@ -49,7 +49,7 @@ namespace System.Windows.Controls {
 			DependencyProperty.Register ("Orientation",
 						     typeof (Orientation),
 						     typeof (VirtualizingStackPanel),
-						     new PropertyMetadata (Orientation.Vertical));
+						     new PropertyMetadata (Orientation.Vertical, VirtualizingStackPanel.OrientationChanged));
 		
 		public static readonly DependencyProperty VirtualizationModeProperty =
 			DependencyProperty.RegisterAttached ("VirtualizationMode",
@@ -91,6 +91,11 @@ namespace System.Windows.Controls {
 				throw new ArgumentNullException ("element");
 			
 			element.SetValue (VirtualizingStackPanel.VirtualizationModeProperty, value);
+		}
+
+		static void OrientationChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		{
+			((VirtualizingStackPanel) sender).InvalidateMeasure ();
 		}
 
 		bool canHorizontallyScroll;
