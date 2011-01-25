@@ -340,10 +340,6 @@ namespace System.Windows.Controls {
 			
 			HorizontalOffset = 0;
 			VerticalOffset = 0;
-			ViewportHeight = 0;
-			ViewportWidth = 0;
-			ExtentHeight = 0;
-			ExtentWidth = 0;
 			
 			InvalidateMeasure ();
 			

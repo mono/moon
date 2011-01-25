@@ -52,6 +52,23 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ClearChildren ()
+		{
+			TestPanel.Children.Add (Control);
+			Control.UpdateLayout ();
+			var vsp = Control.FindFirstChild <VirtualizingStackPanel> ();
+			Assert.IsGreater (0, vsp.ExtentWidth, "#1");
+			Assert.IsGreater (0, vsp.ExtentHeight, "#2");
+			Assert.IsGreater (0, vsp.ViewportWidth, "#3");
+			Assert.IsGreater (0, vsp.ViewportHeight, "#4");
+			Control.Items.Clear ();
+			Assert.IsGreater (0, vsp.ExtentWidth, "#5");
+			Assert.IsGreater (0, vsp.ExtentHeight, "#6");
+			Assert.IsGreater (0, vsp.ViewportWidth, "#7");
+			Assert.IsGreater (0, vsp.ViewportHeight, "#8");
+		}
+
+		[TestMethod]
 		public void MoreItemsThanHeight_CheckMeasure()
 		{
 			TestPanel.Children.Add(Control);
