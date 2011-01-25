@@ -354,7 +354,7 @@ PositionAtOffsetIterator::Step (int *offset)
 			IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
 			(*offset) --;
 			location = parent_node->GetDocumentChildren()->IndexOf (Value (element));
-			if (location == parent_node->GetDocumentChildren()->GetCount() - 1)
+			if ((int)location == parent_node->GetDocumentChildren()->GetCount() - 1)
 				location = CONTENT_END;
 			else
 				location ++;
@@ -367,7 +367,7 @@ PositionAtOffsetIterator::Step (int *offset)
 			const char *text = ((Run*)element)->GetText();
 
 			if (text == NULL) {
-				*offset --;
+				(*offset) --;
 				location = CONTENT_END;
 				return true;
 			}
@@ -392,8 +392,8 @@ PositionAtOffsetIterator::Step (int *offset)
 			DependencyObjectCollection *doc_children = node->GetDocumentChildren();
 			int children_count = doc_children ? doc_children->GetCount() : 0;
 
-			if (children_count) {
-				if (location > children_count - 1) {
+			if (children_count > 0) {
+				if ((int)location > children_count - 1) {
 					DependencyObject *parent = GetElementParent();
 
 					if (!parent) {
@@ -405,7 +405,7 @@ PositionAtOffsetIterator::Step (int *offset)
 					IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
 					(*offset) --;
 					location = parent_node->GetDocumentChildren()->IndexOf (Value (element)) + 1;
-					if (location == children_count - 1)
+					if ((int)location == children_count - 1)
 						location = CONTENT_END;
 					element = parent;
 					return true;
@@ -430,15 +430,13 @@ PositionAtOffsetIterator::Step (int *offset)
 				IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (parent);
 				(*offset) --;
 				location = parent_node->GetDocumentChildren()->IndexOf (Value (element)) + 1;
-				if (location == children_count - 1)
+				if ((int)location == children_count - 1)
 					location = CONTENT_END;
 				element = parent;
 				return true;
 			}
 		}
 	}
-#undef CONTENT_START
-#undef CONTENT_END
 }
 
 
@@ -464,7 +462,7 @@ TextPointer::GetPositionAtOffset_np (int offset, LogicalDirection dir)
 int
 TextPointer::ResolveLocation ()
 {
-	if (location != (guint32)-1)
+	if (location != CONTENT_END)
 		return location;
 
 	// FIXME double check this case
@@ -495,5 +493,7 @@ TextPointer::GetIsAtInsertionPosition ()
 	return false;
 }
 
+#undef CONTENT_START
+#undef CONTENT_END
 
 };

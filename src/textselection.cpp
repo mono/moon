@@ -249,6 +249,12 @@ TextSelection::SetText (const char *text)
 			IDocumentNode *node = anchor.GetParentNode();
 			DependencyObjectCollection *children = node->GetDocumentChildren();
 
+			if (!children) {
+				// this can happen when anchor is in an InlineUIContainer.
+				printf ("NIEX TextSelection.SetText for anchor == InlineUIContainer.\n");
+				return;
+			}
+
 			Run *r = MoonUnmanagedFactory::CreateRun ();
 			r->SetText (text);
 
