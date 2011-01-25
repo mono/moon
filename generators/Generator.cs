@@ -41,6 +41,7 @@ class Generator {
 		GenerateManagedDOs (info);
 
 		GenerateManagedEvents (info);
+		GenerateManagedWeakRefs (info);
 
 		GenerateJSBindings (info);
 	}
@@ -297,6 +298,40 @@ class Generator {
 		Helper.WriteWarningGenerated (text);
 		contents = text.ToString () + contents;
 		Helper.WriteAllText (file, contents);
+	}
+
+	static void GenerateManagedWeakRefs (GlobalInfo all)
+	{
+		string base_dir = Environment.CurrentDirectory;
+		string class_dir = Path.Combine (base_dir, "class");
+		string sys_win_dir = Path.Combine (Path.Combine (class_dir, "System.Windows"), "System.Windows");
+		string filename = Path.Combine (sys_win_dir, "WeakRefs.g.cs");
+
+		StringBuilder text = new StringBuilder ();
+
+		Helper.WriteWarningGenerated (text);
+		text.AppendLine ();
+		text.AppendLine ("using System;");
+		text.AppendLine ("namespace Mono {");
+		text.AppendLine ("\tinternal enum WeakRefs {");
+		text.AppendLine ("\t\tInvalid = 0,");
+		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+
+			foreach (FieldInfo field in t.WeakRefs) {
+				text.Append ("\t\t");
+				text.Append (t.Name);
+				text.Append ("_");
+				text.Append (field.Name.Replace ("WeakRef", ""));
+				text.Append (" = ");
+				text.Append (t.GetWeakRefId (field));
+				text.AppendLine (",");
+			}
+		}
+
+		text.AppendLine ("\t}");
+		text.AppendLine ("}");
+
+		Helper.WriteAllText (filename, text.ToString ());
 	}
 
 	static void GenerateManagedEvents (GlobalInfo all)
@@ -2678,9 +2713,19 @@ class Generator {
 		text.AppendLine ();
 
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+
+			foreach (FieldInfo field in t.WeakRefs) {
+				text.Append ("const void *");
+				text.Append (t.Name);
+				text.Append ("::");
+				text.Append (field.Name);
+				text.Append (" = (void *)");
+				text.Append (t.GetWeakRefId (field));
+				text.AppendLine (";");
+			}
+
 			if (t.GetEventCount () == 0)
 				continue;
-
 
 			foreach (FieldInfo field in t.Events) {
 				text.Append ("const int ");

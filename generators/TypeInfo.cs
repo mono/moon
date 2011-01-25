@@ -20,6 +20,7 @@ class TypeInfo : MemberInfo {
 	private List<TypeInfo> interfaces;
 	private List<FieldInfo> events;
 	private List<FieldInfo> properties;
+	private List<FieldInfo> weakRefs;
 	private bool? is_abstract;
 
 	public TypeReference Base; // The parent type
@@ -85,6 +86,31 @@ class TypeInfo : MemberInfo {
 				events.Sort (new Members.MembersSortedByFullName <FieldInfo>());
 			}
 			return events;
+		}
+	}
+
+	public List<FieldInfo> WeakRefs {
+		get {
+			if (weakRefs == null) {
+				weakRefs = new List<FieldInfo> ();
+
+				foreach (MemberInfo member in Children.Values) {
+					FieldInfo field = member as FieldInfo;
+					if (field == null)
+						continue;
+					Console.WriteLine ("Checking: {0}", field.Name);
+					if (!field.Name.EndsWith ("WeakRef"))
+						continue;
+
+					if (!field.IsStatic)
+						continue;
+
+					weakRefs.Add (field);
+				}
+				weakRefs.Sort (new Members.MembersSortedByFullName <FieldInfo>());
+			}
+			Console.WriteLine ("I have: {0}", weakRefs.Count);
+			return weakRefs;
 		}
 	}
 
@@ -235,6 +261,18 @@ class TypeInfo : MemberInfo {
 				return i + GetBaseEventCount ();
 		}
 		return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event);
+	}
+
+	// There are only a handful of these so just autoincrement the value.
+	// Ensure we always return > 0 so that getting '0' (the default value)
+	// is an error case.
+	static List<FieldInfo> weakRefIds = new List<FieldInfo> ();
+	public int GetWeakRefId (FieldInfo weakRef)
+	{
+		if (!weakRefIds.Contains (weakRef))
+			weakRefIds.Add (weakRef);
+
+		return weakRefIds.IndexOf (weakRef) + 1;
 	}
 
 	public string KindName {
