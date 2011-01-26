@@ -58,11 +58,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			// ContentTest
 			Assert.IsNull (peer.GetChildren (), "#0");
 
-			// Null
-			Assert.Throws<NullReferenceException> (delegate {
-				new DataGridDetailsPresenterAutomationPeer (null);
-			});
-
 			// IsContentElement
 			Assert.IsFalse (peer.IsContentElement (), "IsContentElement");
 

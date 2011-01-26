@@ -46,9 +46,17 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		// All these methods are tested in AllTests
 		public override void GetAutomationControlType () {}
 		public override void ContentTest () {}
-		public override void Null () {}
 		public override void IsContentElement () {}
 		public override void GetClassName () {}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)] // NRE in SL2, ANE in SL4
+		public override void Null ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				new DataGridRowsPresenterAutomationPeer (null);
+			});
+		}
 
 		[TestMethod]
 		public void AllTests ()
@@ -61,11 +69,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			// ContentTest
 			Assert.IsNull (peer.GetChildren (), "#0");
 
-			// Null
-			Assert.Throws<NullReferenceException> (delegate {
-				new DataGridRowsPresenterAutomationPeer (null);
-			});
-			
 			// IsContentElement
 			Assert.IsFalse (peer.IsContentElement (), "IsContentElement");
 		

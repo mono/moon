@@ -68,8 +68,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		public override void GetName () {}
 		public override void GetClickablePoint () {}
 		public override void GetParentTest () {}
-		public override void Null () {}
 		public override void IsOffScreen () {}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)] // NRE in SL2, ANE in SL4
+		public override void Null ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				new DataGridColumnHeaderAutomationPeer (null);
+			});
+		}
 
 		[TestMethod]
 		public void AllTests ()
@@ -111,11 +119,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			// GetParent
 			Assert.IsNotNull (peer.GetParent (), "GetParent");
-
-			// Null
-			Assert.Throws<NullReferenceException> (delegate {
-				new DataGridColumnHeaderAutomationPeer (null);
-			});
 
 			// IsOffscreen
 			Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen");

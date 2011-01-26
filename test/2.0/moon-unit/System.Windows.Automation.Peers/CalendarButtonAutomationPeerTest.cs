@@ -459,9 +459,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion (4)] // NRE in SL2, ANE in SL4
 		public override void Null ()
 		{
-			Assert.Throws<NullReferenceException> (delegate {
+			Assert.Throws<ArgumentNullException> (delegate {
 				new CalendarButtonAutomationPeer (null);
 			});
 		}

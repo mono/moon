@@ -39,9 +39,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	public class ThumbAutomationPeerTest {
 
 		[TestMethod]
+		[MinRuntimeVersion (4)] // NRE in SL2, ANE in SL4
 		public void Null ()
 		{
-			Assert.Throws<NullReferenceException> (delegate {
+			Assert.Throws<ArgumentNullException> (delegate {
 				new ThumbAutomationPeer (null);
 			});
 		}

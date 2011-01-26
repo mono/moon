@@ -44,11 +44,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	public class DataGridRowsPresenterAutomationPeerTest : FrameworkElementAutomationPeerTest {
 
 		// All these methods are tested in AllTests
-		public override void Null () {}
 		public override void GetChildren () {}
 		public override void IsContentElement () {}
 		public override void GetClassName () {}
 		public override void ContentTest () {}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)] // NRE in SL2, ANE in SL4
+		public override void Null ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				new DataGridRowHeaderAutomationPeer (null);
+			});
+		}
 
 		[TestMethod]
 		public void AllTests ()
@@ -66,11 +74,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			List<AutomationPeer> children = peer.GetChildren ();
 			Assert.IsNotNull (children, "#0");
 			Assert.AreEqual (0, children.Count, "#1");
-
-			// Null
-			Assert.Throws<NullReferenceException> (delegate {
-				new DataGridRowsPresenterAutomationPeer (null);
-			});
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

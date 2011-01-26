@@ -45,8 +45,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		// All these methods are tested in AllTests
 		public override void GetAutomationControlType () {}
-		public override void Null () {}
 		public override void GetClassName () {}
+
+		[TestMethod]
+		[MinRuntimeVersion (4)] // NRE in SL2, ANE in SL4
+		public override void Null ()
+		{
+			Assert.Throws<ArgumentNullException> (delegate {
+				new DataGridRowAutomationPeer (null);
+			});
+		}
 
 		[TestMethod]
 		public void AllTests ()
@@ -55,11 +63,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			// GetAutomationControlType
 			Assert.AreEqual (AutomationControlType.DataItem, peer.GetAutomationControlType (), "GetAutomationControlType");
-
-			// Null
-			Assert.Throws<NullReferenceException> (delegate {
-				new DataGridRowAutomationPeer (null);
-			});
 
 			// GetClassName
 			Assert.AreEqual ("DataGridRow", peer.GetClassName (), "GetClassNameCore");
