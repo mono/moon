@@ -372,7 +372,10 @@ namespace Mono.Xaml {
 						Helper.GetConverterCreatorFor (p, p.PropertyType),
 						p.DeclaringType
 					);
-				} else if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (target), name, out dp)) {
+				} else if (Deployment.Current.MajorVersion >= 4) {
+					// The SL4 parser does not allow you to bind to a DP with no CLR wrapper
+					accessors = null;
+				} else if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (target), name, out dp) && !dp.IsAttached) {
 					accessors = new Accessors (
 						(o) => { throw new XamlParseException (string.Format ("The property {0} was not found on element {1}.", name, target.Name)); },
 						(o, a) => { throw new XamlParseException (string.Format ("The property {0} was not found on element {1}.", name, target.Name)); },
@@ -429,18 +432,41 @@ namespace Mono.Xaml {
 
 		static Accessors CreateAttachedAccessors (XamlObjectElement parent, Type t, string name)
 		{
+			// See comment in XamlReflectionPropertyForName to see why we special case the case
+			// where there's a DP but no static getter/setter methods.
+
+			if (string.IsNullOrEmpty (name))
+				return null;
+			
+			Func<TypeConverter> converter = null;
 			MethodInfo getter = ResolveAttachedPropertyGetter (name, t);
 			MethodInfo setter = ResolveAttachedPropertySetter (name, t, getter == null ? null : getter.ReturnType);
-
-			if (getter == null && setter == null)
-				return null;
-
-			if (setter == null && !IsCollectionType (getter.ReturnType))
-				return null;
-
-			Func<TypeConverter> converter = null;
 			if (getter != null)
 				converter = Helper.GetConverterCreatorFor (getter, getter.ReturnType);
+
+			if ((getter == null && setter == null) || (setter == null && !IsCollectionType (getter.ReturnType))) {
+
+				if (Deployment.Current.MajorVersion >= 4) {
+					// The SL4+ parser will not allow you to set a Binding on DP with no CLR wrapper
+					return null;
+				}
+
+				// The old parser will allow you to set a Binding on DP with no CLR wrapper
+				DependencyProperty dp;
+				Types.Ensure (t);
+				if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (t), name, out dp) && dp.IsAttached) {
+					return new Accessors (
+						(o) => { throw new XamlParseException (string.Format ("The property {0} was not found on element {1}.", name, t.Name)); },
+						(o, a) => { throw new XamlParseException (string.Format ("The property {0} was not found on element {1}.", name, t.Name)); },
+						dp.PropertyType,
+						dp.Name,
+						converter,
+						dp.DeclaringType
+					);
+				} else {
+					return null;
+				}
+			}
 
 			return new Accessors (
 				CreateAttachedGetter (getter),
