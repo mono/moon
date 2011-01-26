@@ -353,10 +353,16 @@ namespace Mono.Xaml {
 
 		private XamlReflectionPropertySetter XamlReflectionPropertyForName (Type target, string name)
 		{
+			// If there's a normal CLR property of this name, great! We do everything as normal. If there's
+			// no CLR property, we need to check for the existence of a DependencyProperty of that name. If
+			// the DP exists, we should create a XamlReflectionPropertySetter with a getter/setter that throws
+			// an exception. This allows us to do something like: <Rectangle SomeDp={Binding} /> when SomeDp
+			// does not have a CLR wrapper property.
 			Accessors accessors;
 			var key = new CachedAccessorKey (name, target);
 			if (!XamlContext.PropertyAccessorCache.TryGetValue (key, out accessors)) {
 				PropertyInfo p = target.GetProperty (PropertyName (name), XamlParser.PROPERTY_BINDING_FLAGS);
+				DependencyProperty dp;
 				if (p != null) {
 					accessors = new Accessors (
 						CreateGetter (p.GetGetMethod (true)),
@@ -366,7 +372,17 @@ namespace Mono.Xaml {
 						Helper.GetConverterCreatorFor (p, p.PropertyType),
 						p.DeclaringType
 					);
+				} else if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (target), name, out dp)) {
+					accessors = new Accessors (
+						(o) => { throw new XamlParseException (string.Format ("The property {0} was not found on element {1}.", name, target.Name)); },
+						(o, a) => { throw new XamlParseException (string.Format ("The property {0} was not found on element {1}.", name, target.Name)); },
+						dp.PropertyType,
+						dp.Name,
+						Helper.GetConverterCreatorFor (dp.PropertyType),
+						dp.DeclaringType
+					);
 				}
+
 				XamlContext.PropertyAccessorCache.Add (key, accessors);
 			}
 
