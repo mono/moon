@@ -361,5 +361,14 @@ namespace Mono.Moonlight.UnitTesting
 				box.SetValue (TextBox.WatermarkProperty, new object ());
 			}, "SetValue");
 		}
+
+		[TestMethod]
+		public void NullifyFontSource ()
+		{
+			TextBox tb = new TextBox ();
+			Assert.IsNull (tb.FontSource, "before");
+			tb.FontSource = null; // no exception
+			Assert.IsNull (tb.FontSource, "after");
+		}
 	}
 }

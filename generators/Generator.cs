@@ -2665,6 +2665,13 @@ class Generator {
 		text.AppendLine (" }");
 	}
 
+	// special case for FontSource which is a struct in unmanaged and a class in managed
+	// FIXME: move this into an @attribute if we get more cases like this one
+	static bool IsValueType (TypeInfo type)
+	{
+		return ((type.IsValueType && type.Name != "FontSource") || type.IsEnum);
+	}
+
 	static void GenerateTypeStaticCpp (GlobalInfo all)
 	{
 		string header;
@@ -2816,7 +2823,7 @@ class Generator {
 							"Type::" + type.KindName,
 							"Type::" + parentKind,
 							type.IsEnum ? "true" : "false",
-							type.IsValueType || type.IsEnum ? "true" : "false",
+							IsValueType (type) ? "true" : "false",
 							type.IsInterface ? "true" : "false",
 							"\"" + type.Name + "\"",
 							type.GetEventCount (),

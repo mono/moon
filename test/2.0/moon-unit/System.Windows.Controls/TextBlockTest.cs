@@ -67,6 +67,15 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void NullifyFontSource ()
+		{
+			TextBlock tb = new TextBlock ();
+			Assert.IsNull (tb.FontSource, "before");
+			tb.FontSource = null; // no exception
+			Assert.IsNull (tb.FontSource, "after");
+		}
+
+		[TestMethod]
 		public void NegativeFontSize()
 		{
 			TextBlock tb = new TextBlock();
