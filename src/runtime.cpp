@@ -1969,20 +1969,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		int layer_count = layers->GetCount ();
 		for (int i = layer_count - 1; i >= 0 && new_input_list->IsEmpty (); i--)
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
-
-		if (mouse_down) {
-			EmitFocusChangeEvents ();
-			if (!GetFocusedElement ()) {
-				int last = layer_count - 1;
-				for (int i = last; i >= 0; i--) {
-					if (TabNavigationWalker::Focus (layers->GetValueAt (i)->AsUIElement (), true))
-						break;
-				}
-				if (!GetFocusedElement () && last != -1)
-					FocusElement (layers->GetValueAt (last)->AsUIElement ());
-			}
-			EmitFocusChangeEvents ();
-		}
 		
 		
 		// for 2 lists:
@@ -2064,6 +2050,10 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	}
 #endif
 
+	if (mouse_down) {
+		EnsureElementFocused ();
+	}
+
 	// Perform any captures/releases that are pending after the
 	// event is bubbled.
 	if (pendingCapture)
@@ -2072,6 +2062,24 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		PerformReleaseCapture ();
 	emittingMouseEvent = false;
 	return handled;
+}
+
+
+void
+Surface::EnsureElementFocused ()
+{
+	if (!GetFocusedElement () && layers) {
+		int last = layers->GetCount () - 1;
+		for (int i = last; i >= 0; i--) {
+			if (TabNavigationWalker::Focus (layers->GetValueAt (i)->AsUIElement (), true))
+				break;
+		}
+		if (!GetFocusedElement () && last != -1)
+			FocusElement (layers->GetValueAt (last)->AsUIElement ());
+	}
+
+	if (FirstUserInitiatedEvent ())
+		AddTickCall (Surface::EmitFocusChangeEventsAsync);
 }
 
 void

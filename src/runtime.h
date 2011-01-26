@@ -241,6 +241,7 @@ public:
 
 	/* @GeneratePInvoke */
 	UIElement *GetFocusedElement () { return focused_element; }
+	void EnsureElementFocused ();
 
 	UIElementCollection *GetLayers () { return layers; }
 
