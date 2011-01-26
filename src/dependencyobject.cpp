@@ -472,26 +472,22 @@ EventObject::ref ()
 
 	} else if (v == 1 && managed_handle.IsAllocated ()) {
 		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS) {
+			/* It's possible for a managed object to die at any stage, so there's no way to
+			* guarantee that calling ref () on an object of refcount 1 will actually have a living
+			* managed peer to GCHandle. This is just something we'll have to cope with without
+			* blowing up. So, if the managed peer is dead when we ref a native peer, don't bother
+			* swapping the existing GCHandle.
+			*
+			* One scenario where we hit this is when animating a DO where nothing holds a ref to
+			* the DO except the storyboard.
+			*/
+
 			GCHandle old_handle = managed_handle;
 			void *man_ob = deployment->GetGCHandleTarget (old_handle);
-#if SANITY
-			/* It is rare, but this check may fail in some circumstances: in particular when the managed object
-			 * has been finalized, and the corresponding unref is delayed (but not executed yet). Other code might
-			 * hold a pointer to this object without a ref (possibly because it'll clear out the pointer once this
-			 * object is destroyed, which hasn't happened yet). One example is FrameworkTemplate, it adds a handler
-			 * to Deployment::ShuttingDownEvent without reffing itself (which could cause it to stay alive until
-			 * shutdown). Now if the ShuttingDownEvent is emitted just between the unref delayed is enqueued and
-			 * before it's executed, we fail this check. */
-			g_warn_if_fail (man_ob != NULL);
-			if (!man_ob)
-				print_stack_trace ();
-#endif
-			managed_handle = deployment->CreateGCHandle (man_ob);
-#if 0
-			printf ("%s::ref (): %p switching from weak %p to strong %p (weak obj: %p strong obj: %p) deployment: %p\n",
-			 GetTypeName (), this, old_handle.ToIntPtr (), managed_handle.ToIntPtr (), deployment->GetGCHandleTarget (old_handle), deployment->GetGCHandleTarget (managed_handle), deployment);
-#endif
-			deployment->FreeGCHandle (old_handle);
+			if (man_ob) {
+				this->managed_handle = deployment->CreateGCHandle (man_ob);
+				deployment->FreeGCHandle (old_handle);
+			}
 		}
 	}
 
@@ -552,21 +548,24 @@ EventObject::unref ()
 			delete this;
 			
 	} else if (v == 1 && managed_handle.IsAllocated ()) {
+		/* As per comment in DependencyObject::ref (), it's possible we reffed a native DO
+		* whose managed peer had died before we reffed. In this scenario, the target of the
+		* GCHandle will be null even though technically the peer should have a strong gchandle
+		* attached. This is not an error condition. In this scenario, don't bother switching
+		* the GCHandle to a weak one.
+		*/
+
 		GCHandle old_handle = managed_handle;
 		void *man_ob = deployment->GetGCHandleTarget (old_handle);
-#if SANITY
-		if (man_ob == NULL) {
-			printf ("%s::unref () %p managed_handle: %p NO MANAGED OBJECT\n", GetTypeName (), this, managed_handle.ToIntPtr ());
-			g_assert (man_ob != NULL);
+		if (man_ob) {
+			this->managed_handle = deployment->CreateWeakGCHandle (man_ob);
+			deployment->FreeGCHandle (old_handle);
 		}
-#endif
-		this->managed_handle = deployment->CreateWeakGCHandle (man_ob);
 #if 0
 		printf ("%s::unref (): %p switching from strong %p to weak %p (strong obj: %p weak obj: %p) deployment: %p\n",
 			GetTypeName (), this, old_handle.ToIntPtr (), this->managed_handle.ToIntPtr (), deployment->GetGCHandleTarget (old_handle),
 			deployment->GetGCHandleTarget (this->managed_handle), deployment);
 #endif
-		deployment->FreeGCHandle (old_handle);
 	}
 
 #if SANITY
