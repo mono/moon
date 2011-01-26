@@ -69,8 +69,8 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	Target               *target;
 	unsigned             i;
 
-	pipe  = screen->context_create (screen, NULL);
-	gpipe = new GalliumPipe (pipe);
+	gpipe = GalliumPipe::GetInstance (screen);
+	pipe  = gpipe->Pipe ();
 	cso   = cso_create_context (pipe);
 
 	target = new Target (surface, r, gpipe);

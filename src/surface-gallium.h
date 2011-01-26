@@ -21,8 +21,7 @@ namespace Moonlight {
 
 class GalliumPipe {
 public:
-	GalliumPipe (pipe_context *context);
-	~GalliumPipe ();
+	static GalliumPipe *GetInstance (pipe_screen *screen);
 
 	GalliumPipe *ref ();
 	void        unref ();
@@ -30,8 +29,13 @@ public:
 	pipe_context *Pipe ();
 
 private:
+	GalliumPipe (pipe_screen *screen);
+	~GalliumPipe ();
+
 	pipe_context *pipe;
 	gint32       refcount;
+
+	static GalliumPipe *softpipe;
 };
 
 class GalliumSurface : public MoonSurface {
