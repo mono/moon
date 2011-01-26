@@ -1,6 +1,6 @@
 
-This is Moonlight, an open source implementation of Silverlight 1.0, 2.0
-and 3.0 for Unix systems.   
+This is Moonlight, an open source implementation of Silverlight 1.0, 2.0, 
+3.0 and 4.0 for Unix systems.   
 
 See http://www.mono-project.com/Moonlight for more information. 
 
@@ -13,8 +13,11 @@ Requirements
 ============
 
 	At this time, Moonlight trunk (this release) requires you to use
-	Mono trunk. To build Moonlight, you need to get the mono and
-	mono-basic repositories from a specific revision from trunk.
+	Mono 2.10 or trunk to get the required dependency (e.g. latest 
+	Mono.Cecil) and compilers (e.g. the new 'mcs' compiler).
+
+	To build Moonlight, you'll also need to get the source code for mono
+	and mono-basic repositories from a specific revision from trunk.
 
 	Do this like this:
             git clone git://github.com/mono/moon.git moon
