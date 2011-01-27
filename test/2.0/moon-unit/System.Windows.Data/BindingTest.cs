@@ -684,6 +684,41 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion (4)]
+		public void BindToDPUsingAttributeSyntax_NoCLRWrapper_SL4 ()
+		{
+			Assert.Throws<XamlParseException> (() =>
+				XamlReader.Load  (@"	
+<Canvas
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:my=""clr-namespace:MoonTest.System.Windows.Data;assembly=moon-unit"">
+	<Canvas.Resources>
+		<my:UnbackedDPs x:Name=""CLRObject"" DPNoProp=""{Binding Path=Test}"" />
+	</Canvas.Resources>
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MaxRuntimeVersion (3)]
+		public void BindToDPUsingAttributeSyntax_NoCLRWrapper_SL3 ()
+		{
+			var c = (Canvas) XamlReader.Load (@"	
+<Canvas
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:my=""clr-namespace:MoonTest.System.Windows.Data;assembly=moon-unit"" >
+	<Canvas.Resources>
+		<my:UnbackedDPs x:Name=""CLRObject"" DPNoProp=""{Binding Path=Test}"" />
+	</Canvas.Resources>
+</Canvas>
+");
+			var obj = (c.Resources["CLRObject"] as DependencyObject);
+			Assert.IsInstanceOfType<BindingExpression> (obj.ReadLocalValue (UnbackedDPs.DPNoPropProperty), "#1");
+		}
+
+		[TestMethod]
 		public void BindToText ()
 		{
 			Binding binding = new Binding ("");
