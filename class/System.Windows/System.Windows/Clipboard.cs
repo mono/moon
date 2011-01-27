@@ -41,6 +41,8 @@ namespace System.Windows {
 		{
 			Surface surface;
 			IntPtr window;
+
+			CheckAccess ();
 			surface = Deployment.Current.Surface;
 			window = NativeMethods.surface_get_normal_window (surface.Native);
 			if (window == IntPtr.Zero)
@@ -50,12 +52,14 @@ namespace System.Windows {
 
 		public static bool ContainsText ()
 		{
+			CheckAccess ();
 			IntPtr clipboard = GetClipboard();
 			return NativeMethods.moon_clipboard_contains_text (clipboard);
 		}
 
 		public static string GetText ()
 		{
+			CheckAccess ();
 			CheckUserInitiated ();
 			IntPtr clipboard = GetClipboard();
 			return NativeMethods.moon_clipboard_get_text (clipboard) ?? String.Empty;
@@ -66,6 +70,7 @@ namespace System.Windows {
 			if (text == null)
 				throw new ArgumentNullException ("text");
 
+			CheckAccess ();
 			CheckUserInitiated ();
 			IntPtr clipboard = GetClipboard();
 			NativeMethods.moon_clipboard_set_text (clipboard, text, text.Length);
@@ -75,6 +80,12 @@ namespace System.Windows {
 		{
 			if (!Helper.IsUserInitiated ())
 				throw new SecurityException ("Clipboard access is not allowed");
+		}
+
+		private static void CheckAccess ()
+		{
+			if (!Helper.CheckAccess ())
+				throw new UnauthorizedAccessException ("Must be called from the main thread");
 		}
 	}
 }
