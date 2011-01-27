@@ -159,7 +159,7 @@ fi
 
 configure_mono=1
 build_mono=1
-mono_flags="--with-sgen=no"
+mono_flags="--with-moon-gc=sgen"
 mono_path=../mono
 mcs_path=../mono/mcs
 configure_gallium=1
@@ -185,8 +185,8 @@ for arg; do
       configure_gallium=0 ;;
     --with-gallium-path* )
       gallium_path=$(echo $arg|sed -e 's,.*=,,') ;;
-    --with-sgen=yes | --with-sgen )
-      mono_flags="--with-moon-gc=sgen" ;;
+    --with-sgen=no )
+      mono_flags="--with-sgen=no" ;;
   esac
 done
 
