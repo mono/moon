@@ -42,11 +42,24 @@ namespace Mono
 	 *  TODO:
 	 *  - Find out when to call Free.
 	 */
-	internal sealed partial class Types
-	{
+	internal sealed partial class Types {
+
+		class KindComparer : IEqualityComparer<Kind> {
+
+			public bool Equals (Kind x, Kind y)
+			{
+				return x == y;
+			}
+
+			public int GetHashCode (Kind obj)
+			{
+				return (int) obj;
+			}
+		}
+
 		private IntPtr native;
 		private Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
-		private Dictionary<Kind,ManagedType> types_kind = new Dictionary <Kind, ManagedType>();
+		private Dictionary<Kind,ManagedType> types_kind = new Dictionary <Kind, ManagedType>(new KindComparer ());
 		private object sync_object = new object ();
 		
 		public Types(IntPtr raw)
