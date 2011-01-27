@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 598 methods needs to be decorated.
+# 591 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -51,9 +51,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_set_value_at_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::consent_prompt_user_for(System.Int32,System.Boolean&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::content_control_get_content_sets_parent(System.IntPtr)
@@ -1087,9 +1084,6 @@
 # Promoting interface member to [SecurityCritical] because of 'System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)'.
-+SC-M: System.Void Mono.IRefContainer::AddStrongRef(System.IntPtr,System.String)
-
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)
 
@@ -1343,7 +1337,7 @@
 +SC-M: System.Void Mono.NativeMethods::message_received_event_args_set_response(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::moon_clipboard_set_text(System.IntPtr,System.String)
++SC-M: System.Void Mono.NativeMethods::moon_clipboard_set_text(System.IntPtr,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::moon_window_set_transparent(System.IntPtr,System.Boolean)
@@ -1708,18 +1702,6 @@
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
 
-# implements 'System.Void Mono.IRefContainer::AddStrongRef(System.IntPtr,System.String)'.
-+SC-M: System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)
-
-# overrides 'System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)'.
-+SC-M: System.Void System.Windows.Deployment::AddStrongRef(System.IntPtr,System.String)
-
-# overrides 'System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)'.
-+SC-M: System.Void System.Windows.FrameworkTemplate::AddStrongRef(System.IntPtr,System.String)
-
-# overrides 'System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)'.
-+SC-M: System.Void System.Windows.Media.Animation.Timeline::AddStrongRef(System.IntPtr,System.String)
-
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
 
@@ -1734,9 +1716,6 @@
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
-
-# overrides 'System.Void System.Windows.DependencyObject::AddStrongRef(System.IntPtr,System.String)'.
-+SC-M: System.Void System.Windows.ResourceDictionary::AddStrongRef(System.IntPtr,System.String)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)

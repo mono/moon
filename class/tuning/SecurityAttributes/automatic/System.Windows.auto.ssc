@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 636 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -245,13 +245,14 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::writeable_bitmap_new()
 +SSC-M: System.Boolean Mono.Helper::IsUserInitiated()
 +SSC-M: System.Void Mono.Helper::.cctor()
++SSC-M: System.Void Mono.NativeDependencyObjectHelper::AddStrongRef(System.IntPtr,System.IntPtr,System.IntPtr)
++SSC-M: System.Void Mono.NativeDependencyObjectHelper::ClearStrongRef(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetAnimationBaseValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::ClearValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(System.IntPtr)
-+SSC-M: System.Void Mono.NativeDependencyObjectHelper::.cctor()
 +SSC-M: System.Void Mono.NameScope::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Boolean Mono.NameScope::get_Temporary()
 +SSC-M: System.Void Mono.NameScope::set_Temporary(System.Boolean)
@@ -403,7 +404,6 @@
 +SSC-M: System.Boolean System.Windows.Clipboard::ContainsText()
 +SSC-M: System.String System.Windows.Clipboard::GetText()
 +SSC-M: System.Void System.Windows.Clipboard::SetText(System.String)
-+SSC-M: System.Void System.Windows.Clipboard::CheckUserInitiated()
 +SSC-M: System.Void System.Windows.Deployment::Initialize()
 +SSC-M: Mono.Surface System.Windows.Deployment::get_Surface()
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()
@@ -598,6 +598,7 @@
 +SSC-M: System.TimeSpan System.Windows.Media.Animation.Storyboard::GetCurrentTime()
 +SSC-M: System.Windows.Media.Animation.ClockState System.Windows.Media.Animation.Storyboard::GetCurrentState()
 +SSC-M: System.Windows.DependencyProperty System.Windows.Media.Animation.Storyboard::GetTargetDependencyProperty(System.Windows.Media.Animation.Timeline)
++SSC-M: System.Windows.DependencyObject System.Windows.Media.Animation.Timeline::get_ManualTarget()
 +SSC-M: System.Void System.Windows.Media.Animation.Timeline::set_ManualTarget(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.Media.Imaging.BitmapSource::SetSource(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::.ctor(System.IntPtr)
