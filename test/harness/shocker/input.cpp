@@ -52,7 +52,7 @@ static void sleep_ms (guint32 ms)
 
 InputProvider *InputProvider::instance = NULL;
 
-InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_available (false), down_keys (NULL)
+InputProvider::InputProvider () : display (NULL), root_window (0), xtest_available (false), down_keys (NULL)
 {
 	display = XOpenDisplay (NULL);
 	
