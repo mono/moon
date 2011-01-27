@@ -112,3 +112,9 @@ dist-hook:
 	mkdir $(distdir)/icons
 	cp -p $(srcdir)/icons/icon32.png $(srcdir)/icons/icon48.png $(srcdir)/icons/icon128.png $(distdir)/icons
 
+install-test-plugin:
+	$(MAKE) -C plugin $@
+	$(MAKE) -C test/harness/shocker $@
+
+detect:
+	$(MAKE) -C class/tuning/SecurityAttributes/ $@
