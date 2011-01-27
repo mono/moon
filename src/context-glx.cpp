@@ -39,6 +39,13 @@ GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
 	g_assert (n == 1);
 
 	ctx = glXCreateContext (dpy, visinfo, 0, True);
+	if (!ctx) {
+		g_warning ("Failed to create GLX context for VisualID: 0x%x",
+			   (int) templ.visualid);
+		XFree (visinfo);
+		return;
+	}
+
 	glXMakeCurrent (dpy, drawable, ctx);
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
@@ -77,7 +84,8 @@ GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
 
 GLXContext::~GLXContext ()
 {
-	glXDestroyContext (dpy, ctx);
+	if (ctx)
+		glXDestroyContext (dpy, ctx);
 }
 
 void
@@ -589,6 +597,9 @@ GLXContext::Flush ()
 bool
 GLXContext::CheckVersion ()
 {
+	if (!ctx)
+		return 0;
+
 	ForceCurrent ();
 
 	if (atof ((const char *) glGetString (GL_VERSION)) < MIN_GL_VERSION) {
