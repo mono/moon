@@ -1,4 +1,14 @@
 <Project name="libshocker" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar />
+    <AsmRefVar />
+    <ProjectRefVar />
+    <MessageRegex Name="gcc" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <Configurations active="Default">
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="shocker" />
@@ -37,16 +47,8 @@
     <File subtype="Code" buildaction="Nothing" name="harness.h" />
     <File subtype="Code" buildaction="Nothing" name="debug.h" />
     <File subtype="Code" buildaction="Compile" name="debug.cpp" />
+    <File subtype="Code" buildaction="Compile" name="clipboard.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="clipboard.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../../..">
-    <BuildFilesVar />
-    <DeployFilesVar />
-    <ResourcesVar />
-    <OthersVar />
-    <GacRefVar />
-    <AsmRefVar />
-    <ProjectRefVar />
-    <MessageRegex Name="gcc" />
-  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

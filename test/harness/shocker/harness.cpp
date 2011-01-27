@@ -21,10 +21,13 @@
 #include <string.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <gtk/gtk.h>
 
 #include "debug.h"
 #include "harness.h"
 #include "shocker-plugin.h"
+#include "clipboard.h"
+#include "src/moonlightconfiguration.h"
 
 bool
 send_all (int sockfd, const char *buffer, guint32 length)
@@ -575,5 +578,84 @@ void WindowHelper_GetPrimaryScreenSize (guint32 *width, guint32 *height)
 
 	XGetGeometry (display, root, &root, &x, &y, width, height, &bwidth, &depth);
 	XCloseDisplay (display);
+}
+
+int ClipboardHelper_ClearClipboard ()
+{
+	return Clipboard::ClearClipboard ();
+}
+
+int ClipboardHelper_WriteCustomFormatTextToClipboard (const gunichar2 *customFormat, gunichar2 *textToWrite, gint32 textLen, bool makeUTF8Encoded)
+{
+	return Clipboard::WriteCustomFormatTextToClipboard (customFormat, textToWrite, textLen, makeUTF8Encoded);
+}
+
+int ClipboardHelper_ReadCustomFormatTextFromClipboard (const char *customFormat, bool readAsUTF8Encoded, gunichar2 **textRead, gint32 *textLen)
+{
+	return Clipboard::ReadCustomFormatTextFromClipboard (customFormat, readAsUTF8Encoded, textRead, textLen);
+}
+
+int ClipboardHelper_WriteImageToClipboard (const char *pathToImage)
+{
+	return Clipboard::WriteImageToClipboard (pathToImage);
+}
+
+int TestHost_CleanDRM ()
+{
+	Shocker_FailTestFast ("TestHost_CleanDRM (): not implemented");
+	return 0;
+}
+
+int TestHost_SetRegKey (const char *keyPath, const char *keyName, gint32 Value)
+{
+	LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i)\n", keyPath, keyName, Value);
+
+	if (strcmp (keyName, "Clipboard") == 0) {
+		if (strncmp (keyPath, "Settings\\Permissions\\", 21) == 0)
+			keyPath += 21;
+
+		char key [strlen (keyPath) + 16];
+		int key_len = strlen (keyPath);
+
+		memcpy (key, keyPath, key_len);
+
+			// strip off any trailing backslashes
+		if (key [key_len - 1] == '\\') {
+			key [key_len - 1] = 0;
+			key_len--;
+		}
+
+		memcpy (key + key_len, "-clipboard", 10);
+
+		Moonlight::MoonlightConfiguration configuration;
+		if (Value == 17) { // Allow
+			LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i): Allowing clipboard for key '%s'\n", keyPath, keyName, Value, key);
+			configuration.SetBooleanValue ("Permissions", key, true);
+		} else if (Value == 4) { // Deny
+			LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i): Denying clipboard for key '%s'\n", keyPath, keyName, Value, key);
+			configuration.SetBooleanValue ("Permissions", key, false);
+		} else if (Value == 0) { // Remove
+			LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i): Removing clipboard key '%s'\n", keyPath, keyName, Value, key);
+			configuration.RemoveKey ("Permissions", key);
+		} else {
+			Shocker_FailTestFast ("TestHost_SetRegKey (): Unknown clipboard access value");
+		}
+		configuration.Save ();
+	} else {
+		Shocker_FailTestFast ("TestHost_SetRegKey (): not implemented");
+	}
+
+	return 0;
+}
+
+int Testhost_GetMachineName (char **name)
+{
+	Shocker_FailTestFast ("Testhost_GetMachineName (): not implemented");
+	return 0;
+}
+
+void TestHost_GetJTRURenderDataCapturer (void **ppJtruWrapper)
+{
+	Shocker_FailTestFast ("TestHost_GetJTRURenderDataCapturer (): not implemented");
 }
 

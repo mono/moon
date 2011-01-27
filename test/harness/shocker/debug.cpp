@@ -23,7 +23,7 @@ void
 shocker_debug_initialize ()
 {
 	char *env = getenv ("MOONLIGHT_SHOCKER_DEBUG");
-	printf ("[shocker] parsing MOONLIGHT_SHOCKER_DEBUG=%s\n", env);
+	printf ("[shocker] parsing MOONLIGHT_SHOCKER_DEBUG=%s (valid values: all,harness,capture,input,plugin,shutdown,clipboard or a combination of those)\n", env);
 	if (env == NULL || env [0] == 0)
 		return;
 
@@ -48,6 +48,8 @@ shocker_debug_initialize ()
 			shocker_flags |= SHOCKER_DEBUG_PLUGIN;
 		} else if (!strcmp (word, "shutdown")) {
 			shocker_flags |= SHOCKER_DEBUG_SHUTDOWN;
+		} else if (!strcmp (word, "clipboard")) {
+			shocker_flags |= SHOCKER_DEBUG_CLIPBOARD;
 		} else {
 			printf ("[shocker]: Unknown value '%s' in MOONLIGHT_SHOCKER_DEBUG.\n", word);
 		}

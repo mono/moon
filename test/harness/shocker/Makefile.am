@@ -7,6 +7,8 @@ INCLUDES = -I$(top_srcdir)/plugin/moz-sdk $(SHOCKER_CFLAGS) -Wall -DDBUS_ENABLED
 libshocker_la_SOURCES = 	\
 	debug.cpp			\
 	debug.h				\
+	clipboard.cpp		\
+	clipboard.h			\
 	shocker.cpp  		\
 	shocker.h		\
 	shocker-plugin.h		\
@@ -24,7 +26,8 @@ libshocker_la_SOURCES = 	\
 	harness.h			\
 	harness.cpp			\
 	shutdown-manager.h	\
-	shutdown-manager.cpp
+	shutdown-manager.cpp	\
+	$(top_srcdir)/src/moonlightconfiguration.cpp
 
 libshocker_la_LDFLAGS = \
 	-avoid-version -module

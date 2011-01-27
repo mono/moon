@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "debug.h"
 #include "browser.h"
@@ -26,11 +27,19 @@
 #define PLUGIN_DESCRIPTION  	PLUGIN_NAME ":  Test Harness Plugin for testing Moonlight files."
 
 Window PluginObject::browser_app_context = 0;
+bool PluginObject::main_thread_inited = false;
+pthread_t PluginObject::main_thread = 0;
 
 void
 TestPlugin_GetXY (NPWindow *window, guint32 *x, guint32 *y)
 {
 	PluginObject::GetXY (window, x, y);
+}
+
+bool
+PluginObject::InMainThread ()
+{
+	return (!main_thread_inited || pthread_equal (main_thread, pthread_self ()));
 }
 
 void
@@ -59,6 +68,9 @@ PluginObject::PluginObject (NPP npp, int argc, char *argn[], char *argv[])
 	instance = npp;
 	x = 0;
 	y = 0;
+
+	main_thread = pthread_self ();
+	main_thread_inited = true;
 
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)

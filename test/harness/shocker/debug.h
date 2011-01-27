@@ -24,6 +24,7 @@ enum ShockerFlags {
 	SHOCKER_DEBUG_INPUT    = 1 << 2,
 	SHOCKER_DEBUG_PLUGIN   = 1 << 3,
 	SHOCKER_DEBUG_SHUTDOWN = 1 << 4,
+	SHOCKER_DEBUG_CLIPBOARD = 1 << 5,
 };
 
 #define LOG_HARNESS(...)	if (G_UNLIKELY (shocker_flags & SHOCKER_DEBUG_HARNESS))  printf (__VA_ARGS__);
@@ -31,6 +32,7 @@ enum ShockerFlags {
 #define LOG_INPUT(...)		if (G_UNLIKELY (shocker_flags & SHOCKER_DEBUG_INPUT))    printf (__VA_ARGS__);
 #define LOG_PLUGIN(...)		if (G_UNLIKELY (shocker_flags & SHOCKER_DEBUG_PLUGIN))   printf (__VA_ARGS__);
 #define LOG_SHUTDOWN(...)	if (G_UNLIKELY (shocker_flags & SHOCKER_DEBUG_SHUTDOWN)) printf (__VA_ARGS__);
+#define LOG_CLIPBOARD(...)  if (G_UNLIKELY (shocker_flags & SHOCKER_DEBUG_CLIPBOARD)) printf (__VA_ARGS__);
 
 void shocker_debug_initialize () __attribute__ ((constructor));
 

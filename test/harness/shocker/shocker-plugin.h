@@ -43,6 +43,7 @@ public:
 	static Window browser_app_context;
 	
 	static void GetXY (NPWindow *window, guint32 *x, guint32 *y);
+	static bool InMainThread ();
 
 private:	  
 	NPP instance;
@@ -50,6 +51,9 @@ private:
 	AutoCapture* auto_capture;
 	guint32 x, y;
 	
+	static bool main_thread_inited;
+	static pthread_t main_thread;
+
 	ShockerScriptableControlObject* shocker_control;
 	ShockerScriptableControlObject* GetShockerControl ();
 	void UpdateXY ();

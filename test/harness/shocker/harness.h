@@ -86,6 +86,16 @@ int WindowHelper_EnsureOOBWindowIsActive (guint32 active /* 32bit bool */);
 int WindowHelper_SetWindowPosition (guint32 left, guint32 top);
 void WindowHelper_GetPrimaryScreenSize (guint32 *width, guint32 *height);
 
+int ClipboardHelper_ClearClipboard ();
+int ClipboardHelper_WriteCustomFormatTextToClipboard (const gunichar2 *customFormat, gunichar2 *textToWrite, gint32 textLen, bool makeUTF8Encoded);
+int ClipboardHelper_WriteImageToClipboard (const char *pathToImage);
+int ClipboardHelper_ReadCustomFormatTextFromClipboard (const char *customFormat, bool readAsUTF8Encoded, gunichar2 **textRead, gint32 *textLen);
+
+int TestHost_CleanDRM ();
+int TestHost_SetRegKey (const char *keyPath, const char *keyName, gint32 Value);
+int Testhost_GetMachineName (char **name);
+void TestHost_GetJTRURenderDataCapturer (void **ppJtruWrapper);
+
 G_END_DECLS
 
 #endif /* __HARNESS_H__ */
