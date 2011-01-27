@@ -98,7 +98,7 @@ class TypeInfo : MemberInfo {
 					FieldInfo field = member as FieldInfo;
 					if (field == null)
 						continue;
-					Console.WriteLine ("Checking: {0}", field.Name);
+
 					if (!field.Name.EndsWith ("WeakRef"))
 						continue;
 
@@ -109,7 +109,7 @@ class TypeInfo : MemberInfo {
 				}
 				weakRefs.Sort (new Members.MembersSortedByFullName <FieldInfo>());
 			}
-			Console.WriteLine ("I have: {0}", weakRefs.Count);
+
 			return weakRefs;
 		}
 	}
