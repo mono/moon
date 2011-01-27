@@ -170,6 +170,8 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 	} else if (args->GetId () == Border::BackgroundProperty) {
 		Invalidate ();
+	} else if (args->GetId () == Border::BorderBrushProperty) {
+		Invalidate ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }
