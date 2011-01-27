@@ -1549,7 +1549,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard and then cut
-					clipboard->SetText (GetSelectedText (), -1);
+					clipboard->SetText (GetSelectedText ());
 				}
 			}
 			
@@ -1576,7 +1576,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard
-					clipboard->SetText (GetSelectedText (), -1);
+					clipboard->SetText (GetSelectedText ());
 				}
 			}
 			
@@ -1620,7 +1620,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 				if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard
-						clipboard->SetText (GetSelectedText (), -1);
+						clipboard->SetText (GetSelectedText ());
 					}
 				}
 				
@@ -1634,7 +1634,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 				if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard and then cut
-						clipboard->SetText (GetSelectedText(), -1);
+						clipboard->SetText (GetSelectedText());
 					}
 				}
 				
@@ -2033,7 +2033,7 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		
 		if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Primary))) {
 			// copy the selection to the primary clipboard
-			clipboard->SetText (GetSelectedText (), -1);
+			clipboard->SetText (GetSelectedText ());
 		}
 	}
 }

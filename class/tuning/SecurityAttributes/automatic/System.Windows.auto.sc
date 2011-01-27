@@ -1337,7 +1337,7 @@
 +SC-M: System.Void Mono.NativeMethods::message_received_event_args_set_response(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::moon_clipboard_set_text(System.IntPtr,System.String,System.Int32)
++SC-M: System.Void Mono.NativeMethods::moon_clipboard_set_text(System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::moon_window_set_transparent(System.IntPtr,System.Boolean)

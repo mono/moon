@@ -175,7 +175,7 @@ public:
 	/* @GeneratePInvoke */
 	virtual bool ContainsText () = 0;
 	/* @GeneratePInvoke */
-	virtual void SetText (const char *text, int length) = 0;
+	virtual void SetText (const char *text) = 0;
 	virtual void AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data) = 0;
 	/* @GeneratePInvoke */
 	virtual char* GetText () = 0;

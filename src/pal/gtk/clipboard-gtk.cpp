@@ -35,9 +35,9 @@ MoonClipboardGtk::ContainsText ()
 }
 
 void
-MoonClipboardGtk::SetText (const char *text, int length)
+MoonClipboardGtk::SetText (const char *text)
 {
-	gtk_clipboard_set_text (clipboard, text, length);
+	gtk_clipboard_set_text (clipboard, text, strlen (text));
 }
 
 class AsyncClosure {

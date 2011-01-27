@@ -73,7 +73,7 @@ namespace System.Windows {
 			CheckAccess ();
 			CheckUserInitiated ();
 			IntPtr clipboard = GetClipboard();
-			NativeMethods.moon_clipboard_set_text (clipboard, text, text.Length);
+			NativeMethods.moon_clipboard_set_text (clipboard, text);
 		}
 
 		private static void CheckUserInitiated ()
