@@ -447,6 +447,9 @@ class TypeReference {
 			case "WindowStyle":
 				managed_type = "WindowStyle";
 				break;
+			case "MoonConsentType":
+				managed_type = "int";
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";

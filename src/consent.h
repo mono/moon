@@ -16,13 +16,13 @@
 
 namespace Moonlight {
 
-typedef enum {
-	MOON_CONSENT_CLIPBOARD,
-	MOON_CONSENT_FULLSCREEN_PINNING,
-	MOON_CONSENT_CAPTURE,
+enum MoonConsentType {
+	MOON_CONSENT_CLIPBOARD = 0,
+	MOON_CONSENT_FULLSCREEN_PINNING = 1,
+	MOON_CONSENT_CAPTURE = 2,
 	// FIXME should this be here too?  MOON_CONSENT_ISOSTOR_QUOTA_INCREASE
 	MOON_CONSENT_LAST
-} MoonConsentType;
+};
 
 G_BEGIN_DECLS
 
@@ -34,8 +34,9 @@ public:
 	static const char *GetConsentDescription (MoonConsentType consent);
 	static MoonConsentType GetConsentType (const char *name);
 
-	static bool PromptUserFor (MoonConsentType consent);
-	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website);
+	/* @GeneratePInvoke */
+	static bool PromptUserFor (/* @MarshalAs=int */ MoonConsentType consent, bool *asked_user);
+	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user);
 };
 
 G_END_DECLS

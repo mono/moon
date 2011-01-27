@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 636 methods
+# 637 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -404,6 +404,7 @@
 +SSC-M: System.Boolean System.Windows.Clipboard::ContainsText()
 +SSC-M: System.String System.Windows.Clipboard::GetText()
 +SSC-M: System.Void System.Windows.Clipboard::SetText(System.String)
++SSC-M: System.Void System.Windows.Clipboard::CheckUserInitiated()
 +SSC-M: System.Void System.Windows.Deployment::Initialize()
 +SSC-M: Mono.Surface System.Windows.Deployment::get_Surface()
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()

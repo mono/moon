@@ -70,21 +70,28 @@ Consent::GetConsentType (const char *name)
 }
 
 bool
-Consent::PromptUserFor (MoonConsentType consent)
+Consent::PromptUserFor (MoonConsentType consent, bool *asked_user)
 {
+	bool result;
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	const Uri *uri = surface->GetSourceLocation ();
-
-	char *website = ((uri->GetPort () > 0)
-			 ? g_strdup_printf ("%s://%s:%d",
-					    uri->GetScheme(),
-					    uri->GetHost(),
-					    uri->GetPort())
-			 : g_strdup_printf ("%s://%s",
-					    uri->GetScheme(),
-					    uri->GetHost()));
-
+	char *website;
 	const char *question, *detail;
+
+	if (asked_user)
+		*asked_user = false;
+
+	if (uri->GetPort () > 0) {
+		website = g_strdup_printf ("%s://%s:%d", uri->GetScheme(), uri->GetHost(), uri->GetPort());
+	} else {
+		/* file:// uri */
+		website = g_strdup (uri->ToString ());
+		/* We need to strip off the filename */
+		char *last_sep = strrchr (website, '/');
+		if (last_sep != NULL) {
+			*(last_sep + 1) = 0;
+		}
+	}
 
 	switch (consent) {
 	case MOON_CONSENT_CLIPBOARD:
@@ -105,11 +112,15 @@ Consent::PromptUserFor (MoonConsentType consent)
 		break;
 	}
 
-	return PromptUserFor (consent, question, detail, website);
+	result = PromptUserFor (consent, question, detail, website, asked_user);
+
+	g_free (website);
+
+	return result;
 }
 
 bool
-Consent::PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website)
+Consent::PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user)
 {
 	bool remember = false;
 	bool rv = false; 
@@ -130,6 +141,9 @@ Consent::PromptUserFor (MoonConsentType consent, const char *question, const cha
 						  detail,
 						  website,
 						  &remember);
+
+	if (asked_user)
+		*asked_user = true;
 
 	if (remember) {
 		configuration.SetBooleanValue ("Permissions", config_key, rv);

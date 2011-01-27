@@ -37,6 +37,8 @@ namespace System.Windows {
 			MoonClipboard_Primary
 		}
 
+		static bool? consented;
+
 		private static IntPtr GetClipboard ()
 		{
 			Surface surface;
@@ -78,8 +80,19 @@ namespace System.Windows {
 
 		private static void CheckUserInitiated ()
 		{
+			bool asked_user;
+
 			if (!Helper.IsUserInitiated ())
 				throw new SecurityException ("Clipboard access is not allowed");
+
+			if (consented.HasValue && consented.Value)
+				return;
+
+			if (!NativeMethods.consent_prompt_user_for (0, out asked_user))
+				throw new SecurityException ("Clipboard access is not allowed");
+
+			if (asked_user)
+				consented = true;
 		}
 
 		private static void CheckAccess ()
