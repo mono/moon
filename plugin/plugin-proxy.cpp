@@ -17,14 +17,11 @@
 #include <config.h>
 #include "moonlight.h"
 
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/mono-config.h>
-
 typedef NPError (*np_initialize_func) (void *a, void *b);
 typedef NPError (*np_shutdown_func) ();
 typedef NPError (*np_getvalue_func) (void *, NPPVariable var, void *avalue);
 typedef char *  (*np_getmime_func)  ();
-
+typedef void    (*config_parse_memory_func) (const char *buffer);
 static np_initialize_func initialize;
 static np_getvalue_func   getvalue;
 static np_shutdown_func   shutdown;
@@ -86,11 +83,17 @@ load (void)
 		fprintf (stdout, "Moonlight: Attempting to load libmoonplugin from: %s\n", plugin_path);
 	}
 
-	void *real_plugin = dlopen (plugin_path, RTLD_LAZY | RTLD_GLOBAL);
+	void *real_plugin = dlopen (plugin_path, RTLD_LAZY);
 
 	if (real_plugin == NULL){
 		fprintf (stderr, "Moonlight: Unable to load the real plugin %s\n", dlerror ());
 		fprintf (stderr, "Moonlight: plugin_path is %s\n", plugin_path);
+		return FALSE;
+	}
+
+	config_parse_memory_func mono_config_parse_memory = (config_parse_memory_func) dlsym (real_plugin, "mono_config_parse_memory");
+	if (mono_config_parse_memory == NULL){
+		fprintf (stderr, "Moonlight: mono_config_parse_memory not found. %s\n", dlerror ());
 		return FALSE;
 	}
 
@@ -119,12 +122,6 @@ load (void)
 		return FALSE;
 	}
 
-	getmime = (np_getmime_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_GetMIMEDescription));
-	if (getmime == NULL){
-		fprintf (stderr, "Moonlight: NP_GetMIMEDescription not found %s\n", dlerror ());
-		return FALSE;
-	}
-
 	shutdown = (np_shutdown_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Shutdown));
 	if (shutdown == NULL){
 		fprintf (stderr, "Moonlight: NP_Shutdown not found %s\n", dlerror ());
@@ -137,13 +134,7 @@ load (void)
 char*
 NP_GetMIMEDescription (void)
 {
-	if (getmime == NULL)
-		load ();
-
-	if (getmime != NULL){
-		return (*getmime)();
-	}
-	return (char *) "";
+	return (char *) (MIME_TYPES_HANDLED);
 }
 
 NPError

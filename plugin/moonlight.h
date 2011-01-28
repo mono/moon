@@ -54,7 +54,6 @@
 #define LOADER_RENAMED_NAME(x) LOADER_QUOTE(MOON_##x)
 
 extern "C" {
-  char *LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void);
   NPError LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value);
 #ifdef XP_UNIX
   NPError OSCALL LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs);
