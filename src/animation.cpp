@@ -64,7 +64,7 @@ still fire up after it's dead.
 
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
-: baseValue(NULL), stopValue(NULL), disabled(false)
+: baseValue(NULL), current_value (NULL), stopValue(NULL), disabled(false)
 {
 	this->clock = clock;
 	this->timeline = timeline;
@@ -127,7 +127,7 @@ AnimationStorage::Enable ()
 	AttachTargetHandler ();
 	AttachUpdateHandler ();
 	disabled = false;
-	UpdatePropertyValue ();
+	ApplyCurrentValue ();
 }
 
 void
@@ -199,15 +199,13 @@ AnimationStorage::TargetObjectDestroyed ()
 void
 AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
-	((AnimationStorage*)closure)->UpdatePropertyValue ();
+	((AnimationStorage*)closure)->UpdateCurrentValueAndApply ();
 }
 
-void
-AnimationStorage::UpdatePropertyValue ()
-{
-	if (!targetobj) return;
 
-	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
+void
+AnimationStorage::ApplyCurrentValue ()
+{
 	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
 		Applier *applier = NULL;
 		
@@ -217,8 +215,16 @@ AnimationStorage::UpdatePropertyValue ()
 		if (applier)
 			applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
 	}
+}
+
+void
+AnimationStorage::UpdateCurrentValueAndApply ()
+{
+	if (!targetobj) return;
 
 	delete current_value;
+	current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
+	ApplyCurrentValue ();
 }
 
 void
@@ -300,6 +306,7 @@ AnimationStorage::~AnimationStorage ()
 		delete stopValue;
 		stopValue = NULL;
 	}
+	delete current_value;
 }
 
 AnimationClock::AnimationClock (Animation *timeline)

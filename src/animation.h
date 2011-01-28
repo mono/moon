@@ -1144,7 +1144,8 @@ public:
 private:
 
 	void ResetPropertyValue ();
-	void UpdatePropertyValue ();
+	void ApplyCurrentValue ();
+	void UpdateCurrentValueAndApply ();
 	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	void TargetObjectDestroyed ();
@@ -1161,6 +1162,7 @@ private:
 	DependencyObject *targetobj;
 	DependencyProperty *targetprop;
 	Value *baseValue;
+	Value *current_value;
 	Value *stopValue;
 	bool disabled;
 };
