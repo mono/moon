@@ -149,7 +149,8 @@ destroy_object_func (DependencyObject *object, object_indexer *o_indexer, gpoint
 
 	g_list_foreach (o_indexer->properties_list, (GFunc) destroy_property_func, NULL);
 	g_list_free (o_indexer->properties_list);
-	object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &o_indexer->object);
+	if (o_indexer->object)
+		object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &o_indexer->object);
 	g_free (o_indexer);
 }
 
