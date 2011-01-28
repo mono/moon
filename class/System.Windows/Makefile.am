@@ -58,6 +58,7 @@ system_windows_sources =							\
 	$(srcdir)/Microsoft.Internal/RichTextBoxView.cs				\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
 	$(srcdir)/MS.Internal/InternalTransform.cs				\
+	$(srcdir)/MS.Internal/JoltHelper.cs					\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/DependencyObjectHandle.cs				\
