@@ -549,6 +549,8 @@ protected:
 	friend class MoonManagedFactory;
 
 private:
+	void CallRecomputePropertyValueForProviders (DependencyProperty *property, int providerPrecedence, MoonError *error);
+
 	void DetachTemplateOwnerDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();

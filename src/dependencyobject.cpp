@@ -2158,6 +2158,24 @@ DependencyObject::GetValueNoDefaultWithError (DependencyProperty *property, Moon
 }
 
 void
+DependencyObject::CallRecomputePropertyValueForProviders (DependencyProperty *property, int providerPrecedence, MoonError *error)
+{
+	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
+
+	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
+		if (!provider_array[i])
+			continue;
+
+		if (i == providerPrecedence)
+			continue;
+		else if (i < providerPrecedence && (provider_array[i]->GetFlags () & ProviderFlags_RecomputesOnLowerPriorityChange) != 0)
+			provider_array[i]->RecomputePropertyValue (property, ProviderFlags_RecomputesOnLowerPriorityChange, error);
+		else if (i > providerPrecedence && (provider_array[i]->GetFlags () & ProviderFlags_RecomputesOnHigherPriorityChange) != 0)
+			provider_array[i]->RecomputePropertyValue (property, ProviderFlags_RecomputesOnHigherPriorityChange, error);
+	}
+}
+
+void
 DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					DependencyProperty *property,
 					Value *old_provider_value, Value *new_provider_value,
@@ -2205,7 +2223,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		if (provider_array[p]->GetPropertyValue (property)) {
 			// a provider higher in precedence already has
 			// a value for this property, so the one
-			// that's changing isn't visible anyway.
+			// that's changing isn't visible, so we don't
+			// do all the property change notification
+			// below.
+
+			// we *do* need to call RecomputePropertyValue
+			// on providers, though.
+			CallRecomputePropertyValueForProviders (property, providerPrecedence, error);
+
 			return;
 		}
 	}
@@ -2245,6 +2270,9 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
  	if (!equal) {
 		if (providerPrecedence != PropertyPrecedence_IsEnabled && providers.isenabled && providers.isenabled->LocalValueChanged (property))
 			return;
+
+		// we need to let the providers above/below this one that things have changed.
+		CallRecomputePropertyValueForProviders (property, providerPrecedence, error);
 
 		DependencyObject *old_as_dep = NULL;
 		DependencyObject *new_as_dep = NULL;
