@@ -484,8 +484,16 @@ public:
 	GCHandle CreateWeakGCHandle (void *mono_object);
 	void *GetGCHandleTarget (GCHandle gchandle);
 
-	/* @GeneratePInvoke */
+	/* The deployment initialization is awkward because the default managed deployment
+	 * constructor is public, so everybody can do a "new Deployment ();" in managed.
+	 * This will always create a native deployment (even if the managed ctor throws
+	 * an exception, which it's supposed to do) - so in our native ctor we do nothing
+	 * but zero-initialize fields, and the real consumers must call Initialize[Desktop]
+	 * to do what the ctors used to do */
+	/* @GeneratePInvoke,ManagedAccess=None */
 	Deployment ();
+	void Initialize (); /* This method must be called right after the ctor */
+	void InitializeDesktop (MonoDomain *domain);
 	
 	const static void *CurrentApplicationWeakRef;
 
@@ -511,10 +519,8 @@ private:
 		UnloadDomain = 2,
 		DisposeDeployment = 3
 	};
-	/* @SkipFactories */
-	Deployment (MonoDomain *domain);
-	void InnerConstructor ();
 
+	void InitializeCommon ();
 	void DisposeAllMedias ();
 	void DrainUnrefs ();
 	static bool DrainUnrefs (gpointer ptr);

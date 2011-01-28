@@ -143,6 +143,8 @@ public:
 	/* @GeneratePInvoke */
 	virtual const char *GetTypeName ()
 	{
+		if (object_type == Type::DEPLOYMENT)
+			return "Deployment";
 		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	

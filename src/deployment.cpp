@@ -196,7 +196,8 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 #endif
 		root_domain = mono_domain_get ();
 
-		Deployment::desktop_deployment = new Deployment (root_domain);
+		Deployment::desktop_deployment = new Deployment ();
+		Deployment::desktop_deployment->InitializeDesktop (root_domain);
 		Deployment::SetCurrent (Deployment::desktop_deployment);
 		Deployment::desktop_deployment->EnsureManagedPeer ();
 
@@ -423,34 +424,8 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 	pthread_setspecific (tls_key, deployment);
 }
 
-Deployment::Deployment (MonoDomain *domain)
-	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, CurrentApplicationWeakRef)
-{
-	this->domain = domain;
-	InnerConstructor ();
-}
-
 Deployment::Deployment()
 	: DependencyObject (this, Type::DEPLOYMENT), current_app (this, CurrentApplicationWeakRef)
-{
-	MonoDomain *current = mono_domain_get ();
-#if MONO_ENABLE_APP_DOMAIN_CONTROL
-	mono_domain_set (root_domain, FALSE);
-	domain = mono_domain_create_appdomain ((char *) "Silverlight AppDomain", NULL);
-
-	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
-
-	mono_domain_set (domain, FALSE);
-#else
-	domain = NULL;
-#endif
-	InnerConstructor ();
-
-	mono_domain_set (current, FALSE);
-}
-
-void
-Deployment::InnerConstructor ()
 {
 	system_windows_image = NULL;
 	system_windows_assembly = NULL;
@@ -465,14 +440,13 @@ Deployment::InnerConstructor ()
 	moon_exception_message = NULL;
 	moon_exception_error_code = NULL;
 
-	
 #if DEBUG
 	moon_sources = NULL;
 #endif	
 	
 #if EVENT_ARG_REUSE
 	num_outstanding_changes = 0;
-	change_args = g_ptr_array_new ();
+	change_args = NULL;
 #endif
 	surface = NULL;
 	medias = NULL;
@@ -497,14 +471,26 @@ Deployment::InnerConstructor ()
 	objects_destroyed = 0;
 	http_handler = NULL;
 	default_http_handler = NULL;
-	
-	types = NULL;
+	domain = NULL;
 
 #if OBJECT_TRACKING
 	objects_alive = NULL;
-	pthread_mutex_init (&objects_alive_mutex, NULL);
 #endif
 
+	font_manager = NULL;
+	interned_strings = NULL;
+	types = NULL;
+}
+
+void
+Deployment::InitializeCommon ()
+{
+#if EVENT_ARG_REUSE
+	change_args = g_ptr_array_new ();
+#endif
+#if OBJECT_TRACKING
+	pthread_mutex_init (&objects_alive_mutex, NULL);
+#endif
 	pthread_setspecific (tls_key, this);
 
 	pthread_mutex_lock (&hash_mutex);
@@ -517,6 +503,32 @@ Deployment::InnerConstructor ()
 
 	interned_strings = g_hash_table_new_full (g_str_hash, g_str_equal,
 						  (GDestroyNotify)g_free, (GDestroyNotify)g_free);
+}
+
+void
+Deployment::InitializeDesktop (MonoDomain *domain)
+{
+	this->domain = domain;
+	InitializeCommon ();
+}
+
+void
+Deployment::Initialize ()
+{
+	MonoDomain *current = mono_domain_get ();
+
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
+	mono_domain_set (root_domain, FALSE);
+	domain = mono_domain_create_appdomain ((char *) "Silverlight AppDomain", NULL);
+
+	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
+
+	mono_domain_set (domain, FALSE);
+#endif
+
+	InitializeCommon ();
+
+	mono_domain_set (current, FALSE);
 }
 
 ErrorEventArgs *
@@ -1915,7 +1927,7 @@ Deployment::UnrefDelayed (EventObject *obj)
 	UnrefData *item;
 		
 #if SANITY
-	if (Deployment::GetCurrent () != this)
+	if (Deployment::GetCurrent () != this && obj->GetObjectType () != Type::DEPLOYMENT)
 		g_warning ("Deployment::UnrefDelayed (%p): The current deployment (%p) should be %p.", obj, Deployment::GetCurrent (), this);
 	if (obj->GetObjectType () != Type::DEPLOYMENT &&  obj->GetUnsafeDeployment () != this && obj->GetUnsafeDeployment () != NULL)
 		g_warning ("Deployment::UnrefDelayed (%p): obj's deployment %p should be %p. type: %s", obj, obj->GetUnsafeDeployment (), this, obj->GetTypeName ());

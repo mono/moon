@@ -64,8 +64,15 @@ namespace System.Windows {
 			get { return int.Parse (RuntimeVersion.Split ('.') [0]); }
 		}
 
+		public Deployment ()
+			: base (SafeNativeMethods.deployment_new (), true)
+		{
+			throw new InvalidOperationException ("You must use Deployment.Current instead of creating an instance of Deployment.");
+		}
+
 		private new void Initialize ()
 		{
+
 			NativeMethods.deployment_initialize_app_domain (this.native, GetType ().Assembly.FullName);
 			UriHelper.Initialize (this);
 

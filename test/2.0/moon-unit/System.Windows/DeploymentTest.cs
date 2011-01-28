@@ -38,6 +38,11 @@ namespace MoonTest.System.Windows {
 
 	[TestClass]
 	public class DeploymentTest : SilverlightTest {
+		[TestMethod]
+		public void Ctor ()
+		{
+			Assert.Throws<InvalidOperationException> (delegate { new Deployment (); }, "Deployment..ctor");
+		}
 
 		[TestMethod]
 		public void ExternalCallersFromCrossDomain_ReadOnly ()

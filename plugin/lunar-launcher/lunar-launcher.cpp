@@ -311,6 +311,7 @@ int main (int argc, char **argv)
 	LOG_OOB ("[%i lunar-launcher]: Starting\n", getpid ());
 
 	deployment = new Deployment ();
+	deployment->Initialize ();
 	Deployment::SetCurrent (deployment);
 	
 	if (!deployment->InitializeAppDomain ()) {

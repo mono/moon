@@ -1905,6 +1905,7 @@ PluginInstance::CreatePluginDeployment ()
 	HttpHandler *handler;
 
 	deployment = new Deployment ();
+	deployment->Initialize ();
 	Deployment::SetCurrent (deployment);
 	
 	handler = new BrowserHttpHandler (this);

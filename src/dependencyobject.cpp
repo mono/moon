@@ -378,7 +378,7 @@ EventObject::GetDeployment ()
 	if (deployment == NULL)
 		g_warning ("EventObject::GetDeployment () should not be reached with a null deployment");
 	
-	if (deployment != Deployment::GetCurrent () && Deployment::GetCurrent () != NULL) {
+	if (deployment != Deployment::GetCurrent () && Deployment::GetCurrent () != NULL && object_type != Type::DEPLOYMENT) {
 		g_warning ("EventObject::GetDeployment () our deployment %p doesn't match Deployment::GetCurrent () %p", deployment, Deployment::GetCurrent ());
 		print_stack_trace ();
 	}
@@ -449,7 +449,7 @@ EventObject::ref ()
 	int v = g_atomic_int_exchange_and_add (&refcount, 1);
 		
 #if DEBUG		
-	if (deployment != Deployment::GetCurrent ()) {
+	if (deployment != Deployment::GetCurrent () && object_type != Type::DEPLOYMENT) {
 		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
 		// print_stack_trace ();
 	}
@@ -503,7 +503,7 @@ EventObject::unref ()
 	GCHandle managed_handle = this->managed_handle;
 #if OBJECT_TRACKING
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
-	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
+	const char *type_name = depl == NULL ? NULL : (object_type == Type::DEPLOYMENT ? "Deployment" : Type::Find (depl, GetObjectType ())->GetName ());
 #endif	
 
 	if (!IsMultiThreadedSafe () && !Surface::InMainThread ()) {

@@ -654,21 +654,22 @@ class Generator {
 					break;
 				}
 
-
-				text.Append ("\t\t");
-				Helper.WriteAccess (text, access);
-				text.Append (" ");
-				text.Append (type.ManagedName.Replace ("`1", ""));
-				text.Append (" () : base (SafeNativeMethods.");
-				text.Append (type.C_Constructor);
-				text.Append (" (), true)");
-				if (call_initialize) {
-					text.AppendLine ();
-					text.AppendLine ("\t\t{");
-					text.AppendLine ("\t\t\tInitialize ();");
-					text.AppendLine ("\t\t}");
-				} else {
-					text.AppendLine (" {}");
+				if (access != "None") {
+					text.Append ("\t\t");
+					Helper.WriteAccess (text, access);
+					text.Append (" ");
+					text.Append (type.ManagedName.Replace ("`1", ""));
+					text.Append (" () : base (SafeNativeMethods.");
+					text.Append (type.C_Constructor);
+					text.Append (" (), true)");
+					if (call_initialize) {
+						text.AppendLine ();
+						text.AppendLine ("\t\t{");
+						text.AppendLine ("\t\t\tInitialize ();");
+						text.AppendLine ("\t\t}");
+					} else {
+						text.AppendLine (" {}");
+					}
 				}
 			}
 
