@@ -40,8 +40,12 @@ IDocumentNode::CastToIDocumentNode (DependencyObject *obj)
 {
 	if (obj->Is (Type::RICHTEXTBOX))
 		return (RichTextBox*)obj;
-	else /* obj is a TextElement */
+	else if (obj->Is (Type::TEXTELEMENT))
 		return (TextElement*)obj;
+	else {
+		g_warning ("CastToIDocumentNode: Trying to cast from %s, which is *bad*", obj->GetTypeName ());
+		return NULL;
+	}
 }
 
 //

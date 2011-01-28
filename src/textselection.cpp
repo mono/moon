@@ -164,8 +164,8 @@ TextSelection::Insert (TextElement *element)
 		// after el, and walk back up to el's parent
 		// with new_el's index as @loc.
 		IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (el_parent);
-		DependencyObjectCollection *parents_children = parent_node->GetDocumentChildren ();
-		DependencyObject *new_el = node->Split (loc);
+		DependencyObjectCollection *parents_children = parent_node ? parent_node->GetDocumentChildren () : NULL;
+		DependencyObject *new_el = node ? node->Split (loc) : NULL;
 
 		if (!new_el) {
 			g_warning ("split failed");
