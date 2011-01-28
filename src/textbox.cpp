@@ -2770,7 +2770,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				ClearSelection (0);
 				ResetIMContext ();
 				
-				SyncAndEmit (value && !value->GetIsNull ());
+				SyncAndEmit (false);
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
