@@ -2146,10 +2146,13 @@ DiscreteObjectKeyFrame::~DiscreteObjectKeyFrame ()
 Value*
 DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Value *to = GetConvertedValue ();
-
-	if (to && keyFrameProgress == 1.0)
-		return new Value (*to);
+	if (keyFrameProgress == 1.0) {
+		Value *to = GetConvertedValue ();
+		if (!to || to->GetIsNull())
+			return new Value ();
+		else
+			return new Value (*to);
+	}
 	else
 		return new Value (*baseValue);
 }
