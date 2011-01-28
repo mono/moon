@@ -603,7 +603,7 @@ GLXContext::CheckVersion ()
 	ForceCurrent ();
 
 	if (atof ((const char *) glGetString (GL_VERSION)) < MIN_GL_VERSION) {
-		g_warning ("OpenGL version %s < %.1f",
+		printf ("Moonlight: OpenGL version %s < %.1f\n",
 			   glGetString (GL_VERSION),
 			   MIN_GL_VERSION);
 		return 0;
