@@ -391,6 +391,8 @@ Surface::Surface (MoonWindow *window)
 	focus_changed_events = new List ();
 
 	full_screen = false;
+	full_screen_options = FullScreenOptionsNone;
+	full_screen_options_consented = false;
 	first_user_initiated_event = false;
 	user_initiated_event = false;
 	user_initiated_monotonic_counter = 0;
@@ -1127,17 +1129,21 @@ Surface::SetFullScreen (bool value)
 		g_warning ("You're not allowed to switch to fullscreen from where you're doing it.");
 		return;
 	}
-	
+
+	if (full_screen_options != FullScreenOptionsNone && !full_screen_options_consented) {
+		bool asked = false;
+		if (!Consent::PromptUserFor (MOON_CONSENT_FULLSCREEN_PINNING, &asked))
+			return;
+		if (asked)
+			full_screen_options_consented = true;
+	}
+
 	UpdateFullScreen (value);
 }
 
 void
 Surface::SetFullScreenOptions (FullScreenOptions options)
 {
-	if (options != FullScreenOptionsNone)
-		if (!Consent::PromptUserFor (MOON_CONSENT_FULLSCREEN_PINNING, NULL))
-			return;
-
 	full_screen_options = options;
 }
 

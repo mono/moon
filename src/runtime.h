@@ -422,6 +422,7 @@ private:
 	// Fullscreen support
 	bool full_screen;
 	FullScreenOptions full_screen_options;
+	bool full_screen_options_consented;
 	Panel *full_screen_message;
 	Uri *source_location;
 	
