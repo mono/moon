@@ -223,6 +223,12 @@ MOON_NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 	return plugin->SetValue (variable, value);
 }
 
+char *
+MOON_NPP_GetMIMEDescription (void)
+{
+	return (char *) (MIME_TYPES_HANDLED);
+}
+
 static bool runtime_initialized = false;
 
 NPError
