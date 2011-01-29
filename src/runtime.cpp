@@ -1831,7 +1831,7 @@ Surface::EmitEventOnList (int event_id, List *list, MoonEvent *event, int end_id
 
 	EmitContext** emit_ctxs = g_new (EmitContext*, end_idx + 1);
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		emit_ctxs[idx] = node->uielement->StartEmit (event_id);
+		emit_ctxs[idx] = node->uielement->StartEmit (event_id, -1);
 	}
 
 	EventArgs *args = CreateArgsForEvent(event_id, event);

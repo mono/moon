@@ -715,7 +715,7 @@ public:
 	NamedProxyPredicate (char *name) { this->name = g_strdup (name); }
 	~NamedProxyPredicate () { g_free (name); }
 
-	static bool matches (EventHandler cb_handler, gpointer cb_data, gpointer data)
+	static bool matches (int token, EventHandler cb_handler, gpointer cb_data, gpointer data)
 	{
 		if (cb_handler != EventListenerProxy::proxy_listener_to_javascript)
 			return false;

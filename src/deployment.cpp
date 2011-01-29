@@ -1579,14 +1579,14 @@ Deployment::ShutdownManaged ()
 class LoadedClosure {
 public:
 	UIElement *obj;
-	EventHandler handler;
-	gpointer handler_data;
+	int token;
 
-	LoadedClosure (UIElement *obj, EventHandler handler, gpointer handler_data)
-		: obj (obj), handler (handler), handler_data (handler_data)
+	LoadedClosure (UIElement *obj, int token)
+		: obj (obj), token (token)
 	{
 
 	}
+
 	~LoadedClosure ()
 	{
 		
@@ -1602,14 +1602,13 @@ Deployment::delete_loaded_closure (gpointer closure)
 }
 
 bool
-Deployment::match_loaded_closure (EventHandler cb_handler, gpointer cb_data, gpointer data)
+Deployment::match_loaded_closure (int token, EventHandler cb_handler, gpointer cb_data, gpointer data)
 {
 	LoadedClosure *closure_to_match = (LoadedClosure*)data;
 	LoadedClosure *closure = (LoadedClosure*)cb_data;
 
 	return (closure_to_match->obj == closure->obj &&
-		closure_to_match->handler == closure->handler &&
-		closure_to_match->handler_data == closure->handler_data);
+		closure_to_match->token == closure->token);
 
 }
 
@@ -1627,22 +1626,16 @@ Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer cl
 // 	if (!lclosure->obj->IsLoaded ())
 // 		lclosure->obj->OnLoaded ();
 
-	if (lclosure->handler) {
-		// RoutedEventArgs *rea = MoonUnmanagedFactory::CreateRoutedEventArgs ();
-		// rea->SetSource (lclosure->obj);
-		lclosure->handler (lclosure->obj, /*rea*/NULL, lclosure->handler_data);
-		// rea->unref ();
-	}
-	
+
+	lclosure->obj->EmitOnly (UIElement::LoadedEvent, lclosure->token);
 	deployment->RemoveHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure);
 }
 
 void
-Deployment::add_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure)
+Deployment::add_loaded_handler (EventObject *obj, int token, gpointer closure)
 {
 	Deployment *deployment = (Deployment*)closure;
-	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj,
-						     handler, handler_data);
+	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj, token);
 
 	// This is unrefed in delete_loaded_closure
 	obj->ref ();
@@ -1650,11 +1643,10 @@ Deployment::add_loaded_handler (EventObject *obj, EventHandler handler, gpointer
 }
 
 void
-Deployment::remove_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure)
+Deployment::remove_loaded_handler (EventObject *obj, int token, gpointer closure)
 {
 	Deployment *deployment = (Deployment*)closure;
-	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj,
-						     handler, handler_data);
+	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj, token);
 	deployment->RemoveMatchingHandlers (Deployment::LoadedEvent, match_loaded_closure, lclosure);
 	delete lclosure;
 }

@@ -47,9 +47,9 @@ class MoonError;
 typedef void (* TickCallHandler) (EventObject *object);
 /* @CBindingRequisite */
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
-typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
+typedef bool (* EventHandlerPredicate) (int token, EventHandler cb_handler, gpointer cb_data, gpointer data);
 
-typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
+typedef void (* HandlerMethod) (EventObject *object, int token, gpointer data);
 
 /* @CBindingRequisite */
 typedef void (* ManagedRefCallback) (EventObject *referer, Value *referent, const void *id);
@@ -204,7 +204,7 @@ public:
 	
 	void unref_delayed ();
 	
-	EmitContext *StartEmit (int event_id, bool only_unemitted = false, int starting_generation = -1);
+	EmitContext *StartEmit (int event_id, int only_token, bool only_unemitted = false, int starting_generation = -1);
 	bool DoEmit (int event_id, EventArgs *calldata = NULL);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	static bool EmitCallback (gpointer d);
@@ -250,6 +250,7 @@ public:
 	bool hadManagedPeer;
 
 	static void ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closure);
+	bool EmitOnly (int event_id, int token, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
 
 protected:
 	virtual ~EventObject ();

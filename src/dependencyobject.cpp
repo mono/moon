@@ -888,7 +888,7 @@ EventObject::RemoveAllHandlers (gpointer data)
 }
 
 void
-EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
+EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(int token, EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
 {
 	if (events == NULL) {
 #if SANITY
@@ -905,7 +905,7 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
 	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	while (c) {
-		if (!predicate || predicate (c->func, c->data, closure)) {
+		if (!predicate || predicate (c->token, c->func, c->data, closure)) {
 			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				c->pending_removal = true;
 			} else {
@@ -928,7 +928,7 @@ EventObject::ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpoin
 	int last_foreach_generation = events->lists [event_id].last_foreach_generation;
 	while (event_closure) {
 		if (!event_closure->pending_removal && (!only_new || event_closure->token >= last_foreach_generation))
-			(*m) (this, event_closure->func, event_closure->data, closure);
+			(*m) (this, event_closure->token, closure);
 		event_closure = (EventClosure *) event_closure->next;
 	}
 	events->lists [event_id].last_foreach_generation = GetEventGeneration (event_id);
@@ -955,7 +955,7 @@ EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer clos
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (event_closure) {
 		if (event_closure->token == token) {
-			(*m) (this, event_closure->func, event_closure->data, closure);
+			(*m) (this, event_closure->token, closure);
 			break;
 		}
 		event_closure = (EventClosure *) event_closure->next;
@@ -1138,6 +1138,7 @@ struct EmitData {
 	int event_id;
 	EventArgs *calldata;
 	bool only_unemitted;
+	int only_token;
 };
 
 bool
@@ -1145,7 +1146,7 @@ EventObject::EmitCallback (gpointer d)
 {
 	EmitData *data = (EmitData *) d;
 	data->sender->SetCurrentDeployment ();
-	data->sender->Emit (data->event_id, data->calldata, data->only_unemitted);
+	data->sender->EmitOnly (data->event_id, data->only_token, data->calldata, data->only_unemitted);
 	data->sender->unref ();
 	delete data;
 #if SANITY
@@ -1156,6 +1157,11 @@ EventObject::EmitCallback (gpointer d)
 
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
+{
+	return EmitOnly (event_id, -1, calldata, only_unemitted, starting_generation);
+}
+bool
+EventObject::EmitOnly (int event_id, int token, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
 	if (events == NULL) {
 		if (calldata)
@@ -1200,13 +1206,14 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 		data->sender = this;
 		data->sender->ref ();
 		data->event_id = event_id;
+		data->only_token = token;
 		data->calldata = calldata;
 		data->only_unemitted = only_unemitted;
 		surface->GetTimeManager ()->AddTimeout (MOON_PRIORITY_HIGH, 1, EmitCallback, data);
 		return false;
 	}
 
-	EmitContext* ctx = StartEmit (event_id, only_unemitted, starting_generation);
+	EmitContext* ctx = StartEmit (event_id, token, only_unemitted, starting_generation);
 	
 	if (ctx == NULL)
 		return false;
@@ -1219,7 +1226,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 }
 
 EmitContext*
-EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generation)
+EventObject::StartEmit (int event_id, int only_token, bool only_unemitted, int starting_generation)
 {
 	if (events == NULL)
 		return NULL;
@@ -1247,7 +1254,10 @@ EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generati
 	/* make a copy of the event list to use for emitting */
 	closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	for (int i = 0; closure != NULL; i ++) {
-		ctx->closures[i] = closure->pending_removal ? NULL : closure;
+		if (only_token == -1 || closure->token == only_token)
+			ctx->closures[i] = closure->pending_removal ? NULL : closure;
+		else
+			ctx->closures[i] = NULL;
 		closure = (EventClosure *) closure->next;
 	}
 

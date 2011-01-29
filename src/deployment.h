@@ -406,10 +406,10 @@ public:
 	void AddLoadedHandler (UIElement *el, int token);
 	void RemoveLoadedHandler (UIElement *el, int token);
 
-	static void add_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
-	static void remove_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
+	static void add_loaded_handler (EventObject *obj, int token, gpointer closure);
+	static void remove_loaded_handler (EventObject *obj, int token, gpointer closure);
 	static void delete_loaded_closure (gpointer closure);
-	static bool match_loaded_closure (EventHandler cb_handler, gpointer cb_data, gpointer data);
+	static bool match_loaded_closure (int token, EventHandler cb_handler, gpointer cb_data, gpointer data);
 	static void proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer closure);
 
 	/* @GenerateManagedEvent=false */
