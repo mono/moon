@@ -83,7 +83,7 @@ load (void)
 		fprintf (stdout, "Moonlight: Attempting to load libmoonplugin from: %s\n", plugin_path);
 	}
 
-	void *real_plugin = dlopen (plugin_path, RTLD_LAZY);
+	void *real_plugin = dlopen (plugin_path, RTLD_LAZY | RTLD_GLOBAL);
 
 	if (real_plugin == NULL){
 		fprintf (stderr, "Moonlight: Unable to load the real plugin %s\n", dlerror ());
