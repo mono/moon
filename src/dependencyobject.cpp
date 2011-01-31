@@ -389,7 +389,7 @@ EventObject::GetDeployment ()
 
 void
 EventObject::SetCurrentDeployment (bool domain)
-{	
+{
 	if (deployment != NULL) {
 		Deployment::SetCurrent (deployment, domain);
 	}

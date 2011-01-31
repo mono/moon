@@ -230,7 +230,8 @@ public:
 	{ return deployment; }
 #endif
 	;
-
+	
+	/* @GeneratePInvoke */
 	void SetCurrentDeployment (bool domain = true);
 
 	// a public deployment getter for sanity checking without the warnings in GetDeployment.
