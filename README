@@ -22,7 +22,7 @@ Requirements
 	Do this like this:
             git clone git://github.com/mono/moon.git moon
             git clone git://github.com/mono/mono.git mono
-            cd mono && git reset --hard 652e71d6 && cd ..
+            cd mono && git reset --hard c3a038e2 && cd ..
             git clone git://github.com/mono/mono-basic.git mono-basic
             cd mono-basic && git reset --hard b104419 && cd ..
 
