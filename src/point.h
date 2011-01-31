@@ -15,6 +15,8 @@
 #include <cairo.h>
 #include <math.h>
 
+#include "pal.h"
+
 namespace Moonlight {
 
 /* @IncludeInKinds */
@@ -71,7 +73,7 @@ public:
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-Point *point_from_str (const char *str);
+MOON_API Point *point_from_str (const char *str);
 
 G_END_DECLS
 };

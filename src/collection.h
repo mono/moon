@@ -32,7 +32,7 @@ class CollectionIterator;
 /* @CallInitialize */
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=Manual */
-class Collection : public DependencyObject {
+class MOON_API Collection : public DependencyObject {
 public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	const static int CountProperty;

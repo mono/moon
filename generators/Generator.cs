@@ -655,12 +655,15 @@ class Generator {
 				}
 
 				if (access != "None") {
+					string ctor = type.C_Constructor;
+					if (ctor.StartsWith ("_moonlight_cbinding_"))
+						ctor = ctor.Substring ("_moonlight_cbinding_".Length);
 					text.Append ("\t\t");
 					Helper.WriteAccess (text, access);
 					text.Append (" ");
 					text.Append (type.ManagedName.Replace ("`1", ""));
 					text.Append (" () : base (SafeNativeMethods.");
-					text.Append (type.C_Constructor);
+					text.Append (ctor);
 					text.Append (" (), true)");
 					if (call_initialize) {
 						text.AppendLine ();
@@ -1594,6 +1597,10 @@ class Generator {
 			throw new Exception (string.Format ("Expected 'class' or 'struct', not '{0}'", tokenizer.CurrentToken.value));
 		}
 
+		// permit our visibility tags
+		tokenizer.Accept (Token2Type.Identifier, "MOON_API");
+		tokenizer.Accept (Token2Type.Identifier, "MOON_LOCAL");
+
 		if (tokenizer.CurrentToken.type == Token2Type.Identifier) {
 			type.Name = tokenizer.GetIdentifier ();
 		} else {
@@ -1796,6 +1803,14 @@ class Generator {
 				}
 
 				if (tokenizer.Accept (Token2Type.Identifier, "G_GNUC_INTERNAL")) {
+					continue;
+				}
+
+				if (tokenizer.Accept (Token2Type.Identifier, "MOON_API")) {
+					continue;
+				}
+
+				if (tokenizer.Accept (Token2Type.Identifier, "MOON_LOCAL")) {
 					continue;
 				}
 
@@ -2535,6 +2550,7 @@ class Generator {
 
 		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))
 			text.AppendLine ("/* @GeneratePInvoke */");
+		text.Append ("MOON_API ");
 		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		if (!cmethod.ReturnType.IsPointer)
 			text.Append (" ");
@@ -3114,7 +3130,8 @@ class Generator {
 		managed_name = name;
 		if (marshal_moonerror)
 			managed_name = managed_name.Replace ("_with_error", "");
-
+		if (managed_name.StartsWith ("_moonlight_cbinding_"))
+			managed_name = managed_name.Substring ("_moonlight_cbinding_".Length);
 		returntype = method.ReturnType;
 //		is_manually_defined = IsManuallyDefined (NativeMethods_cs, managed_name);
 		contains_unknown_types = method.ContainsUnknownTypes;
@@ -3130,10 +3147,8 @@ class Generator {
 		text.Append (tabs);
 		text.Append ("[DllImport (\"");
 		text.Append (library);
-		if (generate_wrapper) {
-			text.Append ("\", EntryPoint=\"");
-			text.Append (name);
-		}
+		text.Append ("\", EntryPoint=\"");
+		text.Append (name);
 		text.Append("\"");
 		text.Append(", CharSet=CharSet.Auto");
 		text.AppendLine (")]");
@@ -3159,7 +3174,7 @@ class Generator {
 		else
 			returntype.Write (text, SignatureType.PInvoke, null);
 		text.Append (" ");
-		text.Append (name);
+		text.Append (managed_name);
 		if (generate_wrapper)
 			text.Append ("_");
 		cmethod.Parameters.Write (text, SignatureType.PInvoke, false);
@@ -3205,7 +3220,7 @@ class Generator {
 			if (!is_void)
 				text.Append ("result = ");
 
-			text.Append (cmethod.Name);
+			text.Append (managed_name);
 			text.Append ("_");
 			cmethod.Parameters.Write (text, SignatureType.Managed, true);
 

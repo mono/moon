@@ -19,6 +19,7 @@
 #include <glib.h>
 #include <stdio.h>
 
+#include "pal.h"
 #include "provider.h"
 #include "weakrefmanager.h"
 #include "dependencyproperty.h"
@@ -99,7 +100,7 @@ private:
 };
 
 /* @Namespace=None,ManagedEvents=Manual */
-class EventObject {
+class MOON_API EventObject {
 private:
 	enum Flags {
 		MultiThreadedSafe = 1 << 28, // if the dtor can be called on any thread
@@ -323,7 +324,7 @@ public:
 };
 
 /* @Namespace=System.Windows */
-class DependencyObject : public EventObject {
+class MOON_API DependencyObject : public EventObject {
 public:
 	virtual void Dispose ();
 

@@ -661,9 +661,9 @@ public:
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
+MOON_API void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
 /* @GeneratePInvoke */
-void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
+MOON_API void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
 
 G_END_DECLS
 

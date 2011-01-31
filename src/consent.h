@@ -24,8 +24,6 @@ enum MoonConsentType {
 	MOON_CONSENT_LAST
 };
 
-G_BEGIN_DECLS
-
 class Consent {
 public:
 	static char *GeneratePermissionConfigurationKey (MoonConsentType consent, const char *website);
@@ -38,8 +36,6 @@ public:
 	static bool PromptUserFor (/* @MarshalAs=int */ MoonConsentType consent, bool *asked_user);
 	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user);
 };
-
-G_END_DECLS
 
 };
 #endif /* __MOON_CONSENT_H__ */

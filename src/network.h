@@ -15,6 +15,7 @@
 
 #include <glib.h>
 
+#include "pal.h"
 #include "dependencyobject.h"
 #include "eventargs.h"
 #include "downloader.h"
@@ -31,7 +32,7 @@ class HttpResponse;
  */
 
 /* @Namespace=None */
-class HttpRequestProgressChangedEventArgs : public EventArgs {
+class MOON_API HttpRequestProgressChangedEventArgs : public EventArgs {
 private:
 	double progress;
 
@@ -49,7 +50,7 @@ public:
  */
 
 /* @Namespace=None */
-class HttpRequestStoppedEventArgs : public EventArgs {
+class MOON_API HttpRequestStoppedEventArgs : public EventArgs {
 private:
 	char *error_msg;
 
@@ -72,7 +73,7 @@ public:
  */
 
 /* @Namespace=None */
-class HttpRequestWriteEventArgs : public EventArgs {
+class MOON_API HttpRequestWriteEventArgs : public EventArgs {
 private:
 	void *data;
 	gint64 offset;
@@ -100,7 +101,7 @@ public:
  */
 
 /* @Namespace=None,ManagedEvents=Manual */
-class HttpRequest : public EventObject {
+class MOON_API HttpRequest : public EventObject {
 public:
 	enum Options {
 		OptionsNone = 0,
@@ -210,7 +211,7 @@ private:
  * HttpHeader
  */
 
-class HttpHeader : public List::Node {
+class MOON_API HttpHeader : public List::Node {
 private:
 	char *header;
 	char *value;
@@ -237,7 +238,7 @@ typedef void (* HttpHeaderVisitor) (gpointer context, const char *header, const 
  * HttpResponse
  */
 
-class HttpResponse : public EventObject {
+class MOON_API HttpResponse : public EventObject {
 private:
 	List *headers;
 	gint32 response_status;
@@ -276,7 +277,7 @@ public:
  *   You also need to provide an implementation of HttpRequest.
  */
 
-class HttpHandler : public EventObject {
+class MOON_API HttpHandler : public EventObject {
 private:
 	char *download_dir;
 

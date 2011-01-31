@@ -49,6 +49,12 @@ public static class Helper {
 			CppToCName (member, result);
 		}
 
+		/// FIXME enable this if we want to namespace the
+		/// cbindings.  we should be doing this, but we
+		/// *can't* do it as long as the existing codecs
+		/// reference symbols directly.
+		// result.Insert (0, "_moonlight_cbinding_");
+
 		return result.ToString ();
 	}
 

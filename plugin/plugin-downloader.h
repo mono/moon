@@ -25,7 +25,7 @@ namespace Moonlight {
  * BrowserHttpHandler
  */
 
-class BrowserHttpHandler : public HttpHandler {
+class MOON_API BrowserHttpHandler : public HttpHandler {
 private:
 	PluginInstance *instance;
 
@@ -43,7 +43,7 @@ public:
  * BrowserHttpRequest
  */
 
-class BrowserHttpRequest : public HttpRequest {
+class MOON_API BrowserHttpRequest : public HttpRequest {
 private:
 	BrowserHttpHandler *browser_handler;
 
@@ -61,7 +61,7 @@ public:
  * BrowserHttpResponse
  */
 
-class BrowserHttpResponse : public HttpResponse {
+class MOON_API BrowserHttpResponse : public HttpResponse {
 public:
 	BrowserHttpResponse (HttpRequest *request);
 };

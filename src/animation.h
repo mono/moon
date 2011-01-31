@@ -16,6 +16,7 @@
 
 #include <glib.h>
 
+#include "color.h"
 #include "trigger.h"
 #include "collection.h"
 #include "clock.h"
@@ -1051,10 +1052,10 @@ protected:
 	friend class MoonManagedFactory;
 private:
 	bool HookupAnimationsRecurse (Clock *clock,
-				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
-				      GHashTable *promoted_values,
-				      List *animated_properties,
-				      MoonError *error);
+						 DependencyObject *targetObject, PropertyPath *targetPropertyPath,
+						 GHashTable *promoted_values,
+						 List *animated_properties,
+						 MoonError *error);
 
 	static void clock_statechanged (EventObject *sender, EventArgs *calldata, gpointer closure);
 };

@@ -20,12 +20,10 @@
 typedef NPError (*np_initialize_func) (void *a, void *b);
 typedef NPError (*np_shutdown_func) ();
 typedef NPError (*np_getvalue_func) (void *, NPPVariable var, void *avalue);
-typedef char *  (*np_getmime_func)  ();
 typedef void    (*config_parse_memory_func) (const char *buffer);
 static np_initialize_func initialize;
 static np_getvalue_func   getvalue;
 static np_shutdown_func   shutdown;
-static np_getmime_func    getmime;
 
 
 static NPError

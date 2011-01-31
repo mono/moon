@@ -15,6 +15,7 @@
 #include <cairo.h>
 #include <math.h>
 
+#include "pal.h"
 #include "point.h"
 #include "size.h"
 #include "thickness.h"
@@ -259,7 +260,7 @@ struct Rect {
 G_BEGIN_DECLS
 
 /*@GeneratePInvoke */
-Rect *rect_from_str (const char *str);
+MOON_API Rect *rect_from_str (const char *str);
 
 G_END_DECLS
 

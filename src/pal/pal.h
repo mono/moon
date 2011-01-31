@@ -3,18 +3,39 @@
 #ifndef MOON_PAL_H
 #define MOON_PAL_H
 
+#if defined _WIN32 || defined __CYGWIN__
+#define MOON_DLL_EXPORT __declspec(dllexport)
+#define MOON_DLL_IMPORT __declspec(dllimport)
+#define MOON_DLL_LOCAL
+#else
+#if __GNUC__ >= 4
+#define MOON_DLL_EXPORT __attribute__ ((visibility("default")))
+#define MOON_DLL_IMPORT __attribute__ ((visibility("default")))
+#define MOON_DLL_LOCAL  __attribute__ ((visibility("hidden")))
+#else
+#define MOON_DLL_EXPORT
+#define MOON_DLL_IMPORT
+#define MOON_DLL_LOCAL
+#endif
+#endif
+
+#if BUILDING_LIBMOON
+#define MOON_API MOON_DLL_EXPORT
+#define MOON_LOCAL MOON_DLL_LOCAL
+#else
+#define MOON_API MOON_DLL_IMPORT
+#define MOON_LOCAL
+#endif
+
+
 #include <glib.h>
 #include <time.h>
 #include <stdio.h>
 
 #include "enums.h"
 #include "cairo.h"
-#include "color.h"
-#include "point.h"
-#include "rect.h"
-#include "error.h"
 #include "list.h"
-#include "uri.h"
+#include "gchandle.h"
 
 // I hate X11
 #ifdef FocusIn
@@ -23,6 +44,7 @@
 #ifdef FocusOut
 #undef FocusOut
 #endif
+
 
 // the default for MoonWindowingSystem::GetCursorBlinkTimeout
 #define CURSOR_BLINK_TIMEOUT_DEFAULT  900
@@ -36,10 +58,16 @@ class HttpRequest;
 class EventObject;
 class EventArgs;
 class PluginInstance;
+class Uri;
 
 class MoonEvent;
 class MoonWindow;
 class MoonClipboard;
+class MoonError;
+
+struct Point;
+struct Rect;
+struct Color;
 
 enum MoonModifier {
 	MoonModifier_Shift    = 1 << 0,
@@ -277,7 +305,7 @@ private:
 	MoonWindowlessCtor windowless_ctor;
 };
 
-struct MoonAppRecord {
+struct MOON_API MoonAppRecord {
 	char *origin;
 	time_t mtime;
 	char *uid;
@@ -309,7 +337,7 @@ public:
 
 typedef void (* UpdateCompletedCallback) (bool updated, const char *error, gpointer user_data);
 
-class MoonInstallerService {
+class MOON_API MoonInstallerService {
 	UpdateCompletedCallback completed;
 	HttpRequest *request;
 	MoonAppDatabase *db;

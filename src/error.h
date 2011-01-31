@@ -18,6 +18,7 @@ namespace Moonlight {
 class ErrorEventArgs;
 };
 
+#include "pal.h"
 #include "enums.h"
 #include "gchandle.h"
 
@@ -25,7 +26,7 @@ namespace Moonlight {
 
 class ParserErrorEventArgs;
 
-class MoonError {
+class MOON_API MoonError {
 public:
 	enum ExceptionType {
 		NO_ERROR = 0,

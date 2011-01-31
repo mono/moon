@@ -97,7 +97,7 @@ struct MoonlightRuntimeOption {
 	const char *description;
 };
 
-extern guint32 moonlight_flags;
+extern MOON_API guint32 moonlight_flags;
 
 const MoonlightRuntimeOption * moonlight_get_runtime_options ();
 void moonlight_set_runtime_option (RuntimeInitFlag flag, bool set);
@@ -156,8 +156,8 @@ struct MoonlightDebugOption {
 	guint32 flag;
 };
 
-extern guint32 debug_flags_ex;
-extern guint32 debug_flags;
+extern MOON_API guint32 debug_flags_ex;
+extern MOON_API guint32 debug_flags;
 
 const MoonlightDebugOption * moonlight_get_debug_options ();
 void moonlight_set_debug_option (guint32 flag, bool set);
@@ -183,7 +183,7 @@ enum MoonEventStatus {
 };
 
 /* @Namespace=None,ManagedEvents=Manual */
-class Surface : public EventObject {
+class MOON_API Surface : public EventObject {
 public:
 	/* @GeneratePInvoke,SkipFactories */
 	Surface (MoonWindow *window);
@@ -546,11 +546,12 @@ public:
 
 G_BEGIN_DECLS
 
-void     runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser);
+MOON_API void     runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser);
 
-void     runtime_init_browser (const char *plugin_dir, bool out_of_browser);
+MOON_API void     runtime_init_browser (const char *plugin_dir, bool out_of_browser);
+
 /* @GeneratePInvoke */
-void     runtime_init_desktop ();
+MOON_API void     runtime_init_desktop ();
 
 GList   *runtime_get_surface_list (void);
 
@@ -559,18 +560,18 @@ void	 runtime_flags_set_show_fps (gboolean flag);
 void	 runtime_flags_set_use_shapecache (gboolean flag);
 
 /* @GeneratePInvoke */
-MoonWindowingSystem *runtime_get_windowing_system ();
-MoonInstallerService *runtime_get_installer_service ();
-MoonMessagingService *runtime_get_messaging_service ();
+MOON_API MoonWindowingSystem *runtime_get_windowing_system ();
+MOON_API MoonInstallerService *runtime_get_installer_service ();
+MOON_API MoonMessagingService *runtime_get_messaging_service ();
 /* @GeneratePInvoke */
-MoonCaptureService *runtime_get_capture_service ();
+MOON_API MoonCaptureService *runtime_get_capture_service ();
 /* @GeneratePInvoke */
-MoonNetworkService *runtime_get_network_service ();
+MOON_API MoonNetworkService *runtime_get_network_service ();
 
-void     runtime_shutdown (void);
+MOON_API void     runtime_shutdown (void);
 
 /* @GeneratePInvoke */
-void g_free_pinvoke (void *obj);
+MOON_API void g_free_pinvoke (void *obj);
 
 G_END_DECLS
 

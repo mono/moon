@@ -15,7 +15,8 @@ INCLUDES = \
 	-I$(top_srcdir)/src/zip \
 	-I/usr/include/X11 \
 	$(PLUGIN_CFLAGS) \
-	-Wall
+	-DBUILDING_LIBMOON=1 \
+	-Wall -fvisibility=hidden -fvisibility-inlines-hidden
 
 
 #--- libmoonloader ----------------------

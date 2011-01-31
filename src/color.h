@@ -14,6 +14,8 @@
 #include <glib.h>
 #include <math.h>
 
+#include "pal.h"
+
 namespace Moonlight {
 
 /* @IncludeInKinds */
@@ -85,7 +87,7 @@ G_BEGIN_DECLS
 const char *color_to_string (Color *color);
 
 /* @GeneratePInvoke */
-Color *color_from_str  (const char *name);
+MOON_API Color *color_from_str  (const char *name);
 
 G_END_DECLS
 

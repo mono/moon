@@ -348,9 +348,9 @@ class InkPresenter : public Canvas {
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-void stroke_get_bounds (Stroke *stroke, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
+MOON_API void stroke_get_bounds (Stroke *stroke, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
 /* @GeneratePInvoke */
-void stroke_collection_get_bounds (StrokeCollection *collection, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
+MOON_API void stroke_collection_get_bounds (StrokeCollection *collection, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
 
 G_END_DECLS
 

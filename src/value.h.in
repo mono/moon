@@ -15,6 +15,7 @@
 
 #include <glib.h>
 
+#include "pal.h"
 #include "type.h"
 #include "enums.h"
 
@@ -74,7 +75,7 @@ class PlaylistEntry;
 #define checked_get_subclass(kind, castas) return (castas*)u.dependency_object;
 #endif
 
-struct Value {
+struct MOON_API Value {
 public:
 	void Init ();
 	void Strengthen ();
@@ -262,14 +263,14 @@ public:
 
 G_BEGIN_DECLS
 /* @GeneratePInvoke */
-void value_free_value (Value *value);
+MOON_API void value_free_value (Value *value);
 /* @GeneratePInvoke */
-void value_free_value2 (/* @MarshalAs=IntPtr */ Value *value);
+MOON_API void value_free_value2 (/* @MarshalAs=IntPtr */ Value *value);
 
 /* @GeneratePInvoke */
-void value_delete_value (Value *value);
+MOON_API void value_delete_value (Value *value);
 /* @GeneratePInvoke */
-void value_delete_value2 (/* @MarshalAs=IntPtr */ Value *value);
+MOON_API void value_delete_value2 (/* @MarshalAs=IntPtr */ Value *value);
 G_END_DECLS
 
 };

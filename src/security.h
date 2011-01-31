@@ -39,7 +39,7 @@ public:
 
 G_BEGIN_DECLS
 
-G_GNUC_INTERNAL void security_enable_coreclr (const char *platform_dir);
+void security_enable_coreclr (const char *platform_dir);
 
 G_END_DECLS
 

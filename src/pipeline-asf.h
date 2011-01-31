@@ -248,7 +248,7 @@ private:
 
 	void WritePacket (void *buf, gint32 n); // forwards to the current entry. Main thread only
 	MmsPlaylistEntry *GetCurrentReffed (); // thread safe
-
+	
 	void SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id, HttpStreamingFeatures features); // Main thread only
 	MediaResult ParseHeader (void *buffer, gint32 size); // Main thread only
 	void ReportStreamChange (gint32 reason); // called by the MmsDownloader when we get a C (stream change) packet. Main thread only.

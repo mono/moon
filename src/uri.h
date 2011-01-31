@@ -15,6 +15,7 @@
 
 #include <glib.h>
 
+#include "pal.h"
 #include "value.h"
 #include "gchandle.h"
 
@@ -60,7 +61,7 @@ struct UriFunctions {
 /* @IncludeInKinds */
 /* @SkipValue */
 /* @Namespace=System */
-class Uri {
+class MOON_API Uri {
 public:
 	Uri ();
 	/* @GeneratePInvoke */

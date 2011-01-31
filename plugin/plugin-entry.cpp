@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "pal.h"
 #include "moonlight.h"
 #include "deployment.h"
 
@@ -360,13 +361,13 @@ MOON_NPN_PopPopupsEnabledState (NPP instance)
 
 /*** These functions are located automagically by mozilla *********************/
 
-NPError
+MOON_API NPError
 LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value)
 {
 	return MOON_NPP_GetValue ((NPP) future, variable, value);
 }
 
-NPError OSCALL
+MOON_API NPError OSCALL
 LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs)
 {
 	if (mozilla_funcs == NULL || plugin_funcs == NULL)
@@ -485,7 +486,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 	return MOON_NPP_Initialize ();
 }
 
-NPError OSCALL
+MOON_API NPError OSCALL
 LOADER_RENAMED_SYM(NP_Shutdown) (void)
 {
 	MOON_NPP_Shutdown ();

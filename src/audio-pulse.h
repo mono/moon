@@ -71,7 +71,7 @@ class PulsePlayer : public AudioPlayer {
 	 	ConnectionFailed,
 	 	ConnectionSuccess
 	};
- private:
+
 	pa_context *context;
 	pa_threaded_mainloop *loop;
 	pa_mainloop_api *api;

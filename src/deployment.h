@@ -20,6 +20,7 @@
 #include "mutex.h"
 #include "value.h"
 #include "network.h"
+#include "uri.h"
 
 #if !INCLUDED_MONO_HEADERS
 typedef struct _MonoAssembly MonoAssembly;
@@ -57,7 +58,7 @@ namespace Moonlight {
 typedef void (*EnsureManagedPeerCallback)(EventObject *forObj, Type::Kind kind);
 
 /* @Namespace=System.Windows,CallInitialize */
-class AssemblyPart : public DependencyObject {
+class MOON_API AssemblyPart : public DependencyObject {
 public:
  	/* @PropertyType=string,DefaultValue=\"\",Validator=AssemblyPartSourceValidator */
 	const static int SourceProperty;
@@ -184,7 +185,7 @@ protected:
 
 /* @Namespace=System.Windows */
 /* @ContentProperty=Source */
-class Icon : public DependencyObject {
+class MOON_API Icon : public DependencyObject {
 public:
 	/* @PropertyType=Uri,DefaultValue=new Uri(),IsConstPropertyType,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int SourceProperty;
@@ -223,7 +224,7 @@ protected:
 };
 
 /* @Namespace=System.Windows */
-class OutOfBrowserSettings : public DependencyObject {
+class MOON_API OutOfBrowserSettings : public DependencyObject {
 public:
 	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,GenerateAccessors,Validator=NonNullOnlyDuringInitializationValidator */
 	const static int BlurbProperty;
@@ -272,7 +273,7 @@ protected:
 };
 
 /* @Namespace=System.Windows,CallInitialize */
-class Deployment : public DependencyObject {
+class MOON_API Deployment : public DependencyObject {
 public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=OnlyDuringInitializationValidator */
 	const static int ExternalCallersFromCrossDomainProperty;

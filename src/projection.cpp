@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "rect.h"
 #include "projection.h"
 #include "eventargs.h"
 

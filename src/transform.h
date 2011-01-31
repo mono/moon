@@ -455,7 +455,7 @@ class TransformGroup : public Transform {
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r);
+MOON_API void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r);
 
 G_END_DECLS
 

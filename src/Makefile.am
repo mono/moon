@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la libmoon-static.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) $(LLVM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/@PAL@ -fPIC
+INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) $(LLVM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/@PAL@ -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -DBUILDING_LIBMOON=1
 
 libmoon_include_headers = 	\
 	animation.h		\

@@ -14,6 +14,7 @@
 #ifndef MOON_PLUGIN
 #define MOON_PLUGIN
 
+#include "pal.h"
 #include "plugin-accessibility-bridge.h"
 #include "moonlight.h"
 

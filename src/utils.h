@@ -47,14 +47,14 @@ struct ManagedStreamCallbacks {
 };
 
 /* @GeneratePInvoke */
-gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
+MOON_API gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
 
 gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
 
 gboolean managed_unzip_is_current_file_valid (unzFile zipFile);
 
 /* @GeneratePInvoke */
-gboolean managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file);
+MOON_API gboolean managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file);
 
 gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
 
