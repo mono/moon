@@ -15,15 +15,17 @@
 
 #include <glib.h>
 
+#include "pal.h"
+
 namespace Moonlight {
 
 G_BEGIN_DECLS
 
 // NOTE: this is used from 'mscorlib.dll' System.IO.IsolatedStorage/MoonIsolatedStorageFile.cs
-gboolean isolated_storage_increase_quota_to (const char *primary_text, const char* secondary_text);
+MOON_API gboolean isolated_storage_increase_quota_to (const char *primary_text, const char* secondary_text);
 
 // NOTE: this is used from 'mscorlib.dll' System.IO.IsolatedStorage/MoonIsolatedStorage.cs
-long isolated_storage_get_current_usage (const char* root);
+MOON_API long isolated_storage_get_current_usage (const char* root);
 
 G_END_DECLS
 
