@@ -388,11 +388,9 @@ EventObject::GetDeployment ()
 #endif
 
 void
-EventObject::SetCurrentDeployment (bool domain, bool register_thread)
+EventObject::SetCurrentDeployment (bool domain)
 {	
 	if (deployment != NULL) {
-		if (register_thread)
-			Deployment::RegisterThread (deployment);
 		Deployment::SetCurrent (deployment, domain);
 	}
 }

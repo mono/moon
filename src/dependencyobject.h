@@ -231,8 +231,7 @@ public:
 #endif
 	;
 
-	/* @GenerateCBinding */
-	void SetCurrentDeployment (bool domain = true, bool register_thread = false);
+	void SetCurrentDeployment (bool domain = true);
 
 	// a public deployment getter for sanity checking without the warnings in GetDeployment.
 	// it may also be used whenever it is known that the current deployment might be wrong

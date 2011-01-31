@@ -2748,6 +2748,8 @@ MediaThreadPool::WorkerLoop (void *data)
 	
 	g_return_val_if_fail (self_index >= 0, NULL);
 	
+	Deployment::RegisterThread ();
+
 	while (!shutting_down) {
 		pthread_mutex_lock (&mutex);
 		
@@ -2798,7 +2800,7 @@ MediaThreadPool::WorkerLoop (void *data)
 		if (node == NULL)
 			continue;
 		
-		media->SetCurrentDeployment (true, true);
+		media->SetCurrentDeployment (true);
 
 		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
 		
@@ -2818,7 +2820,9 @@ MediaThreadPool::WorkerLoop (void *data)
 	if (media != NULL)
 		pthread_cond_signal (&completed_condition);
 	pthread_mutex_unlock (&mutex);
-	
+
+	Deployment::UnregisterThread ();
+
 	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %u: Exited (index: %i).\n", (int) pthread_self (), self_index);
 	
 	return NULL;

@@ -309,10 +309,17 @@ Deployment::CreateDownloader ()
 }
 
 void
-Deployment::RegisterThread (Deployment *deployment)
+Deployment::RegisterThread ()
 {
-	LOG_DEPLOYMENT ("Deployment::RegisterThread (): Deployment: %p Domain: %p\n", deployment, deployment->domain);
-	mono_thread_attach (deployment->domain);
+	LOG_DEPLOYMENT ("Deployment::RegisterThread () thread: %p\n", (void*) pthread_self ());
+	mono_thread_attach (root_domain);
+}
+
+void
+Deployment::UnregisterThread ()
+{
+	LOG_DEPLOYMENT ("Deployment::UnregisterThread () thread: %p\n", (void*) pthread_self ());
+	mono_thread_detach (mono_thread_current ());
 }
 
 Deployment*

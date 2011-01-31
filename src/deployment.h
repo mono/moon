@@ -348,7 +348,8 @@ public:
 
 	static bool Initialize (const char *platform_dir, bool create_root_domain);
 
-	static void RegisterThread (Deployment *deployment);
+	static void RegisterThread ();
+	static void UnregisterThread ();
 
 	void UnrefDelayed (EventObject *obj);
 

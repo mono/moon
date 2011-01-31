@@ -997,7 +997,7 @@ CurlHttpHandler::GetData ()
 	struct timespec tv;
 	CURLMcode res;
 
-	SetCurrentDeployment (true, true);
+	SetCurrentDeployment (true);
 
 	do {
 		/* Wait for work */

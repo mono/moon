@@ -1036,7 +1036,7 @@ FfmpegDemuxer::WorkerLoop (void *data)
 		pthread_mutex_unlock (&worker_mutex);
 		if (work != NULL) {
 			LOG_FFMPEG ("ffmpeg thread got work: %i\n", work->action);
-			work->GetDemuxer ()->SetCurrentDeployment (false, false);
+			work->GetDemuxer ()->SetCurrentDeployment (false);
 			switch (work->action) {
 			case FfmpegNode::Open:
 				work->GetDemuxer ()->Open ();
