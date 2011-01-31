@@ -169,6 +169,10 @@ namespace Mono.Xaml {
 
 					switch (reader.NodeType) {
 					case XmlNodeType.Element:
+						if (IsIgnorable ()) {
+							reader.Skip ();
+							continue;
+						}
 						ParseElement ();
 						break;
 					case XmlNodeType.EndElement:
