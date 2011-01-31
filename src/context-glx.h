@@ -18,7 +18,7 @@
 
 namespace Moonlight {
 
-class GLXContext : public GLContext {
+class MOON_API GLXContext : public GLContext {
 public:
 	GLXContext (GLXSurface *surface);
 	virtual ~GLXContext ();

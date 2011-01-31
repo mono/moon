@@ -13,6 +13,8 @@
 
 #include <cairo.h>
 
+#include "pal.h"
+
 #include "list.h"
 #include "rect.h"
 #include "color.h"
@@ -23,7 +25,7 @@ namespace Moonlight {
 
 class PixelShader;
 
-class Context : public Stack {
+class MOON_API Context : public Stack {
 public:
 	struct Clip {
 	public:

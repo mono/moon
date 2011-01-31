@@ -359,7 +359,7 @@ protected:
 };
 
 /* @Namespace=System.Windows.Media.Effects */
-class PixelShader : public DependencyObject {
+class MOON_API PixelShader : public DependencyObject {
 public:
 	/* @PropertyType=Uri,DefaultValue=new Uri(),IsConstPropertyType,GenerateAccessors */
 	const static int UriSourceProperty;

@@ -21,7 +21,7 @@
 
 namespace Moonlight {
 
-class GLXSurface : public GLSurface {
+class MOON_API GLXSurface : public GLSurface {
 public:
 	GLXSurface (Display *dpy, XID win);
 	GLXSurface (GLsizei w, GLsizei h);

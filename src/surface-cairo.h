@@ -15,7 +15,7 @@
 
 namespace Moonlight {
 
-class CairoSurface : public MoonSurface {
+class MOON_API CairoSurface : public MoonSurface {
 public:
 	CairoSurface (cairo_surface_t *data,
 		      int             width,

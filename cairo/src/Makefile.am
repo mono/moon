@@ -6,7 +6,7 @@ include $(srcdir)/Makefile.am.features
 EXTRA_DIST += Makefile.win32      Makefile.win32.features
 MAINTAINERCLEANFILES += $(srcdir)/Makefile.win32.features
 
-AM_CPPFLAGS = -I$(srcdir) $(CAIRO_CFLAGS) -fvisibility=hidden
+AM_CPPFLAGS = -I$(srcdir) $(CAIRO_CFLAGS)
 
 if OS_WIN32
 export_symbols = -export-symbols cairo.def

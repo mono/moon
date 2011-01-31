@@ -14,9 +14,11 @@
 #include <cairo.h>
 #include <glib.h>
 
+#include "pal.h"
+
 namespace Moonlight {
 
-class MoonSurface {
+class MOON_API MoonSurface {
 public:
 	MoonSurface ();
 	virtual ~MoonSurface ();

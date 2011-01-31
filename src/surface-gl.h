@@ -21,7 +21,7 @@
 
 namespace Moonlight {
 
-class GLSurface : public MoonSurface {
+class MOON_API GLSurface : public MoonSurface {
 public:
 	GLSurface ();
 	GLSurface (GLsizei width, GLsizei height);

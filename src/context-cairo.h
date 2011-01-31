@@ -16,7 +16,7 @@
 
 namespace Moonlight {
 
-class CairoContext : public Context {
+class MOON_API CairoContext : public Context {
 public:
 	CairoContext (CairoSurface *surface);
 
