@@ -2284,6 +2284,7 @@ class Generator {
 		header.AppendLine ("#  include \"pal/gtk/window-gtk.h\"");
 		header.AppendLine ("#endif");
 		header.AppendLine ("#include \"enums.h\"");
+		header.AppendLine ("#include \"type.h\"");
 		header.AppendLine ();
 		header.AppendLine ("namespace Moonlight {");
 		foreach (MemberInfo member in info.Children.Values) {
