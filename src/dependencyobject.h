@@ -231,7 +231,7 @@ public:
 #endif
 	;
 	
-	/* @GeneratePInvoke */
+	/* @GenerateCBinding */
 	void SetCurrentDeployment (bool domain = true);
 
 	// a public deployment getter for sanity checking without the warnings in GetDeployment.
