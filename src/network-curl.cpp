@@ -579,7 +579,12 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 
 		SetStatus (status, statusText);
 
-		state = STARTED;
+		/* if we got 100, curl still needs to send the body of the POST
+		 * so we don't have the "real" response yet
+		 */
+		if (status != 100)
+			state = STARTED;
+
 		return;
 	}
 
