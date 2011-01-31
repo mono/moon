@@ -1002,6 +1002,8 @@ CurlHttpHandler::GetData ()
 	struct timespec tv;
 	CURLMcode res;
 
+	Deployment::RegisterThread ();
+
 	SetCurrentDeployment (true);
 
 	do {
@@ -1052,7 +1054,7 @@ CurlHttpHandler::GetData ()
 
 		if (curl_multi_fdset (multicurl, &r, &w, &x, &available)) {
 			fprintf(stderr, "Moonlight: Curl Error: curl_multi_fdset\n");
-			return;
+			goto done;
 		}
 
 		if (available == -1)
@@ -1063,7 +1065,7 @@ CurlHttpHandler::GetData ()
 
 		if (curl_multi_timeout (multicurl, &timeout)) {
 			fprintf(stderr, "Moonlight: Curl Error: curl_multi_timeout\n");
-			return;
+			goto done;
 		}
 
 		if (timeout <= 0)
@@ -1081,6 +1083,9 @@ CurlHttpHandler::GetData ()
 			read (fds [0], &tmp, 1);
 		}
 	} while (!quit);
+
+ done:
+	Deployment::UnregisterThread ();
 }
 
 void
