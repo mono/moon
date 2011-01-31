@@ -160,7 +160,7 @@ protected:
 };
 
 /* @Namespace=System.Windows.Media */
-class DoubleCollection : public Collection {
+class MOON_API DoubleCollection : public Collection {
 public:
 	virtual Type::Kind GetElementType () { return Type::DOUBLE; }
 

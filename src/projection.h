@@ -15,6 +15,7 @@
 
 #include <glib.h>
 #include <math.h>
+#include "pal.h"
 #include "enums.h"
 #include "dependencyobject.h"
 
@@ -26,7 +27,7 @@ namespace Moonlight {
 /* @Namespace=None */ // The managed Matrix3D is a struct
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=None */
-class Matrix3D : public DependencyObject {
+class MOON_API Matrix3D : public DependencyObject {
 private:
 	double matrix[16];
 
@@ -160,7 +161,7 @@ class UnmanagedMatrix3D : public Matrix3D {
 };
 
 /* @Namespace=System.Windows.Media */
-class Projection : public DependencyObject {
+class MOON_API Projection : public DependencyObject {
 public:
 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Projection ();
@@ -181,7 +182,7 @@ protected:
 };
 
 /* @Namespace=System.Windows.Media */
-class PlaneProjection : public Projection {
+class MOON_API PlaneProjection : public Projection {
 public:
 	/* @GeneratePInvoke */
 	PlaneProjection ();
@@ -275,7 +276,7 @@ protected:
 
 /* @Namespace=System.Windows.Media */
 /* @ContentProperty="ProjectionMatrix" */
-class Matrix3DProjection : public Projection {
+class MOON_API Matrix3DProjection : public Projection {
 public:
 	/* @GeneratePInvoke */
 	Matrix3DProjection () { SetObjectType (Type::MATRIX3DPROJECTION); }
