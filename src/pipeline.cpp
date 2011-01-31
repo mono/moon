@@ -2807,6 +2807,8 @@ MediaThreadPool::WorkerLoop (void *data)
 		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: processed node %p\n", (int) pthread_self (), node);
 		
 		delete node;
+
+		Deployment::SetCurrent (NULL);
 	}
 	
 	pthread_mutex_lock (&mutex);
