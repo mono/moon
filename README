@@ -33,7 +33,7 @@ Requirements
             git clone git://anongit.freedesktop.org/mesa/mesa
             cd mesa && git reset --hard 3ed0a099c && cd ..
 
-	The revision the codecs currently are at is: 97a73493 (only applicable to buildbots
+	The revision the codecs currently are at is: 44bf0abb (only applicable to buildbots
 	and developers on the Moonlight team). For SVN users, the revision is: 9329
 
 Compiling Mono for Moonlight
