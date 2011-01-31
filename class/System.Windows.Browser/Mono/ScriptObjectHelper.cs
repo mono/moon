@@ -35,6 +35,15 @@ namespace Mono {
 
 	internal static class ScriptObjectHelper {
 
+		static ScriptObject comparer;
+		static bool isChrome;
+		static ScriptObjectHelper ()
+		{
+			string comparison = "(new function () {{ this.ci = function (a, b) {{ return a == b; }}; }}).ci";
+			comparer = (ScriptObject) HtmlPage.Window.Eval (comparison);
+			isChrome = HtmlPage.BrowserInformation.UserAgent.ToLower().Contains("chrome");
+		}
+
 		public static bool TryChangeType (object value, Type type, CultureInfo culture, out object ret)
 		{
 			ret = value;
@@ -153,12 +162,19 @@ namespace Mono {
 					if (reference != null)
 						return reference;
 
-					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker")) {
-						Value val;
-						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker", out val);
-						reference = ScriptObject.LookupScriptObject (new IntPtr (val.u.i32));
-						if (reference != null) {
-							return reference;
+					if (isChrome) {
+						if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker")) {
+							Value val;
+							NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker", out val);
+							reference = ScriptObject.LookupScriptObject (new IntPtr (val.u.i32));
+							if (reference != null) {
+								Mono.Value [] vargs = new Mono.Value [2];
+								vargs[0] = v;
+								ToValue (ref vargs[1], reference);
+								Mono.Value res;
+								if (NativeMethods.html_object_invoke_self (PluginHost.Handle, comparer.Handle, vargs, 2, out res))
+									return reference;
+							}
 						}
 					}
 
@@ -167,6 +183,8 @@ namespace Mono {
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
 						int r = val.u.i32;
 						NativeMethods.value_free_value (ref val);
+						if (isChrome)
+							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (int)v.u.p);
 						if (r == (int)HtmlElement.NodeType.Document)
 							return new HtmlDocument (v.u.p);
 						else if (r == (int)HtmlElement.NodeType.Element ||
@@ -175,9 +193,11 @@ namespace Mono {
 							return new HtmlElement (v.u.p);
 
 					}
-					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location"))
+					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location")) {
+						if (isChrome)
+							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (int)v.u.p);
 						return new HtmlWindow (v.u.p);
-					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "length") &&
+					} else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "length") &&
 							 NativeMethods.html_object_has_method (PluginHost.Handle, v.u.p, "item"))
 						return new ScriptObjectCollection (v.u.p);
 					return new ScriptObject (v.u.p);

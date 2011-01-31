@@ -31,8 +31,6 @@ namespace System.Windows.Browser
 {
 	public sealed class HtmlElement : HtmlObject
 	{
-		static ScriptObject comparer;
-
 		internal enum NodeType : int {
 			NotSet		= 0,
 			Element 	= 1,
@@ -57,12 +55,6 @@ namespace System.Windows.Browser
 				}
 				return type;
 			}
-		}
-
-		static HtmlElement ()
-		{
-			string comparison = "(new function () {{ this.ci = function (a, b) {{ return a == b; }}; }}).ci";
-			comparer = (ScriptObject) HtmlPage.Window.Eval (comparison);
 		}
 
 		// When does this .ctor make sense?
