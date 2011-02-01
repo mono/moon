@@ -1,2 +1,2 @@
 #!/bin/sh
-MONO_PATH=@prefix@/lib/moonlight/2.0:@prefix@/lib/moonlight/2.0-redist:$MONO_PATH exec @prefix@/bin/mono $MONO_OPTIONS --runtime=moonlight --security=temporary-smcs-hack @prefix@/lib/moonlight/2.0/smcs.exe "$@"
+exec @prefix@/bin/mono $MONO_OPTIONS @MCS_PATH@/class/lib/basic/mcs.exe -nostdlib -lib:@prefix@/lib/moonlight/2.0 -r:@MCS_PATH@/class/lib/basic/mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll "$@"
