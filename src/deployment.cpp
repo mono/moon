@@ -98,6 +98,10 @@ moonlight_should_insert_breakpoint (MonoMethod *method)
 
 void *event_object_get_managed_object (EventObject *eo)
 {
+#if DEBUG
+	if (!eo->hadManagedPeer)
+		printf ("*** MOONLIGHT ERROR ***: No managed peer was ever created for %s\n", eo->GetTypeName ());
+#endif
 	return eo->GetDeployment ()->GetGCHandleTarget (eo->GetManagedHandle ());
 }
 
