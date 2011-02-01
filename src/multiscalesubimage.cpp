@@ -32,6 +32,7 @@ MultiScaleSubImage::MultiScaleSubImage ()
 MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, DeepZoomImageTileSource *tsource, int _id, int _n)
 	: DependencyObject (Type::MULTISCALESUBIMAGE)
 {
+	EnsureManagedPeer ();
 	LOG_MSI ("new MultiScaleSubImage ()\n");
 	source = tsource;
 	source->ref ();
@@ -57,8 +58,6 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, DeepZoomImageTile
 
 	source->SetUriSource (new_uri);
 	delete new_uri;
-
-	EnsureManagedPeer ();
 }
 
 MultiScaleSubImage::~MultiScaleSubImage ()
