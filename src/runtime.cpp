@@ -442,6 +442,7 @@ Surface::Surface (MoonWindow *window)
 	surface_list = g_list_append (surface_list, this);
 
 	SetRuntimeOptions (moonlight_flags);
+	EnsureManagedPeer ();
 }
 
 Surface::~Surface ()

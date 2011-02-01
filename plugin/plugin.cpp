@@ -789,7 +789,6 @@ PluginInstance::CreateWindow ()
 	}
 
 	surface = new Surface (moon_window);
-	surface->EnsureManagedPeer ();
 	deployment->SetSurface (surface);
 	moon_window->SetSurface (surface);
 	if (bridge)
