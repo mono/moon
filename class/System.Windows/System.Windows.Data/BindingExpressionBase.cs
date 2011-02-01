@@ -579,7 +579,7 @@ namespace System.Windows.Data {
 					                                       Binding.ConverterParameter,
 					                                       GetConverterCulture ());
 				if (value is string) {
-					TryUseParseMethod ((string) value, node.PropertyInfo.PropertyType, ref value);
+					TryUseParseMethod ((string) value, node.ValueType, ref value);
 				}
 				
 				try {

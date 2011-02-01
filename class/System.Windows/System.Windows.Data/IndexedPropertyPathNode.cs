@@ -140,7 +140,7 @@ namespace System.Windows.Data
 				object newVal = PropertyInfo.GetValue (Source, new object [] { Index });
 				isBroken = false;
 				if (Value != newVal) {
-					ValueType = newVal == null ? null : newVal.GetType ();
+					ValueType = PropertyInfo.PropertyType;
 					Value = newVal;
 				}
 			} catch {
