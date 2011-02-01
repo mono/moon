@@ -104,7 +104,7 @@ namespace System.Windows.Data
 
 		public void SetSource (object source)
 		{
-			if (Source != source) {
+			if (Source != source || source == null) {
 				var oldSource = Source;
 				if (Listener != null) {
 					Listener.Detach ();
