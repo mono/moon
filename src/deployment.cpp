@@ -195,6 +195,7 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 	else {
 #endif
 		root_domain = mono_domain_get ();
+		mono_add_internal_call ("Mono.NativeMethods::event_object_get_managed_object", (const void *)event_object_get_managed_object);
 
 		Deployment::desktop_deployment = new Deployment ();
 		Deployment::desktop_deployment->InitializeDesktop (root_domain);
