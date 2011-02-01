@@ -1316,11 +1316,13 @@ Deployment::Shutdown ()
 	is_network_stopped = true;
 
 	if (http_handler != NULL) {
+		http_handler->Dispose ();
 		http_handler->unref ();
 		http_handler = NULL;
 	}
 
 	if (default_http_handler != NULL) {
+		default_http_handler->Dispose ();
 		default_http_handler->unref ();
 		default_http_handler = NULL;
 	}

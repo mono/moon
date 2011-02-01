@@ -1085,6 +1085,7 @@ CurlHttpHandler::GetData ()
 	} while (!quit);
 
  done:
+	Deployment::SetCurrent (NULL);
 	Deployment::UnregisterThread ();
 }
 
