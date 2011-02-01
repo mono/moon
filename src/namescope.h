@@ -19,7 +19,7 @@
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 /* @ManagedEvents=None */
-class NameScope : public DependencyObject {
+class MOON_API NameScope : public DependencyObject {
 	GHashTable *names;
 	bool is_locked;
 	bool temporary;

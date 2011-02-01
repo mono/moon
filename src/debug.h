@@ -20,6 +20,7 @@
 
 #endif /* DEBUG || LOGGING */
 
+#include "moonbuild.h"
 #include "runtime.h"
 
 /*
@@ -40,7 +41,7 @@ void dump_frames (void);
 G_BEGIN_DECLS
 
 char* get_stack_trace (void);
-void print_stack_trace (void);
+void MOON_API print_stack_trace (void);
 void enable_vm_stack_trace (void);
 void hexdump_addr (void *addr, size_t n);
 

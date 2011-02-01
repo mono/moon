@@ -13,6 +13,7 @@
 
 #include <glib.h>
 
+#include "moonbuild.h"
 #include "provider.h"
 #include "dependencyproperty.h"
 #include "value.h"
@@ -82,7 +83,7 @@ private:
 };
 
 /* @Namespace=None,ManagedEvents=Manual */
-class EventObject {
+class MOON_API EventObject {
 private:
 	enum Flags {
 		MultiThreadedSafe = 1 << 29, // if the dtor can be called on any thread
@@ -256,7 +257,7 @@ private:
 
 
 /* @Namespace=System.Windows */
-class DependencyObject : public EventObject {
+class MOON_API DependencyObject : public EventObject {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject ();

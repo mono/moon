@@ -870,7 +870,7 @@ protected:
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Children" */
-class Storyboard : public ParallelTimeline {
+class MOON_API Storyboard : public ParallelTimeline {
 public:
  	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
 	const static int TargetNameProperty;

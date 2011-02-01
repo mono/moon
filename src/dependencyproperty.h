@@ -81,8 +81,8 @@ class DependencyProperty {
 	static DependencyProperty *RegisterCoreProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
-	static DependencyProperty *GetDependencyProperty (Type *type, const char *name);
+	MOON_API static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
+	MOON_API static DependencyProperty *GetDependencyProperty (Type *type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type *type, const char *name, bool inherits);
 	
 	/* @GenerateCBinding,GeneratePInvoke */

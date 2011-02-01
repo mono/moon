@@ -18,6 +18,7 @@
 #define __TYPE_H__
 
 #include <glib.h>
+#include "moonbuild.h"
 #include "list.h"
 
 class Deployment;
@@ -30,7 +31,7 @@ class Types;
 typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 
-class Type {
+class MOON_API Type {
 friend class Types;
 public:
 	enum Kind {
@@ -449,7 +450,7 @@ private:
 	Deployment *deployment;
 };
 
-class Types {
+class MOON_API Types {
 	friend class Type;
 	
 private:
@@ -498,14 +499,14 @@ public:
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-bool type_get_value_type (Type::Kind type);
+bool type_get_value_type (Type::Kind type) MOON_API;
 DependencyObject *type_create_instance (Type *type);
 DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 
 void types_init (void);
 
 /* @GeneratePInvoke */
-bool type_is_dependency_object (Type::Kind type);
+bool type_is_dependency_object (Type::Kind type) MOON_API;
 
 G_END_DECLS
 

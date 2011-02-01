@@ -24,6 +24,7 @@
 
 class MoonWindow;
 
+#include "moonbuild.h"
 #include "rect.h"
 #include "enums.h"
 #include "color.h"
@@ -31,7 +32,7 @@ class MoonWindow;
 class Surface;
 
 /* @Namespace=System.Windows */
-class MoonWindow {
+class MOON_API MoonWindow {
  public:
 	MoonWindow (int w, int h, Surface *s = NULL) : width(w), height(h), surface(s), transparent(false) { }
 

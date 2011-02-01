@@ -8,6 +8,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "moonbuild.h"
 #include "enums.h"
 
 class Accessibility;
@@ -377,6 +378,7 @@ class DiscreteDoubleKeyFrame;
 class DiscreteObjectKeyFrame;
 class DiscretePointKeyFrame;
 class DispatcherTimer;
+class DomEventListener;
 class DoubleAnimation;
 class DoubleAnimationUsingKeyFrames;
 class DoubleCollection;
@@ -868,2358 +870,2358 @@ G_BEGIN_DECLS
  * Application
  **/
 /* @GeneratePInvoke */
-Application *application_new (void);
+MOON_API Application *application_new (void);
 
 /* @GeneratePInvoke */
-Application *application_get_current (void);
+MOON_API Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+MOON_API void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 
 /* @GeneratePInvoke */
-void application_set_current (Application *current);
+MOON_API void application_set_current (Application *current);
 
 /**
  * ArcSegment
  **/
 /* @GeneratePInvoke */
-ArcSegment *arc_segment_new (void);
+MOON_API ArcSegment *arc_segment_new (void);
 
 /**
  * AssemblyPart
  **/
 /* @GeneratePInvoke */
-AssemblyPart *assembly_part_new (void);
+MOON_API AssemblyPart *assembly_part_new (void);
 
 /**
  * AssemblyPartCollection
  **/
 /* @GeneratePInvoke */
-AssemblyPartCollection *assembly_part_collection_new (void);
+MOON_API AssemblyPartCollection *assembly_part_collection_new (void);
 
 /**
  * AudioStream
  **/
 /* @GeneratePInvoke */
-AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
+MOON_API AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 
-int audio_stream_get_bit_rate (AudioStream *instance);
+MOON_API int audio_stream_get_bit_rate (AudioStream *instance);
 
-int audio_stream_get_bits_per_sample (AudioStream *instance);
+MOON_API int audio_stream_get_bits_per_sample (AudioStream *instance);
 
-int audio_stream_get_block_align (AudioStream *instance);
+MOON_API int audio_stream_get_block_align (AudioStream *instance);
 
-int audio_stream_get_channels (AudioStream *instance);
+MOON_API int audio_stream_get_channels (AudioStream *instance);
 
-int audio_stream_get_input_bit_rate (AudioStream *instance);
+MOON_API int audio_stream_get_input_bit_rate (AudioStream *instance);
 
-int audio_stream_get_input_bits_per_sample (AudioStream *instance);
+MOON_API int audio_stream_get_input_bits_per_sample (AudioStream *instance);
 
-int audio_stream_get_input_block_align (AudioStream *instance);
+MOON_API int audio_stream_get_input_block_align (AudioStream *instance);
 
-int audio_stream_get_input_channels (AudioStream *instance);
+MOON_API int audio_stream_get_input_channels (AudioStream *instance);
 
-int audio_stream_get_input_sample_rate (AudioStream *instance);
+MOON_API int audio_stream_get_input_sample_rate (AudioStream *instance);
 
-int audio_stream_get_output_bit_rate (AudioStream *instance);
+MOON_API int audio_stream_get_output_bit_rate (AudioStream *instance);
 
-int audio_stream_get_output_bits_per_sample (AudioStream *instance);
+MOON_API int audio_stream_get_output_bits_per_sample (AudioStream *instance);
 
-int audio_stream_get_output_block_align (AudioStream *instance);
+MOON_API int audio_stream_get_output_block_align (AudioStream *instance);
 
-int audio_stream_get_output_channels (AudioStream *instance);
+MOON_API int audio_stream_get_output_channels (AudioStream *instance);
 
-int audio_stream_get_output_sample_rate (AudioStream *instance);
+MOON_API int audio_stream_get_output_sample_rate (AudioStream *instance);
 
-int audio_stream_get_sample_rate (AudioStream *instance);
+MOON_API int audio_stream_get_sample_rate (AudioStream *instance);
 
-void audio_stream_set_bit_rate (AudioStream *instance, int value);
+MOON_API void audio_stream_set_bit_rate (AudioStream *instance, int value);
 
-void audio_stream_set_bits_per_sample (AudioStream *instance, int value);
+MOON_API void audio_stream_set_bits_per_sample (AudioStream *instance, int value);
 
-void audio_stream_set_block_align (AudioStream *instance, int value);
+MOON_API void audio_stream_set_block_align (AudioStream *instance, int value);
 
-void audio_stream_set_channels (AudioStream *instance, int value);
+MOON_API void audio_stream_set_channels (AudioStream *instance, int value);
 
-void audio_stream_set_input_bit_rate (AudioStream *instance, int value);
+MOON_API void audio_stream_set_input_bit_rate (AudioStream *instance, int value);
 
-void audio_stream_set_input_bits_per_sample (AudioStream *instance, int value);
+MOON_API void audio_stream_set_input_bits_per_sample (AudioStream *instance, int value);
 
-void audio_stream_set_input_block_align (AudioStream *instance, int value);
+MOON_API void audio_stream_set_input_block_align (AudioStream *instance, int value);
 
-void audio_stream_set_input_channels (AudioStream *instance, int value);
+MOON_API void audio_stream_set_input_channels (AudioStream *instance, int value);
 
-void audio_stream_set_input_sample_rate (AudioStream *instance, int value);
+MOON_API void audio_stream_set_input_sample_rate (AudioStream *instance, int value);
 
-void audio_stream_set_output_bit_rate (AudioStream *instance, int value);
+MOON_API void audio_stream_set_output_bit_rate (AudioStream *instance, int value);
 
-void audio_stream_set_output_bits_per_sample (AudioStream *instance, int value);
+MOON_API void audio_stream_set_output_bits_per_sample (AudioStream *instance, int value);
 
-void audio_stream_set_output_block_align (AudioStream *instance, int value);
+MOON_API void audio_stream_set_output_block_align (AudioStream *instance, int value);
 
-void audio_stream_set_output_channels (AudioStream *instance, int value);
+MOON_API void audio_stream_set_output_channels (AudioStream *instance, int value);
 
-void audio_stream_set_output_sample_rate (AudioStream *instance, int value);
+MOON_API void audio_stream_set_output_sample_rate (AudioStream *instance, int value);
 
-void audio_stream_set_sample_rate (AudioStream *instance, int value);
+MOON_API void audio_stream_set_sample_rate (AudioStream *instance, int value);
 
 /**
  * BackEase
  **/
 /* @GeneratePInvoke */
-BackEase *back_ease_new (void);
+MOON_API BackEase *back_ease_new (void);
 
 /* @GeneratePInvoke */
-double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
+MOON_API double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
 
 /**
  * BeginStoryboard
  **/
 /* @GeneratePInvoke */
-BeginStoryboard *begin_storyboard_new (void);
+MOON_API BeginStoryboard *begin_storyboard_new (void);
 
 /**
  * BezierSegment
  **/
 /* @GeneratePInvoke */
-BezierSegment *bezier_segment_new (void);
+MOON_API BezierSegment *bezier_segment_new (void);
 
 /**
  * BitmapCache
  **/
 /* @GeneratePInvoke */
-BitmapCache *bitmap_cache_new (void);
+MOON_API BitmapCache *bitmap_cache_new (void);
 
 /**
  * BitmapImage
  **/
 /* @GeneratePInvoke */
-BitmapImage *bitmap_image_new (void);
+MOON_API BitmapImage *bitmap_image_new (void);
 
 /* @GeneratePInvoke */
-void bitmap_image_pixbuf_write (BitmapImage *instance, gpointer buffer, gint32 offset, gint32 n);
+MOON_API void bitmap_image_pixbuf_write (BitmapImage *instance, gpointer buffer, gint32 offset, gint32 n);
 
 /* @GeneratePInvoke */
-void bitmap_image_pixmap_complete (BitmapImage *instance);
+MOON_API void bitmap_image_pixmap_complete (BitmapImage *instance);
 
 /**
  * BitmapSource
  **/
 /* @GeneratePInvoke */
-BitmapSource *bitmap_source_new (void);
+MOON_API BitmapSource *bitmap_source_new (void);
 
 /* @GeneratePInvoke */
-gpointer bitmap_source_get_bitmap_data (BitmapSource *instance);
+MOON_API gpointer bitmap_source_get_bitmap_data (BitmapSource *instance);
 
 /* @GeneratePInvoke */
-void bitmap_source_invalidate (BitmapSource *instance);
+MOON_API void bitmap_source_invalidate (BitmapSource *instance);
 
 /* @GeneratePInvoke */
-void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own);
+MOON_API void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own);
 
 /**
  * BlurEffect
  **/
 /* @GeneratePInvoke */
-BlurEffect *blur_effect_new (void);
+MOON_API BlurEffect *blur_effect_new (void);
 
 /**
  * Border
  **/
 /* @GeneratePInvoke */
-Border *border_new (void);
+MOON_API Border *border_new (void);
 
 /**
  * BounceEase
  **/
 /* @GeneratePInvoke */
-BounceEase *bounce_ease_new (void);
+MOON_API BounceEase *bounce_ease_new (void);
 
 /* @GeneratePInvoke */
-double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
+MOON_API double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
 
 /**
  * Brush
  **/
 /* @GeneratePInvoke */
-Brush *brush_new (void);
+MOON_API Brush *brush_new (void);
 
 /**
  * CacheMode
  **/
 /* @GeneratePInvoke */
-CacheMode *cache_mode_new (void);
+MOON_API CacheMode *cache_mode_new (void);
 
 /**
  * Canvas
  **/
 /* @GeneratePInvoke */
-Canvas *canvas_new (void);
+MOON_API Canvas *canvas_new (void);
 
 /**
  * CircleEase
  **/
 /* @GeneratePInvoke */
-CircleEase *circle_ease_new (void);
+MOON_API CircleEase *circle_ease_new (void);
 
 /* @GeneratePInvoke */
-double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
+MOON_API double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
 
 /**
  * Collection
  **/
 /* @GeneratePInvoke */
-int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
+MOON_API int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
-bool collection_clear (Collection *instance);
+MOON_API bool collection_clear (Collection *instance);
 
 /* @GeneratePInvoke */
-bool collection_contains (Collection *instance, Value *value);
+MOON_API bool collection_contains (Collection *instance, Value *value);
 
 /* @GeneratePInvoke */
-int collection_get_count (Collection *instance);
+MOON_API int collection_get_count (Collection *instance);
 
 /* @GeneratePInvoke */
-int collection_get_element_type (Collection *instance);
+MOON_API int collection_get_element_type (Collection *instance);
 
 /* @GeneratePInvoke */
-CollectionIterator *collection_get_iterator (Collection *instance);
+MOON_API CollectionIterator *collection_get_iterator (Collection *instance);
 
 /* @GeneratePInvoke */
-Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
+MOON_API Value *collection_get_value_at_with_error (Collection *instance, int index, MoonError *error);
 
 /* @GeneratePInvoke */
-int collection_index_of (Collection *instance, Value *value);
+MOON_API int collection_index_of (Collection *instance, Value *value);
 
 /* @GeneratePInvoke */
-bool collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
+MOON_API bool collection_insert_with_error (Collection *instance, int index, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
-bool collection_remove (Collection *instance, Value *value);
+MOON_API bool collection_remove (Collection *instance, Value *value);
 
 /* @GeneratePInvoke */
-bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
+MOON_API bool collection_remove_at_with_error (Collection *instance, int index, MoonError *error);
 
 /* @GeneratePInvoke */
-bool collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error);
+MOON_API bool collection_set_value_at_with_error (Collection *instance, int index, Value *value, MoonError *error);
 
 /**
  * CollectionChangedEventArgs
  **/
 /* @GeneratePInvoke */
-CollectionChangedEventArgs *collection_changed_event_args_new (void);
+MOON_API CollectionChangedEventArgs *collection_changed_event_args_new (void);
 
 /* @GeneratePInvoke */
-int collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance);
+MOON_API int collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-int collection_changed_event_args_get_index (CollectionChangedEventArgs *instance);
+MOON_API int collection_changed_event_args_get_index (CollectionChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-Value *collection_changed_event_args_get_new_item (CollectionChangedEventArgs *instance);
+MOON_API Value *collection_changed_event_args_get_new_item (CollectionChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-Value *collection_changed_event_args_get_old_item (CollectionChangedEventArgs *instance);
+MOON_API Value *collection_changed_event_args_get_old_item (CollectionChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-void collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, int action);
+MOON_API void collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, int action);
 
 /* @GeneratePInvoke */
-void collection_changed_event_args_set_index (CollectionChangedEventArgs *instance, int index);
+MOON_API void collection_changed_event_args_set_index (CollectionChangedEventArgs *instance, int index);
 
 /* @GeneratePInvoke */
-void collection_changed_event_args_set_new_item (CollectionChangedEventArgs *instance, Value *item);
+MOON_API void collection_changed_event_args_set_new_item (CollectionChangedEventArgs *instance, Value *item);
 
 /* @GeneratePInvoke */
-void collection_changed_event_args_set_old_item (CollectionChangedEventArgs *instance, Value *item);
+MOON_API void collection_changed_event_args_set_old_item (CollectionChangedEventArgs *instance, Value *item);
 
 /**
  * CollectionIterator
  **/
 /* @GeneratePInvoke */
-void collection_iterator_destroy (CollectionIterator *iterator);
+MOON_API void collection_iterator_destroy (CollectionIterator *iterator);
 
 /* @GeneratePInvoke */
-Value *collection_iterator_get_current (CollectionIterator *instance, MoonError *error);
+MOON_API Value *collection_iterator_get_current (CollectionIterator *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-bool collection_iterator_next (CollectionIterator *instance, MoonError *error);
+MOON_API bool collection_iterator_next (CollectionIterator *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-bool collection_iterator_reset (CollectionIterator *instance);
+MOON_API bool collection_iterator_reset (CollectionIterator *instance);
 
 /**
  * ColorAnimation
  **/
 /* @GeneratePInvoke */
-ColorAnimation *color_animation_new (void);
+MOON_API ColorAnimation *color_animation_new (void);
 
 /**
  * ColorAnimationUsingKeyFrames
  **/
 /* @GeneratePInvoke */
-ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new (void);
+MOON_API ColorAnimationUsingKeyFrames *color_animation_using_key_frames_new (void);
 
 /**
  * ColorKeyFrame
  **/
 /* @GeneratePInvoke */
-ColorKeyFrame *color_key_frame_new (void);
+MOON_API ColorKeyFrame *color_key_frame_new (void);
 
 /**
  * ColorKeyFrameCollection
  **/
 /* @GeneratePInvoke */
-ColorKeyFrameCollection *color_key_frame_collection_new (void);
+MOON_API ColorKeyFrameCollection *color_key_frame_collection_new (void);
 
 /**
  * ColumnDefinition
  **/
 /* @GeneratePInvoke */
-ColumnDefinition *column_definition_new (void);
+MOON_API ColumnDefinition *column_definition_new (void);
 
 /**
  * ColumnDefinitionCollection
  **/
 /* @GeneratePInvoke */
-ColumnDefinitionCollection *column_definition_collection_new (void);
+MOON_API ColumnDefinitionCollection *column_definition_collection_new (void);
 
 /**
  * ContentChangedEventArgs
  **/
 /* @GeneratePInvoke */
-Value *content_changed_event_args_get_new_content (ContentChangedEventArgs *instance);
+MOON_API Value *content_changed_event_args_get_new_content (ContentChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *instance);
+MOON_API Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *instance);
 
 /**
  * ContentControl
  **/
 /* @GeneratePInvoke */
-ContentControl *content_control_new (void);
+MOON_API ContentControl *content_control_new (void);
 
 /* @GeneratePInvoke */
-bool content_control_get_content_sets_parent (ContentControl *instance);
+MOON_API bool content_control_get_content_sets_parent (ContentControl *instance);
 
 /* @GeneratePInvoke */
-void content_control_set_content_sets_parent (ContentControl *instance, bool value);
+MOON_API void content_control_set_content_sets_parent (ContentControl *instance, bool value);
 
 /**
  * Control
  **/
 /* @GeneratePInvoke */
-Control *control_new (void);
+MOON_API Control *control_new (void);
 
 /* @GeneratePInvoke */
-DependencyObject *control_get_template_child (Control *instance, const char *name);
+MOON_API DependencyObject *control_get_template_child (Control *instance, const char *name);
 
 /**
  * ControlTemplate
  **/
 /* @GeneratePInvoke */
-ControlTemplate *control_template_new (void);
+MOON_API ControlTemplate *control_template_new (void);
 
 /**
  * CubicEase
  **/
 /* @GeneratePInvoke */
-CubicEase *cubic_ease_new (void);
+MOON_API CubicEase *cubic_ease_new (void);
 
 /* @GeneratePInvoke */
-double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
+MOON_API double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
 
 /**
  * CursorPositionChangedEventArgs
  **/
 /* @GeneratePInvoke */
-CursorPositionChangedEventArgs *cursor_position_changed_event_args_new (void);
+MOON_API CursorPositionChangedEventArgs *cursor_position_changed_event_args_new (void);
 
 /* @GeneratePInvoke */
-double cursor_position_changed_event_args_get_cursor_height (CursorPositionChangedEventArgs *instance);
+MOON_API double cursor_position_changed_event_args_get_cursor_height (CursorPositionChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-double cursor_position_changed_event_args_get_cursor_x (CursorPositionChangedEventArgs *instance);
+MOON_API double cursor_position_changed_event_args_get_cursor_x (CursorPositionChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-double cursor_position_changed_event_args_get_cursor_y (CursorPositionChangedEventArgs *instance);
+MOON_API double cursor_position_changed_event_args_get_cursor_y (CursorPositionChangedEventArgs *instance);
 
 /**
  * DataTemplate
  **/
 /* @GeneratePInvoke */
-DataTemplate *data_template_new (void);
+MOON_API DataTemplate *data_template_new (void);
 
 /**
  * DeepZoomImageTileSource
  **/
 /* @GeneratePInvoke */
-DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
+MOON_API DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 
 /**
  * DependencyObject
  **/
 /* @GeneratePInvoke */
-void dependency_object_add_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
+MOON_API void dependency_object_add_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
 
 /* @GeneratePInvoke */
-void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error);
+MOON_API void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error);
 
 /* @GeneratePInvoke */
-DependencyObject *dependency_object_new (void);
+MOON_API DependencyObject *dependency_object_new (void);
 
 /* @GeneratePInvoke */
-DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, int *element_kind);
+MOON_API DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, int *element_kind);
 
 /* @GeneratePInvoke */
-const char *dependency_object_get_name (DependencyObject *instance);
+MOON_API const char *dependency_object_get_name (DependencyObject *instance);
 
 /* @GeneratePInvoke */
-DependencyObject *dependency_object_get_template_owner (DependencyObject *instance);
+MOON_API DependencyObject *dependency_object_get_template_owner (DependencyObject *instance);
 
 /* @GeneratePInvoke */
-Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
+MOON_API Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-Value *dependency_object_get_value_with_error (DependencyObject *instance, int whatami, DependencyProperty *property, MoonError *error);
+MOON_API Value *dependency_object_get_value_with_error (DependencyObject *instance, int whatami, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-Value *dependency_object_read_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
+MOON_API Value *dependency_object_read_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-void dependency_object_remove_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb);
+MOON_API void dependency_object_remove_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb);
 
 /* @GeneratePInvoke */
-void dependency_object_set_name (DependencyObject *instance, const char *name);
+MOON_API void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
-void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+MOON_API void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
 
 /* @GeneratePInvoke */
-void dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value);
+MOON_API void dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value);
 
 /* @GeneratePInvoke */
-bool dependency_object_set_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
+MOON_API bool dependency_object_set_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
 /**
  * DependencyObjectCollection
  **/
 /* @GeneratePInvoke */
-DependencyObjectCollection *dependency_object_collection_new (void);
+MOON_API DependencyObjectCollection *dependency_object_collection_new (void);
 
 /**
  * DependencyProperty
  **/
 /* @GeneratePInvoke */
-Value *dependency_property_get_default_value (DependencyProperty *instance);
+MOON_API Value *dependency_property_get_default_value (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_get_dependency_property (int type, const char *name);
+MOON_API DependencyProperty *dependency_property_get_dependency_property (int type, const char *name);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_get_dependency_property_full (int type, const char *name, bool inherits);
+MOON_API DependencyProperty *dependency_property_get_dependency_property_full (int type, const char *name, bool inherits);
 
 /* @GeneratePInvoke */
-const char *dependency_property_get_name (DependencyProperty *instance);
+MOON_API const char *dependency_property_get_name (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-int dependency_property_get_property_type (DependencyProperty *instance);
+MOON_API int dependency_property_get_property_type (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-bool dependency_property_is_attached (DependencyProperty *instance);
+MOON_API bool dependency_property_is_attached (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-bool dependency_property_is_nullable (DependencyProperty *instance);
+MOON_API bool dependency_property_is_nullable (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-bool dependency_property_is_read_only (DependencyProperty *instance);
+MOON_API bool dependency_property_is_read_only (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_core_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+MOON_API DependencyProperty *dependency_property_register_core_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_custom_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+MOON_API DependencyProperty *dependency_property_register_custom_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 
 /* @GeneratePInvoke */
-void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
+MOON_API void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
 
 /* @GeneratePInvoke */
-void dependency_property_set_property_changed_callback (DependencyProperty *instance, PropertyChangeHandler changed_callback);
+MOON_API void dependency_property_set_property_changed_callback (DependencyProperty *instance, PropertyChangeHandler changed_callback);
 
 /**
  * Deployment
  **/
 /* @GeneratePInvoke */
-Deployment *deployment_new (void);
+MOON_API Deployment *deployment_new (void);
 
 /* @GeneratePInvoke */
-Deployment *deployment_get_current (void);
+MOON_API Deployment *deployment_get_current (void);
 
 /* @GeneratePInvoke */
-Types *deployment_get_types (Deployment *instance);
+MOON_API Types *deployment_get_types (Deployment *instance);
 
 /* @GeneratePInvoke */
-void deployment_set_current (Deployment *value);
+MOON_API void deployment_set_current (Deployment *value);
 
 /* @GeneratePInvoke */
-void deployment_set_current_application (Deployment *instance, Application *value);
+MOON_API void deployment_set_current_application (Deployment *instance, Application *value);
 
 /* @GeneratePInvoke */
-void deployment_set_is_loaded_from_xap (Deployment *instance, bool flag);
+MOON_API void deployment_set_is_loaded_from_xap (Deployment *instance, bool flag);
 
 /**
  * DiscreteColorKeyFrame
  **/
 /* @GeneratePInvoke */
-DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
+MOON_API DiscreteColorKeyFrame *discrete_color_key_frame_new (void);
 
 /**
  * DiscreteDoubleKeyFrame
  **/
 /* @GeneratePInvoke */
-DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
+MOON_API DiscreteDoubleKeyFrame *discrete_double_key_frame_new (void);
 
 /**
  * DiscreteObjectKeyFrame
  **/
 /* @GeneratePInvoke */
-DiscreteObjectKeyFrame *discrete_object_key_frame_new (void);
+MOON_API DiscreteObjectKeyFrame *discrete_object_key_frame_new (void);
 
 /**
  * DiscretePointKeyFrame
  **/
 /* @GeneratePInvoke */
-DiscretePointKeyFrame *discrete_point_key_frame_new (void);
+MOON_API DiscretePointKeyFrame *discrete_point_key_frame_new (void);
 
 /**
  * DispatcherTimer
  **/
 /* @GeneratePInvoke */
-DispatcherTimer *dispatcher_timer_new (void);
+MOON_API DispatcherTimer *dispatcher_timer_new (void);
 
 /* @GeneratePInvoke */
-void dispatcher_timer_start (DispatcherTimer *instance);
+MOON_API void dispatcher_timer_start (DispatcherTimer *instance);
 
 /* @GeneratePInvoke */
-void dispatcher_timer_stop (DispatcherTimer *instance);
+MOON_API void dispatcher_timer_stop (DispatcherTimer *instance);
 
 /**
  * DoubleAnimation
  **/
 /* @GeneratePInvoke */
-DoubleAnimation *double_animation_new (void);
+MOON_API DoubleAnimation *double_animation_new (void);
 
 /**
  * DoubleAnimationUsingKeyFrames
  **/
 /* @GeneratePInvoke */
-DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
+MOON_API DoubleAnimationUsingKeyFrames *double_animation_using_key_frames_new (void);
 
 /**
  * DoubleCollection
  **/
 /* @GeneratePInvoke */
-DoubleCollection *double_collection_new (void);
+MOON_API DoubleCollection *double_collection_new (void);
 
 /**
  * DoubleKeyFrame
  **/
 /* @GeneratePInvoke */
-DoubleKeyFrame *double_key_frame_new (void);
+MOON_API DoubleKeyFrame *double_key_frame_new (void);
 
 /**
  * DoubleKeyFrameCollection
  **/
 /* @GeneratePInvoke */
-DoubleKeyFrameCollection *double_key_frame_collection_new (void);
+MOON_API DoubleKeyFrameCollection *double_key_frame_collection_new (void);
 
 /**
  * Downloader
  **/
 /* @GeneratePInvoke */
-void *downloader_create_web_request (Downloader *instance, const char *method, const char *uri);
+MOON_API void *downloader_create_web_request (Downloader *instance, const char *method, const char *uri);
 
 /* @GeneratePInvoke */
-Downloader *downloader_new (void);
+MOON_API Downloader *downloader_new (void);
 
 /* @GeneratePInvoke */
-void downloader_notify_failed (Downloader *instance, const char *msg);
+MOON_API void downloader_notify_failed (Downloader *instance, const char *msg);
 
 /* @GeneratePInvoke */
-void downloader_notify_finished (Downloader *instance, const char *final_uri);
+MOON_API void downloader_notify_finished (Downloader *instance, const char *final_uri);
 
 /* @GeneratePInvoke */
-void downloader_notify_size (Downloader *instance, gint64 size);
+MOON_API void downloader_notify_size (Downloader *instance, gint64 size);
 
 /* @GeneratePInvoke */
-void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback, DownloaderGetResponseFunc get_response);
+MOON_API void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback, DownloaderGetResponseFunc get_response);
 
 /* @GeneratePInvoke */
-void downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n);
+MOON_API void downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n);
 
 /**
  * DownloaderRequest
  **/
 /* @GeneratePInvoke */
-void downloader_request_free (DownloaderRequest *instance);
+MOON_API void downloader_request_free (DownloaderRequest *instance);
 
 /* @GeneratePInvoke */
-void downloader_request_abort (DownloaderRequest *instance);
+MOON_API void downloader_request_abort (DownloaderRequest *instance);
 
 /* @GeneratePInvoke */
-DownloaderResponse *downloader_request_get_downloader_response (DownloaderRequest *instance);
+MOON_API DownloaderResponse *downloader_request_get_downloader_response (DownloaderRequest *instance);
 
 /* @GeneratePInvoke */
-bool downloader_request_get_response (DownloaderRequest *instance, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+MOON_API bool downloader_request_get_response (DownloaderRequest *instance, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
 
 /* @GeneratePInvoke */
-const bool downloader_request_is_aborted (DownloaderRequest *instance);
+MOON_API const bool downloader_request_is_aborted (DownloaderRequest *instance);
 
 /* @GeneratePInvoke */
-void downloader_request_set_body (DownloaderRequest *instance, void *body, int size);
+MOON_API void downloader_request_set_body (DownloaderRequest *instance, void *body, int size);
 
 /* @GeneratePInvoke */
-void downloader_request_set_http_header (DownloaderRequest *instance, const char *name, const char *value);
+MOON_API void downloader_request_set_http_header (DownloaderRequest *instance, const char *name, const char *value);
 
 /**
  * DownloaderResponse
  **/
 /* @GeneratePInvoke */
-void downloader_response_free (DownloaderResponse *instance);
+MOON_API void downloader_response_free (DownloaderResponse *instance);
 
 /* @GeneratePInvoke */
-void downloader_response_abort (DownloaderResponse *instance);
+MOON_API void downloader_response_abort (DownloaderResponse *instance);
 
 /* @GeneratePInvoke */
-int downloader_response_get_response_status (DownloaderResponse *instance);
+MOON_API int downloader_response_get_response_status (DownloaderResponse *instance);
 
 /* @GeneratePInvoke */
-const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
+MOON_API const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
 
 /* @GeneratePInvoke */
-void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderCallback visitor, gpointer context);
+MOON_API void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderCallback visitor, gpointer context);
 
 /**
  * DownloadProgressEventArgs
  **/
 /* @GeneratePInvoke */
-double download_progress_event_args_get_progress (DownloadProgressEventArgs *instance);
+MOON_API double download_progress_event_args_get_progress (DownloadProgressEventArgs *instance);
 
 /**
  * DrawingAttributes
  **/
 /* @GeneratePInvoke */
-DrawingAttributes *drawing_attributes_new (void);
+MOON_API DrawingAttributes *drawing_attributes_new (void);
 
 /**
  * DropShadowEffect
  **/
 /* @GeneratePInvoke */
-DropShadowEffect *drop_shadow_effect_new (void);
+MOON_API DropShadowEffect *drop_shadow_effect_new (void);
 
 /**
  * EasingColorKeyFrame
  **/
 /* @GeneratePInvoke */
-EasingColorKeyFrame *easing_color_key_frame_new (void);
+MOON_API EasingColorKeyFrame *easing_color_key_frame_new (void);
 
 /**
  * EasingDoubleKeyFrame
  **/
 /* @GeneratePInvoke */
-EasingDoubleKeyFrame *easing_double_key_frame_new (void);
+MOON_API EasingDoubleKeyFrame *easing_double_key_frame_new (void);
 
 /**
  * EasingFunctionBase
  **/
 /* @GeneratePInvoke */
-EasingFunctionBase *easing_function_base_new (void);
+MOON_API EasingFunctionBase *easing_function_base_new (void);
 
 /* @GeneratePInvoke */
-void easing_function_base_set_easing_function (EasingFunctionBase *instance, EasingFunction value);
+MOON_API void easing_function_base_set_easing_function (EasingFunctionBase *instance, EasingFunction value);
 
 /**
  * EasingPointKeyFrame
  **/
 /* @GeneratePInvoke */
-EasingPointKeyFrame *easing_point_key_frame_new (void);
+MOON_API EasingPointKeyFrame *easing_point_key_frame_new (void);
 
 /**
  * Effect
  **/
 /* @GeneratePInvoke */
-Effect *effect_new (void);
+MOON_API Effect *effect_new (void);
 
 /**
  * ElasticEase
  **/
 /* @GeneratePInvoke */
-double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
+MOON_API double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-ElasticEase *elastic_ease_new (void);
+MOON_API ElasticEase *elastic_ease_new (void);
 
 /**
  * Ellipse
  **/
 /* @GeneratePInvoke */
-Ellipse *ellipse_new (void);
+MOON_API Ellipse *ellipse_new (void);
 
 /**
  * EllipseGeometry
  **/
 /* @GeneratePInvoke */
-EllipseGeometry *ellipse_geometry_new (void);
+MOON_API EllipseGeometry *ellipse_geometry_new (void);
 
 /**
  * ErrorEventArgs
  **/
 /* @GeneratePInvoke */
-int error_event_args_get_error_code (ErrorEventArgs *instance);
+MOON_API int error_event_args_get_error_code (ErrorEventArgs *instance);
 
 /* @GeneratePInvoke */
-const char *error_event_args_get_error_message (ErrorEventArgs *instance);
+MOON_API const char *error_event_args_get_error_message (ErrorEventArgs *instance);
 
 /* @GeneratePInvoke */
-int error_event_args_get_error_type (ErrorEventArgs *instance);
+MOON_API int error_event_args_get_error_type (ErrorEventArgs *instance);
 
 /* @GeneratePInvoke */
-gpointer error_event_args_get_moon_error (ErrorEventArgs *instance);
+MOON_API gpointer error_event_args_get_moon_error (ErrorEventArgs *instance);
 
 /**
  * EventObject
  **/
 /* @GeneratePInvoke */
-int event_object_add_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+MOON_API int event_object_add_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
-void event_object_add_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+MOON_API void event_object_add_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
-void event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler tr);
+MOON_API void event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler tr);
 
 /* @GeneratePInvoke */
-int event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+MOON_API int event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
-void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata);
+MOON_API void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata);
 
 /* @GeneratePInvoke */
-int event_object_get_object_type (EventObject *instance);
+MOON_API int event_object_get_object_type (EventObject *instance);
 
 /* @GeneratePInvoke */
-Surface *event_object_get_surface (EventObject *instance);
+MOON_API Surface *event_object_get_surface (EventObject *instance);
 
 /* @GeneratePInvoke */
-const char *event_object_get_type_name (EventObject *instance);
+MOON_API const char *event_object_get_type_name (EventObject *instance);
 
 /* @GeneratePInvoke */
-void event_object_ref (EventObject *instance);
+MOON_API void event_object_ref (EventObject *instance);
 
 /* @GeneratePInvoke */
-int event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+MOON_API int event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
 
 /* @GeneratePInvoke */
-void event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+MOON_API void event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
 
 /* @GeneratePInvoke */
-void event_object_remove_toggle_ref_notifier (EventObject *instance);
+MOON_API void event_object_remove_toggle_ref_notifier (EventObject *instance);
 
 /* @GeneratePInvoke */
-void event_object_set_object_type (EventObject *instance, int value);
+MOON_API void event_object_set_object_type (EventObject *instance, int value);
 
 /* @GeneratePInvoke */
-void event_object_unref (EventObject *instance);
+MOON_API void event_object_unref (EventObject *instance);
 
 /**
  * EventTrigger
  **/
 /* @GeneratePInvoke */
-EventTrigger *event_trigger_new (void);
+MOON_API EventTrigger *event_trigger_new (void);
 
 /**
  * ExponentialEase
  **/
 /* @GeneratePInvoke */
-double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
+MOON_API double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-ExponentialEase *exponential_ease_new (void);
+MOON_API ExponentialEase *exponential_ease_new (void);
 
 /**
  * ExtensionPart
  **/
 /* @GeneratePInvoke */
-ExtensionPart *extension_part_new (void);
+MOON_API ExtensionPart *extension_part_new (void);
 
 /**
  * ExternalDecoder
  **/
-ExternalDecoder *external_decoder_new (Media *media, IMediaStream *stream, void *instance, const char *name, ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async, ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async, ExternalDecoder_CleanupCallback cleanup, ExternalDecoder_CleanStateCallback clean_state, ExternalDecoder_HasDelayedFrameCallback has_delayed_frame, ExternalDecoder_DisposeCallback dispose, ExternalDecoder_DtorCallback dtor);
+MOON_API ExternalDecoder *external_decoder_new (Media *media, IMediaStream *stream, void *instance, const char *name, ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async, ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async, ExternalDecoder_CleanupCallback cleanup, ExternalDecoder_CleanStateCallback clean_state, ExternalDecoder_HasDelayedFrameCallback has_delayed_frame, ExternalDecoder_DisposeCallback dispose, ExternalDecoder_DtorCallback dtor);
 
 /**
  * ExternalDecoderInfo
  **/
-ExternalDecoderInfo *external_decoder_info_new (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor);
+MOON_API ExternalDecoderInfo *external_decoder_info_new (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor);
 
 /**
  * ExternalDemuxer
  **/
 /* @GeneratePInvoke */
-gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
+MOON_API gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
 
 /* @GeneratePInvoke */
-void external_demuxer_clear_callbacks (ExternalDemuxer *instance);
+MOON_API void external_demuxer_clear_callbacks (ExternalDemuxer *instance);
 
 /* @GeneratePInvoke */
-void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
+MOON_API void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
 
 /**
  * ExternalPart
  **/
 /* @GeneratePInvoke */
-ExternalPart *external_part_new (void);
+MOON_API ExternalPart *external_part_new (void);
 
 /**
  * ExternalPartCollection
  **/
 /* @GeneratePInvoke */
-ExternalPartCollection *external_part_collection_new (void);
+MOON_API ExternalPartCollection *external_part_collection_new (void);
 
 /**
  * FrameworkElement
  **/
 /* @GeneratePInvoke */
-bool framework_element_apply_template (FrameworkElement *instance);
+MOON_API bool framework_element_apply_template (FrameworkElement *instance);
 
 /* @GeneratePInvoke */
-Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
+MOON_API Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
 
 /* @GeneratePInvoke */
-FrameworkElement *framework_element_new (void);
+MOON_API FrameworkElement *framework_element_new (void);
 
 /* @GeneratePInvoke */
-DependencyObject *framework_element_get_logical_parent (FrameworkElement *instance);
+MOON_API DependencyObject *framework_element_get_logical_parent (FrameworkElement *instance);
 
 /* @GeneratePInvoke */
-Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
+MOON_API Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
-void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
+MOON_API void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 
 /* @GeneratePInvoke */
-void framework_element_set_default_style (FrameworkElement *instance, Style *value);
+MOON_API void framework_element_set_default_style (FrameworkElement *instance, Style *value);
 
 /* @GeneratePInvoke */
-void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);
+MOON_API void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);
 
 /**
  * FrameworkTemplate
  **/
 /* @GeneratePInvoke */
-FrameworkTemplate *framework_template_new (void);
+MOON_API FrameworkTemplate *framework_template_new (void);
 
 /* @GeneratePInvoke */
-DependencyObject *framework_template_get_visual_tree (FrameworkTemplate *instance, FrameworkElement *templateBindingSource);
+MOON_API DependencyObject *framework_template_get_visual_tree (FrameworkTemplate *instance, FrameworkElement *templateBindingSource);
 
 /**
  * GeneralTransform
  **/
 /* @GeneratePInvoke */
-GeneralTransform *general_transform_new (void);
+MOON_API GeneralTransform *general_transform_new (void);
 
 /* @GeneratePInvoke */
-Matrix *general_transform_get_matrix (GeneralTransform *instance);
+MOON_API Matrix *general_transform_get_matrix (GeneralTransform *instance);
 
 /**
  * Geometry
  **/
 /* @GeneratePInvoke */
-Geometry *geometry_new (void);
+MOON_API Geometry *geometry_new (void);
 
 /* @GeneratePInvoke */
-Rect geometry_get_bounds (Geometry *instance);
+MOON_API Rect geometry_get_bounds (Geometry *instance);
 
 /**
  * GeometryCollection
  **/
 /* @GeneratePInvoke */
-GeometryCollection *geometry_collection_new (void);
+MOON_API GeometryCollection *geometry_collection_new (void);
 
 /**
  * GeometryGroup
  **/
 /* @GeneratePInvoke */
-GeometryGroup *geometry_group_new (void);
+MOON_API GeometryGroup *geometry_group_new (void);
 
 /**
  * Glyphs
  **/
 /* @GeneratePInvoke */
-Glyphs *glyphs_new (void);
+MOON_API Glyphs *glyphs_new (void);
 
 /**
  * GradientBrush
  **/
 /* @GeneratePInvoke */
-GradientBrush *gradient_brush_new (void);
+MOON_API GradientBrush *gradient_brush_new (void);
 
 /**
  * GradientStop
  **/
 /* @GeneratePInvoke */
-GradientStop *gradient_stop_new (void);
+MOON_API GradientStop *gradient_stop_new (void);
 
 /**
  * GradientStopCollection
  **/
 /* @GeneratePInvoke */
-GradientStopCollection *gradient_stop_collection_new (void);
+MOON_API GradientStopCollection *gradient_stop_collection_new (void);
 
 /**
  * Grid
  **/
 /* @GeneratePInvoke */
-Grid *grid_new (void);
+MOON_API Grid *grid_new (void);
 
 /**
  * HitTestCollection
  **/
 /* @GeneratePInvoke */
-HitTestCollection *hit_test_collection_new (void);
+MOON_API HitTestCollection *hit_test_collection_new (void);
 
 /**
  * Icon
  **/
 /* @GeneratePInvoke */
-Icon *icon_new (void);
+MOON_API Icon *icon_new (void);
 
 /**
  * IconCollection
  **/
 /* @GeneratePInvoke */
-IconCollection *icon_collection_new (void);
+MOON_API IconCollection *icon_collection_new (void);
 
 /**
  * Image
  **/
 /* @GeneratePInvoke */
-Image *image_new (void);
+MOON_API Image *image_new (void);
 
 /* @GeneratePInvoke */
-void image_set_source (Image *instance, ImageSource *source);
+MOON_API void image_set_source (Image *instance, ImageSource *source);
 
 /**
  * ImageBrush
  **/
 /* @GeneratePInvoke */
-ImageBrush *image_brush_new (void);
+MOON_API ImageBrush *image_brush_new (void);
 
 /**
  * ImageSource
  **/
 /* @GeneratePInvoke */
-ImageSource *image_source_new (void);
+MOON_API ImageSource *image_source_new (void);
 
 /**
  * IMediaDecoder
  **/
-void imedia_decoder_report_decode_frame_completed (IMediaDecoder *instance, MediaFrame *frame);
+MOON_API void imedia_decoder_report_decode_frame_completed (IMediaDecoder *instance, MediaFrame *frame);
 
-void imedia_decoder_report_open_decoder_completed (IMediaDecoder *instance);
+MOON_API void imedia_decoder_report_open_decoder_completed (IMediaDecoder *instance);
 
-void imedia_decoder_set_pixel_format (IMediaDecoder *instance, int value);
+MOON_API void imedia_decoder_set_pixel_format (IMediaDecoder *instance, int value);
 
 /**
  * IMediaDemuxer
  **/
 /* @GeneratePInvoke */
-void imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, int diagnosticKind, gint64 diagnosticValue);
+MOON_API void imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, int diagnosticKind, gint64 diagnosticValue);
 
 /* @GeneratePInvoke */
-void imedia_demuxer_report_get_frame_completed (IMediaDemuxer *instance, MediaFrame *frame);
+MOON_API void imedia_demuxer_report_get_frame_completed (IMediaDemuxer *instance, MediaFrame *frame);
 
 /* @GeneratePInvoke */
-void imedia_demuxer_report_get_frame_progress (IMediaDemuxer *instance, double bufferingProgress);
+MOON_API void imedia_demuxer_report_get_frame_progress (IMediaDemuxer *instance, double bufferingProgress);
 
 /* @GeneratePInvoke */
-void imedia_demuxer_report_open_demuxer_completed (IMediaDemuxer *instance);
+MOON_API void imedia_demuxer_report_open_demuxer_completed (IMediaDemuxer *instance);
 
 /* @GeneratePInvoke */
-void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts);
+MOON_API void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts);
 
 /* @GeneratePInvoke */
-void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
+MOON_API void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
 
 /* @GeneratePInvoke */
-void imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value);
+MOON_API void imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value);
 
 /**
  * IMediaObject
  **/
 /* @GeneratePInvoke */
-Media *imedia_object_get_media_reffed (IMediaObject *instance);
+MOON_API Media *imedia_object_get_media_reffed (IMediaObject *instance);
 
-void imedia_object_report_error_occurred (IMediaObject *instance, const char *message);
+MOON_API void imedia_object_report_error_occurred (IMediaObject *instance, const char *message);
 
 /**
  * IMediaStream
  **/
-const char *imedia_stream_get_codec (IMediaStream *instance);
+MOON_API const char *imedia_stream_get_codec (IMediaStream *instance);
 
-int imedia_stream_get_codec_id (IMediaStream *instance);
+MOON_API int imedia_stream_get_codec_id (IMediaStream *instance);
 
-guint64 imedia_stream_get_duration (IMediaStream *instance);
+MOON_API guint64 imedia_stream_get_duration (IMediaStream *instance);
 
-void *imedia_stream_get_extra_data (IMediaStream *instance);
+MOON_API void *imedia_stream_get_extra_data (IMediaStream *instance);
 
-int imedia_stream_get_extra_data_size (IMediaStream *instance);
+MOON_API int imedia_stream_get_extra_data_size (IMediaStream *instance);
 
-int imedia_stream_get_stream_type (IMediaStream *instance);
+MOON_API int imedia_stream_get_stream_type (IMediaStream *instance);
 
-void imedia_stream_set_codec_id (IMediaStream *instance, int value);
+MOON_API void imedia_stream_set_codec_id (IMediaStream *instance, int value);
 
-void imedia_stream_set_duration (IMediaStream *instance, guint64 value);
+MOON_API void imedia_stream_set_duration (IMediaStream *instance, guint64 value);
 
-void imedia_stream_set_extra_data (IMediaStream *instance, void *value);
+MOON_API void imedia_stream_set_extra_data (IMediaStream *instance, void *value);
 
-void imedia_stream_set_extra_data_size (IMediaStream *instance, int value);
+MOON_API void imedia_stream_set_extra_data_size (IMediaStream *instance, int value);
 
 /**
  * InkPresenter
  **/
 /* @GeneratePInvoke */
-InkPresenter *ink_presenter_new (void);
+MOON_API InkPresenter *ink_presenter_new (void);
 
 /**
  * Inline
  **/
 /* @GeneratePInvoke */
-Inline *inline_new (void);
+MOON_API Inline *inline_new (void);
 
 /**
  * InlineCollection
  **/
 /* @GeneratePInvoke */
-InlineCollection *inline_collection_new (void);
+MOON_API InlineCollection *inline_collection_new (void);
 
 /**
  * InputMethod
  **/
 /* @GeneratePInvoke */
-InputMethod *input_method_new (void);
+MOON_API InputMethod *input_method_new (void);
 
 /**
  * ItemCollection
  **/
 /* @GeneratePInvoke */
-ItemCollection *item_collection_new (void);
+MOON_API ItemCollection *item_collection_new (void);
 
 /**
  * Keyboard
  **/
 /* @GeneratePInvoke */
-int keyboard_get_modifiers (void);
+MOON_API int keyboard_get_modifiers (void);
 
 /**
  * KeyEventArgs
  **/
 /* @GeneratePInvoke */
-int key_event_args_get_key (KeyEventArgs *instance);
+MOON_API int key_event_args_get_key (KeyEventArgs *instance);
 
 /* @GeneratePInvoke */
-int key_event_args_get_platform_key_code (KeyEventArgs *instance);
+MOON_API int key_event_args_get_platform_key_code (KeyEventArgs *instance);
 
 /* @GeneratePInvoke */
-KeyEventArgs *key_event_args_new (void);
+MOON_API KeyEventArgs *key_event_args_new (void);
 
 /**
  * KeyFrameCollection
  **/
 /* @GeneratePInvoke */
-KeyFrameCollection *key_frame_collection_new (void);
+MOON_API KeyFrameCollection *key_frame_collection_new (void);
 
 /**
  * KeySpline
  **/
 /* @GeneratePInvoke */
-KeySpline *key_spline_new (void);
+MOON_API KeySpline *key_spline_new (void);
 
 /**
  * Line
  **/
 /* @GeneratePInvoke */
-Line *line_new (void);
+MOON_API Line *line_new (void);
 
 /**
  * LinearColorKeyFrame
  **/
 /* @GeneratePInvoke */
-LinearColorKeyFrame *linear_color_key_frame_new (void);
+MOON_API LinearColorKeyFrame *linear_color_key_frame_new (void);
 
 /**
  * LinearDoubleKeyFrame
  **/
 /* @GeneratePInvoke */
-LinearDoubleKeyFrame *linear_double_key_frame_new (void);
+MOON_API LinearDoubleKeyFrame *linear_double_key_frame_new (void);
 
 /**
  * LinearGradientBrush
  **/
 /* @GeneratePInvoke */
-LinearGradientBrush *linear_gradient_brush_new (void);
+MOON_API LinearGradientBrush *linear_gradient_brush_new (void);
 
 /**
  * LinearPointKeyFrame
  **/
 /* @GeneratePInvoke */
-LinearPointKeyFrame *linear_point_key_frame_new (void);
+MOON_API LinearPointKeyFrame *linear_point_key_frame_new (void);
 
 /**
  * LineBreak
  **/
 /* @GeneratePInvoke */
-LineBreak *line_break_new (void);
+MOON_API LineBreak *line_break_new (void);
 
 /**
  * LineGeometry
  **/
 /* @GeneratePInvoke */
-LineGeometry *line_geometry_new (void);
+MOON_API LineGeometry *line_geometry_new (void);
 
 /**
  * LineSegment
  **/
 /* @GeneratePInvoke */
-LineSegment *line_segment_new (void);
+MOON_API LineSegment *line_segment_new (void);
 
 /**
  * LogReadyRoutedEventArgs
  **/
 /* @GeneratePInvoke */
-LogReadyRoutedEventArgs *log_ready_routed_event_args_new (void);
+MOON_API LogReadyRoutedEventArgs *log_ready_routed_event_args_new (void);
 
 /**
  * Matrix
  **/
 /* @GeneratePInvoke */
-cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
+MOON_API cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
 
 /* @GeneratePInvoke */
-Matrix *matrix_new (void);
+MOON_API Matrix *matrix_new (void);
 
 /**
  * Matrix3D
  **/
 /* @GeneratePInvoke */
-gpointer matrix3_d_get_matrix_values (Matrix3D *instance);
+MOON_API gpointer matrix3_d_get_matrix_values (Matrix3D *instance);
 
 /* @GeneratePInvoke */
-Matrix3D *matrix3_d_new (void);
+MOON_API Matrix3D *matrix3_d_new (void);
 
 /**
  * Matrix3DProjection
  **/
 /* @GeneratePInvoke */
-Matrix3DProjection *matrix3_dprojection_new (void);
+MOON_API Matrix3DProjection *matrix3_dprojection_new (void);
 
 /**
  * MatrixTransform
  **/
 /* @GeneratePInvoke */
-MatrixTransform *matrix_transform_new (void);
+MOON_API MatrixTransform *matrix_transform_new (void);
 
 /**
  * Media
  **/
-void media_register_decoder (DecoderInfo *info);
+MOON_API void media_register_decoder (DecoderInfo *info);
 
 /**
  * MediaAttribute
  **/
 /* @GeneratePInvoke */
-MediaAttribute *media_attribute_new (void);
+MOON_API MediaAttribute *media_attribute_new (void);
 
 /**
  * MediaAttributeCollection
  **/
 /* @GeneratePInvoke */
-MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *instance, const char *name);
+MOON_API MediaAttribute *media_attribute_collection_get_item_by_name (MediaAttributeCollection *instance, const char *name);
 
 /* @GeneratePInvoke */
-MediaAttributeCollection *media_attribute_collection_new (void);
+MOON_API MediaAttributeCollection *media_attribute_collection_new (void);
 
 /**
  * MediaBase
  **/
 /* @GeneratePInvoke */
-MediaBase *media_base_new (void);
+MOON_API MediaBase *media_base_new (void);
 
 /* @GeneratePInvoke */
-void media_base_set_source (MediaBase *instance, const char *uri);
+MOON_API void media_base_set_source (MediaBase *instance, const char *uri);
 
 /**
  * MediaElement
  **/
 /* @GeneratePInvoke */
-MediaElement *media_element_new (void);
+MOON_API MediaElement *media_element_new (void);
 
 /* @GeneratePInvoke */
-void media_element_pause (MediaElement *instance);
+MOON_API void media_element_pause (MediaElement *instance);
 
 /* @GeneratePInvoke */
-void media_element_play (MediaElement *instance);
+MOON_API void media_element_play (MediaElement *instance);
 
 /* @GeneratePInvoke */
-void media_element_report_error_occurred (MediaElement *instance, const char *args);
+MOON_API void media_element_report_error_occurred (MediaElement *instance, const char *args);
 
 /* @GeneratePInvoke */
-IMediaDemuxer *media_element_set_demuxer_source (MediaElement *instance, void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
+MOON_API IMediaDemuxer *media_element_set_demuxer_source (MediaElement *instance, void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
 
 /* @GeneratePInvoke */
-void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
+MOON_API void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
 
 /* @GeneratePInvoke */
-void media_element_stop (MediaElement *instance);
+MOON_API void media_element_stop (MediaElement *instance);
 
 /**
  * MediaFrame
  **/
-void media_frame_add_state (MediaFrame *instance, int state);
+MOON_API void media_frame_add_state (MediaFrame *instance, int state);
 
-guint8 *media_frame_get_buffer (MediaFrame *instance);
+MOON_API guint8 *media_frame_get_buffer (MediaFrame *instance);
 
-guint32 media_frame_get_buf_len (MediaFrame *instance);
+MOON_API guint32 media_frame_get_buf_len (MediaFrame *instance);
 
-gint32 media_frame_get_height (MediaFrame *instance);
+MOON_API gint32 media_frame_get_height (MediaFrame *instance);
 
-guint64 media_frame_get_pts (MediaFrame *instance);
+MOON_API guint64 media_frame_get_pts (MediaFrame *instance);
 
-gint32 media_frame_get_width (MediaFrame *instance);
+MOON_API gint32 media_frame_get_width (MediaFrame *instance);
 
-bool media_frame_is_key_frame (MediaFrame *instance);
+MOON_API bool media_frame_is_key_frame (MediaFrame *instance);
 
 /* @GeneratePInvoke */
-MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
+MOON_API MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 
-void media_frame_set_buffer (MediaFrame *instance, guint8 *value);
+MOON_API void media_frame_set_buffer (MediaFrame *instance, guint8 *value);
 
-void media_frame_set_buf_len (MediaFrame *instance, guint32 value);
+MOON_API void media_frame_set_buf_len (MediaFrame *instance, guint32 value);
 
-void media_frame_set_data_stride (MediaFrame *instance, guint8 *a, guint8 *b, guint8 *c, guint8 *d);
+MOON_API void media_frame_set_data_stride (MediaFrame *instance, guint8 *a, guint8 *b, guint8 *c, guint8 *d);
 
-void media_frame_set_decoder_specific_data (MediaFrame *instance, void *value);
+MOON_API void media_frame_set_decoder_specific_data (MediaFrame *instance, void *value);
 
-void media_frame_set_height (MediaFrame *instance, gint32 value);
+MOON_API void media_frame_set_height (MediaFrame *instance, gint32 value);
 
-void media_frame_set_pts (MediaFrame *instance, guint64 value);
+MOON_API void media_frame_set_pts (MediaFrame *instance, guint64 value);
 
-void media_frame_set_src_slide_h (MediaFrame *instance, int value);
+MOON_API void media_frame_set_src_slide_h (MediaFrame *instance, int value);
 
-void media_frame_set_src_slide_y (MediaFrame *instance, int value);
+MOON_API void media_frame_set_src_slide_y (MediaFrame *instance, int value);
 
-void media_frame_set_src_stride (MediaFrame *instance, int a, int b, int c, int d);
+MOON_API void media_frame_set_src_stride (MediaFrame *instance, int a, int b, int c, int d);
 
-void media_frame_set_width (MediaFrame *instance, gint32 value);
+MOON_API void media_frame_set_width (MediaFrame *instance, gint32 value);
 
 /**
  * MoonWindow
  **/
 /* @GeneratePInvoke */
-bool moon_window_get_transparent (MoonWindow *instance);
+MOON_API bool moon_window_get_transparent (MoonWindow *instance);
 
 /* @GeneratePInvoke */
-void moon_window_set_transparent (MoonWindow *instance, bool flag);
+MOON_API void moon_window_set_transparent (MoonWindow *instance, bool flag);
 
 /**
  * MoonWindowGtk
  **/
 /* @GeneratePInvoke */
-void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
+MOON_API void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
 
 /* @GeneratePInvoke */
-MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface);
+MOON_API MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface);
 
 /**
  * MouseButtonEventArgs
  **/
 /* @GeneratePInvoke */
-MouseButtonEventArgs *mouse_button_event_args_new (void);
+MOON_API MouseButtonEventArgs *mouse_button_event_args_new (void);
 
 /**
  * MouseEventArgs
  **/
 /* @GeneratePInvoke */
-void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
+MOON_API void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
 
 /* @GeneratePInvoke */
-StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
+MOON_API StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
 
 /* @GeneratePInvoke */
-StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
+MOON_API StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
 
 /* @GeneratePInvoke */
-MouseEventArgs *mouse_event_args_new (void);
+MOON_API MouseEventArgs *mouse_event_args_new (void);
 
 /**
  * MouseWheelEventArgs
  **/
 /* @GeneratePInvoke */
-int mouse_wheel_event_args_get_wheel_delta (MouseWheelEventArgs *instance);
+MOON_API int mouse_wheel_event_args_get_wheel_delta (MouseWheelEventArgs *instance);
 
 /* @GeneratePInvoke */
-MouseWheelEventArgs *mouse_wheel_event_args_new (void);
+MOON_API MouseWheelEventArgs *mouse_wheel_event_args_new (void);
 
 /**
  * MultiScaleImage
  **/
 /* @GeneratePInvoke */
-Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
+MOON_API Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
 
-void multi_scale_image_emit_image_failed (MultiScaleImage *instance);
+MOON_API void multi_scale_image_emit_image_failed (MultiScaleImage *instance);
 
-void multi_scale_image_emit_image_open_failed (MultiScaleImage *instance);
+MOON_API void multi_scale_image_emit_image_open_failed (MultiScaleImage *instance);
 
-void multi_scale_image_emit_motion_finished (MultiScaleImage *instance);
+MOON_API void multi_scale_image_emit_motion_finished (MultiScaleImage *instance);
 
-void multi_scale_image_handle_dz_parsed (MultiScaleImage *instance);
+MOON_API void multi_scale_image_handle_dz_parsed (MultiScaleImage *instance);
 
-void multi_scale_image_invalidate_tile_layer (MultiScaleImage *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
-
-/* @GeneratePInvoke */
-Point multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint);
+MOON_API void multi_scale_image_invalidate_tile_layer (MultiScaleImage *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
 
 /* @GeneratePInvoke */
-MultiScaleImage *multi_scale_image_new (void);
-
-void multi_scale_image_on_source_property_changed (MultiScaleImage *instance);
+MOON_API Point multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint);
 
 /* @GeneratePInvoke */
-void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
+MOON_API MultiScaleImage *multi_scale_image_new (void);
+
+MOON_API void multi_scale_image_on_source_property_changed (MultiScaleImage *instance);
+
+/* @GeneratePInvoke */
+MOON_API void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
 
 /**
  * MultiScaleSubImage
  **/
-gint32 multi_scale_sub_image_get_zindex (MultiScaleSubImage *instance);
+MOON_API gint32 multi_scale_sub_image_get_zindex (MultiScaleSubImage *instance);
 
 /* @GeneratePInvoke */
-MultiScaleSubImage *multi_scale_sub_image_new (void);
+MOON_API MultiScaleSubImage *multi_scale_sub_image_new (void);
 
 /**
  * MultiScaleSubImageCollection
  **/
 /* @GeneratePInvoke */
-MultiScaleSubImageCollection *multi_scale_sub_image_collection_new (void);
+MOON_API MultiScaleSubImageCollection *multi_scale_sub_image_collection_new (void);
 
 /**
  * MultiScaleTileSource
  **/
 /* @GeneratePInvoke */
-void multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
+MOON_API void multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
 
 /* @GeneratePInvoke */
-MultiScaleTileSource *multi_scale_tile_source_new (void);
+MOON_API MultiScaleTileSource *multi_scale_tile_source_new (void);
 
 /* @GeneratePInvoke */
-void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
+MOON_API void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
 
 /**
  * NameScope
  **/
-NameScope *name_scope_new (void);
+MOON_API NameScope *name_scope_new (void);
 
 /**
  * ObjectAnimationUsingKeyFrames
  **/
 /* @GeneratePInvoke */
-ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new (void);
+MOON_API ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new (void);
 
 /**
  * ObjectKeyFrame
  **/
 /* @GeneratePInvoke */
-ObjectKeyFrame *object_key_frame_new (void);
+MOON_API ObjectKeyFrame *object_key_frame_new (void);
 
 /**
  * ObjectKeyFrameCollection
  **/
 /* @GeneratePInvoke */
-ObjectKeyFrameCollection *object_key_frame_collection_new (void);
+MOON_API ObjectKeyFrameCollection *object_key_frame_collection_new (void);
 
 /**
  * OutOfBrowserSettings
  **/
 /* @GeneratePInvoke */
-OutOfBrowserSettings *out_of_browser_settings_new (void);
+MOON_API OutOfBrowserSettings *out_of_browser_settings_new (void);
 
 /**
  * Panel
  **/
 /* @GeneratePInvoke */
-Panel *panel_new (void);
+MOON_API Panel *panel_new (void);
 
 /**
  * ParallelTimeline
  **/
 /* @GeneratePInvoke */
-ParallelTimeline *parallel_timeline_new (void);
+MOON_API ParallelTimeline *parallel_timeline_new (void);
 
 /**
  * PasswordBox
  **/
 /* @GeneratePInvoke */
-PasswordBox *password_box_new (void);
+MOON_API PasswordBox *password_box_new (void);
 
 /**
  * Path
  **/
 /* @GeneratePInvoke */
-Path *path_new (void);
+MOON_API Path *path_new (void);
 
 /**
  * PathFigure
  **/
 /* @GeneratePInvoke */
-PathFigure *path_figure_new (void);
+MOON_API PathFigure *path_figure_new (void);
 
 /**
  * PathFigureCollection
  **/
 /* @GeneratePInvoke */
-PathFigureCollection *path_figure_collection_new (void);
+MOON_API PathFigureCollection *path_figure_collection_new (void);
 
 /**
  * PathGeometry
  **/
 /* @GeneratePInvoke */
-PathGeometry *path_geometry_new (void);
+MOON_API PathGeometry *path_geometry_new (void);
 
 /**
  * PathSegment
  **/
 /* @GeneratePInvoke */
-PathSegment *path_segment_new (void);
+MOON_API PathSegment *path_segment_new (void);
 
 /**
  * PathSegmentCollection
  **/
 /* @GeneratePInvoke */
-PathSegmentCollection *path_segment_collection_new (void);
+MOON_API PathSegmentCollection *path_segment_collection_new (void);
 
 /**
  * PixelShader
  **/
 /* @GeneratePInvoke */
-PixelShader *pixel_shader_new (void);
+MOON_API PixelShader *pixel_shader_new (void);
 
 /**
  * PlaneProjection
  **/
 /* @GeneratePInvoke */
-PlaneProjection *plane_projection_new (void);
+MOON_API PlaneProjection *plane_projection_new (void);
 
 /**
  * PointAnimation
  **/
 /* @GeneratePInvoke */
-PointAnimation *point_animation_new (void);
+MOON_API PointAnimation *point_animation_new (void);
 
 /**
  * PointAnimationUsingKeyFrames
  **/
 /* @GeneratePInvoke */
-PointAnimationUsingKeyFrames *point_animation_using_key_frames_new (void);
+MOON_API PointAnimationUsingKeyFrames *point_animation_using_key_frames_new (void);
 
 /**
  * PointCollection
  **/
 /* @GeneratePInvoke */
-PointCollection *point_collection_new (void);
+MOON_API PointCollection *point_collection_new (void);
 
 /**
  * PointKeyFrame
  **/
 /* @GeneratePInvoke */
-PointKeyFrame *point_key_frame_new (void);
+MOON_API PointKeyFrame *point_key_frame_new (void);
 
 /**
  * PointKeyFrameCollection
  **/
 /* @GeneratePInvoke */
-PointKeyFrameCollection *point_key_frame_collection_new (void);
+MOON_API PointKeyFrameCollection *point_key_frame_collection_new (void);
 
 /**
  * PolyBezierSegment
  **/
 /* @GeneratePInvoke */
-PolyBezierSegment *poly_bezier_segment_new (void);
+MOON_API PolyBezierSegment *poly_bezier_segment_new (void);
 
-void poly_bezier_segment_set_points (PolyBezierSegment *instance, PointCollection *points);
+MOON_API void poly_bezier_segment_set_points (PolyBezierSegment *instance, PointCollection *points);
 
 /**
  * Polygon
  **/
 /* @GeneratePInvoke */
-Polygon *polygon_new (void);
+MOON_API Polygon *polygon_new (void);
 
 /**
  * Polyline
  **/
 /* @GeneratePInvoke */
-Polyline *polyline_new (void);
+MOON_API Polyline *polyline_new (void);
 
 /**
  * PolyLineSegment
  **/
 /* @GeneratePInvoke */
-PolyLineSegment *poly_line_segment_new (void);
+MOON_API PolyLineSegment *poly_line_segment_new (void);
 
 /**
  * PolyQuadraticBezierSegment
  **/
 /* @GeneratePInvoke */
-PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
+MOON_API PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
 
 /**
  * Popup
  **/
 /* @GeneratePInvoke */
-Popup *popup_new (void);
+MOON_API Popup *popup_new (void);
 
 /**
  * PowerEase
  **/
 /* @GeneratePInvoke */
-double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
+MOON_API double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-PowerEase *power_ease_new (void);
+MOON_API PowerEase *power_ease_new (void);
 
 /**
  * Projection
  **/
 /* @GeneratePInvoke */
-Projection *projection_new (void);
+MOON_API Projection *projection_new (void);
 
 /**
  * PropertyChangedEventArgs
  **/
 /* @GeneratePInvoke */
-int property_changed_event_args_get_id (PropertyChangedEventArgs *instance);
+MOON_API int property_changed_event_args_get_id (PropertyChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-Value *property_changed_event_args_get_new_value (PropertyChangedEventArgs *instance);
+MOON_API Value *property_changed_event_args_get_new_value (PropertyChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-Value *property_changed_event_args_get_old_value (PropertyChangedEventArgs *instance);
+MOON_API Value *property_changed_event_args_get_old_value (PropertyChangedEventArgs *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *property_changed_event_args_get_property (PropertyChangedEventArgs *instance);
+MOON_API DependencyProperty *property_changed_event_args_get_property (PropertyChangedEventArgs *instance);
 
 /**
  * QuadraticBezierSegment
  **/
 /* @GeneratePInvoke */
-QuadraticBezierSegment *quadratic_bezier_segment_new (void);
+MOON_API QuadraticBezierSegment *quadratic_bezier_segment_new (void);
 
 /**
  * QuadraticEase
  **/
 /* @GeneratePInvoke */
-double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
+MOON_API double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-QuadraticEase *quadratic_ease_new (void);
+MOON_API QuadraticEase *quadratic_ease_new (void);
 
 /**
  * QuarticEase
  **/
 /* @GeneratePInvoke */
-double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
+MOON_API double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-QuarticEase *quartic_ease_new (void);
+MOON_API QuarticEase *quartic_ease_new (void);
 
 /**
  * QuinticEase
  **/
 /* @GeneratePInvoke */
-double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
+MOON_API double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-QuinticEase *quintic_ease_new (void);
+MOON_API QuinticEase *quintic_ease_new (void);
 
 /**
  * RadialGradientBrush
  **/
 /* @GeneratePInvoke */
-RadialGradientBrush *radial_gradient_brush_new (void);
+MOON_API RadialGradientBrush *radial_gradient_brush_new (void);
 
 /**
  * Rectangle
  **/
 /* @GeneratePInvoke */
-Rectangle *rectangle_new (void);
+MOON_API Rectangle *rectangle_new (void);
 
 /**
  * RectangleGeometry
  **/
 /* @GeneratePInvoke */
-RectangleGeometry *rectangle_geometry_new (void);
+MOON_API RectangleGeometry *rectangle_geometry_new (void);
 
 /**
  * RenderingEventArgs
  **/
 /* @GeneratePInvoke */
-TimeSpan rendering_event_args_get_rendering_time (RenderingEventArgs *instance);
+MOON_API TimeSpan rendering_event_args_get_rendering_time (RenderingEventArgs *instance);
 
 /**
  * ResourceDictionary
  **/
 /* @GeneratePInvoke */
-bool resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
+MOON_API bool resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_clear (ResourceDictionary *instance);
+MOON_API bool resource_dictionary_clear (ResourceDictionary *instance);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_contains_key (ResourceDictionary *instance, const char *key);
+MOON_API bool resource_dictionary_contains_key (ResourceDictionary *instance, const char *key);
 
 /* @GeneratePInvoke */
-Value *resource_dictionary_get (ResourceDictionary *instance, const char *key, bool *exists);
+MOON_API Value *resource_dictionary_get (ResourceDictionary *instance, const char *key, bool *exists);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_remove (ResourceDictionary *instance, const char *key);
+MOON_API bool resource_dictionary_remove (ResourceDictionary *instance, const char *key);
 
 /* @GeneratePInvoke */
-ResourceDictionary *resource_dictionary_new (void);
+MOON_API ResourceDictionary *resource_dictionary_new (void);
 
 /* @GeneratePInvoke */
-bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *value);
+MOON_API bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *value);
 
 /**
  * ResourceDictionaryCollection
  **/
 /* @GeneratePInvoke */
-ResourceDictionaryCollection *resource_dictionary_collection_new (void);
+MOON_API ResourceDictionaryCollection *resource_dictionary_collection_new (void);
 
 /**
  * ResourceDictionaryIterator
  **/
 /* @GeneratePInvoke */
-const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error);
+MOON_API const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error);
 
 /**
  * RotateTransform
  **/
 /* @GeneratePInvoke */
-RotateTransform *rotate_transform_new (void);
+MOON_API RotateTransform *rotate_transform_new (void);
 
 /**
  * RoutedEventArgs
  **/
 /* @GeneratePInvoke */
-bool routed_event_args_get_handled (RoutedEventArgs *instance);
+MOON_API bool routed_event_args_get_handled (RoutedEventArgs *instance);
 
 /* @GeneratePInvoke */
-DependencyObject *routed_event_args_get_source (RoutedEventArgs *instance);
+MOON_API DependencyObject *routed_event_args_get_source (RoutedEventArgs *instance);
 
 /* @GeneratePInvoke */
-RoutedEventArgs *routed_event_args_new (void);
+MOON_API RoutedEventArgs *routed_event_args_new (void);
 
 /* @GeneratePInvoke */
-void routed_event_args_set_handled (RoutedEventArgs *instance, bool handled);
+MOON_API void routed_event_args_set_handled (RoutedEventArgs *instance, bool handled);
 
 /* @GeneratePInvoke */
-void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
+MOON_API void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
 
 /**
  * RowDefinition
  **/
 /* @GeneratePInvoke */
-RowDefinition *row_definition_new (void);
+MOON_API RowDefinition *row_definition_new (void);
 
 /**
  * RowDefinitionCollection
  **/
 /* @GeneratePInvoke */
-RowDefinitionCollection *row_definition_collection_new (void);
+MOON_API RowDefinitionCollection *row_definition_collection_new (void);
 
 /**
  * Run
  **/
 /* @GeneratePInvoke */
-Run *run_new (void);
+MOON_API Run *run_new (void);
 
 /**
  * ScaleTransform
  **/
 /* @GeneratePInvoke */
-ScaleTransform *scale_transform_new (void);
+MOON_API ScaleTransform *scale_transform_new (void);
 
 /**
  * Setter
  **/
 /* @GeneratePInvoke */
-Setter *setter_new (void);
+MOON_API Setter *setter_new (void);
 
 /**
  * SetterBase
  **/
 /* @GeneratePInvoke */
-SetterBase *setter_base_new (void);
+MOON_API SetterBase *setter_base_new (void);
 
 /**
  * SetterBaseCollection
  **/
 /* @GeneratePInvoke */
-SetterBaseCollection *setter_base_collection_new (void);
+MOON_API SetterBaseCollection *setter_base_collection_new (void);
 
 /**
  * ShaderEffect
  **/
 /* @GeneratePInvoke */
-ShaderEffect *shader_effect_new (void);
+MOON_API ShaderEffect *shader_effect_new (void);
 
 /**
  * Shape
  **/
 /* @GeneratePInvoke */
-Transform *shape_get_geometry_transform (Shape *instance);
+MOON_API Transform *shape_get_geometry_transform (Shape *instance);
 
 /* @GeneratePInvoke */
-Shape *shape_new (void);
+MOON_API Shape *shape_new (void);
 
 /**
  * SineEase
  **/
 /* @GeneratePInvoke */
-double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
+MOON_API double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
-SineEase *sine_ease_new (void);
+MOON_API SineEase *sine_ease_new (void);
 
 /**
  * SizeChangedEventArgs
  **/
 /* @GeneratePInvoke */
-SizeChangedEventArgs *size_changed_event_args_new (void);
+MOON_API SizeChangedEventArgs *size_changed_event_args_new (void);
 
 /**
  * SkewTransform
  **/
 /* @GeneratePInvoke */
-SkewTransform *skew_transform_new (void);
+MOON_API SkewTransform *skew_transform_new (void);
 
 /**
  * SolidColorBrush
  **/
 /* @GeneratePInvoke */
-SolidColorBrush *solid_color_brush_new (void);
+MOON_API SolidColorBrush *solid_color_brush_new (void);
 
 /**
  * SplineColorKeyFrame
  **/
 /* @GeneratePInvoke */
-SplineColorKeyFrame *spline_color_key_frame_new (void);
+MOON_API SplineColorKeyFrame *spline_color_key_frame_new (void);
 
 /**
  * SplineDoubleKeyFrame
  **/
 /* @GeneratePInvoke */
-SplineDoubleKeyFrame *spline_double_key_frame_new (void);
+MOON_API SplineDoubleKeyFrame *spline_double_key_frame_new (void);
 
 /**
  * SplinePointKeyFrame
  **/
 /* @GeneratePInvoke */
-SplinePointKeyFrame *spline_point_key_frame_new (void);
+MOON_API SplinePointKeyFrame *spline_point_key_frame_new (void);
 
 /**
  * Storyboard
  **/
 /* @GeneratePInvoke */
-bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
+MOON_API bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-int storyboard_get_current_state (Storyboard *instance);
+MOON_API int storyboard_get_current_state (Storyboard *instance);
 
 /* @GeneratePInvoke */
-TimeSpan storyboard_get_current_time (Storyboard *instance);
+MOON_API TimeSpan storyboard_get_current_time (Storyboard *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *storyboard_get_target_dependency_property (Storyboard *instance);
+MOON_API DependencyProperty *storyboard_get_target_dependency_property (Storyboard *instance);
 
 /* @GeneratePInvoke */
-void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
+MOON_API void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_resume_with_error (Storyboard *instance, MoonError *error);
+MOON_API void storyboard_resume_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_seek_aligned_to_last_tick_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
+MOON_API void storyboard_seek_aligned_to_last_tick_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
+MOON_API void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_skip_to_fill_with_error (Storyboard *instance, MoonError *error);
+MOON_API void storyboard_skip_to_fill_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_stop_with_error (Storyboard *instance, MoonError *error);
+MOON_API void storyboard_stop_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-Storyboard *storyboard_new (void);
+MOON_API Storyboard *storyboard_new (void);
 
 /**
  * Stroke
  **/
 /* @GeneratePInvoke */
-bool stroke_hit_test (Stroke *instance, StylusPointCollection *stylusPoints);
+MOON_API bool stroke_hit_test (Stroke *instance, StylusPointCollection *stylusPoints);
 
 /* @GeneratePInvoke */
-Stroke *stroke_new (void);
+MOON_API Stroke *stroke_new (void);
 
 /**
  * StrokeCollection
  **/
 /* @GeneratePInvoke */
-StrokeCollection *stroke_collection_hit_test (StrokeCollection *instance, StylusPointCollection *stylusPoints);
+MOON_API StrokeCollection *stroke_collection_hit_test (StrokeCollection *instance, StylusPointCollection *stylusPoints);
 
 /* @GeneratePInvoke */
-StrokeCollection *stroke_collection_new (void);
+MOON_API StrokeCollection *stroke_collection_new (void);
 
 /**
  * Style
  **/
 /* @GeneratePInvoke */
-void style_seal (Style *instance);
+MOON_API void style_seal (Style *instance);
 
 /* @GeneratePInvoke */
-Style *style_new (void);
+MOON_API Style *style_new (void);
 
 /**
  * StylusInfo
  **/
 /* @GeneratePInvoke */
-StylusInfo *stylus_info_new (void);
+MOON_API StylusInfo *stylus_info_new (void);
 
 /**
  * StylusPoint
  **/
 /* @GeneratePInvoke */
-double stylus_point_get_pressure_factor (StylusPoint *instance);
+MOON_API double stylus_point_get_pressure_factor (StylusPoint *instance);
 
 /* @GeneratePInvoke */
-double stylus_point_get_x (StylusPoint *instance);
+MOON_API double stylus_point_get_x (StylusPoint *instance);
 
 /* @GeneratePInvoke */
-double stylus_point_get_y (StylusPoint *instance);
+MOON_API double stylus_point_get_y (StylusPoint *instance);
 
 /* @GeneratePInvoke */
-void stylus_point_set_pressure_factor (StylusPoint *instance, double factor);
+MOON_API void stylus_point_set_pressure_factor (StylusPoint *instance, double factor);
 
 /* @GeneratePInvoke */
-void stylus_point_set_x (StylusPoint *instance, double x);
+MOON_API void stylus_point_set_x (StylusPoint *instance, double x);
 
 /* @GeneratePInvoke */
-void stylus_point_set_y (StylusPoint *instance, double y);
+MOON_API void stylus_point_set_y (StylusPoint *instance, double y);
 
 /* @GeneratePInvoke */
-StylusPoint *stylus_point_new (void);
+MOON_API StylusPoint *stylus_point_new (void);
 
 /**
  * StylusPointCollection
  **/
 /* @GeneratePInvoke */
-double stylus_point_collection_add_stylus_points (StylusPointCollection *instance, StylusPointCollection *stylusPointCollection);
+MOON_API double stylus_point_collection_add_stylus_points (StylusPointCollection *instance, StylusPointCollection *stylusPointCollection);
 
 /* @GeneratePInvoke */
-StylusPointCollection *stylus_point_collection_new (void);
+MOON_API StylusPointCollection *stylus_point_collection_new (void);
 
 /**
  * Surface
  **/
 /* @GeneratePInvoke */
-void surface_attach (Surface *instance, UIElement *toplevel);
+MOON_API void surface_attach (Surface *instance, UIElement *toplevel);
 
 /* @GeneratePInvoke */
-Downloader *surface_create_downloader (Surface *instance);
+MOON_API Downloader *surface_create_downloader (Surface *instance);
 
 /* @GeneratePInvoke */
-void surface_emit_error (Surface *instance, int number, int code, const char *message);
+MOON_API void surface_emit_error (Surface *instance, int number, int code, const char *message);
 
 /* @GeneratePInvoke */
-Color *surface_get_background_color (Surface *instance);
+MOON_API Color *surface_get_background_color (Surface *instance);
 
 /* @GeneratePInvoke */
-UIElement *surface_get_focused_element (Surface *instance);
+MOON_API UIElement *surface_get_focused_element (Surface *instance);
 
 /* @GeneratePInvoke */
-bool surface_get_full_screen (Surface *instance);
+MOON_API bool surface_get_full_screen (Surface *instance);
 
 /* @GeneratePInvoke */
-TimeManager *surface_get_time_manager (Surface *instance);
+MOON_API TimeManager *surface_get_time_manager (Surface *instance);
 
 /* @GeneratePInvoke */
-UIElement *surface_get_toplevel (Surface *instance);
+MOON_API UIElement *surface_get_toplevel (Surface *instance);
 
 /* @GeneratePInvoke */
-int surface_get_user_initiated_counter (Surface *instance);
+MOON_API int surface_get_user_initiated_counter (Surface *instance);
 
-MoonWindow *surface_get_window (Surface *instance);
-
-/* @GeneratePInvoke */
-double surface_get_zoom_factor (Surface *instance);
+MOON_API MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */
-bool surface_in_main_thread (void);
+MOON_API double surface_get_zoom_factor (Surface *instance);
 
 /* @GeneratePInvoke */
-bool surface_is_loaded (Surface *instance);
+MOON_API bool surface_in_main_thread (void);
 
 /* @GeneratePInvoke */
-bool surface_is_user_initiated_event (Surface *instance);
+MOON_API bool surface_is_loaded (Surface *instance);
 
 /* @GeneratePInvoke */
-bool surface_is_version_supported (const char *version);
+MOON_API bool surface_is_user_initiated_event (Surface *instance);
 
 /* @GeneratePInvoke */
-void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);
+MOON_API bool surface_is_version_supported (const char *version);
 
 /* @GeneratePInvoke */
-void surface_resize (Surface *instance, int width, int height);
+MOON_API void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);
 
 /* @GeneratePInvoke */
-void surface_set_full_screen (Surface *instance, bool value);
+MOON_API void surface_resize (Surface *instance, int width, int height);
 
 /* @GeneratePInvoke */
-Surface *surface_new (MoonWindow *window);
+MOON_API void surface_set_full_screen (Surface *instance, bool value);
+
+/* @GeneratePInvoke */
+MOON_API Surface *surface_new (MoonWindow *window);
 
 /**
  * TabNavigationWalker
  **/
 /* @GeneratePInvoke */
-bool tab_navigation_walker_focus (UIElement *element, bool forwards);
+MOON_API bool tab_navigation_walker_focus (UIElement *element, bool forwards);
 
 /**
  * TextBlock
  **/
 /* @GeneratePInvoke */
-TextBlock *text_block_new (void);
+MOON_API TextBlock *text_block_new (void);
 
 /**
  * TextBox
  **/
 /* @GeneratePInvoke */
-TextBox *text_box_new (void);
+MOON_API TextBox *text_box_new (void);
 
 /**
  * TextBoxBase
  **/
 /* @GeneratePInvoke */
-void text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args);
+MOON_API void text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
+MOON_API void text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args);
+MOON_API void text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args);
+MOON_API void text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseButtonEventArgs *args);
+MOON_API void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseButtonEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseButtonEventArgs *args);
+MOON_API void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseButtonEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args);
+MOON_API void text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_post_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
+MOON_API void text_box_base_post_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_select_all (TextBoxBase *instance);
+MOON_API void text_box_base_select_all (TextBoxBase *instance);
 
 /* @GeneratePInvoke */
-bool text_box_base_select_with_error (TextBoxBase *instance, int start, int length, MoonError *error);
+MOON_API bool text_box_base_select_with_error (TextBoxBase *instance, int start, int length, MoonError *error);
 
 /**
  * TextBoxView
  **/
 /* @GeneratePInvoke */
-TextBoxView *text_box_view_new (void);
+MOON_API TextBoxView *text_box_view_new (void);
 
 /**
  * TextChangedEventArgs
  **/
 /* @GeneratePInvoke */
-TextChangedEventArgs *text_changed_event_args_new (void);
+MOON_API TextChangedEventArgs *text_changed_event_args_new (void);
 
 /**
  * TileBrush
  **/
 /* @GeneratePInvoke */
-TileBrush *tile_brush_new (void);
+MOON_API TileBrush *tile_brush_new (void);
 
 /**
  * Timeline
  **/
 /* @GeneratePInvoke */
-DependencyObject *timeline_get_manual_target (Timeline *instance);
+MOON_API DependencyObject *timeline_get_manual_target (Timeline *instance);
 
 /* @GeneratePInvoke */
-void timeline_set_manual_target (Timeline *instance, DependencyObject *o);
+MOON_API void timeline_set_manual_target (Timeline *instance, DependencyObject *o);
 
 /* @GeneratePInvoke */
-Timeline *timeline_new (void);
+MOON_API Timeline *timeline_new (void);
 
 /**
  * TimelineCollection
  **/
 /* @GeneratePInvoke */
-TimelineCollection *timeline_collection_new (void);
+MOON_API TimelineCollection *timeline_collection_new (void);
 
 /**
  * TimelineGroup
  **/
 /* @GeneratePInvoke */
-TimelineGroup *timeline_group_new (void);
+MOON_API TimelineGroup *timeline_group_new (void);
 
 /**
  * TimelineMarker
  **/
 /* @GeneratePInvoke */
-TimelineMarker *timeline_marker_new (void);
+MOON_API TimelineMarker *timeline_marker_new (void);
 
 /**
  * TimelineMarkerCollection
  **/
 /* @GeneratePInvoke */
-TimelineMarkerCollection *timeline_marker_collection_new (void);
+MOON_API TimelineMarkerCollection *timeline_marker_collection_new (void);
 
 /**
  * TimelineMarkerRoutedEventArgs
  **/
 /* @GeneratePInvoke */
-TimelineMarker *timeline_marker_routed_event_args_get_marker (TimelineMarkerRoutedEventArgs *instance);
+MOON_API TimelineMarker *timeline_marker_routed_event_args_get_marker (TimelineMarkerRoutedEventArgs *instance);
 
 /* @GeneratePInvoke */
-TimelineMarkerRoutedEventArgs *timeline_marker_routed_event_args_new (TimelineMarker *marker);
+MOON_API TimelineMarkerRoutedEventArgs *timeline_marker_routed_event_args_new (TimelineMarker *marker);
 
 /**
  * TimeManager
  **/
 /* @GeneratePInvoke */
-void time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+MOON_API void time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
 
 /* @GeneratePInvoke */
-void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+MOON_API void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
 
-guint time_manager_add_timeout (TimeManager *instance, gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
-
-/* @GeneratePInvoke */
-int time_manager_get_maximum_refresh_rate (TimeManager *instance);
+MOON_API guint time_manager_add_timeout (TimeManager *instance, gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
 
 /* @GeneratePInvoke */
-void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
-
-void time_manager_remove_timeout (TimeManager *instance, guint timeout_id);
+MOON_API int time_manager_get_maximum_refresh_rate (TimeManager *instance);
 
 /* @GeneratePInvoke */
-void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
+MOON_API void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+
+MOON_API void time_manager_remove_timeout (TimeManager *instance, guint timeout_id);
+
+/* @GeneratePInvoke */
+MOON_API void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
 
 /**
  * TouchDevice
  **/
 /* @GeneratePInvoke */
-UIElement *touch_device_get_directly_over (TouchDevice *instance);
+MOON_API UIElement *touch_device_get_directly_over (TouchDevice *instance);
 
 /* @GeneratePInvoke */
-int touch_device_get_id (TouchDevice *instance);
+MOON_API int touch_device_get_id (TouchDevice *instance);
 
 /* @GeneratePInvoke */
-void touch_device_set_directly_over (TouchDevice *instance, UIElement *element);
+MOON_API void touch_device_set_directly_over (TouchDevice *instance, UIElement *element);
 
 /* @GeneratePInvoke */
-void touch_device_set_id (TouchDevice *instance, int id);
+MOON_API void touch_device_set_id (TouchDevice *instance, int id);
 
 /* @GeneratePInvoke */
-TouchDevice *touch_device_new (void);
+MOON_API TouchDevice *touch_device_new (void);
 
 /**
  * TouchPoint
  **/
 /* @GeneratePInvoke */
-int touch_point_get_action (TouchPoint *instance);
+MOON_API int touch_point_get_action (TouchPoint *instance);
 
 /* @GeneratePInvoke */
-Point *touch_point_get_position (TouchPoint *instance);
+MOON_API Point *touch_point_get_position (TouchPoint *instance);
 
 /* @GeneratePInvoke */
-Size *touch_point_get_size (TouchPoint *instance);
+MOON_API Size *touch_point_get_size (TouchPoint *instance);
 
 /* @GeneratePInvoke */
-TouchDevice *touch_point_get_touch_device (TouchPoint *instance);
+MOON_API TouchDevice *touch_point_get_touch_device (TouchPoint *instance);
 
 /* @GeneratePInvoke */
-void touch_point_set_action (TouchPoint *instance, int action);
+MOON_API void touch_point_set_action (TouchPoint *instance, int action);
 
 /* @GeneratePInvoke */
-void touch_point_set_position (TouchPoint *instance, Point *position);
+MOON_API void touch_point_set_position (TouchPoint *instance, Point *position);
 
 /* @GeneratePInvoke */
-void touch_point_set_size (TouchPoint *instance, Size *size);
+MOON_API void touch_point_set_size (TouchPoint *instance, Size *size);
 
 /* @GeneratePInvoke */
-void touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device);
+MOON_API void touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device);
 
 /* @GeneratePInvoke */
-TouchPoint *touch_point_new (void);
+MOON_API TouchPoint *touch_point_new (void);
 
 /**
  * TouchPointCollection
  **/
 /* @GeneratePInvoke */
-TouchPointCollection *touch_point_collection_new (void);
+MOON_API TouchPointCollection *touch_point_collection_new (void);
 
 /**
  * Transform
  **/
 /* @GeneratePInvoke */
-Transform *transform_new (void);
+MOON_API Transform *transform_new (void);
 
 /**
  * TransformCollection
  **/
 /* @GeneratePInvoke */
-TransformCollection *transform_collection_new (void);
+MOON_API TransformCollection *transform_collection_new (void);
 
 /**
  * TransformGroup
  **/
 /* @GeneratePInvoke */
-TransformGroup *transform_group_new (void);
+MOON_API TransformGroup *transform_group_new (void);
 
 /**
  * TranslateTransform
  **/
 /* @GeneratePInvoke */
-TranslateTransform *translate_transform_new (void);
+MOON_API TranslateTransform *translate_transform_new (void);
 
 /**
  * TriggerAction
  **/
-void trigger_action_fire (TriggerAction *instance);
+MOON_API void trigger_action_fire (TriggerAction *instance);
 
 /* @GeneratePInvoke */
-TriggerAction *trigger_action_new (void);
+MOON_API TriggerAction *trigger_action_new (void);
 
 /**
  * TriggerActionCollection
  **/
 /* @GeneratePInvoke */
-TriggerActionCollection *trigger_action_collection_new (void);
+MOON_API TriggerActionCollection *trigger_action_collection_new (void);
 
 /**
  * TriggerBase
  **/
 /* @GeneratePInvoke */
-TriggerBase *trigger_base_new (void);
+MOON_API TriggerBase *trigger_base_new (void);
 
 /**
  * TriggerCollection
  **/
 /* @GeneratePInvoke */
-TriggerCollection *trigger_collection_new (void);
+MOON_API TriggerCollection *trigger_collection_new (void);
 
 /**
  * Types
  **/
 /* @GeneratePInvoke */
-Type *types_find (Types *instance, int type);
+MOON_API Type *types_find (Types *instance, int type);
 
 /* @GeneratePInvoke */
-int types_register_type (Types *instance, const char *name, void *gc_handle, int parent, bool is_interface, bool ctor_visible, int *interfaces, int interface_count);
+MOON_API int types_register_type (Types *instance, const char *name, void *gc_handle, int parent, bool is_interface, bool ctor_visible, int *interfaces, int interface_count);
 
 /* @GeneratePInvoke */
-Types *types_new (void);
+MOON_API Types *types_new (void);
 
 /**
  * UIElement
  **/
 /* @GeneratePInvoke */
-void uielement_arrange (UIElement *instance, Rect finalRect);
+MOON_API void uielement_arrange (UIElement *instance, Rect finalRect);
 
 /* @GeneratePInvoke */
-bool uielement_capture_mouse (UIElement *instance);
+MOON_API bool uielement_capture_mouse (UIElement *instance);
 
 /* @GeneratePInvoke */
-void uielement_element_added (UIElement *instance, UIElement *obj);
+MOON_API void uielement_element_added (UIElement *instance, UIElement *obj);
 
 /* @GeneratePInvoke */
-void uielement_element_removed (UIElement *instance, UIElement *obj);
+MOON_API void uielement_element_removed (UIElement *instance, UIElement *obj);
 
 /* @GeneratePInvoke */
-void uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
+MOON_API void uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p, HitTestCollection *uielement_list);
 
 /* @GeneratePInvoke */
-void uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
+MOON_API void uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
 
 /* @GeneratePInvoke */
-bool uielement_focus (UIElement *instance, bool recurse);
+MOON_API bool uielement_focus (UIElement *instance, bool recurse);
 
 /* @GeneratePInvoke */
-Size uielement_get_desired_size (UIElement *instance);
+MOON_API Size uielement_get_desired_size (UIElement *instance);
 
 /* @GeneratePInvoke */
-Size uielement_get_render_size (UIElement *instance);
+MOON_API Size uielement_get_render_size (UIElement *instance);
 
 /* @GeneratePInvoke */
-DependencyObject *uielement_get_subtree_object (UIElement *instance);
+MOON_API DependencyObject *uielement_get_subtree_object (UIElement *instance);
 
 /* @GeneratePInvoke */
-GeneralTransform *uielement_get_transform_to_uielement_with_error (UIElement *instance, UIElement *to_element, MoonError *error);
+MOON_API GeneralTransform *uielement_get_transform_to_uielement_with_error (UIElement *instance, UIElement *to_element, MoonError *error);
 
 /* @GeneratePInvoke */
-UIElement *uielement_get_visual_parent (UIElement *instance);
+MOON_API UIElement *uielement_get_visual_parent (UIElement *instance);
 
-void uielement_invalidate (UIElement *instance);
-
-/* @GeneratePInvoke */
-void uielement_invalidate_arrange (UIElement *instance);
+MOON_API void uielement_invalidate (UIElement *instance);
 
 /* @GeneratePInvoke */
-void uielement_invalidate_measure (UIElement *instance);
+MOON_API void uielement_invalidate_arrange (UIElement *instance);
 
 /* @GeneratePInvoke */
-void uielement_measure (UIElement *instance, Size availableSize);
+MOON_API void uielement_invalidate_measure (UIElement *instance);
 
 /* @GeneratePInvoke */
-void uielement_release_mouse_capture (UIElement *instance);
+MOON_API void uielement_measure (UIElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
-void uielement_set_subtree_object (UIElement *instance, DependencyObject *value);
+MOON_API void uielement_release_mouse_capture (UIElement *instance);
 
 /* @GeneratePInvoke */
-void uielement_update_layout (UIElement *instance);
+MOON_API void uielement_set_subtree_object (UIElement *instance, DependencyObject *value);
+
+/* @GeneratePInvoke */
+MOON_API void uielement_update_layout (UIElement *instance);
 
 /**
  * UIElementCollection
  **/
 /* @GeneratePInvoke */
-UIElementCollection *uielement_collection_new (void);
+MOON_API UIElementCollection *uielement_collection_new (void);
 
 /**
  * UnmanagedMatrix
  **/
 /* @GeneratePInvoke */
-UnmanagedMatrix *unmanaged_matrix_new (void);
+MOON_API UnmanagedMatrix *unmanaged_matrix_new (void);
 
 /**
  * UnmanagedMatrix3D
  **/
 /* @GeneratePInvoke */
-UnmanagedMatrix3D *unmanaged_matrix3_d_new (void);
+MOON_API UnmanagedMatrix3D *unmanaged_matrix3_d_new (void);
 
 /**
  * Uri
  **/
-bool uri_equals (const Uri *left, const Uri *right);
+MOON_API bool uri_equals (const Uri *left, const Uri *right);
 
 /* @GeneratePInvoke */
-void uri_free (Uri *instance);
+MOON_API void uri_free (Uri *instance);
 
-guint uri_get_hash_code (Uri *instance);
+MOON_API guint uri_get_hash_code (Uri *instance);
 
 /* @GeneratePInvoke */
-bool uri_parse (Uri *instance, const char *uri, bool allow_trailing_sep);
+MOON_API bool uri_parse (Uri *instance, const char *uri, bool allow_trailing_sep);
 
 /**
  * UserControl
  **/
 /* @GeneratePInvoke */
-UserControl *user_control_new (void);
+MOON_API UserControl *user_control_new (void);
 
 /**
  * VideoBrush
  **/
 /* @GeneratePInvoke */
-void video_brush_set_source (VideoBrush *instance, MediaElement *source);
+MOON_API void video_brush_set_source (VideoBrush *instance, MediaElement *source);
 
 /* @GeneratePInvoke */
-VideoBrush *video_brush_new (void);
+MOON_API VideoBrush *video_brush_new (void);
 
 /**
  * VideoStream
  **/
-guint32 video_stream_get_height (VideoStream *instance);
+MOON_API guint32 video_stream_get_height (VideoStream *instance);
 
-guint32 video_stream_get_width (VideoStream *instance);
+MOON_API guint32 video_stream_get_width (VideoStream *instance);
 
 /* @GeneratePInvoke */
-VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
+MOON_API VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 
 /**
  * VisualBrush
  **/
 /* @GeneratePInvoke */
-VisualBrush *visual_brush_new (void);
+MOON_API VisualBrush *visual_brush_new (void);
 
 /**
  * WindowSettings
  **/
 /* @GeneratePInvoke */
-WindowSettings *window_settings_new (void);
+MOON_API WindowSettings *window_settings_new (void);
 
 /**
  * WriteableBitmap
  **/
 /* @GeneratePInvoke */
-gpointer writeable_bitmap_initialize_from_bitmap_source (WriteableBitmap *instance, BitmapSource *source);
+MOON_API gpointer writeable_bitmap_initialize_from_bitmap_source (WriteableBitmap *instance, BitmapSource *source);
 
 /* @GeneratePInvoke */
-void writeable_bitmap_lock (WriteableBitmap *instance);
+MOON_API void writeable_bitmap_lock (WriteableBitmap *instance);
 
 /* @GeneratePInvoke */
-void writeable_bitmap_render (WriteableBitmap *instance, UIElement *element, Transform *transform);
+MOON_API void writeable_bitmap_render (WriteableBitmap *instance, UIElement *element, Transform *transform);
 
 /* @GeneratePInvoke */
-void writeable_bitmap_unlock (WriteableBitmap *instance);
+MOON_API void writeable_bitmap_unlock (WriteableBitmap *instance);
 
 /* @GeneratePInvoke */
-WriteableBitmap *writeable_bitmap_new (void);
+MOON_API WriteableBitmap *writeable_bitmap_new (void);
 
 /**
  * XamlContext
  **/
 /* @GeneratePInvoke */
-DependencyObject *xaml_context_get_template_binding_source (XamlContext *instance);
+MOON_API DependencyObject *xaml_context_get_template_binding_source (XamlContext *instance);
 
 /**
  * XamlLoader
  **/
 /* @GeneratePInvoke */
-Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error);
+MOON_API Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, int flags, MoonError *error);
+MOON_API Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, int flags, MoonError *error);
 
 /* @GeneratePInvoke */
-XamlContext *xaml_loader_get_context (XamlLoader *instance);
+MOON_API XamlContext *xaml_loader_get_context (XamlLoader *instance);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, int *element_type, int flags, MoonError *error);
+MOON_API Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, int *element_type, int flags, MoonError *error);
 
 /**
  * Xap
  **/
 /* @GeneratePInvoke */
-char *xap_unpack (const char *fname);
+MOON_API char *xap_unpack (const char *fname);
 
 
 G_END_DECLS

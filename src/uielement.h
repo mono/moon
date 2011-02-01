@@ -38,7 +38,7 @@
 class Surface;
 
 /* @Namespace=System.Windows */
-class UIElement : public DependencyObject {
+class MOON_API UIElement : public DependencyObject {
 public:
 	UIElement ();
 	virtual void Dispose ();

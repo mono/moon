@@ -37,6 +37,7 @@
 
 #include <gtk/gtk.h>
 
+#include "moonbuild.h"
 #include "libmoon.h"
 #include "silverlight-versions.h"
 
@@ -65,14 +66,13 @@
 #define LOADER_RENAMED_NAME(x) LOADER_QUOTE(MOON_##x)
 
 extern "C" {
-  char *LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void);
-  NPError LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value);
+  NPError LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value) MOON_API;
 #ifdef XP_UNIX
-  NPError OSCALL LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs);
+  NPError OSCALL LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs *plugin_funcs) MOON_API;
 #else
-  NPError OSCALL LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs);
+  NPError OSCALL LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs) MOON_API;
 #endif
-  NPError OSCALL LOADER_RENAMED_SYM(NP_Shutdown) (void);
+  NPError OSCALL LOADER_RENAMED_SYM(NP_Shutdown) (void) MOON_API;
 }
 #else
 #define LOADER_RENAMED_SYM(x) x

@@ -119,7 +119,7 @@ class TextBuffer;
 class TextBoxUndoStack;
 
 /* @Namespace=None,ManagedEvents=Manual */
-class TextBoxBase : public Control, public ITextAttributes {
+class MOON_API TextBoxBase : public Control, public ITextAttributes {
  protected:
 	friend class TextBoxView;
 	

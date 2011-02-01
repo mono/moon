@@ -14,6 +14,7 @@
 #define __URI_H__
 
 #include <glib.h>
+#include "moonbuild.h"
 
 enum UriToStringFlags {
 	UriHidePasswd   = 1 << 0,
@@ -25,7 +26,7 @@ enum UriToStringFlags {
 /* @IncludeInKinds */
 /* @SkipValue */
 /* @Namespace=System */
-struct Uri {
+struct MOON_API Uri {
 public:
 	Uri ();
 	Uri (const Uri& uri);

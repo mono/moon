@@ -16,6 +16,8 @@
 #include "plugin-accessibility.h"
 #include "moonlight.h"
 
+const int Accessibility::PerformActionEvent = 10; // XXX  i should burn in hell for this..
+
 Accessibility::Accessibility ()
 {
 	SetObjectType (Type::ACCESSIBILITY);

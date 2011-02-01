@@ -25,12 +25,10 @@
 typedef NPError (*np_initialize_func) (void *a, void *b);
 typedef NPError (*np_shutdown_func) ();
 typedef NPError (*np_getvalue_func) (void *, NPPVariable var, void *avalue);
-typedef char *  (*np_getmime_func)  ();
 
 static np_initialize_func initialize;
 static np_getvalue_func   getvalue;
 static np_shutdown_func   shutdown;
-static np_getmime_func    getmime;
 
 
 static NPError
@@ -149,12 +147,6 @@ load (void)
 		return FALSE;
 	}
 
-	getmime = (np_getmime_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_GetMIMEDescription));
-	if (getmime == NULL){
-		fprintf (stderr, "NP_GetMIMEDescription not found %s\n", dlerror ());
-		return FALSE;
-	}
-
 	shutdown = (np_shutdown_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Shutdown));
 	if (shutdown == NULL){
 		fprintf (stderr, "NP_Shutdown not found %s\n", dlerror ());
@@ -167,13 +159,7 @@ load (void)
 char*
 NP_GetMIMEDescription (void)
 {
-	if (getmime == NULL)
-		load ();
-
-	if (getmime != NULL){
-		return (*getmime)();
-	}
-	return (char *) "";
+	return MIME_TYPES_HANDLED;
 }
 
 NPError

@@ -16,12 +16,12 @@
 
 class ErrorEventArgs;
 
-
+#include "moonbuild.h"
 #include "enums.h"
 
 class ParserErrorEventArgs;
 
-class MoonError {
+class MOON_API MoonError {
 public:
 	enum ExceptionType {
 		NO_ERROR = 0,

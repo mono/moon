@@ -26,7 +26,7 @@
 
 
 /* @Namespace=System.Windows.Media */
-class MediaAttribute : public DependencyObject {
+class MOON_API MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
 
@@ -46,7 +46,7 @@ class MediaAttribute : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Media */
-class MediaAttributeCollection : public DependencyObjectCollection {
+class MOON_API MediaAttributeCollection : public DependencyObjectCollection {
  protected:
 	virtual ~MediaAttributeCollection () {}
 
@@ -156,7 +156,7 @@ class MediaBase : public FrameworkElement {
 
 
 /* @Namespace=System.Windows.Controls */
-class Image : public MediaBase {
+class MOON_API Image : public MediaBase {
  private:
 	void DownloadProgress ();
 	void ImageOpened (RoutedEventArgs *args);

@@ -173,7 +173,7 @@ class TextBlockDynamicPropertyValueProvider;
 
 /* @ContentProperty="Inlines" */
 /* @Namespace=System.Windows.Controls */
-class TextBlock : public FrameworkElement {
+class MOON_API TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
 	TextFontDescription *font;

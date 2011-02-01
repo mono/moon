@@ -14,6 +14,8 @@
 #include <glib.h>
 #include <math.h>
 
+#include "moonbuild.h"
+
 /* @IncludeInKinds */
 /* @Namespace=System.Windows.Media */
 struct Color {
@@ -76,7 +78,7 @@ G_BEGIN_DECLS
 
 const char *color_to_string (Color *color);
 
-Color *color_from_str  (const char *name);
+Color *color_from_str  (const char *name) MOON_API;
 
 G_END_DECLS
 

@@ -17,6 +17,7 @@
 #include <gtk/gtkwidget.h>
 #include <cairo.h>
 
+#include "moonbuild.h"
 #include "point.h"
 #include "uielement.h"
 #include "dependencyobject.h"
@@ -84,7 +85,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_CURL_BRIDGE	       = 1 << 29
 };
 
-extern guint32 moonlight_flags;
+extern MOON_API guint32 moonlight_flags;
 
 
 #if LOGGING || DEBUG
@@ -130,8 +131,8 @@ enum RuntimeDebugFlagsExtra {
 	RUNTIME_DEBUG_PIPELINE_EX       = 1 << 7,
 };
 
-extern guint32 debug_flags_ex;
-extern guint32 debug_flags;
+extern MOON_API guint32 debug_flags_ex;
+extern MOON_API guint32 debug_flags;
 #endif
 
 
@@ -145,7 +146,7 @@ typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, void *user_data);
 
 /* @Namespace=None,ManagedEvents=Manual */
-class Surface : public EventObject {
+class MOON_API Surface : public EventObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Surface (MoonWindow *window);
@@ -486,11 +487,11 @@ G_BEGIN_DECLS
 
 void     runtime_init (const char *platform_dir, guint32 flags);
 
-void     runtime_init_browser (const char *plugin_dir);
+void     runtime_init_browser (const char *plugin_dir) MOON_API;
 /* @GeneratePInvoke */
-void     runtime_init_desktop ();
+void     runtime_init_desktop () MOON_API;
 /* @GeneratePInvoke */
-bool     runtime_is_running_out_of_browser ();
+bool     runtime_is_running_out_of_browser () MOON_API;
 
 GList   *runtime_get_surface_list (void);
 
@@ -498,7 +499,7 @@ void	 runtime_flags_set_manual_timesource (gboolean flag);
 void	 runtime_flags_set_show_fps (gboolean flag);
 void	 runtime_flags_set_use_shapecache (gboolean flag);
 
-void     runtime_shutdown (void);
+ void     runtime_shutdown (void) MOON_API;
 
 G_END_DECLS
 

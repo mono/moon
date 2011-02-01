@@ -188,7 +188,7 @@ protected:
 };
 
 /* @Namespace=System.Windows */
-class Deployment : public DependencyObject {
+class MOON_API Deployment : public DependencyObject {
 public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=CrossDomainValidator */
 	const static int ExternalCallersFromCrossDomainProperty;

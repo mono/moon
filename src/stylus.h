@@ -15,6 +15,7 @@
 #define __STYLUS_H__
 
 #include <glib.h>
+#include "moonbuild.h"
 #include "canvas.h"
 #include "collection.h"
 
@@ -31,7 +32,7 @@ enum TouchAction {
 };
 
 /* @Namespace=System.Windows.Input */
-class StylusInfo : public DependencyObject {
+class MOON_API StylusInfo : public DependencyObject {
  protected:
 	virtual ~StylusInfo () {}
 	
@@ -94,7 +95,7 @@ class StylusPoint : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Input */
-class StylusPointCollection : public DependencyObjectCollection {
+class MOON_API StylusPointCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value);
 	
@@ -237,7 +238,7 @@ class DrawingAttributes : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Ink */
-class Stroke : public DependencyObject {
+class MOON_API Stroke : public DependencyObject {
 	Rect old_bounds;
 	Rect bounds;
 	Rect dirty;
@@ -291,7 +292,7 @@ class Stroke : public DependencyObject {
 
 
 /* @Namespace=System.Windows.Ink */
-class StrokeCollection : public DependencyObjectCollection {
+class MOON_API StrokeCollection : public DependencyObjectCollection {
  protected:
 	virtual bool CanAdd (Value *value);
 	
@@ -349,9 +350,9 @@ class InkPresenter : public Canvas {
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-void stroke_get_bounds (Stroke *stroke, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
+void stroke_get_bounds (Stroke *stroke, /* @MarshalAs=Rect,IsRef */ Rect *bounds) MOON_API;
 /* @GeneratePInvoke */
-void stroke_collection_get_bounds (StrokeCollection *collection, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
+void stroke_collection_get_bounds (StrokeCollection *collection, /* @MarshalAs=Rect,IsRef */ Rect *bounds) MOON_API;
 
 G_END_DECLS
 

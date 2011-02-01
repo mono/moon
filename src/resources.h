@@ -39,7 +39,7 @@ class ResourceDictionaryIterator : public CollectionIterator {
 };
 
 /* @Namespace=System.Windows */
-class ResourceDictionary : public Collection {
+class MOON_API ResourceDictionary : public Collection {
 	friend class ResourceDictionaryIterator;
 	
 public:

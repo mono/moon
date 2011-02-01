@@ -21,6 +21,7 @@
 #include <string.h>
 #include <cairo.h>
 
+#include "moonbuild.h"
 #include "type.h"
 
 /* 
@@ -349,7 +350,7 @@ class YUVConverter;
 #define checked_get_subclass(kind, castas) return (castas*)u.dependency_object;
 #endif
 
-struct Value {
+struct MOON_API Value {
 public:
 	void Init ();
 
@@ -798,9 +799,9 @@ public:
 
 G_BEGIN_DECLS
 /* @GeneratePInvoke */
-void value_free_value (Value *value);
+void value_free_value (Value *value) MOON_API;
 /* @GeneratePInvoke */
-void value_free_value2 (/* @MarshalAs=IntPtr */ Value *value);
+void value_free_value2 (/* @MarshalAs=IntPtr */ Value *value) MOON_API;
 G_END_DECLS
 
 

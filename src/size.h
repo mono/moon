@@ -13,6 +13,7 @@
 
 #include <math.h>
 #include <glib.h>
+#include "moonbuild.h"
 #include "eventargs.h"
 #include "thickness.h"
 
@@ -104,9 +105,9 @@ public:
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
+void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size) MOON_API;
 /* @GeneratePInvoke */
-void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
+void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size) MOON_API;
 
 G_END_DECLS
 

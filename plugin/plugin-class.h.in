@@ -1124,7 +1124,7 @@ G_BEGIN_DECLS
 
 // These are meant to be called by System.Silverlight.dll
 /* @GeneratePInvoke */
-NPObject * moonlight_object_to_npobject (MoonlightObject *obj);
+NPObject * moonlight_object_to_npobject (MoonlightObject *obj) MOON_API;
 MoonlightObject * npobject_to_moonlight_object (NPObject *npobj);
 
 /* @GeneratePInvoke */
@@ -1133,7 +1133,7 @@ MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create_root
 									     SetPropertyDelegate setprop,
 									     GetPropertyDelegate getprop,
 									     EventHandlerDelegate addevent,
-									     EventHandlerDelegate removeevent);
+									     EventHandlerDelegate removeevent) MOON_API;
 
 /* @GeneratePInvoke */
 MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptable,
@@ -1141,7 +1141,7 @@ MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPO
 									     SetPropertyDelegate setprop,
 									     GetPropertyDelegate getprop,
 									     EventHandlerDelegate addevent,
-									     EventHandlerDelegate removeevent);
+									     EventHandlerDelegate removeevent) MOON_API;
 
 /* @GeneratePInvoke */
 void moonlight_scriptable_object_add_property (PluginInstance *plugin,
@@ -1150,13 +1150,13 @@ void moonlight_scriptable_object_add_property (PluginInstance *plugin,
 					       char *property_name,
 					       /* @MarshalAs=TypeCode */ int property_type,
 					       bool can_read,
-					       bool can_write);
+					       bool can_write) MOON_API;
 
 /* @GeneratePInvoke */
 void moonlight_scriptable_object_add_event (PluginInstance *plugin,
 					    MoonlightScriptableObjectObject *obj,
 					    gpointer event_handle,
-					    char *event_name);
+					    char *event_name) MOON_API;
 
 /* @GeneratePInvoke */
 void moonlight_scriptable_object_add_method (PluginInstance *plugin,
@@ -1165,40 +1165,40 @@ void moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					     char *method_name,
 					     /* @MarshalAs=TypeCode */ int method_return_type,
 					     /* @MarshalAs=TypeCode[] */ int *method_parameter_types,
-					     int parameter_count);
+					     int parameter_count) MOON_API;
 
 /* @GeneratePInvoke */
 void moonlight_scriptable_object_register (PluginInstance *plugin,
 					   char *name,
-					   MoonlightScriptableObjectObject *obj);
+					   MoonlightScriptableObjectObject *obj) MOON_API;
 
 /* @GeneratePInvoke */
 void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 					     MoonlightScriptableObjectObject *obj,
 					     MoonlightScriptableObjectObject *event_args,
-					     NPObject *cb_obj);
+					     NPObject *cb_obj) MOON_API;
 
 /*** HtmlObject ***************************************************/
 
 // These are meant to be called by System.Silverlight.dll
 /* @GeneratePInvoke */
-bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name);
+bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name) MOON_API;
 /* @GeneratePInvoke */
-void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value,IsOut */ Value *result) MOON_API;
 /* @GeneratePInvoke */
-void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
+void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value) MOON_API;
 /* @GeneratePInvoke */
-bool html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+bool html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result) MOON_API;
 /* @GeneratePInvoke */
-bool html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+bool html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result) MOON_API;
 /* @GeneratePInvoke */
-gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
+gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context) MOON_API;
 /* @GeneratePInvoke */
-void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
+void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener) MOON_API;
 /* @GeneratePInvoke */
-void html_object_release (PluginInstance *plugin, NPObject *npobj);
+void html_object_release (PluginInstance *plugin, NPObject *npobj) MOON_API;
 /* @GeneratePInvoke */
-void html_object_retain (PluginInstance *plugin, NPObject *npobj);
+void html_object_retain (PluginInstance *plugin, NPObject *npobj) MOON_API;
 
 /*** Browser interaction utility classes ***/
 void browser_do_alert (PluginInstance *plugin, char *msg);

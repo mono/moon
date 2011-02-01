@@ -74,7 +74,7 @@ enum DownloaderAccessPolicy {
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 /* @ManagedEvents=Manual */
-class Downloader : public DependencyObject {
+class MOON_API Downloader : public DependencyObject {
 	static DownloaderCreateStateFunc create_state;
 	static DownloaderDestroyStateFunc destroy_state;
 	static DownloaderOpenFunc open_func;
@@ -262,7 +262,7 @@ class IDownloader {
 	void SetDeployment (Deployment *deployment) { this->deployment = deployment; }
 };
 
-class DownloaderResponse : public IDownloader {
+class MOON_API DownloaderResponse : public IDownloader {
  protected:
 	DownloaderResponseStartedHandler started;
 	DownloaderResponseDataAvailableHandler available;
@@ -293,7 +293,7 @@ class DownloaderResponse : public IDownloader {
 	virtual void unref () = 0;
 };
 
-class DownloaderRequest : public IDownloader {
+class MOON_API DownloaderRequest : public IDownloader {
  protected:
  	DownloaderResponse *response;
 	char *uri;

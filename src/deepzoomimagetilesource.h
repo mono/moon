@@ -24,7 +24,7 @@
 typedef void (*msi_cb) (MultiScaleImage *msi);
 
 /* @Version=2,Namespace=System.Windows.Media */
-class DeepZoomImageTileSource : public MultiScaleTileSource {
+class MOON_API DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	msi_cb parsed_callback;
 	msi_cb failed_callback;

@@ -27,7 +27,7 @@
 struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls */
-class MultiScaleImage : public MediaBase {
+class MOON_API MultiScaleImage : public MediaBase {
 	friend class MultiScaleImagePropertyValueProvider;
 
 	GHashTable *cache;

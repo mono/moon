@@ -12,6 +12,7 @@
 
 #include <glib.h>
 
+#include "moonbuild.h"
 #include "utils.h"
 #include "enums.h"
 #include "control.h"
@@ -34,7 +35,7 @@ typedef void (*WriteFunc) (void* buf, gint32 offset, gint32 n, gpointer user_dat
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=Manual */
-class Application : public DependencyObject {
+class MOON_API Application : public DependencyObject {
 public:
 	/* @PropertyType=ResourceDictionary,AutoCreateValue,GenerateAccessors */
 	const static int ResourcesProperty;

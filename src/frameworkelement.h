@@ -27,7 +27,7 @@ typedef void (*LoadedCallback)(FrameworkElement *element);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
-class FrameworkElement : public UIElement {
+class MOON_API FrameworkElement : public UIElement {
 public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	const static int HeightProperty;

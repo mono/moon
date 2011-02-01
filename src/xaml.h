@@ -15,6 +15,7 @@
 
 #include <glib.h>
 
+#include "moonbuild.h"
 #include "enums.h"
 #include "uielement.h"
 #include "error.h"
@@ -95,46 +96,46 @@ G_BEGIN_DECLS
 
 void        xaml_init (void);
 
-bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error);
+bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error) MOON_API;
 
-bool        time_span_from_str (const char *str, TimeSpan *res);
+bool        time_span_from_str (const char *str, TimeSpan *res) MOON_API;
 /* @GeneratePInvoke */
-bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
+bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v) MOON_API;
 /* @GeneratePInvoke */
-bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
+bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v) MOON_API;
 bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
 
 void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
 
-bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events);
+bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events) MOON_API;
 
-bool        xaml_bool_from_str (const char *s, bool *res);
-
-/* @GeneratePInvoke */
-XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface);
-/* @GeneratePInvoke */
-void	    xaml_loader_free (XamlLoader *loader);
-/* @GeneratePInvoke */
-void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
+bool        xaml_bool_from_str (const char *s, bool *res) MOON_API;
 
 /* @GeneratePInvoke */
-char*       xaml_uri_for_prefix (void *parser, char* prefix);
+XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface) MOON_API;
+/* @GeneratePInvoke */
+void	    xaml_loader_free (XamlLoader *loader) MOON_API;
+/* @GeneratePInvoke */
+void        xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks) MOON_API;
+
+/* @GeneratePInvoke */
+char*       xaml_uri_for_prefix (void *parser, char* prefix) MOON_API;
 
 
 /* @GeneratePInvoke */
-Value*      xaml_lookup_named_item (void *parser, void *element_instance, const char* name);
+Value*      xaml_lookup_named_item (void *parser, void *element_instance, const char* name) MOON_API;
 /* @GeneratePInvoke */
-void*       xaml_get_template_parent (void *parser, void *element_instance);
+void*       xaml_get_template_parent (void *parser, void *element_instance) MOON_API;
 /* @GeneratePInvoke */
-char*       xaml_get_element_key (void *parser, void *element_instance);
+char*       xaml_get_element_key (void *parser, void *element_instance) MOON_API;
 /* @GeneratePInvoke */
-char*       xaml_get_element_name (void *parser, void *element_instance);
+char*       xaml_get_element_name (void *parser, void *element_instance) MOON_API;
 /* @GeneratePInvoke */
-bool        xaml_is_property_set (void *parser, void *element_instance, char *name);
+bool        xaml_is_property_set (void *parser, void *element_instance, char *name) MOON_API;
 /* @GeneratePInvoke */
-void        xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
+void        xaml_mark_property_as_set (void *parser, void *element_instance, char *name) MOON_API;
 /* @GeneratePInvoke */
-void        xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value);
+void        xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value) MOON_API;
 
 G_END_DECLS
 
@@ -167,7 +168,7 @@ G_END_DECLS
 */
 
 
-class XamlLoader {
+class MOON_API XamlLoader {
 	bool expanding_template;
 	DependencyObject *template_owner;
 	Surface *surface;

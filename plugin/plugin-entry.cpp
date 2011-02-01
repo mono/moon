@@ -331,12 +331,6 @@ MOON_NPN_PopPopupsEnabledState (NPP instance)
 
 /*** These functions are located automagically by mozilla *********************/
 
-char *
-LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void)
-{
-	return MOON_NPP_GetMIMEDescription ();
-}
-
 NPError
 LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value)
 {

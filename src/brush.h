@@ -304,7 +304,7 @@ class TileBrush : public Brush {
 
 
 /* @Namespace=System.Windows.Media */
-class ImageBrush : public TileBrush {
+class MOON_API ImageBrush : public TileBrush {
 private:
 	void DownloadProgress ();
 	void ImageOpened (RoutedEventArgs *args);

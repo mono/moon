@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "moonbuild.h"
 #include "collection.h"
 
 /* @Namespace=System.Windows.Media */
@@ -320,7 +321,7 @@ class TransformGroup : public Transform {
 G_BEGIN_DECLS
 
 /* @GeneratePInvoke */
-void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r);
+void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r) MOON_API;
 
 G_END_DECLS
 

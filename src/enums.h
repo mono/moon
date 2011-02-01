@@ -13,6 +13,8 @@
 
 #include <glib.h>
 
+#include "moonbuild.h"
+
 enum ErrorEventArgsType {
 	NoError,
 	UnknownError,
@@ -381,8 +383,8 @@ enum BitmapCreateOptions {
 
 G_BEGIN_DECLS
 
-int enums_str_to_int (const char *prop_name, const char *str);
-const char *enums_int_to_str (const char *prop_name, int e);
+MOON_API int enums_str_to_int (const char *prop_name, const char *str);
+MOON_API const char *enums_int_to_str (const char *prop_name, int e);
 bool enums_is_enum_name (const char *enum_name);
 
 G_END_DECLS

@@ -1478,6 +1478,10 @@ class Generator {
 			throw new Exception (string.Format ("Expected 'class' or 'struct', not '{0}'", tokenizer.CurrentToken.value));
 		}
 
+                // permit our visibility tags
+                tokenizer.Accept (Token2Type.Identifier, "MOON_API");
+                tokenizer.Accept (Token2Type.Identifier, "MOON_LOCAL");
+
 		if (tokenizer.CurrentToken.type == Token2Type.Identifier) {
 			type.Name = tokenizer.GetIdentifier ();
 		} else {
@@ -1658,6 +1662,14 @@ class Generator {
 					continue;
 				}
 
+                                if (tokenizer.Accept (Token2Type.Identifier, "MOON_API")) {
+                                        continue;
+                                }
+
+                                if (tokenizer.Accept (Token2Type.Identifier, "MOON_LOCAL")) {
+                                        continue;
+                                }
+
 			    break;
 			} while (true);
 
@@ -1776,6 +1788,9 @@ class Generator {
 					tokenizer.AcceptOrThrow (Token2Type.Identifier, "0");
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 					method.IsAbstract = true;
+				} else if (tokenizer.Accept (Token2Type.Identifier, "MOON_API") ||
+					   tokenizer.Accept (Token2Type.Identifier, "MOON_LOCAL")) {
+					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 				} else {
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 				}
@@ -2099,6 +2114,7 @@ class Generator {
 		header.AppendLine ("#include <glib.h>");
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
+		header.AppendLine ("#include \"moonbuild.h\"");
 		header.AppendLine ("#include \"enums.h\"");
 		header.AppendLine ();
 		foreach (MemberInfo member in info.Children.Values) {
@@ -2226,6 +2242,7 @@ class Generator {
 		
 		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))
 			text.AppendLine ("/* @GeneratePInvoke */");
+                text.Append ("MOON_API ");
 		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		if (!cmethod.ReturnType.IsPointer)
 			text.Append (" ");

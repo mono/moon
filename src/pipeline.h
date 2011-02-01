@@ -678,7 +678,7 @@ public:
 	static void RegisterConverter (ConverterInfo *info);
 	
 	static void RegisterMSCodecs ();
-	static bool IsMSCodecsInstalled ();
+	static bool IsMSCodecsInstalled () MOON_API;
 	
 	static void Initialize ();
 	static void Shutdown ();

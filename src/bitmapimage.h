@@ -22,7 +22,7 @@
 #include "bitmapsource.h"
 
 /* @Namespace=System.Windows.Media.Imaging */
-class BitmapImage : public BitmapSource {
+class MOON_API BitmapImage : public BitmapSource {
  private:
 	Downloader *downloader;
 	GdkPixbufLoader *loader;

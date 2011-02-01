@@ -155,7 +155,7 @@ private:
 };
 
 /* @Namespace=None */
-class DownloadProgressEventArgs : public EventArgs {
+class MOON_API DownloadProgressEventArgs : public EventArgs {
  private:
 	double progress;
 
@@ -173,7 +173,7 @@ class DownloadProgressEventArgs : public EventArgs {
 };
 
 /* @Namespace=None */
-class RoutedEventArgs : public EventArgs {
+class MOON_API RoutedEventArgs : public EventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	RoutedEventArgs ();
@@ -203,7 +203,7 @@ private:
 };
 
 /* @Namespace=None */
-class KeyEventArgs : public RoutedEventArgs {
+class MOON_API KeyEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	KeyEventArgs ();
@@ -230,7 +230,7 @@ private:
 };
 
 /* @Namespace=None */
-class MouseEventArgs : public RoutedEventArgs {
+class MOON_API MouseEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseEventArgs ();
@@ -300,7 +300,7 @@ protected:
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
-class ErrorEventArgs : public EventArgs  {
+class MOON_API ErrorEventArgs : public EventArgs  {
 private:
 	MoonError *error;
 	void Initialize (Type::Kind kind, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg);

@@ -18,6 +18,7 @@
 #include <cairo.h>
 #include <sys/types.h>
 
+#include "moonbuild.h"
 #include "downloader.h"
 #include "zip/unzip.h"
 
@@ -45,10 +46,10 @@ struct ManagedStreamCallbacks {
 };
 
 /* @GeneratePInvoke */
-gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
+gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname) MOON_API;
 
 /* @GeneratePInvoke */
-gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
+gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest) MOON_API;
 
 gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
 
@@ -72,7 +73,7 @@ char *CreateTempDir (const char *filename);
 
 int RemoveDir (const char *dir);
 
-int CopyFileTo (const char *filename, int fd);
+int CopyFileTo (const char *filename, int fd) MOON_API;
 
 int write_all (int fd, char *buf, size_t len);
 

@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 #endif
 
 /* @GeneratePInvoke */
-int message_box_show (const char *caption, const char* text, int buttons);
+int message_box_show (const char *caption, const char* text, int buttons) MOON_API;
 
 G_END_DECLS
 

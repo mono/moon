@@ -15,9 +15,9 @@
 #define __LIST_H__
 
 #include <pthread.h>
+#include "moonbuild.h"
 
-
-class List {
+class MOON_API List {
 public:
 	class Node {
 	public:

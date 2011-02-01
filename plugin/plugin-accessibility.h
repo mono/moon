@@ -15,12 +15,13 @@
 #ifndef MOON_PLUGIN_ACCESSIBILITY
 #define MOON_PLUGIN_ACCESSIBILITY
 
+#include "moonbuild.h"
 #include "dependencyobject.h"
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */
 /* @ManagedEvents=Manual */
-class Accessibility : public DependencyObject {
+class MOON_API Accessibility : public DependencyObject {
 public:
  	/* @PropertyType=string,DefaultValue=\"Silverlight Content\" */
 	const static int TitleProperty;

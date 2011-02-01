@@ -24,7 +24,7 @@
 #include "enums.h"
 
 /* @Namespace=System.Windows.Controls */
-class MediaElement : public FrameworkElement {
+class MOON_API MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
  private:	
 	Mutex mutex;

@@ -21,7 +21,7 @@
 #include "runtime.h"
 #include "moonlightconfiguration.h"
 
-class CodecDownloader : public EventObject {
+class MOON_API CodecDownloader : public EventObject {
 private:
 	static bool running; // If there already is another CodecDownloader running
 	Surface *surface;
