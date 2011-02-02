@@ -41,7 +41,6 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, DeepZoomImageTile
 
 	const Uri *source_uri = source->GetUriSource ();
 	if (!source_uri || source_uri->IsAbsolute ()) {
-		EnsureManagedPeer ();
 		return;
 	}
 
