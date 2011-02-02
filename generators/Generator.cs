@@ -3037,6 +3037,15 @@ class Generator {
 				continue;
 			if (!minfo.Annotations.ContainsKey ("GeneratePInvoke"))
 				continue;
+			if (minfo.ParentType == null) {
+				// having this as an error would be annoying if the error is in a generated header
+				// since we'd error out the first time the generator is run, but not the second
+				// Make it more visible instead (red)
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine ("C method: {0} must be a static C++ method to properly namespace it. A pinvoke will not be generated.", minfo.Name);
+				Console.ResetColor ();
+				continue;
+			}
 			foreach (MethodInfo mi in methods) {
 				if (mi.CMethod.Name == minfo.Name) {
 					minfo = null;

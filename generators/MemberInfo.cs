@@ -57,7 +57,7 @@ class MemberInfo {
 
 	public TypeInfo ParentType {
 		get {
-			return (TypeInfo) Parent;
+			return Parent as TypeInfo;
 		}
 	}
 
