@@ -98,60 +98,50 @@ typedef DependencyObject *parse_template_func (Value *data, const Uri *resource_
 
 G_BEGIN_DECLS
 void        xaml_init (void);
-
-bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error);
-
-bool        time_span_from_str (const char *str, TimeSpan *res);
-/* @GeneratePInvoke */
-/* Managed code must call value_free_value on the result */
-MOON_API bool        value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
-/* @GeneratePInvoke */
-/* Managed code must call value_free_value on the result */
-MOON_API bool        xaml_value_from_str_with_parser (void *p, Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v, bool *v_set);
-/* @GeneratePInvoke */
-/* Managed code must call value_free_value on the result */
-MOON_API bool        value_from_str (Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
-bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value *v, const char **s);
-
-void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
-
-bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events);
-
-bool        xaml_bool_from_str (const char *s, bool *res);
-
-/* @GeneratePInvoke */
-MOON_API XamlLoader *xaml_loader_new (const Uri *resourceBase, Surface *surface);
-/* @GeneratePInvoke */
-MOON_API void	    xaml_loader_free (XamlLoader *loader);
-/* @GeneratePInvoke */
-MOON_API void        xaml_loader_set_callbacks (SL3XamlLoader *loader, XamlLoaderCallbacks *callbacks);
-
-/* @GeneratePInvoke */
-MOON_API char*       xaml_uri_for_prefix (void *parser, char* prefix);
-
-
-/* @GeneratePInvoke */
-MOON_API Value*      xaml_lookup_named_item (void *parser, void *element_instance, const char* name);
-/* @GeneratePInvoke */
-MOON_API void*       xaml_get_template_parent (void *parser, void *element_instance);
-/* @GeneratePInvoke */
-MOON_API char*       xaml_get_element_key (void *parser, void *element_instance);
-/* @GeneratePInvoke */
-MOON_API char*       xaml_get_element_name (void *parser, void *element_instance);
-/* @GeneratePInvoke */
-MOON_API bool        xaml_is_property_set (void *parser, void *element_instance, char *name);
-/* @GeneratePInvoke */
-MOON_API void        xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
-/* @GeneratePInvoke */
-MOON_API void        xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value);
-
 G_END_DECLS
 
+class MOON_API Xaml {
+public:
+	static bool SetPropertyFromStr (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error);
+	static bool TimeSpanFromStr (const char *str, TimeSpan *res);
+	/* Managed code must call value_free_value on the result */
+	/* @GeneratePInvoke */
+	static bool ValueFromStrWithParser (void *p, Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v, bool *v_set);
+	static bool ConvertPropertyValueToEnumStr (DependencyProperty *prop, Value *v, const char **s);
 
+	static void ParseXmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
 
+	static bool IsValidEventName (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events);
+
+	static bool BoolFromStr (const char *s, bool *res);
+
+	/* @GeneratePInvoke */
+	static XamlLoader *LoaderNew (const Uri *resourceBase, Surface *surface);
+	/* @GeneratePInvoke */
+	static void LoaderFree (XamlLoader *loader);
+	/* @GeneratePInvoke */
+	static void LoaderSetCallbacks (SL3XamlLoader *loader, XamlLoaderCallbacks *callbacks);
+
+	/* @GeneratePInvoke */
+	static char* UriForPrefix (void *parser, char* prefix);
+
+	/* @GeneratePInvoke */
+	static Value*      LookupNamedItem (void *parser, void *element_instance, const char* name);
+	/* @GeneratePInvoke */
+	static void*       GetTemplateParent (void *parser, void *element_instance);
+	/* @GeneratePInvoke */
+	static char*       GetElementKey (void *parser, void *element_instance);
+	/* @GeneratePInvoke */
+	static char*       GetElementName (void *parser, void *element_instance);
+	/* @GeneratePInvoke */
+	static bool        IsPropertySet (void *parser, void *element_instance, char *name);
+	/* @GeneratePInvoke */
+	static void        MarkPropertyAsSet (void *parser, void *element_instance, char *name);
+	/* @GeneratePInvoke */
+	static void        DelaySetProperty (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value);
+};
 
 class XamlLoaderFactory {
-
  public:
 	static XamlLoader *CreateLoader (const Uri* resource_base, Surface *surface);
 	static XamlLoader *CreateLoader (const Uri* resource_base, Surface *surface, XamlContext *context);

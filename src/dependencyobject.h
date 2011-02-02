@@ -121,6 +121,7 @@ public:
 	
 	/* @GeneratePInvoke */
 	void unref ();
+	static void unref_static (EventObject *obj); /* suitable for glib callbacks, hashtable free methods, etc */
 	
 	/* @GeneratePInvoke */
 	int GetRefCount () { return refcount; }

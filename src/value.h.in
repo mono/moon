@@ -199,8 +199,27 @@ public:
 	
   	Type::Kind GetKind () const;
 	
-	void FreeValue ();
-	
+	/* @GeneratePInvoke */
+	static void FreeValue (Value *value);
+	/* @GeneratePInvoke */
+	static void FreeValue2 (/* @MarshalAs=IntPtr */ Value *value);
+
+
+	/* @GeneratePInvoke */
+	static void DeleteValue (Value *value);
+	/* @GeneratePInvoke */
+	static void DeleteValue2 (/* @MarshalAs=IntPtr */ Value *value);
+
+	/* The implementation for this method is in xaml.cpp */
+	/* Managed code must call value_free_value on the result */
+	/* @GeneratePInvoke */
+	static bool FromStrWithTypename (const char *type_name, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
+
+	/* The implementation for this method is in xaml.cpp */
+	/* Managed code must call value_free_value on the result */
+	/* @GeneratePInvoke */
+	static bool FromStr (Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
+
   private:
 	Type::Kind k;
 	
@@ -259,19 +278,9 @@ public:
 
 	void Copy (const Value& other);
 	char *GetName ();
+
+	void FreeValueInternal ();
 };
-
-G_BEGIN_DECLS
-/* @GeneratePInvoke */
-MOON_API void value_free_value (Value *value);
-/* @GeneratePInvoke */
-MOON_API void value_free_value2 (/* @MarshalAs=IntPtr */ Value *value);
-
-/* @GeneratePInvoke */
-MOON_API void value_delete_value (Value *value);
-/* @GeneratePInvoke */
-MOON_API void value_delete_value2 (/* @MarshalAs=IntPtr */ Value *value);
-G_END_DECLS
 
 };
 #endif /* MOON_VALUE_H */

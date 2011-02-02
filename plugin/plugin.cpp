@@ -425,7 +425,7 @@ static bool
 parse_bool_arg (const char *arg)
 {
 	bool b;
-	return xaml_bool_from_str (arg, &b) && b;
+	return Xaml::BoolFromStr (arg, &b) && b;
 }
 
 void
@@ -1860,7 +1860,7 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	if (value->GetKind () != Type::STRING)
 		return false;
 
-	if (!xaml_is_valid_event_name (plugin->GetDeployment (), target->GetKind(), name, false))
+	if (!Xaml::IsValidEventName (plugin->GetDeployment (), target->GetKind(), name, false))
 		return false;
 
 	const char* function_name = value->AsString ();

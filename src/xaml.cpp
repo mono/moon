@@ -180,7 +180,7 @@ class XamlNamespace {
 	}
 };
 
-void
+static void
 add_namespace_data (gpointer key, gpointer value, gpointer user_data)
 {
 	XamlNamespace *ns = (XamlNamespace *) value;
@@ -197,7 +197,7 @@ add_namespace_data (gpointer key, gpointer value, gpointer user_data)
 	}
 }
 
-void
+static void
 add_namespace_to_ignorable (gpointer key, gpointer value, gpointer user_data)
 {
 	char *prefix = (char *) key;
@@ -327,7 +327,7 @@ class XamlContextInternal {
 	}
 };
 
-DependencyObject *
+static DependencyObject *
 parse_template (Value *data, const Uri *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error)
 {
 	XamlContext *xaml_context = data->AsXamlContext ();
@@ -641,7 +641,7 @@ class XamlElementInstance : public List::Node {
 	}
 };
 
-void 
+static void
 unref_xaml_element (gpointer data, gpointer user_data)
 {
 	DependencyObject* dob = (DependencyObject*) data;
@@ -1692,19 +1692,19 @@ SL4XamlLoader::HydrateFromStringWithError (const char *xaml, Value *obj, bool cr
 }
 
 XamlLoader* 
-xaml_loader_new (const Uri *resourceBase, Surface* surface)
+Xaml::LoaderNew (const Uri *resourceBase, Surface* surface)
 {
 	return new SL3XamlLoader (resourceBase, surface);
 }
 
 void
-xaml_loader_free (XamlLoader* loader)
+Xaml::LoaderFree (XamlLoader* loader)
 {
 	delete loader;
 }
 
 void 
-xaml_loader_set_callbacks (SL3XamlLoader* loader, XamlLoaderCallbacks *callbacks)
+Xaml::LoaderSetCallbacks (SL3XamlLoader* loader, XamlLoaderCallbacks *callbacks)
 {
 	if (!loader) {
 		LOG_XAML ("Trying to set callbacks for a null object\n");
@@ -1725,7 +1725,7 @@ namespace_for_prefix (gpointer key, gpointer value, gpointer user_data)
 }
 
 char*
-xaml_uri_for_prefix (void *parser, char* prefix)
+Xaml::UriForPrefix (void *parser, char* prefix)
 {
 	XamlParserInfo *p = (XamlParserInfo *) parser;
 
@@ -1769,7 +1769,7 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_cod
 	XML_StopParser (p->parser, FALSE);
 }
 
-void
+static void
 expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 {
 	// Already had an error
@@ -1943,7 +1943,7 @@ flush_char_data (XamlParserInfo *p)
 		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
 			if (allow_value_from_str_in_flush (p, p->current_element->parent)) {
 				Value *v = NULL;
-				if (value_from_str (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
+				if (Value::FromStr (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
 					p->current_element->SetValue (v);
 					goto cleanup;
 				}
@@ -2368,7 +2368,7 @@ print_tree (XamlElementInstance *el, int depth)
 }
 
 void		
-xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembly)
+Xaml::ParseXmlns (const char* xmlns, char** type_name, char** ns, char** assembly)
 {
 	const char delimiters[]  = ";";
 	char* decl;
@@ -2516,7 +2516,7 @@ SL3XamlLoader::CreateFromString (const char *xaml, bool create_namescope, Type::
 	return HydrateFromString (xaml, NULL, create_namescope, element_type, flags);
 }
 
-DependencyObject *
+static DependencyObject *
 value_to_dependency_object (Value *value)
 {
 	if (!value || !value->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT))
@@ -2798,7 +2798,7 @@ parse_ticks (const char **pp, const char *end)
 }
 
 bool
-time_span_from_str (const char *str, TimeSpan *res)    
+Xaml::TimeSpanFromStr (const char *str, TimeSpan *res)
 {
 	const char *end = str + strlen (str);
 	const char *p;
@@ -2848,7 +2848,7 @@ time_span_from_str (const char *str, TimeSpan *res)
 	return true;
 }
 
-bool
+static bool
 repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 {
 	if (!g_ascii_strcasecmp ("Forever", str)) {
@@ -2884,7 +2884,7 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 	   from 1.0. 
 	*/
 	TimeSpan t;
-	if (!time_span_from_str (str, &t))
+	if (!Xaml::TimeSpanFromStr (str, &t))
 		return false;
 
 	*res = RepeatBehavior (t);
@@ -2892,7 +2892,7 @@ repeat_behavior_from_str (const char *str, RepeatBehavior *res)
 	return true;
 }
 
-bool
+static bool
 duration_from_str (const char *str, Duration *res)
 {
 	if (!g_ascii_strcasecmp ("Automatic", str)) {
@@ -2906,14 +2906,14 @@ duration_from_str (const char *str, Duration *res)
 	}
 
 	TimeSpan ts;
-	if (!time_span_from_str (str, &ts))
+	if (!Xaml::TimeSpanFromStr (str, &ts))
 		return false;
 
 	*res = Duration (ts);
 	return true;
 }
 
-bool
+static bool
 keytime_from_str (const char *str, KeyTime *res)
 {
 	if (!g_ascii_strcasecmp ("Uniform", str)) {
@@ -2938,14 +2938,14 @@ keytime_from_str (const char *str, KeyTime *res)
 	}
 
 	TimeSpan ts;
-	if (!time_span_from_str (str, &ts))
+	if (!Xaml::TimeSpanFromStr (str, &ts))
 		return false;
 
 	*res = KeyTime (ts);
 	return true;
 }
 
-bool
+static bool
 key_spline_from_str (const char *str, KeySpline **res)
 {	
 	PointCollection *pts = PointCollection::FromStr (str);
@@ -2965,7 +2965,7 @@ key_spline_from_str (const char *str, KeySpline **res)
 	return true;
 }
 
-Matrix *
+static Matrix *
 matrix_from_str (const char *str)
 {
 	if (!g_ascii_strcasecmp ("Identity", str)) {
@@ -2996,7 +2996,7 @@ matrix_from_str (const char *str)
 	return matrix;
 }
 
-Matrix3D *
+static Matrix3D *
 matrix3d_from_str (const char *str)
 {
 	if (!g_ascii_strcasecmp ("Identity", str)) {
@@ -3037,7 +3037,7 @@ matrix3d_from_str (const char *str)
 	return matrix;
 }
 
-bool
+static bool
 grid_length_from_str (const char *str, GridLength *grid_length)
 {
 	if (IS_NULL_OR_EMPTY (str)) {
@@ -3130,7 +3130,7 @@ more_points_available (char **in)
 	return (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-' || *inptr == '+');
 }
 
-Geometry *
+static Geometry *
 geometry_from_str (const char *str)
 {
 	char *inptr = (char *) str;
@@ -3516,18 +3516,17 @@ is_legal_top_level_kind (Type::Kind kind)
 	return false;
 }
 
-// NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
 bool
-value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v)
+Value::FromStrWithTypename (const char *type_name, const char *prop_name, const char *str, Value **v)
 {
 	Type *t = Type::Find (Deployment::GetCurrent (), type_name);
 	if (!t)
 		return false;
 
-	return value_from_str (t->GetKind (), prop_name, str, v);
+	return Value::FromStr (t->GetKind (), prop_name, str, v);
 }
 
-char *
+static char *
 expand_property_path (XamlParserInfo *p, PropertyPath *path)
 {
 	if (!path->path || !p)
@@ -3601,7 +3600,7 @@ expand_property_path (XamlParserInfo *p, PropertyPath *path)
 }
 
 bool
-value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v)
+Value::FromStr (Type::Kind type, const char *prop_name, const char *str, Value **v)
 {
 	bool v_set = false;
 
@@ -3611,7 +3610,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 }
 
 bool
-xaml_bool_from_str (const char *s, bool *res)
+Xaml::BoolFromStr (const char *s, bool *res)
 {
 	bool b;
 	char *endptr;
@@ -3641,7 +3640,7 @@ xaml_bool_from_str (const char *s, bool *res)
 }
 
 bool
-xaml_value_from_str_with_parser (void *p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set)
+Xaml::ValueFromStrWithParser (void *p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set)
 {
 	return value_from_str_with_parser ((XamlParserInfo *) p, type, prop_name, str, v, v_set);
 }
@@ -3681,7 +3680,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::BOOL: {
 		bool b;
 
-		if (!xaml_bool_from_str (s, &b))
+		if (!Xaml::BoolFromStr (s, &b))
 			break;
 
 		*v = new Value (b);
@@ -3736,7 +3735,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::TIMESPAN: {
 		TimeSpan ts;
 
-		if (!time_span_from_str (s, &ts))
+		if (!Xaml::TimeSpanFromStr (s, &ts))
 			break;
 
 		*v = new Value (ts, Type::TIMESPAN);
@@ -4550,7 +4549,7 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	if (!dep) 
 		return false;
 
-	return xaml_set_property_from_str (item, dep, value, &error);
+	return Xaml::SetPropertyFromStr (item, dep, value, &error);
 }
 
 void
@@ -4577,7 +4576,7 @@ bool
 XamlElementInstanceValueType::CreateValueItemFromString (const char* str)
 {
 
-	bool res = value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value);
+	bool res = Value::FromStr (element_info->GetType ()->GetKind (), NULL, str, &value);
 	return res;
 }
 
@@ -5111,12 +5110,12 @@ cleanup:
 }
 
 bool
-xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error)
+Xaml::SetPropertyFromStr (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error)
 {
 	Value *v = NULL;
 	bool rv = true;
 	
-	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
+	if (!Value::FromStr (prop->GetPropertyType(), prop->GetName(), value, &v))
 		return false;
 	
 	// it's possible for (a valid) value to be NULL (and we must keep the default value)
@@ -5129,7 +5128,7 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 }
 
 bool
-xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events)
+Xaml::IsValidEventName (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events)
 {
 	Type *type = Type::Find (deployment, kind);
 	if (!type)
@@ -5454,7 +5453,7 @@ lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exis
 }
 
 Value *
-xaml_lookup_named_item (void *parser, void *instance, const char* name)
+Xaml::LookupNamedItem (void *parser, void *instance, const char* name)
 {
 	XamlParserInfo *p = (XamlParserInfo *) parser;
 	XamlElementInstance *inst = (XamlElementInstance *) instance;
@@ -5486,7 +5485,7 @@ xaml_lookup_named_item (void *parser, void *instance, const char* name)
 }
 
 void *
-xaml_get_template_parent (void *parser, void *element_instance)
+Xaml::GetTemplateParent (void *parser, void *element_instance)
 {
 	XamlParserInfo *p = (XamlParserInfo *) parser;
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
@@ -5495,7 +5494,7 @@ xaml_get_template_parent (void *parser, void *element_instance)
 }
 
 char *
-xaml_get_element_key (void *parser, void *element_instance)
+Xaml::GetElementKey (void *parser, void *element_instance)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 	const char *key = get_key_from_child (item);
@@ -5507,28 +5506,28 @@ xaml_get_element_key (void *parser, void *element_instance)
 }
 
 char *
-xaml_get_element_name (void *parser, void *element_instance)
+Xaml::GetElementName (void *parser, void *element_instance)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 	return g_strdup (item->element_name);
 }
 
 bool
-xaml_is_property_set (void *parser, void *element_instance, char *name)
+Xaml::IsPropertySet (void *parser, void *element_instance, char *name)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 	return item->IsPropertySet (name);
 }
 
 void
-xaml_mark_property_as_set (void *parser, void *element_instance, char *name)
+Xaml::MarkPropertyAsSet (void *parser, void *element_instance, char *name)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 	item->MarkPropertyAsSet (name);
 }
 
 void
-xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value)
+Xaml::DelaySetProperty (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 	item->DelaySetProperty (xmlns, name, value);

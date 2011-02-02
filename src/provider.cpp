@@ -10,7 +10,6 @@
 
 #include <config.h>
 
-#include "cbinding.h"
 #include "runtime.h"
 #include "provider.h"
 #include "control.h"
@@ -30,7 +29,7 @@ namespace Moonlight {
 LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
 	: PropertyValueProvider (obj, precedence, ProviderFlags_ProvidesLocalValue)
 {
-	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
+	local_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) Value::DeleteValue);
 	this->dispose_value = dispose_value;
 }
 
@@ -74,7 +73,7 @@ StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, P
 	style = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
-					    (GDestroyNotify)value_delete_value);
+					    (GDestroyNotify)Value::DeleteValue);
 	this->dispose_value = dispose_value;
 }
 
@@ -211,7 +210,7 @@ ImplicitStylePropertyValueProvider::ImplicitStylePropertyValueProvider (Dependen
 	styles = NULL;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
-					    (GDestroyNotify)value_delete_value);
+					    (GDestroyNotify)Value::DeleteValue);
 	this->dispose_value = dispose_value;
 }
 
@@ -933,7 +932,7 @@ InheritedPropertyValueProvider::SetPropertySource (Inheritable inheritableProper
 AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence, GHRFunc dispose_value)
 	: PropertyValueProvider (obj, precedence, ProviderFlags_ProvidesLocalValue)
 {
-	auto_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) value_delete_value);
+	auto_values = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) Value::DeleteValue);
 	this->dispose_value = dispose_value;
 }
 

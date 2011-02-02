@@ -492,6 +492,14 @@ EventObject::ref ()
 	OBJECT_TRACK ("Ref", GetTypeName ());
 }
 
+void
+EventObject::unref_static (EventObject *obj)
+{
+	if (obj == NULL)
+		return;
+	obj->unref ();
+}
+
 void 
 EventObject::unref ()
 {

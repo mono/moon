@@ -12,7 +12,6 @@
 
 #include <glib.h>
 
-#include "cbinding.h"
 #include "canvas.h"
 #include "collection.h"
 #include "geometry.h"

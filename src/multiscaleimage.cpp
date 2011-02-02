@@ -28,7 +28,6 @@
 #include <errno.h>
 #include <math.h>
 
-#include "cbinding.h"
 #include "multiscaleimage.h"
 #include "tilesource.h"
 #include "deepzoomimagetilesource.h"

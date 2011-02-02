@@ -696,7 +696,7 @@ Value::Copy (const Value& v)
 }
 
 void
-Value::FreeValue ()
+Value::FreeValueInternal ()
 {
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
 		Deployment::GetCurrent ()->FreeGCHandle ((GCHandle) u.managed_object);
@@ -988,34 +988,35 @@ Value::operator= (const Value& other)
 // This is invoked by managed code to free the contents of the value
 //
 void 
-value_free_value (Value* value)
+Value::FreeValue (Value* value)
 {
 	if (value == NULL)
 		return;
-	value->FreeValue ();
+	value->FreeValueInternal ();
 }
 
 // This is just a callback we can use in our GHashTable destructors
-void value_delete_value (Value *value)
+void
+Value::DeleteValue (Value *value)
 {
 	delete value;
 }
 
 void
-value_free_value2 (Value *value)
+Value::FreeValue2 (Value* value)
 {
-	value_free_value (value);
+	FreeValue (value);
 }
 
 void
-value_delete_value2 (Value *value)
+Value::DeleteValue2 (Value *value)
 {
 	delete value;
 }
 
 Value::~Value ()
 {
-	FreeValue ();
+	FreeValueInternal ();
 }
 
 #if DEBUG || LOGGING

@@ -3205,7 +3205,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			return true;
 		}
 		
-		rv = xaml_set_property_from_str (dob, prop, strval, error);
+		rv = Xaml::SetPropertyFromStr (dob, prop, strval, error);
 		
 		if (strval != strbuf)
 			g_free (strval);
@@ -3953,7 +3953,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 			ts = (TimeSpan) NPVARIANT_TO_INT32 (args[0]);
 		} else if (NPVARIANT_IS_STRING (args[0])) {
 			char *span = STRDUP_FROM_VARIANT (args[0]);
-			ok = time_span_from_str (span, &ts);
+			ok = Xaml::TimeSpanFromStr (span, &ts);
 			g_free (span);
 			
 			if (!ok)

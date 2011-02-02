@@ -368,7 +368,7 @@ Type::CopyProperties (bool inherited)
 }
 
 bool
-type_get_value_type (Type::Kind type)
+Type::GetValueType (Type::Kind type)
 {
 	Type *t = Type::Find (Deployment::GetCurrent (), type);
 	
@@ -379,13 +379,13 @@ type_get_value_type (Type::Kind type)
 }
 
 bool
-type_is_dependency_object (Type::Kind type)
+Type::IsDependencyObject (Type::Kind type)
 {
 	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::DEPENDENCY_OBJECT);
 }
 
 bool
-type_is_event_object (Type::Kind type)
+Type::IsEventObject (Type::Kind type)
 {
 	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::EVENTOBJECT);
 }

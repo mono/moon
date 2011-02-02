@@ -48,11 +48,11 @@
 
 #include "consent.h"
 #include "deployment.h"
-#include "cbinding.h"
 #include "tabnavigationwalker.h"
 #include "window.h"
 #if PAL_GTK_WINDOWING
 #include "pal-gtk.h"
+#include "gtk/gtk.h"
 #elif PAL_COCOA_WINDOWING
 #include "pal-cocoa.h"
 #endif
@@ -683,7 +683,7 @@ Surface::Attach (UIElement *element)
 	toplevel = element;
 
 	this->ref ();
-	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify) EventObject::unref_static);
 
 	AttachLayer (toplevel);
 	ticked_after_attach = false;

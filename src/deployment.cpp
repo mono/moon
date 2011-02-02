@@ -877,7 +877,7 @@ Deployment::MonoXamlParserCreateFromFile (const char *file, bool create_namescop
 	// Note, we need to free the one we get from managed, but not delete.
 	v = (Value *) mono_object_unbox (ret);
 	Value *clone = new Value (*v);
-	v->FreeValue ();
+	Value::FreeValue (v);
 	return clone;
 }
 
@@ -905,7 +905,7 @@ Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namesc
 	// Note, we need to free the one we get from managed, but not delete.
 	v = (Value *) mono_object_unbox (ret);
 	Value *clone = new Value (*v);
-	v->FreeValue ();
+	Value::FreeValue (v);
 	return clone;
 }
 
@@ -934,7 +934,7 @@ Deployment::MonoXamlParserHydrateFromString (const char *xaml, Value *obj, bool 
 	// Note, we need to free the one we get from managed, but not delete.
 	v = (Value *) mono_object_unbox (ret);
 	Value *clone = new Value (*v);
-	v->FreeValue ();
+	Value::FreeValue (v);
 	return clone;
 }
 
