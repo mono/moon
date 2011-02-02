@@ -1,4 +1,4 @@
-
+	
 This is Moonlight, an open source implementation of Silverlight 1.0, 2.0, 
 3.0 and 4.0 for Unix systems.   
 
@@ -33,8 +33,8 @@ Requirements
             git clone git://anongit.freedesktop.org/mesa/mesa
             cd mesa && git reset --hard 3ed0a099c && cd ..
 
-	The revision the codecs currently are at is: 44bf0abb (only applicable to buildbots
-	and developers on the Moonlight team). For SVN users, the revision is: 9329
+	The revision the codecs currently are at is: 994953e0 (only applicable to buildbots
+	and developers on the Moonlight team). For SVN users, the revision is: 9363
 
 Compiling Mono for Moonlight
 ============================
