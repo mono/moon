@@ -406,6 +406,7 @@ namespace Mono {
 			case Kind.LOCALMESSAGESENDER: return new LocalMessageSender (raw, false);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
 			case Kind.MATRIX3DPROJECTION: return new Matrix3DProjection (raw, false);
+			case Kind.NAMESCOPE: return new NameScope (raw, false);
 			case Kind.TIMELINEMARKERROUTEDEVENTARGS : return new TimelineMarkerRoutedEventArgs (raw, false);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
 			case Kind.MOUSEEVENTARGS: return new MouseEventArgs (raw);
@@ -501,7 +502,6 @@ namespace Mono {
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
 			case Kind.CLOCK: 
-			case Kind.NAMESCOPE: 
 			case Kind.TRIGGERACTION:
 			case Kind.KEYFRAME_COLLECTION:
 			case Kind.UIELEMENT:

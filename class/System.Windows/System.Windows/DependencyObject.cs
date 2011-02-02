@@ -390,7 +390,7 @@ namespace System.Windows {
 				throw new ArgumentNullException ("name");
 			if (scope == null)
 				throw new ArgumentNullException ("scope");
-			return NativeMethods.dependency_object_set_name_on_scope (native, name, scope.NativeHandle);
+			return NativeMethods.dependency_object_set_name_on_scope (native, name, scope.native);
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()

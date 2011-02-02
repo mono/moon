@@ -668,7 +668,7 @@ Surface::Attach (UIElement *element)
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
 	if (NameScope::GetNameScope (element) == NULL) {
-		NameScope *ns = new NameScope ();
+		NameScope *ns = MoonUnmanagedFactory::CreateNameScope ();
 		NameScope::SetNameScope (element, ns);
 		ns->unref ();
 	}

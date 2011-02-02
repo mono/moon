@@ -20,7 +20,7 @@ namespace Moonlight {
 
 /* @Namespace=Mono */
 /* @ManagedEvents=None */
-class NameScope : public EventObject {
+class NameScope : public DependencyObject {
 	GHashTable *names;
 	bool is_locked;
 	bool temporary;

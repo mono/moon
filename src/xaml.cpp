@@ -699,7 +699,7 @@ class XamlParserInfo {
 		this->deployment = Deployment::GetCurrent ();
 		this->parser = parser;
 		this->file_name = file_name;
-		this->namescope = new NameScope ();
+		this->namescope = MoonUnmanagedFactory::CreateNameScope();
 
 		top_element = NULL;
 		current_namespace = NULL;

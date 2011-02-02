@@ -33,6 +33,11 @@ namespace Mono {
 		public DispatcherTimer () : base (SafeNativeMethods.dispatcher_timer_new (), true) {}
 		internal DispatcherTimer (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
+
+	partial class NameScope {
+		public NameScope () : base (SafeNativeMethods.name_scope_new (), true) {}
+		internal NameScope (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
 }
 
 namespace MS.Internal {

@@ -35,39 +35,11 @@ using System.Collections.Generic;
 namespace Mono
 {
 
-	internal partial class NameScope : INativeEventObjectWrapper, IRefContainer {
-
-		Dictionary<IntPtr, object> strongRefs;
-		private IntPtr _native;
-		private bool free_mapping;
-
-		internal NameScope (IntPtr raw, bool dropRef)
-		{
-			NativeHandle = raw;
-			if (dropRef)
-				NativeMethods.event_object_unref (raw);
-		}
-
-		internal NameScope () : this (SafeNativeMethods.name_scope_new (), true)
-		{
-		}
-
-		public IntPtr NativeHandle {
-			get { return _native; }
-			set {
-				if (_native != IntPtr.Zero) {
-					throw new InvalidOperationException ("NameScope.native is already set");
-				}
-
-				_native = value;
-
-				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
-			}
-		}
+	internal partial class NameScope : DependencyObject {
 
 		public bool Temporary {
-			get { return NativeMethods.name_scope_get_temporary (NativeHandle); }
-			set { NativeMethods.name_scope_set_temporary (NativeHandle, value); }
+			get { return NativeMethods.name_scope_get_temporary (native); }
+			set { NativeMethods.name_scope_set_temporary (native, value); }
 		}
 
 		public static void SetNameScope (DependencyObject dob, NameScope scope)
@@ -79,60 +51,5 @@ namespace Mono
 		{
 			return (NameScope) dob.GetValue (NameScope.NameScopeProperty);
 		}
-
-		~NameScope ()
-		{
-			Free ();
-		}
-
-		internal void Free ()
-		{
-			if (free_mapping) {
-				free_mapping = false;
-				NativeDependencyObjectHelper.FreeNativeMapping (this);
-			}
-		}
-
-		public Kind GetKind () { return Kind.NAMESCOPE; }
-
-		void IRefContainer.AddStrongRef (IntPtr id, object value)
-		{
-			if (strongRefs == null)
-				strongRefs = new Dictionary<IntPtr, object>();
-			if (!strongRefs.ContainsKey (id))
-				strongRefs.Add (id, value);
-		}
-
-		void IRefContainer.ClearStrongRef (IntPtr id, object value)
-		{
-			if (strongRefs != null)
-				strongRefs.Remove (id);
-		}
-
-#if HEAPVIZ
-		System.Collections.ICollection IRefContainer.GetManagedRefs ()
-		{
-			List<HeapRef> refs = new List<HeapRef> ();
-			if (strongRefs != null) {
-				foreach (var keypair in strongRefs)
-					if (keypair.Value is INativeEventObjectWrapper)
-						refs.Add (new HeapRef (true, (INativeEventObjectWrapper)keypair.Value, NativeDependencyObjectHelper.IdToName (keypair.Key)));
-			}
-			return refs;
-		}
-#endif
-
-		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
-		{
-		}
-
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-
 	}
 }
