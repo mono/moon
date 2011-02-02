@@ -46,7 +46,6 @@ struct XamlCallbackData {
 	};
 };
 
-
 typedef bool (*xaml_lookup_object_callback) (XamlCallbackData *data, Value *parent, const char *xmlns, const char *name, bool create, bool is_property, Value *value, MoonError *error);
 typedef bool (*xaml_set_property_callback) (XamlCallbackData *data, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data, MoonError *error);
 typedef bool (*xaml_import_xaml_xmlns_callback) (XamlCallbackData *data, const char* xmlns, MoonError *error);
@@ -67,7 +66,6 @@ struct XamlLoaderCallbacks {
 	{
 	}
 };
-
 
 //
 // Used by the templates
@@ -95,15 +93,10 @@ class XamlContext : public EventObject {
 	DependencyObject* GetTemplateBindingSource ();
 };
 
-
-
 /* @CBindingRequisite */
 typedef DependencyObject *parse_template_func (Value *data, const Uri *resource_base, Surface *surface, DependencyObject *binding_source, const char *xaml, MoonError *error);
 
-
-
 G_BEGIN_DECLS
-
 void        xaml_init (void);
 
 bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error);
@@ -154,33 +147,7 @@ MOON_API void        xaml_delay_set_property (void *parser, void *element_instan
 
 G_END_DECLS
 
-/*
 
-  Plugin:
-    - calls PluginXamlLoader::TryLoad to try to load some xaml.
-    -  calls xaml_create_from_*
-    -     calls XamlLoader::LookupObject (,) if it encounters xmlns/name
-    -      parses the xmlns and name
-    -       calls XamlLoader::LoadVM.
-    -        PluginXamlLoader::LoadVM will load the vm and create a ManagedXamlLoader (which will set the callbacks in XamlLoader)
-    -       calls XamlLoader::CreateObject (,,,) with the parsed xml
-    -        calls the create_managed_object callback (if any).
-    -          will try to load the assembly, if it fails, it's requested.
-    -  if XamlLoader::CreateObject failed, try to download the missing assembly (if any).
-    -  if no missing assembly, the xaml load fails.
-
-  Deskop:
-    - calls System.Windows.XamlReader::Load
-    -  creates a ManagedXamlLoader and a native XamlLoader (setting the callbacks).
-    -  calls xaml_create_from_str
-    -     calls XamlLoader::CreateObject (,) if it encounters xmlns/name
-    -      parses the xmlns and name
-    -       calls XamlLoader::LoadVM (which does nothing).
-    -       calls XamlLoader::CreateObject (,,,) with the parsed xml
-    -        calls the create_managed_object callback (if any).
-    -          will try to load the assembly, if it fails, it's requested.
-    -    destroy the native/managed XamlLoader. Any requested assemblies are ignored, no retries are done.
-*/
 
 
 class XamlLoaderFactory {
@@ -189,10 +156,6 @@ class XamlLoaderFactory {
 	static XamlLoader *CreateLoader (const Uri* resource_base, Surface *surface);
 	static XamlLoader *CreateLoader (const Uri* resource_base, Surface *surface, XamlContext *context);
 };
-
-
-
-
 
 class XamlLoader {
 
@@ -219,7 +182,6 @@ class XamlLoader {
 	virtual ~XamlLoader () {}
 };
 
-
 class SL4XamlLoader : public XamlLoader {
 
  public:
@@ -234,7 +196,6 @@ class SL4XamlLoader : public XamlLoader {
 	Surface *surface;
 	Deployment *deployment;
 };
-
 
 class SL3XamlLoader : public XamlLoader {
 	bool expanding_template;
@@ -293,7 +254,6 @@ class SL3XamlLoader : public XamlLoader {
 
 	ParserErrorEventArgs *error_args;
 };
-
 
 };
 #endif /* __MOON_XAML_H__ */
