@@ -1448,7 +1448,7 @@ RichTextLayout::AddWordsToLine (RichTextLayoutLine *line, TextLayoutAttributes *
 	if (empty)
 		delete inline_;
 	else {
-		char *s = g_strndup (text, inptr - text);
+		//char *s = g_strndup (text, inptr - text);
 
 		line->AddInline (inline_);
 	}
