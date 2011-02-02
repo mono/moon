@@ -863,6 +863,7 @@ static moonlight_handle_native_sigsegv (int signal)
 	case SIGFPE: signal_str = "SIGFPE"; break;
 	case SIGABRT: signal_str = "SIGABRT"; break;
 	case SIGQUIT: signal_str = "SIGQUIT"; break;
+	case SIGBUS: signal_str = "SIGBUS"; break;
 	default: signal_str = "UNKNOWN"; break;
 	}
 	
@@ -930,6 +931,7 @@ moonlight_install_signal_handlers ()
 	g_assert (sigaction (SIGFPE, &sa, NULL) != -1);
 	g_assert (sigaction (SIGQUIT, &sa, NULL) != -1);
 	g_assert (sigaction (SIGABRT, &sa, NULL) != -1);
+	g_assert (sigaction (SIGBUS, &sa, NULL) != -1);
 }
 #endif /* SANITY */
 
