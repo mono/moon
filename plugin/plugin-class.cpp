@@ -2187,13 +2187,13 @@ _invoke_default (NPObject *npobj,
 }
 
 void
-moonlight_object_add_toggle_ref_notifier (NPObject* /*MoonlightObject* */ obj, ToggleNotifyHandler tr)
+MoonlightObject::AddToggleRefNotifier (NPObject* /*MoonlightObject* */ obj, ToggleNotifyHandler tr)
 {
 	((MoonlightObject*)obj)->AddToggleRefNotifier (tr);
 }
 
 void
-moonlight_object_remove_toggle_ref_notifier (NPObject* /*MoonlightObject* */ obj)
+MoonlightObject::RemoveToggleRefNotifier (NPObject* /*MoonlightObject* */ obj)
 {
 	((MoonlightObject*)obj)->RemoveToggleRefNotifier ();
 }
@@ -5196,7 +5196,7 @@ MoonlightScriptableObjectType::MoonlightScriptableObjectType ()
 MoonlightScriptableObjectType *MoonlightScriptableObjectClass;
 
 NPObject* /*MoonlightScriptableObjectObject* */
-moonlight_scriptable_object_create (PluginInstance *plugin,
+MoonlightScriptableObject::Create (PluginInstance *plugin,
 				    InvalidateHandleDelegate invalidate_handle,
 				    HasMemberDelegate has_method,
 				    HasMemberDelegate has_property,
@@ -5222,7 +5222,7 @@ moonlight_scriptable_object_create (PluginInstance *plugin,
 }
 
 void
-moonlight_scriptable_object_register (PluginInstance *plugin,
+MoonlightScriptableObject::Register (PluginInstance *plugin,
 				      char *name,
 				      NPObject* /*MoonlightScriptableObjectObject* */ npobj)
 {
@@ -5300,7 +5300,7 @@ enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurs
 #endif
 
 bool
-html_object_has_method (PluginInstance *plugin, NPObject *npobj, char *name)
+HtmlObject::HasMethod (PluginInstance *plugin, NPObject *npobj, char *name)
 {
 	NPP npp = plugin->GetInstance ();
 	NPObject *window = NULL;
@@ -5316,7 +5316,7 @@ html_object_has_method (PluginInstance *plugin, NPObject *npobj, char *name)
 }
 
 bool
-html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name)
+HtmlObject::HasProperty (PluginInstance *plugin, NPObject *npobj, char *name)
 {
 	NPP npp = plugin->GetInstance ();
 	NPObject *window = NULL;
@@ -5332,7 +5332,7 @@ html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name)
 }
 
 void
-html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)
+HtmlObject::GetProperty (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)
 {
 	NPVariant npresult;
 	NPObject *window = NULL;
@@ -5367,7 +5367,7 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 }
 
 void
-html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value)
+HtmlObject::SetProperty (PluginInstance *plugin, NPObject *npobj, char *name, Value *value)
 {
 	NPVariant npvalue;
 	NPObject *window = NULL;
@@ -5389,7 +5389,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 }
 
 bool
-html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
+HtmlObject::Invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 		    Value *args, guint32 arg_count, Value *result)
 {
 	NPVariant npresult;
@@ -5436,7 +5436,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 }
 
 bool
-html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
+HtmlObject::InvokeSelf (PluginInstance *plugin, NPObject *npobj,
 		Value *args, guint32 arg_count, Value *result)
 {
 	NPVariant npresult;
@@ -5490,14 +5490,14 @@ static bool
 html_object_release_callback (gpointer user_data)
 {
 	release_data *d = (release_data *) user_data;
-	html_object_release (d->plugin, d->npobj);
+	HtmlObject::Release (d->plugin, d->npobj);
 	d->plugin->unref ();
 	g_free (d);
 	return false;
 }
 
 void
-html_object_release (PluginInstance *plugin, NPObject *npobj)
+HtmlObject::Release (PluginInstance *plugin, NPObject *npobj)
 {
 	if (npobj == NULL)
 		return;
@@ -5522,7 +5522,7 @@ html_object_release (PluginInstance *plugin, NPObject *npobj)
 }
 
 void
-html_object_retain (PluginInstance *plugin, NPObject *npobj)
+HtmlObject::Retain (PluginInstance *plugin, NPObject *npobj)
 {
 	if (npobj == NULL)
 		return;
@@ -5543,7 +5543,7 @@ html_object_retain (PluginInstance *plugin, NPObject *npobj)
 }
 
 void
-browser_do_alert (PluginInstance *plugin, char *msg)
+Browser::DoAlert (PluginInstance *plugin, char *msg)
 {
 	NPVariant npresult, npargs;
 	NPObject *window = NULL;

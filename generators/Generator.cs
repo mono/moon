@@ -2367,7 +2367,6 @@ class Generator {
 		impl.AppendLine ("#include <stdio.h>");
 		impl.AppendLine ("#include <stdlib.h>");
 		impl.AppendLine ();
-		impl.AppendLine ("#include \"cbinding.h\"");
 		if (!dir.Contains ("plugin"))
 			impl.AppendLine ("#include \"factory.h\"");
 		impl.AppendLine ();
@@ -2381,6 +2380,7 @@ class Generator {
 			impl.Append (endif);
 		}
 
+		impl.AppendLine ("#include \"cbinding.h\"");
 		impl.AppendLine ();
 		impl.AppendLine ("namespace Moonlight {");
 
