@@ -236,7 +236,7 @@ MOON_NPP_Initialize (void)
 
 	if (!runtime_initialized) {
 		runtime_initialized = true;
-		runtime_init_browser (get_plugin_dir (), false);
+		Runtime::InitBrowser (get_plugin_dir (), false);
 	}
 
 	plugin_init_classes ();
@@ -254,7 +254,7 @@ shutdown_moonlight (gpointer data)
 	/* check if all deployments and all plugins have been freed. */
 	if (Deployment::GetDeploymentCount () != 0 || PluginInstance::GetPluginCount () != 0) {
 		// printf ("shutdown_moonlight (): there are %i deployments and %i plugins left, postponing shutdown a bit.\n", Deployment::GetDeploymentCount (), PluginInstance::GetPluginCount ());
-		runtime_get_windowing_system ()->AddTimeout (MOON_PRIORITY_IDLE,
+		Runtime::GetWindowingSystem ()->AddTimeout (MOON_PRIORITY_IDLE,
 							     100,
 							     shutdown_moonlight,
 							     NULL);
@@ -264,7 +264,7 @@ shutdown_moonlight (gpointer data)
 	// printf ("shutdown_moonlight (): proceeding with shutdown, there are no more deployments nor plugins left.\n");
 
 	plugin_destroy_classes ();
-	runtime_shutdown ();
+	Runtime::Shutdown ();
 	runtime_initialized = false;
 
 	return false;

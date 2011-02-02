@@ -399,7 +399,7 @@ Application::update_complete (bool updated, const char *error, gpointer user_dat
 void
 Application::CheckAndDownloadUpdateAsync ()
 {
-	MoonInstallerService *installer = runtime_get_installer_service ();
+	MoonInstallerService *installer = Runtime::GetInstallerService ();
 	Deployment *deployment = Deployment::GetCurrent ();
 	
 	installer->CheckAndDownloadUpdateAsync (deployment, Application::update_complete, this);
@@ -408,7 +408,7 @@ Application::CheckAndDownloadUpdateAsync ()
 bool
 Application::IsRunningOutOfBrowser ()
 {
-	MoonInstallerService *installer = runtime_get_installer_service ();
+	MoonInstallerService *installer = Runtime::GetInstallerService ();
 	Deployment *deployment = Deployment::GetCurrent ();
 	
 	return installer->IsRunningOutOfBrowser (deployment);
@@ -429,7 +429,7 @@ InstallState
 Application::GetInstallState ()
 {
 	if (install_state == InstallStateUnknown) {
-		MoonInstallerService *installer = runtime_get_installer_service ();
+		MoonInstallerService *installer = Runtime::GetInstallerService ();
 		
 		if (installer->CheckInstalled (Deployment::GetCurrent ()))
 			install_state = InstallStateInstalled;
@@ -455,7 +455,7 @@ Application::IsInstallable ()
 bool
 Application::InstallWithError (MoonError *error, bool user_initiated, bool unattended)
 {
-	MoonInstallerService *installer = runtime_get_installer_service ();
+	MoonInstallerService *installer = Runtime::GetInstallerService ();
 	Deployment *deployment = Deployment::GetCurrent ();
 
 	// application manifest must allow out-of-browser support
@@ -502,7 +502,7 @@ Application::Install ()
 void
 Application::Uninstall ()
 {
-	MoonInstallerService *installer = runtime_get_installer_service ();
+	MoonInstallerService *installer = Runtime::GetInstallerService ();
 	Deployment *deployment = Deployment::GetCurrent ();
 	
 	installer->Uninstall (deployment);

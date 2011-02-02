@@ -95,7 +95,7 @@ MoonNetworkServiceLinux::~MoonNetworkServiceLinux ()
 	
 	delete dbus_network_service;
 	
-	if (idle != 0 && (winsys = runtime_get_windowing_system ())) {
+	if (idle != 0 && (winsys = Runtime::GetWindowingSystem ())) {
 		winsys->RemoveIdle (idle);
 		idle = 0;
 	}
@@ -111,7 +111,7 @@ MoonNetworkServiceLinux::SetNetworkStateChangedCallback (MoonCallback callback, 
 		return true;
 	}
 	
-	if (!(winsys = runtime_get_windowing_system ()))
+	if (!(winsys = Runtime::GetWindowingSystem ()))
 		return false;
 	
 	idle = winsys->AddIdle (poll_network_state, this);

@@ -677,7 +677,7 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 		return false;
 	
 	if (window->surface) {
-		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonButtonEvent *mevent = (MoonButtonEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIButtonPress (mevent);
 		delete mevent;
 	}
@@ -694,7 +694,7 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIButtonRelease (mevent);
 		delete mevent;
 	}
@@ -712,7 +712,7 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		status = window->surface->HandleUIScroll (mevent);
 		delete mevent;
 	}
@@ -729,7 +729,7 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonMotionEvent *mevent = (MoonMotionEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonMotionEvent *mevent = (MoonMotionEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIMotion (mevent);
 		delete mevent;
 	}
@@ -746,7 +746,7 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonCrossingEvent *mevent = (MoonCrossingEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUICrossing (mevent);
 		delete mevent;
 		return true;
@@ -763,7 +763,7 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonFocusEvent *mevent = (MoonFocusEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIFocusIn (mevent);
 		delete mevent;
 		return true;
@@ -780,7 +780,7 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonFocusEvent *mevent = (MoonFocusEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIFocusOut (mevent);
 		delete mevent;
 		return true;
@@ -797,7 +797,7 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonKeyEvent *mevent = (MoonKeyEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIKeyPress (mevent);
 		delete mevent;
 		return true;
@@ -814,7 +814,7 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonKeyEvent *mevent = (MoonKeyEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIKeyRelease (mevent);
 		delete mevent;
 		return true;

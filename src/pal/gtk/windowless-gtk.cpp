@@ -220,7 +220,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		motion.x_root = xev->xmotion.x_root;
 		motion.y_root = xev->xmotion.y_root;
 
-		MoonMotionEvent *mevent = (MoonMotionEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&motion);
+		MoonMotionEvent *mevent = (MoonMotionEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&motion);
 		handled = surface->HandleUIMotion (mevent);
 		delete mevent;
 		break;
@@ -252,7 +252,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 			scroll.state = xev->xbutton.state;
 			scroll.device = NULL; // XXX
 			
-			MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent *) runtime_get_windowing_system()->CreateEventFromPlatformEvent (&scroll);
+			MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent *) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&scroll);
 			handled = surface->HandleUIScroll (mevent);
 			delete mevent;
 			break;
@@ -275,7 +275,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 			if (xev->type == ButtonPress && MoonWindowGtk::container_button_press_callback (NULL, &button, this))
 				handled = MoonEventHandled;
 			if (handled == MoonEventNotHandled) {
-				MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&button);
+				MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&button);
 				if (xev->type == ButtonPress)
 					handled = surface->HandleUIButtonPress (mevent);
 				else
@@ -310,7 +310,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 
 		key->group = (guint8)effective_group;
 
-		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (key);
+		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (key);
 
 		if (xev->type == KeyPress)
 			handled = surface->HandleUIKeyPress (mevent);
@@ -340,7 +340,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		crossing.focus = xev->xcrossing.focus;
 		crossing.state = xev->xcrossing.state;
 
-		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&crossing);
+		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&crossing);
 		surface->HandleUICrossing (mevent);
 		delete mevent;
 		break;
@@ -354,7 +354,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		focus.send_event = xev->xfocus.send_event;
 		focus.in = xev->type == FocusIn;
 	  
-		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&focus);
+		MoonFocusEvent *mevent = (MoonFocusEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&focus);
 
 		if (focus.in)
 			surface->HandleUIFocusIn (mevent);

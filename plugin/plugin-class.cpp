@@ -5507,7 +5507,7 @@ html_object_release (PluginInstance *plugin, NPObject *npobj)
 		plugin->ref ();
 		d->plugin = plugin;
 		d->npobj = npobj;
-		runtime_get_windowing_system()->AddTimeout (MOON_PRIORITY_DEFAULT,
+		Runtime::GetWindowingSystem ()->AddTimeout (MOON_PRIORITY_DEFAULT,
 							    1,
 							    html_object_release_callback, d);
 		return;

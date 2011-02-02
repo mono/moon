@@ -206,7 +206,7 @@ RichTextBox::RichTextBox ()
 
 	contentElement = NULL;
 	
-	MoonWindowingSystem *ws = runtime_get_windowing_system ();
+	MoonWindowingSystem *ws = Runtime::GetWindowingSystem ();
 	im_ctx = ws->CreateIMContext ();
 	im_ctx->SetUsePreedit (false);
 	
@@ -1486,7 +1486,7 @@ GetCursorBlinkTimeout (RichTextBoxView *view)
 	if (!(window = view->GetDeployment ()->GetSurface ()->GetWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
-	return runtime_get_windowing_system ()->GetCursorBlinkTimeout (window);
+	return Runtime::GetWindowingSystem ()->GetCursorBlinkTimeout (window);
 }
 
 void

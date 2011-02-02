@@ -152,9 +152,9 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 
 		// FIXME add some ifdefs + runtime checks here
 #if PAL_GTK_WINDOWING
-		runtime_get_windowing_system()->SetWindowlessCtor (create_gtk_windowless);
+		Runtime::GetWindowingSystem ()->SetWindowlessCtor (create_gtk_windowless);
 #elif PAL_COCOA_WINDOWING
-		runtime_get_windowing_system()->SetWindowlessCtor (create_cocoa_windowless);
+		Runtime::GetWindowingSystem ()->SetWindowlessCtor (create_cocoa_windowless);
 #else
 #error "no PAL windowing system"
 #endif
@@ -777,11 +777,11 @@ PluginInstance::CreateWindow ()
 	
 	if (moon_window == NULL) {
 		if (windowless) {
-			moon_window = runtime_get_windowing_system()->CreateWindowless (window->width, window->height, this);
+			moon_window = Runtime::GetWindowingSystem ()->CreateWindowless (window->width, window->height, this);
 			moon_window->SetTransparent (true);
 		}
 		else {
-			moon_window = runtime_get_windowing_system()->CreateWindow (MoonWindowType_Plugin, window->width, window->height);
+			moon_window = Runtime::GetWindowingSystem ()->CreateWindow (MoonWindowType_Plugin, window->width, window->height);
 		}
 		created = true;
 	} else {
@@ -850,7 +850,7 @@ PluginInstance::UpdateSource ()
 	char *pos = strchr (source, '#');
 	if (pos) {
 		this->ref ();
-		source_idle = runtime_get_windowing_system ()->AddIdle (IdleUpdateSourceByReference, this);
+		source_idle = Runtime::GetWindowingSystem ()->AddIdle (IdleUpdateSourceByReference, this);
 
 		// we're changing the page url as well as the xaml
 		// location, so we need to call SetPageUrl.

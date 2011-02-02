@@ -75,7 +75,7 @@ LocalMessageReceiver::ListenWithError (MoonError *error)
 		return;
 	}
 
-	listener = runtime_get_messaging_service ()->CreateMessagingListener (receiverDomain, receiverName, error);
+	listener = Runtime::GetMessagingService ()->CreateMessagingListener (receiverDomain, receiverName, error);
 
 	if (listener == NULL) {
 		// FIXME: there might be varying error conditions
@@ -193,7 +193,7 @@ void
 LocalMessageSender::SendAsyncWithError (const char *msg, GCHandle managedUserState, MoonError *error)
 {
 	if (sender == NULL) {
-		sender = runtime_get_messaging_service ()->CreateMessagingSender (receiverName,
+		sender = Runtime::GetMessagingService ()->CreateMessagingSender (receiverName,
 										  receiverDomain,
 										  senderDomain,
 										  error);

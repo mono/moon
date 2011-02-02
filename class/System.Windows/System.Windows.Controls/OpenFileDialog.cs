@@ -82,7 +82,7 @@ namespace System.Windows.Controls
 			for (uint i = 0, ofs = 0; (p = Marshal.ReadIntPtr ((IntPtr)((ulong)result + ofs))) != IntPtr.Zero; ofs += inc)
 				files [i++] = new FileInfo (Marshal.PtrToStringAnsi (p));
 			
-			NativeMethods.g_free_pinvoke (result);
+			NativeMethods.runtime_gfree (result);
 			return true;
 		}
 

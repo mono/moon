@@ -544,36 +544,32 @@ public:
 	RenderFunc post_render;
 };
 
-G_BEGIN_DECLS
+class MOON_API Runtime {
+public:
+	static void Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser);
+	static void InitBrowser (const char *plugin_dir, bool out_of_browser);
+	/* @GeneratePInvoke */
+	static void InitDesktop ();
 
-MOON_API void     runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser);
+	static void Shutdown ();
 
-MOON_API void     runtime_init_browser (const char *plugin_dir, bool out_of_browser);
+	static GList *GetSurfaceList ();
 
-/* @GeneratePInvoke */
-MOON_API void     runtime_init_desktop ();
+	static void SetManualTimeSource (gboolean flag);
+	static void SetShowFps (gboolean flag);
+	static void SetUseShapeCache (gboolean flag);
 
-GList   *runtime_get_surface_list (void);
-
-void	 runtime_flags_set_manual_timesource (gboolean flag);
-void	 runtime_flags_set_show_fps (gboolean flag);
-void	 runtime_flags_set_use_shapecache (gboolean flag);
-
-/* @GeneratePInvoke */
-MOON_API MoonWindowingSystem *runtime_get_windowing_system ();
-MOON_API MoonInstallerService *runtime_get_installer_service ();
-MOON_API MoonMessagingService *runtime_get_messaging_service ();
-/* @GeneratePInvoke */
-MOON_API MoonCaptureService *runtime_get_capture_service ();
-/* @GeneratePInvoke */
-MOON_API MoonNetworkService *runtime_get_network_service ();
-
-MOON_API void     runtime_shutdown (void);
-
-/* @GeneratePInvoke */
-MOON_API void g_free_pinvoke (void *obj);
-
-G_END_DECLS
+	/* @GeneratePInvoke */
+	static MoonWindowingSystem *GetWindowingSystem ();
+	static MoonInstallerService *GetInstallerService ();
+	static MoonMessagingService *GetMessagingService ();
+	/* @GeneratePInvoke */
+	static MoonCaptureService *GetCaptureService ();
+	/* @GeneratePInvoke */
+	static MoonNetworkService *GetNetworkService ();
+	/* @GeneratePInvoke */
+	static void GFree (void *ptr);
+};
 
 };
 #endif

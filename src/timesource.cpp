@@ -142,14 +142,14 @@ SystemTimeSource::Start ()
 	if (frequency == -1)
 		g_warning ("SystemTimeSource::frequency uninitialized in ::Start()");
 	
-	timeout_id = runtime_get_windowing_system()->AddTimeout (MOON_PRIORITY_DEFAULT, frequency, SystemTimeSource::tick_timeout, this);
+	timeout_id = Runtime::GetWindowingSystem ()->AddTimeout (MOON_PRIORITY_DEFAULT, frequency, SystemTimeSource::tick_timeout, this);
 }
 
 void
 SystemTimeSource::Stop ()
 {
 	if (timeout_id != 0) {
-		runtime_get_windowing_system ()->RemoveTimeout (timeout_id);
+		Runtime::GetWindowingSystem ()->RemoveTimeout (timeout_id);
 		timeout_id = 0;
 	}
 }

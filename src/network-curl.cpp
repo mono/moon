@@ -1040,7 +1040,7 @@ CurlHttpHandler::GetData ()
 		pthread_mutex_lock (&worker_mutex);
 		if (!calls.IsEmpty ()) {
 			this->ref ();
-			runtime_get_windowing_system ()->AddIdle (EmitCallback, this);
+			Runtime::GetWindowingSystem ()->AddIdle (EmitCallback, this);
 		}
 		pthread_mutex_unlock (&worker_mutex);
 

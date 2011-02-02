@@ -1386,7 +1386,7 @@ Deployment::Shutdown ()
 		shutdown_state = CallManagedShutdown;
 	}
 	this->ref (); /* timemanager is dead, so we need to add timeouts directly to pal */
-	runtime_get_windowing_system()->AddTimeout (MOON_PRIORITY_DEFAULT, 1, ShutdownManagedCallback, this);
+	Runtime::GetWindowingSystem ()->AddTimeout (MOON_PRIORITY_DEFAULT, 1, ShutdownManagedCallback, this);
 #endif
 
 	if (types)
@@ -1951,7 +1951,7 @@ Deployment::UnrefDelayed (EventObject *obj)
 	
 	// If we created a new list instead of prepending to an existing one, add a idle tick call.
 	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
-		runtime_get_windowing_system()->AddIdle (DrainUnrefs, (gpointer)this);
+		Runtime::GetWindowingSystem ()->AddIdle (DrainUnrefs, (gpointer)this);
 		ref (); // keep us alive until we've processed the unrefs.
 	}
 }

@@ -96,7 +96,7 @@ main (int argc, char **argv)
 
 	gtk_init (&argc, &argv);
 
-	runtime_init_desktop ();
+	Runtime::InitDesktop ();
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size (GTK_WINDOW (window), width, height); 
@@ -175,7 +175,7 @@ main (int argc, char **argv)
 	e.target->unref ();
 	delete e.ctx;
 
-	runtime_shutdown ();
+	Runtime::Shutdown ();
 
 	return 0;
 }

@@ -92,7 +92,7 @@ main (int argc, char **argv)
 
 	gtk_init (&argc, &argv);
 
-	runtime_init_desktop ();
+	Runtime::InitDesktop ();
 
 	values = DoubleCollection::FromStr (argv[1]);
 	if (!values) {
@@ -200,7 +200,7 @@ main (int argc, char **argv)
 	p.target->unref ();
 	delete p.ctx;
 
-	runtime_shutdown ();
+	Runtime::Shutdown ();
 
 	return 0;
 }

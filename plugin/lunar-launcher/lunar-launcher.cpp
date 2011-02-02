@@ -300,12 +300,12 @@ int main (int argc, char **argv)
 
 	add_mono_config (plugin_dir);
 
-	runtime_init_browser (plugin_dir, true);
+	Runtime::InitBrowser (plugin_dir, true);
 	g_free (plugin_dir);
 
 	/* get the pal services we need */
-	winsys = runtime_get_windowing_system ();
-	installer = runtime_get_installer_service ();
+	winsys = Runtime::GetWindowingSystem ();
+	installer = Runtime::GetInstallerService ();
 
 	LOG_OOB ("[%i lunar-launcher]: Starting\n", getpid ());
 
@@ -331,7 +331,7 @@ int main (int argc, char **argv)
 		;
 	}
 
-	runtime_shutdown ();
+	Runtime::Shutdown ();
 
 	LOG_OOB ("[%i lunar-launcher]: Exiting\n", getpid ());
 

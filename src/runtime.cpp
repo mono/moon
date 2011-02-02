@@ -2621,15 +2621,15 @@ Surface::IsVersionSupported (const char *version_list)
 }
 
 void
-runtime_init_browser (const char *plugin_dir, bool out_of_browser)
+Runtime::InitBrowser (const char *plugin_dir, bool out_of_browser)
 {
-	runtime_init (plugin_dir, RUNTIME_INIT_BROWSER, out_of_browser);
+	Init (plugin_dir, RUNTIME_INIT_BROWSER, out_of_browser);
 }
 
 void
-runtime_init_desktop ()
+Runtime::InitDesktop ()
 {
-	runtime_init (NULL, RUNTIME_INIT_DESKTOP, false);
+	Init (NULL, RUNTIME_INIT_DESKTOP, false);
 }
 
 #if DEBUG || LOGGING
@@ -2760,7 +2760,7 @@ get_runtime_options (RuntimeInitFlag def)
 }
 
 void
-runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser)
+Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_browser)
 {
 	if (inited)
 		return;
@@ -2831,37 +2831,37 @@ runtime_init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brows
 }
 
 MoonWindowingSystem *
-runtime_get_windowing_system ()
+Runtime::GetWindowingSystem ()
 {
 	return windowing_system;
 }
 
 MoonInstallerService *
-runtime_get_installer_service ()
+Runtime::GetInstallerService ()
 {
 	return installer_service;
 }
 
 MoonMessagingService *
-runtime_get_messaging_service ()
+Runtime::GetMessagingService ()
 {
 	return messaging_service;
 }
 
 MoonCaptureService *
-runtime_get_capture_service ()
+Runtime::GetCaptureService ()
 {
 	return capture_service;
 }
 
 MoonNetworkService *
-runtime_get_network_service ()
+Runtime::GetNetworkService ()
 {
 	return network_service;
 }
 
 void
-runtime_shutdown (void)
+Runtime::Shutdown (void)
 {
 	if (!inited)
 		return;
@@ -2878,7 +2878,7 @@ runtime_shutdown (void)
 }
 
 void
-g_free_pinvoke (void *obj)
+Runtime::GFree (void *obj)
 {
 	g_free (obj);
 }

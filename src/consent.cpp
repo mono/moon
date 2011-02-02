@@ -135,7 +135,7 @@ Consent::PromptUserFor (MoonConsentType consent, const char *question, const cha
 	}
 
 
-	MoonWindowingSystem *windowing_system = runtime_get_windowing_system ();
+	MoonWindowingSystem *windowing_system = Runtime::GetWindowingSystem ();
 
 	rv = windowing_system->ShowConsentDialog (question,
 						  detail,

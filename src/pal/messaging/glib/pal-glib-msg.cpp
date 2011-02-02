@@ -900,7 +900,7 @@ private:
 
 		delete machine;
 
-		runtime_get_windowing_system()->AddIdle (idle_machine_error, error_closure);
+		Runtime::GetWindowingSystem ()->AddIdle (idle_machine_error, error_closure);
 	}
 
 	char *listener_path;

@@ -1241,9 +1241,6 @@
 +SC-M: System.Void Mono.NativeMethods::framework_template_set_xaml_buffer(System.IntPtr,Mono.Xaml.ParseTemplateFunc,Mono.Value&,System.String,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::g_free_pinvoke(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::general_transform_transform_point(System.IntPtr,System.Windows.Point&,System.Windows.Point&)
 
 # p/invoke declaration
@@ -1425,6 +1422,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::routed_event_args_set_source(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::runtime_gfree(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::runtime_init_desktop()

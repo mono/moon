@@ -3259,7 +3259,7 @@ class Generator {
 				text.AppendLine ("\tstring s = Marshal.PtrToStringAnsi (result);\t// *copy* unmanaged string");
 				text.Append (tabs);
 				if (!method.ReturnType.IsConst) {
-					text.AppendLine ("\tg_free_pinvoke (result);\t\t\t// g_free the unmanaged string");
+					text.AppendLine ("\truntime_gfree (result);\t\t\t// g_free the unmanaged string");
 					text.Append (tabs);
 				}
 				text.AppendLine ("\treturn s;");
