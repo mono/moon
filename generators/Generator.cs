@@ -1665,6 +1665,8 @@ class Generator {
 		bool is_static;
 		bool is_const;
 		bool is_extern;
+		bool is_moon_api;
+		bool is_inline;
 		bool is_template = false;
 		string name;
 
@@ -1679,6 +1681,7 @@ class Generator {
 			returntype = null;
 			is_dtor = is_ctor = is_virtual = is_static = false;
 			is_extern = is_const = false;
+			is_moon_api = is_inline = false;
 			name = null;
 			properties = new Annotations ();
 
@@ -1807,6 +1810,7 @@ class Generator {
 				}
 
 				if (tokenizer.Accept (Token2Type.Identifier, "MOON_API")) {
+					is_moon_api = true;
 					continue;
 				}
 
@@ -1843,6 +1847,9 @@ class Generator {
 							break;
 						} else if (tokenizer.CurrentToken.value == "{") {
 							// In-line implementation
+							if (is_moon_api)
+								throw new Exception ("you cannot use MOON_API with inline c++ methods");
+							is_inline = true;
 							tokenizer.SyncWithEndBrace ();
 							break;
 						}
@@ -1944,6 +1951,9 @@ class Generator {
 
 				if (tokenizer.CurrentToken.value == "{") {
 					//Console.WriteLine ("ParseMember: member has body, skipping it");
+					if (is_moon_api)
+						throw new Exception ("you cannot use MOON_API with inline c++ methods");
+					is_inline = true;
 					tokenizer.SyncWithEndBrace ();
 				} else if (is_ctor && tokenizer.Accept (Token2Type.Punctuation, ":")) {
 					// ctor method implemented in header with field initializers and/or base class ctor call
@@ -1964,6 +1974,11 @@ class Generator {
 						tokenizer.AcceptOrThrow (Token2Type.Punctuation, ")");
 						tokenizer.AcceptOrThrow (Token2Type.Punctuation, ")");
 					}
+					if (tokenizer.Accept (Token2Type.Identifier, "MOON_API")) {
+						if (is_inline)
+							throw new Exception ("you cannot use MOON_API with inline c++ methods");
+					}
+					tokenizer.Accept (Token2Type.Identifier, "MOON_LOCAL");
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 				}
 			} else {
