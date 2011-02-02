@@ -2047,7 +2047,9 @@ void
 PluginInstance::SplashStopped (HttpRequest *request, HttpRequestStoppedEventArgs *args)
 {
 	if (!args->IsSuccess ()) {
-		GetSurface ()->GetTimeManager ()->AddTickCall (splashscreen_error_tickcall, new PluginClosure (this));
+		TimeManager *tm = GetSurface () ? GetSurface ()->GetTimeManager () : NULL;
+		if (tm)
+			tm->AddTickCall (splashscreen_error_tickcall, new PluginClosure (this));
 	} else {
 		xaml_loader = PluginXamlLoader::FromFilename (request->GetFinalUri (), request->GetFilename (), this, surface);
 		loading_splash = true;
