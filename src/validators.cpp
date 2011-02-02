@@ -374,16 +374,28 @@ Validators::BasedOnValidator (DependencyObject *instance, DependencyProperty *pr
 bool
 Validators::StyleValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	Type::Kind target_kind;
+	Type::Kind target_kind = instance->GetObjectType();
 	Types *types = instance->GetDeployment ()->GetTypes ();
+	char *error_message = NULL;
 
 	if (!Value::IsNull (value)) {
 		Style *root = NULL;
 		Style *style = value->AsStyle (types);
-		// 0) Styles are only sealable once they're fully validated and correct
-		// so if it's sealed, we don't need to do any more checking.
-		if (style->GetIsSealed ())
+		// 0) Styles are only sealable once they're fully
+		// validated internally and correct so if it's sealed,
+		// we only need to verify that we can apply it to this
+		// object.
+		if (style->GetIsSealed ()) {
+			if (!types->IsSubclassOf (target_kind, style->GetTargetType()->kind)) {
+				error_message = g_strdup_printf ("Style.TargetType ('%s') is not a subclass of ('%s')",
+								 types->Find (style->GetTargetType()->kind)->GetName (),
+								 types->Find (target_kind)->GetName ());
+				MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, error_message);
+				g_free (error_message);
+				return false;
+			}
 			return true;
+		}
 
 		// 1) Check for circular references in the BasedOn tree
 		GHashTable *cycles = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -402,10 +414,8 @@ Validators::StyleValidator (DependencyObject *instance, DependencyProperty *prop
 		// 2) Check that the instance is a subclass of Style::TargetType and also all the styles TargetTypes are
 		// subclasses of their BasedOn styles TargetType.
 		root = style;
-		target_kind = instance->GetObjectType ();
 		while (root) {
 			MoonError::ExceptionType exception;
-			char *error_message = NULL;
 			ManagedTypeInfo *target_type = root->GetTargetType ();
 
 			if (root == style) {

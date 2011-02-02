@@ -478,6 +478,22 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void MismatchTargetTypeAfterSeal ()
+		{
+			Button b;
+			CheckBox cb;
+			Style s = new Style (typeof (CheckBox));
+			
+			s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""CheckBox""><Setter Property=""Width"" Value=""10""/></Style>");
+			cb = new CheckBox ();
+			b = new Button ();
+
+			cb.Style = s;
+
+			Assert.Throws<XamlParseException> (delegate { b.Style = s; }, "#1");
+		}
+
+		[TestMethod]
 		public void InvalidPropertyNameInSetter ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""WidthOrHeight"" Value=""10""/></Style>"); });
