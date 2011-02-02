@@ -136,7 +136,7 @@ bug_report_info (AboutConfigDialogPage *page)
 	g_string_append_printf (str, "Source: %s\n", deployment->GetXapLocation () ? deployment->GetXapLocation ()->GetOriginalString () : NULL);
 	g_string_append_printf (str, "Width: %dpx\n", window->GetWidth ());
 	g_string_append_printf (str, "Height: %dpx\n", window->GetHeight ());
-	g_string_append_printf (str, "Background: %s\n", color_to_string (surface->GetBackgroundColor ()));
+	g_string_append_printf (str, "Background: %s\n", Color::ToString (surface->GetBackgroundColor ()));
 	g_string_append_printf (str, "RuntimeVersion: %s\n", deployment->GetRuntimeVersion() ? deployment->GetRuntimeVersion() : "(Unknown)");
 	g_string_append_printf (str, "Windowless: %s\n", window->GetWidget() == NULL ? "yes" : "no");
 	g_string_append_printf (str, "MaxFrameRate: %i\n", surface->GetTimeManager()->GetMaximumRefreshRate());

@@ -99,13 +99,13 @@ managed_stream_error (gpointer context, gpointer stream)
 }
 
 gboolean
-managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest)
+ManagedUnzip::StreamToStreamFirstFile (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest)
 {
-	return managed_unzip_stream_to_stream_nth_file (source, dest, 0);
+	return StreamToStreamNthFile (source, dest, 0);
 }
 
 gboolean
-managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file)
+ManagedUnzip::StreamToStreamNthFile (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file)
 {
 	zlib_filefunc_def funcs;
 	unzFile zipFile;
@@ -130,10 +130,10 @@ managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, Managed
 	if (unzGoToFirstFile (zipFile) != UNZ_OK)
 		goto cleanup;
 
-	while (!managed_unzip_is_current_file_valid (zipFile) || file > 0) {
+	while (!IsCurrentFileValid (zipFile) || file > 0) {
 		if (unzGoToNextFile (zipFile) != UNZ_OK)
 			goto cleanup;
-		if (!managed_unzip_is_current_file_valid (zipFile))
+		if (!IsCurrentFileValid (zipFile))
 			continue;
 		file --;
 	}
@@ -141,7 +141,7 @@ managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, Managed
 	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
 		goto cleanup;
 
-	ret = managed_unzip_extract_to_stream (zipFile, dest);
+	ret = ExtractToStream (zipFile, dest);
 
 cleanup:
 	unzCloseCurrentFile (zipFile);
@@ -157,7 +157,7 @@ cleanup:
 // without accidentally ignoring regular zero-length files. Needed for
 // drt 1002/1003.
 gboolean
-managed_unzip_is_current_file_valid (unzFile zipFile)
+ManagedUnzip::IsCurrentFileValid (unzFile zipFile)
 {
 	// Figure out how long the filename is using the file_info
 	unz_file_info file_info;
@@ -174,7 +174,7 @@ managed_unzip_is_current_file_valid (unzFile zipFile)
 }
 
 gboolean
-managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname)
+ManagedUnzip::StreamToStream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname)
 {
 	zlib_filefunc_def funcs;
 	unzFile zipFile;
@@ -202,7 +202,7 @@ managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCal
 	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
 		goto cleanup;
 
-	ret = managed_unzip_extract_to_stream (zipFile, dest);
+	ret = ExtractToStream (zipFile, dest);
 
 cleanup:
 	unzCloseCurrentFile (zipFile);
@@ -212,7 +212,7 @@ cleanup:
 }
 
 gboolean
-managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest)
+ManagedUnzip::ExtractToStream (unzFile zipFile, ManagedStreamCallbacks *dest)
 {
 	char buf[4096];
 	int nread;

@@ -278,7 +278,10 @@ class Stroke : public DependencyObject {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	
+
+	/* @GeneratePInvoke */
+	static void GetBounds (Stroke *stroke, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
+
 	//
 	// Property Accessors
 	//
@@ -309,6 +312,9 @@ class StrokeCollection : public DependencyObjectCollection {
 	StrokeCollection *HitTest (StylusPointCollection *stylusPoints);
 	
 	Rect GetBounds ();
+
+	/* @GeneratePInvoke */
+	static void GetBounds (StrokeCollection *collection, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
 };
 
 
@@ -344,15 +350,6 @@ class InkPresenter : public Canvas {
 	void SetStrokes (StrokeCollection *strokes);
 	StrokeCollection *GetStrokes ();
 };
-
-G_BEGIN_DECLS
-
-/* @GeneratePInvoke */
-MOON_API void stroke_get_bounds (Stroke *stroke, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
-/* @GeneratePInvoke */
-MOON_API void stroke_collection_get_bounds (StrokeCollection *collection, /* @MarshalAs=Rect,IsRef */ Rect *bounds);
-
-G_END_DECLS
 
 };
 #endif /* __STYLUS_H__ */

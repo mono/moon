@@ -46,17 +46,16 @@ struct ManagedStreamCallbacks {
 	Stream_Close Close;
 };
 
-/* @GeneratePInvoke */
-MOON_API gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
-
-gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
-
-gboolean managed_unzip_is_current_file_valid (unzFile zipFile);
-
-/* @GeneratePInvoke */
-MOON_API gboolean managed_unzip_stream_to_stream_nth_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file);
-
-gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
+class MOON_API ManagedUnzip {
+public:
+	/* @GeneratePInvoke */
+	static gboolean StreamToStream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
+	static gboolean StreamToStreamFirstFile (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
+	static gboolean IsCurrentFileValid (unzFile zipFile);
+	/* @GeneratePInvoke */
+	static gboolean StreamToStreamNthFile (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, int file);
+	static gboolean ExtractToStream (unzFile zipFile, ManagedStreamCallbacks *dest);
+};
 
 G_GNUC_INTERNAL void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
 

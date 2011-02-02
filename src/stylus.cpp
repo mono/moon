@@ -1006,13 +1006,13 @@ InkPresenter::ShiftPosition (Point p)
 }
 
 void
-stroke_get_bounds (Stroke *stroke, Rect *bounds)
+Stroke::GetBounds (Stroke *stroke, Rect *bounds)
 {
 	*bounds = stroke->GetBounds ();
 }
 
 void
-stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds)
+StrokeCollection::GetBounds (StrokeCollection *collection, Rect *bounds)
 {
 	*bounds = collection->GetBounds ();
 }

@@ -193,7 +193,7 @@ compare_color_names (const void *v1, const void *v2)
  * If no color is found, NULL is returned.
  */
 Color *
-color_from_str (const char *name)
+Color::FromStr (const char *name)
 {
 	size_t len;
 	
@@ -297,7 +297,7 @@ color_from_str (const char *name)
 }
 
 const char *
-color_to_string (Color *color)
+Color::ToString (Color *color)
 {
 	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	static char buf[10];

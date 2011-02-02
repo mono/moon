@@ -68,13 +68,9 @@ public:
 	//   this was successful, false otherwise.
 	//
 	static bool FromStr (const char *s, Point *p);
+	/* @GeneratePInvoke */
+	static Point *FromStr (const char *str);
 };
 
-G_BEGIN_DECLS
-
-/* @GeneratePInvoke */
-MOON_API Point *point_from_str (const char *str);
-
-G_END_DECLS
 };
 #endif /* __MOON_POINT_H__ */

@@ -3780,7 +3780,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::COLOR: {
-		Color *c = color_from_str (s);
+		Color *c = Color::FromStr (s);
 		if (c == NULL)
 			break;
 		*v = new Value (*c);
@@ -3831,7 +3831,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::BRUSH:
 	case Type::SOLIDCOLORBRUSH: {
 		// Only solid color brushes can be specified using attribute syntax
-		Color *c = color_from_str (s);
+		Color *c = Color::FromStr (s);
 		
 		if (c == NULL)
 			break;
@@ -4233,7 +4233,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 		delete uri;
 		return true;
 	} else if (content && content->GetPropertyType () == Type::COLOR && value) {
-		Color *color = color_from_str (g_strstrip (p->cdata->str));
+		Color *color = Color::FromStr (g_strstrip (p->cdata->str));
 		
 		if (color == NULL)
 			return false;

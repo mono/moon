@@ -162,7 +162,7 @@ GeneralTransform::Transform (Point point)
 }
 
 void
-general_transform_transform_point (GeneralTransform *t, Point *p, Point *r)
+GeneralTransform::TransformPoint (GeneralTransform *t, Point *p, Point *r)
 {
 	*r = t->Transform (*p);
 }

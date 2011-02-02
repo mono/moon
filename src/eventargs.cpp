@@ -683,13 +683,13 @@ SizeChangedEventArgs::SizeChangedEventArgs (Size prev_size, Size new_size)
 }
 
 void
-size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, Size *prev_size)
+SizeChangedEventArgs::GetPrevSize (SizeChangedEventArgs *args, Size *prev_size)
 {
 	*prev_size = args->GetPrevSize ();
 }
 
 void
-size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, Size *new_size)
+SizeChangedEventArgs::GetNewSize (SizeChangedEventArgs *args, Size *new_size)
 {
 	*new_size = args->GetNewSize ();
 }

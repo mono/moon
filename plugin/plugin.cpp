@@ -816,7 +816,7 @@ PluginInstance::CreateWindow ()
 	surface->SetEnableRedrawRegions (enable_redraw_regions);
 	
 	if (background) {
-		Color *c = color_from_str (background);
+		Color *c = Color::FromStr (background);
 		
 		if (c == NULL) {
 			d(printf ("error setting background color\n"));
@@ -1623,7 +1623,7 @@ PluginInstance::SetBackground (const char *value)
 	background = g_strdup (value);
 	
 	if (surface) {
-		Color *c = color_from_str (background);
+		Color *c = Color::FromStr (background);
 		
 		if (c == NULL)
 			return false;

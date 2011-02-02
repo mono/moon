@@ -396,7 +396,7 @@ TextElement::SerializeXamlProperties (bool force, GString *str)
 		g_string_append_printf (str, " FontFamily=\"%s\"", GetFontFamily()->source);
 	if (force || LocalValueOverrides (ForegroundProperty)) {
 		if (GetForeground()->Is (Type::SOLIDCOLORBRUSH)) {
-			g_string_append_printf (str, " Foreground=\"%s\"", color_to_string (((SolidColorBrush*)GetForeground())->GetColor()));
+			g_string_append_printf (str, " Foreground=\"%s\"", Color::ToString (((SolidColorBrush*)GetForeground())->GetColor()));
 		}
 	}
 	if (force || LocalValueOverrides (FontWeightProperty))
@@ -902,7 +902,7 @@ Hyperlink::SerializeXamlProperties (bool force, GString *str)
 	g_string_append_printf (str, " NavigateUri=\"%s\"", GetNavigateUri()->GetOriginalString()); // FIXME do we check for null uri here?
 	if (force || LocalValueOverrides (MouseOverForegroundProperty)) {
 		if (GetMouseOverForeground()->Is (Type::SOLIDCOLORBRUSH)) {
-			g_string_append_printf (str, " MouseOverForeground=\"%s\"", color_to_string (((SolidColorBrush*)GetMouseOverForeground())->GetColor()));
+			g_string_append_printf (str, " MouseOverForeground=\"%s\"", Color::ToString (((SolidColorBrush*)GetMouseOverForeground())->GetColor()));
 		}
 	}
 }

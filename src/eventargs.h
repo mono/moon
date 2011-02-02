@@ -656,16 +656,12 @@ public:
 	
 	Size GetPrevSize () { return prev_size; }
 	Size GetNewSize () { return new_size; }
+
+	/* @GeneratePInvoke */
+	static void GetPrevSize (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
+	/* @GeneratePInvoke */
+	static void GetNewSize  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
 };
-
-G_BEGIN_DECLS
-
-/* @GeneratePInvoke */
-MOON_API void                  size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *prev_size);
-/* @GeneratePInvoke */
-MOON_API void                  size_changed_event_args_get_new_size  (SizeChangedEventArgs *args, /* @MarshalAs=Size,IsRef */ Size *new_size);
-
-G_END_DECLS
 
 };
 #endif /* __EVENTARGS_H__ */

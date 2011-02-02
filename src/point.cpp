@@ -45,7 +45,7 @@ Point::Transform (cairo_matrix_t *matrix)
 }
 
 Point *
-point_from_str (const char *str)
+Point::FromStr (const char *str)
 {
 	Point *p = new Point ();
 

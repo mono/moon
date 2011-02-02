@@ -53,6 +53,9 @@ class GeneralTransform : public DependencyObject {
 
 	/* @GenerateJSBinding */
 	Point TransformXY (double x, double y);
+
+	/* @GeneratePInvoke */
+	static void TransformPoint (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r);
 };
 
 /* @Namespace=MS.Internal */
@@ -450,14 +453,6 @@ class TransformGroup : public Transform {
 	void SetChildren (TransformCollection *children);
 	TransformCollection *GetChildren ();
 };
-
-
-G_BEGIN_DECLS
-
-/* @GeneratePInvoke */
-MOON_API void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r);
-
-G_END_DECLS
 
 };
 #endif

@@ -140,7 +140,7 @@ SolidColorBrush::SolidColorBrush ()
 SolidColorBrush::SolidColorBrush (const char *color)
 	: Brush (Type::SOLIDCOLORBRUSH)
 {
-	Color *c = color_from_str (color);
+	Color *c = Color::FromStr (color);
 	SetColor (c);
 	delete c;
 

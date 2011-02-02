@@ -80,16 +80,11 @@ struct Color {
 	{
 		return (fabs (r-v.r) < DBL_EPSILON && fabs (g-v.g) < DBL_EPSILON && fabs (b-v.b) < DBL_EPSILON && fabs (a-v.a) < DBL_EPSILON);
 	}
+
+	/* @GeneratePInvoke */
+	static Color *FromStr (const char *name);
+	static const char *ToString (Color *color);
 };
-
-G_BEGIN_DECLS
-
-const char *color_to_string (Color *color);
-
-/* @GeneratePInvoke */
-MOON_API Color *color_from_str  (const char *name);
-
-G_END_DECLS
 
 };
 

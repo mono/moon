@@ -254,15 +254,11 @@ struct Rect {
 	//
 	static bool FromStr (const char *s, Rect *r);
 
+	/*@GeneratePInvoke */
+	static Rect *FromStr (const char *str);
+
 	static const Rect ManagedEmpty;
 };
-
-G_BEGIN_DECLS
-
-/*@GeneratePInvoke */
-MOON_API Rect *rect_from_str (const char *str);
-
-G_END_DECLS
 
 };
 #endif /* __MOON_RECT_H__ */
