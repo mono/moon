@@ -24,11 +24,9 @@
 
 namespace Moonlight {
 
-GalliumPipe *GalliumPipe::softpipe = NULL;
-
-GalliumPipe::GalliumPipe (pipe_screen *screen)
+GalliumPipe::GalliumPipe (pipe_context *context)
 {
-	pipe     = screen->context_create (screen, NULL);
+	pipe     = context;
 	refcount = 1;
 }
 	
@@ -58,19 +56,6 @@ pipe_context *
 GalliumPipe::Pipe ()
 {
 	return pipe;
-}
-
-GalliumPipe *
-GalliumPipe::GetInstance (pipe_screen *screen)
-{
-	if (strcmp ("softpipe", (*screen->get_name) (screen)) == 0) {
-		if (!softpipe)
-			softpipe = new GalliumPipe (screen);
-
-		return softpipe->ref ();
-	}
-
-	return new GalliumPipe (screen);
 }
 	
 GalliumSurface::Transfer::Transfer (GalliumPipe   *pipe,
