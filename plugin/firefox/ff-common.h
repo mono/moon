@@ -5,6 +5,7 @@
 // muck with our npapi.h)
 #define NO_NSPR_10_SUPPORT
 
+#include "moonbuild.h"
 #include "plugin-class.h"
 
 #include <nsCOMPtr.h>

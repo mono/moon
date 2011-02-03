@@ -18,6 +18,7 @@
 class CallData;
 class CurlBrowserBridge;
 
+#include "moonbuild.h"
 #include "browser-bridge.h"
 #include "list.h"
 #include "ptr.h"

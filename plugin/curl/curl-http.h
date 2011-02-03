@@ -23,6 +23,7 @@ class CurlDownloaderResponse;
 #include <curl/types.h>
 #include <curl/easy.h>
 
+#include "moonbuild.h"
 #include "timemanager.h"
 #include "ptr.h"
 
