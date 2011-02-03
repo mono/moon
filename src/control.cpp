@@ -230,6 +230,11 @@ Control::Focus (bool recurse)
 	Surface *surface = GetDeployment ()->GetSurface ();
 	DeepTreeWalker walker (this);
 	while (UIElement *e = walker.Step ()) {
+		if (e->GetVisibility () != VisibilityVisible) {
+			walker.SkipBranch ();
+			continue;
+		}
+
 		if (!types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))
 			continue;
 		
