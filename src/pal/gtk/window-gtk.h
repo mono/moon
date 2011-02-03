@@ -25,11 +25,11 @@
 #include "window.h"
 #include "runtime.h"
 
-namespace Moonlight {
-
 #ifdef USE_GALLIUM
-class GalliumContext;
+struct pipe_screen;
 #endif
+
+namespace Moonlight {
 
 class GLXSurface;
 
@@ -82,7 +82,7 @@ public:
 	virtual gpointer GetPlatformWindow ();
 
 #ifdef USE_GALLIUM
-	void SetGalliumContext (GalliumContext *gcontext) { context = gcontext; }
+	void SetGalliumScreen (pipe_screen *gscreen) { screen = gscreen; }
 #endif
 
 protected:
@@ -108,7 +108,7 @@ private:
 	cairo_surface_t *native;
 
 #ifdef USE_GALLIUM
-	GalliumContext *context;
+	pipe_screen *screen;
 #endif
 
 #ifdef USE_GLX
