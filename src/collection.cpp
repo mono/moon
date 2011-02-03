@@ -792,7 +792,7 @@ DoubleCollection::FromStr (const char *s)
 		return NULL;
 	}
 
-	DoubleCollection *doubles = new DoubleCollection ();
+	DoubleCollection *doubles = MoonUnmanagedFactory::CreateDoubleCollection ();
 	for (guint i = 0; i < values->len; i ++)
 		doubles->Add (Value (g_array_index (values, double, i)));
 	g_array_free (values, true);
@@ -825,7 +825,7 @@ PointCollection::FromStr (const char *s)
 		return NULL;
 	}
 
-	PointCollection *points = new PointCollection();
+	PointCollection *points = MoonUnmanagedFactory::CreatePointCollection();
 	for (i = 0, j = 0; j < n; j++) {
 		double x = g_array_index (values, double, i++);
 		double y = g_array_index (values, double, i++);
