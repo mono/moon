@@ -312,7 +312,7 @@ Validators::StoryboardTargetPropertyValidator (DependencyObject* instance, Depen
 bool
 Validators::IsSetterSealedValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (instance->Is (Type::SETTERBASE) && !instance->IsBeingParsed ()) {
+	if (instance->Is (Type::SETTERBASE)) {
 		if (((SetterBase*) instance)->GetIsSealed ()) {
 			MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot modify a setter after it is used");
 			return false;

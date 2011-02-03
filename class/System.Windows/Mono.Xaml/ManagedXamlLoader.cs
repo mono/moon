@@ -1338,23 +1338,12 @@ namespace Mono.Xaml
 
 		private static unsafe void SetValue (XamlCallbackData *data, IntPtr target_data, PropertyInfo pi, object target, object value)
 		{
-			SetterBase sb = target as SetterBase;
-			
-			if (sb != null)
-				sb.IsSealed = false;
+			if (NativeMethods.xaml_is_property_set (data->parser, target_data, pi.Name))
+				throw new XamlParseException (2033, String.Format ("Cannot specify the value multiple times for property: {0}.", pi.Name));
 
-			try {
-				if (NativeMethods.xaml_is_property_set (data->parser, target_data, pi.Name))
-					throw new XamlParseException (2033, String.Format ("Cannot specify the value multiple times for property: {0}.", pi.Name));
+			pi.SetValue (target, value, null);
 
-				pi.SetValue (target, value, null);
-
-				NativeMethods.xaml_mark_property_as_set (data->parser, target_data, pi.Name);
-
-			} finally {
-				if (sb != null)
-					sb.IsSealed = true;
-			}
+			NativeMethods.xaml_mark_property_as_set (data->parser, target_data, pi.Name);
 		}
 
 		private static object ConvertType (MemberInfo pi, Type t, object value)
