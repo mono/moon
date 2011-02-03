@@ -48,6 +48,9 @@ ContentPresenter::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		Value *old_value = args->GetOldValue ();
 		Value *new_value = args->GetNewValue ();
 
+		// We have to clear the root before resetting the DataContext. Otherwise
+		// we will end up emitting the LostFocus event after clearing the DataContext
+		// which is incorrect and breaks twoway TextBox.Text bindings using DataContext.
 		if ((new_value && new_value->Is (deployment, Type::UIELEMENT)) ||
 		    (old_value && old_value->Is (deployment, Type::UIELEMENT)))
 			ClearRoot ();
