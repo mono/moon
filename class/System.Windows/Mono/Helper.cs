@@ -108,24 +108,30 @@ namespace Mono {
 
 			// first check for a TypeConverter attribute on the property
 			if (info != null) {
-				attrs = (Attribute[])info.GetCustomAttributes (true);
-				foreach (Attribute attr in attrs) {
-					if (attr is TypeConverterAttribute) {
-						at = (TypeConverterAttribute)attr;
-						break;
+				try {
+					attrs = (Attribute[])info.GetCustomAttributes (true);
+					foreach (Attribute attr in attrs) {
+						if (attr is TypeConverterAttribute) {
+							at = (TypeConverterAttribute)attr;
+							break;
+						}
 					}
+				} catch (Exception) {
 				}
 			}
 
 			if (at == null) {
 				// we didn't find one on the property.
 				// check for one on the Type.
-				attrs = (Attribute[])target_type.GetCustomAttributes (true);
-				foreach (Attribute attr in attrs) {
-					if (attr is TypeConverterAttribute) {
-						at = (TypeConverterAttribute)attr;
-						break;
+				try {
+					attrs = (Attribute[])target_type.GetCustomAttributes (true);
+					foreach (Attribute attr in attrs) {
+						if (attr is TypeConverterAttribute) {
+							at = (TypeConverterAttribute)attr;
+							break;
+						}
 					}
+				} catch (Exception) {
 				}
 			}
 
@@ -144,7 +150,9 @@ namespace Mono {
 				cachedConverters.Add (converterKey, null);
 				return null;
 			}
+			
 			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(Type) });
+			
 			if (ci != null) {
 				creator = System.Linq.Expressions.Expression.Lambda<Func<TypeConverter>> (
 					System.Linq.Expressions.Expression.New (ci,
@@ -152,7 +160,7 @@ namespace Mono {
 			} else
 				creator = System.Linq.Expressions.Expression.Lambda<Func<TypeConverter>> (
 					System.Linq.Expressions.Expression.New (t)).Compile ();
-
+			
 			cachedConverters.Add (converterKey, creator);
 			return creator;
 		}
