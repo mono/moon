@@ -314,13 +314,6 @@ namespace System.Windows.Controls {
 		internal virtual void PostOnKeyDown (KeyEventArgs e)
 		{
 			EmitCurrentContext (EventIds.UIElement_KeyDownEvent, e);
-
-			if (!e.Handled && e.Key == Key.Tab) {
-				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
-				// we handle it and tab to the next control here.
-				e.Handled = true;
-				NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
-			}
 		}
 
 		internal virtual void PreOnKeyUp (KeyEventArgs e) { }

@@ -1862,7 +1862,8 @@ Surface::EmitEventOnList (int event_id, List *list, MoonEvent *event, int end_id
 			break;
 		}
 	}
-
+	if (args->Is (Type::ROUTEDEVENTARGS))
+		handled = ((RoutedEventArgs *)args)->GetHandled ();
 	args->unref();
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
@@ -2481,6 +2482,15 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 		handled = true;
 	}
 
+
+	if (!handled && key == KeyTAB) {
+		// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
+		// we handle it and tab to the next control here.
+		if (GetFocusedElement ())
+			TabNavigationWalker::Focus (GetFocusedElement (), (Keyboard::GetModifiers () & ModifierKeyShift) == ModifierKeyNone);
+		else
+			EnsureElementFocused ();
+	}
 	SetUserInitiatedEvent (false);
 	
 	return handled ? MoonEventHandled : MoonEventNotHandled;
