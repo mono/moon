@@ -73,7 +73,7 @@ public:
 	void ForEach (NodeAction action, void *data);
 };
 
-class Queue {
+class MOON_API Queue {
 protected:
 	pthread_mutex_t lock;
 	List *list;
