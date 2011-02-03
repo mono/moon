@@ -47,16 +47,16 @@ ContentPresenter::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		Deployment *deployment = GetDeployment ();
 		Value *old_value = args->GetOldValue ();
 		Value *new_value = args->GetNewValue ();
-		
+
+		if ((new_value && new_value->Is (deployment, Type::UIELEMENT)) ||
+		    (old_value && old_value->Is (deployment, Type::UIELEMENT)))
+			ClearRoot ();
+
 		if (new_value && !new_value->Is (deployment, Type::UIELEMENT))
 			SetValue (FrameworkElement::DataContextProperty, new_value);
 		else
 			ClearValue (FrameworkElement::DataContextProperty);
-		
-		if ((new_value && new_value->Is (deployment, Type::UIELEMENT)) ||
-		    (old_value && old_value->Is (deployment, Type::UIELEMENT)))
-			ClearRoot ();
-		
+
 		InvalidateMeasure ();
 	} else if (args->GetId () == ContentPresenter::ContentTemplateProperty) {
 		ClearRoot ();
