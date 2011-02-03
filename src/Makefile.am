@@ -393,10 +393,10 @@ EXTRA_DIST = \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
 
-libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
-libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
 # we do not link with gallium libs here, they are static libs, and whoever links with libmoon-static 
