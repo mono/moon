@@ -260,6 +260,9 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		if (GetVisualParent ())
 			GetVisualParent ()->InvalidateMeasure ();
+		if (GetDeployment ()->GetSurface ()->GetFocusedElement () == this) {
+			GetDeployment ()->GetSurface ()->FocusElement (NULL);
+		}
 	} else if (args->GetId () == UIElement::IsHitTestVisibleProperty) {
 		if (args->GetNewValue()->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
