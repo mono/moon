@@ -260,7 +260,7 @@ MoonWindowCocoa::ButtonPressEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUIButtonPress (mevent);
 		delete mevent;
 	}
@@ -274,7 +274,7 @@ MoonWindowCocoa::KeyDownEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUIKeyPress (mevent);
 		delete mevent;
 	}
@@ -288,7 +288,7 @@ MoonWindowCocoa::KeyUpEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUIKeyRelease (mevent);
 		delete mevent;
 	}
@@ -302,7 +302,7 @@ MoonWindowCocoa::ButtonReleaseEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUIButtonRelease (mevent);
 		delete mevent;
 	}
@@ -316,7 +316,7 @@ MoonWindowCocoa::MotionEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonMotionEvent *mevent = (MoonMotionEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonMotionEvent *mevent = (MoonMotionEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUIMotion (mevent);
 		delete mevent;
 	}
@@ -330,7 +330,7 @@ MoonWindowCocoa::MouseEnteredEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUICrossing (mevent);
 		delete mevent;
 	}
@@ -344,7 +344,7 @@ MoonWindowCocoa::MouseExitedEvent (void *evt)
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
 		surface->HandleUICrossing (mevent);
 		delete mevent;
 	}

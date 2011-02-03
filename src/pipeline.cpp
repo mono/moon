@@ -218,7 +218,7 @@ Media::InstallMSCodecs (bool is_user_initiated)
 #if CODECS_SUPPORTED
 	CodecDownloader::ShowUI (Deployment::GetCurrent ()->GetSurface (), is_user_initiated);
 #else
-	runtime_get_windowing_system ()->ShowCodecsUnavailableMessage ();
+	Runtime::GetWindowingSystem ()->ShowCodecsUnavailableMessage ();
 #endif
 }
 
