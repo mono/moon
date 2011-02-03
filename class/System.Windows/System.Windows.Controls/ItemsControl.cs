@@ -191,7 +191,7 @@ namespace System.Windows.Controls {
 					Items.AddImpl (v);
 				break;
 			}
-			InvokeItemsChanged (this, e);
+			OnItemsChanged (e);
 		}
 		
 		static void DisplayMemberPathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
