@@ -36,6 +36,11 @@ Requirements
 	The revision the codecs currently are at is: 994953e0 (only applicable to buildbots
 	and developers on the Moonlight team). For SVN users, the revision is: 9363
 
+	The package wnck-sharp is also required, it can be found in the gnome-desktop-sharp
+	repository on github:
+		https://github.com/mono/gnome-desktop-sharp
+	Alternatively, on ubuntu/debian, the gnome-desktop-sharp2 package provides it.
+
 Compiling Mono for Moonlight
 ============================
 
