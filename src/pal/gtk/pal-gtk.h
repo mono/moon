@@ -11,6 +11,10 @@ struct pipe_screen;
 
 namespace Moonlight {
 
+#ifdef USE_GALLIUM
+class GalliumContext;
+#endif
+
 class MoonWindowingSystemGtk : public MoonWindowingSystem {
 public:
 	MoonWindowingSystemGtk (bool out_of_browser);
@@ -55,6 +59,7 @@ private:
 
 #ifdef USE_GALLIUM
 	pipe_screen *gscreen;
+	GalliumContext *gcontext;
 #endif
 	
 	void LoadSystemColors ();

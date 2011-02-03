@@ -17,6 +17,10 @@
 extern "C" {
 #include "pipe/p_screen.h"
 #include "util/u_debug.h"
+#ifdef CLAMP
+#undef CLAMP
+#endif
+#include "util/u_inlines.h"
 #define template templat
 #include "state_tracker/sw_winsys.h"
 #include "sw/null/null_sw_winsys.h"
@@ -670,6 +674,27 @@ MoonWindowingSystemGtk::MoonWindowingSystemGtk (bool out_of_browser)
 
 #ifdef USE_GALLIUM
 	gscreen = swrast_screen_create (null_sw_create ());
+	g_assert (gscreen);
+
+	struct pipe_resource pt, *texture;
+	GalliumSurface       *target;
+
+	memset (&pt, 0, sizeof (pt));
+	pt.target = PIPE_TEXTURE_2D;
+	pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
+	pt.width0 = 1;
+	pt.height0 = 1;
+	pt.depth0 = 1;
+	pt.last_level = 0;
+	pt.bind = PIPE_BIND_RENDER_TARGET;
+
+	texture = (*gscreen->resource_create) (gscreen, &pt);
+	g_assert (texture);
+
+	target = new GalliumSurface (texture);
+	pipe_resource_reference (&texture, NULL);
+	gcontext = new GalliumContext (target);
+	target->unref ();
 #endif
 
 }
@@ -678,6 +703,7 @@ MoonWindowingSystemGtk::~MoonWindowingSystemGtk ()
 {
 
 #ifdef USE_GALLIUM
+	delete gcontext;
 	gscreen->destroy (gscreen);
 #endif
 
@@ -704,7 +730,7 @@ MoonWindowingSystemGtk::CreateWindow (MoonWindowType windowType, int width, int 
 	MoonWindowGtk *gtkwindow = new MoonWindowGtk (windowType, width, height, parentWindow, surface);
 	RegisterWindow (gtkwindow);
 #ifdef USE_GALLIUM
-	gtkwindow->SetGalliumScreen (gscreen);
+	gtkwindow->SetGalliumContext (gcontext);
 #endif
 	return gtkwindow;
 }
@@ -716,7 +742,7 @@ MoonWindowingSystemGtk::CreateWindowless (int width, int height, PluginInstance 
 	if (gtkwindow)
 		RegisterWindow (gtkwindow);
 #ifdef USE_GALLIUM
-	gtkwindow->SetGalliumScreen (gscreen);
+	gtkwindow->SetGalliumContext (gcontext);
 #endif
 	return gtkwindow;
 }

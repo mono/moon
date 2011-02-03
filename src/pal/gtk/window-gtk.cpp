@@ -28,10 +28,6 @@
 #ifdef USE_GALLIUM
 #define __MOON_GALLIUM__
 #include "context-gallium.h"
-#ifdef CLAMP
-#undef CLAMP
-#endif
-#include "util/u_inlines.h"
 #endif
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -87,7 +83,7 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 	native = NULL;
 
 #ifdef USE_GALLIUM
-	screen = NULL;
+	context = NULL;
 #endif
 
 #ifdef USE_GLX
@@ -966,37 +962,13 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	if (!native)
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
-	if (!ctx) {
-
 #ifdef USE_GALLIUM
-		struct pipe_resource pt, *texture;
-		GalliumSurface       *target;
-
-		memset (&pt, 0, sizeof (pt));
-		pt.target = PIPE_TEXTURE_2D;
-		pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
-		pt.width0 = width;
-		pt.height0 = height;
-		pt.depth0 = 1;
-		pt.last_level = 0;
-		pt.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_TRANSFER_WRITE |
-			PIPE_BIND_TRANSFER_READ;
-
-		g_assert (screen);
-
-		texture = (*screen->resource_create) (screen, &pt);
-
-		target = new GalliumSurface (texture);
-		pipe_resource_reference (&texture, NULL);
-		ctx = new GalliumContext (target);
-		target->unref ();
+	ctx = context;
 #else
-		CairoSurface *target = new CairoSurface (native, width, height);
-		ctx = new CairoContext (target);
-		target->unref ();
+	CairoSurface *target = new CairoSurface (native, width, height);
+	ctx = new CairoContext (target);
+	target->unref ();
 #endif
-
-	}
 
 	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
 	GdkRectangle area = event->area;
@@ -1055,8 +1027,9 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 
 #ifndef USE_GALLIUM
 	delete ctx;
-	ctx = NULL;
 #endif
+
+	ctx = NULL;
 
 	delete region;
 
