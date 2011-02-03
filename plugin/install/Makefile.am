@@ -109,7 +109,7 @@ if INCLUDE_BROWSER_MANAGED_CODE
 #	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
 #	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_BROWSER_MANAGED_CODE
-#	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
+	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
 	cd .xpinstall/ && zip -r9 ../$@ *
 	./check_xpi.sh $@
 
@@ -144,6 +144,7 @@ if INCLUDE_BROWSER_MANAGED_CODE
 	cd $(CRXDIR)/moonlight && rm -f $(SDK_DLLS)
 endif
 
+	find $(CRXDIR) -name \*.so -exec strip '{}' ';'  # strip symbols
 	$(CHROME) --pack-extension=$(CRXDIR) --pack-extension-key=novell-moonlight.pem
 	rm -rf $(CRXDIR)
 endif
