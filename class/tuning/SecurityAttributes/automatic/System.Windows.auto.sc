@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 592 methods needs to be decorated.
+# 591 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -20,7 +20,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::accessibility_bridge_is_accessibility_enabled(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::application_install_with_error_(System.IntPtr,Mono.MoonError&,System.Boolean,System.Boolean)
++SC-M: System.Boolean Mono.NativeMethods::application_install_(System.IntPtr,Mono.MoonError&,System.Boolean,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_is_running_out_of_browser(System.IntPtr)
@@ -35,7 +35,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::collection_contains(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::collection_insert_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::collection_insert_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_iterator_next_(System.IntPtr,Mono.MoonError&)
@@ -47,10 +47,10 @@
 +SC-M: System.Boolean Mono.NativeMethods::collection_remove(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::collection_remove_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::collection_remove_at_(System.IntPtr,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::collection_set_value_at_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::collection_set_value_at_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::consent_prompt_user_for(System.Int32,System.Boolean&)
@@ -62,7 +62,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_name_on_scope(System.IntPtr,System.String,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_get_has_hidden_default_value(System.IntPtr)
@@ -80,7 +80,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::deployment_initialize_app_domain(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::framework_element_apply_template_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::framework_element_apply_template_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::html_object_has_method(System.IntPtr,System.IntPtr,System.String)
@@ -143,7 +143,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_windowless(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::resource_dictionary_add_with_error_(System.IntPtr,System.String,Mono.Value&,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::resource_dictionary_add_(System.IntPtr,System.String,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::resource_dictionary_clear(System.IntPtr)
@@ -161,7 +161,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::routed_event_args_get_handled(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::storyboard_begin_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::storyboard_begin_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::stroke_hit_test(System.IntPtr,System.IntPtr)
@@ -185,13 +185,13 @@
 +SC-M: System.Boolean Mono.NativeMethods::tab_navigation_walker_focus(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_with_error_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::text_pointer_get_is_at_insertion_position(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::text_selection_select_with_error_(System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::text_selection_select_(System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::transform_try_transform(System.IntPtr,System.Windows.Point,System.Windows.Point&)
@@ -218,7 +218,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::window_activate_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::window_activate_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::xaml_is_property_set(System.IntPtr,System.IntPtr,System.String)
@@ -365,7 +365,7 @@
 +SC-M: System.Int32 Mono.NativeMethods::capture_source_get_state(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::collection_add_with_error_(System.IntPtr,Mono.Value&,Mono.MoonError&)
++SC-M: System.Int32 Mono.NativeMethods::collection_add_(System.IntPtr,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_changed_event_args_get_index(System.IntPtr)
@@ -440,7 +440,7 @@
 +SC-M: System.Int32 Mono.NativeMethods::surface_get_user_initiated_counter(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::text_pointer_compare_to_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.Int32 Mono.NativeMethods::text_pointer_compare_to_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
@@ -488,7 +488,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_iterator(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at_(System.IntPtr,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current_(System.IntPtr,Mono.MoonError&)
@@ -512,7 +512,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_find_name(System.IntPtr,System.String,Mono.Kind&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_animation_base_value_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_animation_base_value_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_mentor(System.IntPtr)
@@ -527,13 +527,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_template_owner(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_(System.IntPtr,Mono.Kind,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_with_error_(System.IntPtr,Mono.Kind,System.IntPtr,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_default_value(System.IntPtr,Mono.Kind)
@@ -584,7 +584,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_get_logical_parent(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::framework_template_get_visual_tree_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::framework_template_get_visual_tree_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::general_transform_get_matrix(System.IntPtr)
@@ -809,16 +809,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::shape_get_geometry_transform(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_file_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_string_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_get_context(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_hydrate_from_string_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::storyboard_get_target_dependency_property(System.IntPtr)
@@ -917,7 +917,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_subtree_object(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_visual_parent(System.IntPtr)
@@ -950,13 +950,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_get_template_parent(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.IntPtr,System.IntPtr)
@@ -1084,11 +1084,8 @@
 # p/invoke declaration
 +SC-M: System.UInt64 Mono.NativeMethods::http_request_write_event_args_get_offset(System.IntPtr)
 
-# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)'.
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
-
-# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
-+SC-M: System.Void Mono.NameScope::set_NativeHandle(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_check_and_download_update_async(System.IntPtr)
@@ -1298,16 +1295,16 @@
 +SC-M: System.Void Mono.NativeMethods::imedia_object_report_error_occurred(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::local_message_receiver_dispose_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::local_message_receiver_dispose_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::local_message_receiver_listen_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::local_message_receiver_listen_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::local_message_receiver_set_allowed_sender_domains(System.IntPtr,System.String[],System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::local_message_sender_send_async_with_error_(System.IntPtr,System.String,System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::local_message_sender_send_async_(System.IntPtr,System.String,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_base_set_source(System.IntPtr,System.String)
@@ -1388,7 +1385,7 @@
 +SC-M: System.Void Mono.NativeMethods::resource_dictionary_changed_event_args_set_old_item(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::resource_dictionary_set_internal_source_with_error_(System.IntPtr,System.String,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::resource_dictionary_set_internal_source_(System.IntPtr,System.String,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::rich_text_box_on_got_focus(System.IntPtr,System.IntPtr)
@@ -1448,22 +1445,22 @@
 +SC-M: System.Void Mono.NativeMethods::storyboard_flatten_timelines(System.IntPtr,Mono.FlattenTimelinesCallback)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_pause_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::storyboard_pause_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_resume_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::storyboard_resume_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_seek_aligned_to_last_tick_with_error_(System.IntPtr,System.Int64,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::storyboard_seek_(System.IntPtr,System.Int64,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_seek_with_error_(System.IntPtr,System.Int64,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::storyboard_seek_aligned_to_last_tick_(System.IntPtr,System.Int64,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_stop_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::storyboard_stop_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::stroke_collection_get_bounds(System.IntPtr,System.Windows.Rect&)
@@ -1559,7 +1556,7 @@
 +SC-M: System.Void Mono.NativeMethods::time_manager_set_maximum_refresh_rate(System.IntPtr,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::touch_device_set_directly_over(System.IntPtr,System.IntPtr)
@@ -1580,7 +1577,7 @@
 +SC-M: System.Void Mono.NativeMethods::types_register_interfaces(System.IntPtr,Mono.Kind,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uielement_arrange_with_error_(System.IntPtr,System.Windows.Rect,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::uielement_arrange_(System.IntPtr,System.Windows.Rect,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_element_added(System.IntPtr,System.IntPtr)
@@ -1601,7 +1598,7 @@
 +SC-M: System.Void Mono.NativeMethods::uielement_invalidate_measure(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uielement_measure_with_error_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::uielement_measure_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_release_mouse_capture(System.IntPtr)
@@ -1610,7 +1607,7 @@
 +SC-M: System.Void Mono.NativeMethods::uielement_set_subtree_object(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uielement_update_layout_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::uielement_update_layout_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
@@ -1631,13 +1628,13 @@
 +SC-M: System.Void Mono.NativeMethods::video_brush_set_source(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::window_close_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::window_close_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::window_drag_move_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::window_drag_move_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::window_drag_resize_with_error_(System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::window_drag_resize_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::window_set_moon_window(System.IntPtr,System.IntPtr)
@@ -1766,10 +1763,10 @@
 +SC-M: System.Windows.Rect Mono.NativeMethods::text_pointer_get_character_rect(System.IntPtr,System.Windows.Documents.LogicalDirection)
 
 # p/invoke declaration
-+SC-M: System.Windows.Size Mono.NativeMethods::framework_element_arrange_override_with_error_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
++SC-M: System.Windows.Size Mono.NativeMethods::framework_element_arrange_override_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Windows.Size Mono.NativeMethods::framework_element_measure_override_with_error_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
++SC-M: System.Windows.Size Mono.NativeMethods::framework_element_measure_override_(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Windows.Size Mono.NativeMethods::uielement_get_desired_size(System.IntPtr)

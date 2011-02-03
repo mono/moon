@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 637 methods
+# 636 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -253,10 +253,8 @@
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetAnimationBaseValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::ClearValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(System.IntPtr)
-+SSC-M: System.Void Mono.NameScope::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Boolean Mono.NameScope::get_Temporary()
 +SSC-M: System.Void Mono.NameScope::set_Temporary(System.Boolean)
-+SSC-M: System.Void Mono.NameScope::Free()
 +SSC-M: System.Void Mono.Surface::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: Mono.Kind Mono.Surface::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Void Mono.Surface::set_Native(System.IntPtr)
@@ -288,6 +286,7 @@
 +SSC-M: System.Void System.Windows.Controls.Control::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.Control::.cctor()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.ItemContainerGenerator::GenerateNext(System.Boolean&)
++SSC-M: System.Void System.Windows.Controls.ItemsControl::System.Collections.Specialized.IListenCollectionChanged.CollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::OnItemsClearing(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::AddItemsToPresenter(System.Windows.Controls.Primitives.GeneratorPosition,System.Int32)
 +SSC-M: System.Windows.Controls.ItemCollection System.Windows.Controls.ItemsControl::get_Items()

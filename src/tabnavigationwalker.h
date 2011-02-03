@@ -39,6 +39,7 @@ class TabNavigationWalker {
 	bool WalkChildren (UIElement *root, UIElement *current = NULL);
 
 	static KeyboardNavigationMode GetActiveNavigationMode (UIElement *element, Types *types);
+	static KeyboardNavigationMode GetParentNavigationMode (UIElement *element, Types *types);
 	static void Sort (GPtrArray *array, Types *types);
 	static int TabCompare (Control *left, Control *right);
 	static bool WalkChildren (UIElement *root, UIElement *current, bool forwards, Types *types);

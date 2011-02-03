@@ -43,9 +43,13 @@ TabNavigationWalker::FocusChild ()
 
 	// Add each branch of the visual tree to the array and then sort them
 	// based on the TabIndex of the first Control in each branch
-	VisualTreeWalker child_walker (root);
-	while ((child = child_walker.Step ()))
+	DeepTreeWalker child_walker (root);
+	while ((child = child_walker.Step ())) {
+		if (child == root || !child->Is (Type::CONTROL))
+			continue;
 		g_ptr_array_add (tab_sorted, child);
+		child_walker.SkipBranch ();
+	}
 
 	if (tab_sorted->len > 1) {
 		Sort (tab_sorted, types);
@@ -141,23 +145,26 @@ TabNavigationWalker::Focus (UIElement *element, bool forwards)
 
 	// If tabbing in reverse, we immediately go up a level from initial root as
 	// we know we will not be focusing any of its children.
-	if (!forwards && root->GetVisualParent ())
-		root = root->GetVisualParent ();
+	if ((root->GetVisualParent () && GetParentNavigationMode (root->GetVisualParent (), types) == KeyboardNavigationModeOnce)
+		|| (!forwards && root && root->GetVisualParent ())) {
+		while ((root = root->GetVisualParent ())) {
+			if (root->Is (Type::CONTROL) || !root->GetVisualParent ())
+				break;
+		}
+	}
 
 	do {
 		// If we're starting a tab sequence and the parent of the current element is set to
 		// the 'Once' navigation mode, we should not traverse the children
-		if (!(root == current &&
-			root->GetVisualParent () &&
-			GetActiveNavigationMode (root->GetVisualParent (), types) == KeyboardNavigationModeOnce)) {
-			focused |= WalkChildren (root, current, forwards, types);
-		}
+		focused |= WalkChildren (root, current, forwards, types);
 
 		if (!focused && GetActiveNavigationMode (root, types) == KeyboardNavigationModeCycle)
 			return true;
 
 		current = root;
 		root = root->GetVisualParent ();
+		while (root && !root->Is (Type::CONTROL) && root->GetVisualParent ())
+			root = root->GetVisualParent ();
 	} while (!focused && root);
 
 	if (!focused)
@@ -168,6 +175,19 @@ TabNavigationWalker::Focus (UIElement *element, bool forwards)
 
 KeyboardNavigationMode
 TabNavigationWalker::GetActiveNavigationMode (UIElement *element, Types *types)
+{
+	while (element) {
+		if (types->IsSubclassOf (element->GetObjectType (), Type::CONTROL))
+			return ((Control *)element)->GetTabNavigation ();
+		else
+			// element = element->GetVisualParent ()
+			return KeyboardNavigationModeLocal;
+	}
+	return KeyboardNavigationModeLocal;
+}
+
+KeyboardNavigationMode
+TabNavigationWalker::GetParentNavigationMode (UIElement *element, Types *types)
 {
 	while (element) {
 		if (types->IsSubclassOf (element->GetObjectType (), Type::CONTROL))
@@ -216,8 +236,8 @@ TabNavigationWalker::TabCompare (Control* left, Control* right)
 	if (!right)
 		return 1;
 
-	Value *v1 = left->ReadLocalValue (Control::TabIndexProperty);
-	Value *v2 = right->ReadLocalValue (Control::TabIndexProperty);
+	Value *v1 = left->GetValue (Control::TabIndexProperty);
+	Value *v2 = right->GetValue (Control::TabIndexProperty);
 
 	if (!v1) {
 		return v2 ? -1 : 0;
