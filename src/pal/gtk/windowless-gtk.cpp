@@ -59,7 +59,7 @@ MoonWindowlessGtk::UpdateWindowInfo ()
 
 	NPWindow *window = plugin->GetWindow();
 	NPSetWindowCallbackStruct *ws_info = (NPSetWindowCallbackStruct*)window->ws_info;
-	visualid = ws_info->visual ? visualid = ws_info->visual->visualid : 0;
+	visualid = ws_info->visual ? ws_info->visual->visualid : 0;
 	x = window->x;
 	y = window->y;
 }
