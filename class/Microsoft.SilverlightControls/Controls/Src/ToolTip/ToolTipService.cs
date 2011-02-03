@@ -402,18 +402,20 @@ namespace System.Windows.Controls
  
             ToolTipService._currentToolTip = (ToolTip) ToolTipService._owner.GetValue (AssignedToolTipProperty);
 
-            ToolTipService._currentToolTip.PlacementOverride = ToolTipService.GetPlacement (_owner);
-            ToolTipService._currentToolTip.PlacementTargetOverride = ToolTipService.GetPlacementTarget (_owner) ?? _owner;
-            ToolTipService._currentToolTip.IsOpen = true;
+	    if (ToolTipService._currentToolTip != null) {
+                ToolTipService._currentToolTip.PlacementOverride = ToolTipService.GetPlacement (_owner);
+                ToolTipService._currentToolTip.PlacementTargetOverride = ToolTipService.GetPlacementTarget (_owner) ?? _owner;
+                ToolTipService._currentToolTip.IsOpen = true;
 
-            // start the timer which closes the ToolTip
-            if (ToolTipService._closeTimer == null) 
-            { 
-                ToolTipService._closeTimer = new DispatcherTimer();
-                ToolTipService._closeTimer.Tick += new EventHandler(CloseAutomaticToolTip); 
-            }
-            ToolTipService._closeTimer.Interval = new TimeSpan(0, 0, 0, 0, TOOLTIPSERVICE_showDuration);
-            ToolTipService._closeTimer.Start(); 
+		// start the timer which closes the ToolTip
+                if (ToolTipService._closeTimer == null) 
+                { 
+                    ToolTipService._closeTimer = new DispatcherTimer();
+                    ToolTipService._closeTimer.Tick += new EventHandler(CloseAutomaticToolTip); 
+                }
+                ToolTipService._closeTimer.Interval = new TimeSpan(0, 0, 0, 0, TOOLTIPSERVICE_showDuration);
+                ToolTipService._closeTimer.Start(); 
+	    }
         }
 		/*
         private static void PositiveValueValidation(DependencyObject d, DependencyPropertyChangedEventArgs e) 
