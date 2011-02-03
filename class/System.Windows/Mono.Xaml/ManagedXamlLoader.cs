@@ -1633,7 +1633,7 @@ namespace Mono.Xaml
 		}
 
 		//
-		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
+		// Proxy so that we return bool in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
 		private unsafe bool cb_set_property (XamlCallbackData *data, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value_ptr, IntPtr value_data, ref MoonError error)
@@ -1642,7 +1642,7 @@ namespace Mono.Xaml
 				return SetProperty (data, xmlns, target, target_data, target_parent, prop_xmlns, name, value_ptr, value_data);
 			} catch (Exception ex) {
 				try {
-					Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", (IntPtr) data->top_level, xmlns, (IntPtr)target, name, (IntPtr)value_ptr, ex.Message);
+					Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}", (IntPtr) data->top_level, xmlns, (IntPtr)target, name, (IntPtr)value_ptr, ex.Message);
 					Console.Error.WriteLine (ex);
 					error = new MoonError (ex);
 					return false;
@@ -1661,7 +1661,7 @@ namespace Mono.Xaml
 				Application.ImportXamlNamespace (xmlns);
 				return true;
 			} catch (Exception ex) {
-				Console.WriteLine ("Application::ImportXamlNamespace ({0}) threw an exception:\n{1}", xmlns, ex);
+				Console.WriteLine ("Application::ImportXamlNamespace ({0}) threw an exception: {1}", xmlns, ex);
 				error = new MoonError (ex);
 				return false;
 			}
