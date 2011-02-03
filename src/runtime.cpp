@@ -2057,10 +2057,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	}
 #endif
 
-	if (mouse_down) {
-		EnsureElementFocused ();
-	}
-
 	// Perform any captures/releases that are pending after the
 	// event is bubbled.
 	if (pendingCapture)
@@ -2196,11 +2192,17 @@ Surface::HandleUIFocusIn (MoonFocusEvent *event)
 
 	time_manager->InvokeTickCalls();
 
-	if (GetFocusedElement ()) {
-		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
-		EmitEventOnList (UIElement::GotFocusEvent, focus_to_root, event, -1);
-		delete focus_to_root;
+
+	if (!GetFullScreen ()) {
+		if (GetFocusedElement ()) {
+			List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
+			EmitEventOnList (UIElement::GotFocusEvent, focus_to_root, event, -1);
+			delete focus_to_root;
+		} else {
+			EnsureElementFocused ();
+		}
 	}
+
 
 	return MoonEventNotHandled;
 }
@@ -2213,10 +2215,12 @@ Surface::HandleUIFocusOut (MoonFocusEvent *event)
 
 	time_manager->InvokeTickCalls();
 
-	if (GetFocusedElement ()) {
-		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
-		EmitEventOnList (UIElement::LostFocusEvent, focus_to_root, event, -1);
-		delete focus_to_root;
+	if (!GetFullScreen ()) {
+	 	if (GetFocusedElement ()) {
+			List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
+			EmitEventOnList (UIElement::LostFocusEvent, focus_to_root, event, -1);
+			delete focus_to_root;
+		}
 	}
 
 	return MoonEventNotHandled;
