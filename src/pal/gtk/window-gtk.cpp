@@ -580,6 +580,8 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		else {
 			int y = height - (event->area.y + event->area.height);
 
+			glxctx->MakeCurrent ();
+
 			glDrawBuffer (GL_FRONT);
 			glViewport (-1, -1, 2, 2);
 			glRasterPos2f (0, 0);
