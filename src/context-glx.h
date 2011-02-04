@@ -16,6 +16,8 @@
 
 #ifdef __MOON_GLX__
 
+typedef int (*PFNX11ERRORHANDLERPROC) (Display *, XErrorEvent *);
+
 namespace Moonlight {
 
 class MOON_API GLXContext : public GLContext {
@@ -94,7 +96,7 @@ private:
 	GLint         maxTextureSize;
 
 	static int X11Error;
-	static int (*SavedX11ErrorHandler) (Display *, XErrorEvent *);
+	static PFNX11ERRORHANDLERPROC SavedX11ErrorHandler;
 	static int X11ErrorHandler (Display     *display,
 				    XErrorEvent *event);
 };
