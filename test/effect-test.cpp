@@ -116,7 +116,7 @@ main (int argc, char **argv)
 		e.target = target;
 		e.ctx = ctx;
 
-		if (!ctx->CheckVersion ())
+		if (!ctx->Initialize ())
 			return 1;
 	}
 
