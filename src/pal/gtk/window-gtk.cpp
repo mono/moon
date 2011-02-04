@@ -972,9 +972,25 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 	int width, height;
 	gdk_drawable_get_size (drawable, &width, &height);
 	Context *ctx;
+	GdkRectangle area = event->area;
+	MoonSurface *src;
+	Rect r = Rect (area.x, area.y, area.width, area.height);
 
 	if (!native)
 		native = CreateCairoSurface (drawable, visual, true, width, height);
+	cairo_xlib_surface_set_drawable (native,
+					 gdk_x11_drawable_get_xid (drawable),
+					 width, height);
+	cairo_surface_set_device_offset (native, off_x, off_y);
+
+	Region *region = new Region ();
+	int count = 0;
+	GdkRectangle *rects;
+	gdk_region_get_rectangles (event->region, &rects, &count);
+	while (count--) {
+		GdkRectangle c = rects[count];
+		region->Union (Rect (c.x, c.y, c.width, c.height));
+	}
 
 #ifdef USE_GALLIUM
 	if (gctx) {
@@ -1008,48 +1024,21 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 			gctx = ctx;
 		}
 	}
+	ctx->Push (Context::Group (r));
 #else
 	CairoSurface *target = new CairoSurface (native, width, height);
 	ctx = new CairoContext (target);
 	target->unref ();
-#endif
+	cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
+	MoonSurface *isurface = new CairoSurface (image, r.width, r.height);
+	cairo_surface_destroy (image);
 
-	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
-	GdkRectangle area = event->area;
-	MoonSurface *src;
-	Rect r = Rect (area.x, area.y, area.width, area.height);
-
-	cairo_xlib_surface_set_drawable (native,
-					 gdk_x11_drawable_get_xid (drawable),
-					 width, height);
-	cairo_surface_set_device_offset (native, off_x, off_y);
-
-	Region *region = new Region ();
-	int count = 0;
-	GdkRectangle *rects;
-	gdk_region_get_rectangles (event->region, &rects, &count);
-	while (count--) {
-		GdkRectangle c = rects[count];
-		region->Union (Rect (c.x, c.y, c.width, c.height));
-	}
-
-#ifdef USE_GALLIUM
-	ctx->Push (Context::Group (r));
-#else
-	if (use_image) {
-		cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
-		MoonSurface *surface = new CairoSurface (image, r.width, r.height);
-
-		ctx->Push (Context::Group (r), surface);
-		surface->unref ();
-	}
-	else {
-		ctx->Push (Context::Clip (r));
-	}
+	ctx->Push (Context::Group (r), isurface);
+	isurface->unref ();
 #endif
 
 	/* if we are redirecting to an image surface clear that first */
-	surface->Paint (ctx, region, transparent, use_image ? true : clear_transparent);
+	surface->Paint (ctx, region, transparent, true);
 
 	r = ctx->Pop (&src);
 	if (!r.IsEmpty ()) {

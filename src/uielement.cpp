@@ -1936,7 +1936,7 @@ UIElement::TransformPoint (double *x, double *y)
 	}
 }
 
-#define EFFECT_FLAGS (RUNTIME_INIT_INTERMEDIATE_SURFACES | RUNTIME_INIT_USE_BACKEND_IMAGE)
+#define EFFECT_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
 
 Effect *
 UIElement::GetRenderEffect ()
@@ -1944,7 +1944,7 @@ UIElement::GetRenderEffect ()
 	return (moonlight_flags & EFFECT_FLAGS) == (EFFECT_FLAGS) ? GetEffect () : NULL;
 }
 
-#define PROJECTION_FLAGS (RUNTIME_INIT_INTERMEDIATE_SURFACES | RUNTIME_INIT_USE_BACKEND_IMAGE)
+#define PROJECTION_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
 
 Projection *
 UIElement::GetRenderProjection ()
@@ -1952,7 +1952,7 @@ UIElement::GetRenderProjection ()
 	return (moonlight_flags & PROJECTION_FLAGS) == (PROJECTION_FLAGS) ? GetProjection () : NULL;
 }
 
-#define CACHE_MODE_FLAGS (RUNTIME_INIT_INTERMEDIATE_SURFACES | RUNTIME_INIT_USE_BACKEND_IMAGE)
+#define CACHE_MODE_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
 
 CacheMode *
 UIElement::GetRenderCacheMode ()

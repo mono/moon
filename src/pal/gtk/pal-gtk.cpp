@@ -661,11 +661,6 @@ MoonWindowingSystemGtk::MoonWindowingSystemGtk (bool out_of_browser)
 	}
 	gtk_init (NULL, NULL);
 
-	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) && RunningOnNvidia ()) {
-		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
-		moonlight_flags |= RUNTIME_INIT_USE_BACKEND_IMAGE;
-	}
-	
 	LoadSystemColors ();
 
 #ifdef USE_GALLIUM
