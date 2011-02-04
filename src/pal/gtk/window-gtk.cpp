@@ -549,7 +549,7 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		glxtarget = new GLXSurface (dpy, win);
 		context = new GLXContext (glxtarget);
 
-		if (!context->CheckVersion ()) {
+		if (!context->Initialize ()) {
 			delete context;
 			glxtarget->unref ();
 			glxtarget = NULL;

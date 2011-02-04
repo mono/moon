@@ -23,6 +23,8 @@ public:
 	GLXContext (GLXSurface *surface);
 	virtual ~GLXContext ();
 
+	bool Initialize ();
+
 	void Push (Group extents);
 	cairo_t *Push (Cairo extents);
 	Rect Pop (MoonSurface **ref);
@@ -66,8 +68,6 @@ public:
 
 	void Flush ();
 
-	bool CheckVersion ();
-
 protected:
 	void SetupVertexData (const double *matrix,
 			      double       x,
@@ -81,11 +81,20 @@ protected:
 	void SyncDrawable ();
 	Rect GroupBounds (Group extents);
 
+	static void X11ErrorTrapPush (Display *dpy);
+	static int X11ErrorTrapPop (Display *dpy);
+
 private:
 	Display       *dpy;
 	GLXDrawable   drawable;
+	VisualID      vid;
 	_XxGLXContext ctx;
 	GLint         maxTextureSize;
+
+	static int X11Error;
+	static int (*SavedX11ErrorHandler) (Display *, XErrorEvent *);
+	static int X11ErrorHandler (Display     *display,
+				    XErrorEvent *event);
 };
 
 };

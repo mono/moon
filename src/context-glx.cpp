@@ -26,27 +26,72 @@
 
 namespace Moonlight {
 
+int GLXContext::X11Error;
+int (*GLXContext::SavedX11ErrorHandler) (Display *, XErrorEvent *);
+
 GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
+{
+	dpy = surface->GetDisplay ();
+	drawable = surface->GetGLXDrawable ();
+	vid = surface->GetVisualID ();
+	ctx = (_XxGLXContext) 0;
+}
+
+GLXContext::~GLXContext ()
+{
+	if (ctx)
+		glXDestroyContext (dpy, ctx);
+}
+
+int
+GLXContext::X11ErrorHandler (Display     *display,
+			     XErrorEvent *event)
+{
+	X11Error = event->type;
+	return False;
+}
+
+void
+GLXContext::X11ErrorTrapPush (Display *dpy)
+{
+	XSync (dpy, False);
+	X11Error = Success;
+	SavedX11ErrorHandler = XSetErrorHandler (X11ErrorHandler);
+}
+
+int
+GLXContext::X11ErrorTrapPop (Display *dpy)
+{
+	XSync (dpy, False);
+	XSetErrorHandler (SavedX11ErrorHandler);
+	return X11Error;
+}
+
+bool
+GLXContext::Initialize ()
 {
 	XVisualInfo templ, *visinfo;
 	int         n;
 
-	dpy = surface->GetDisplay ();
-	drawable = surface->GetGLXDrawable ();
-	templ.visualid = surface->GetVisualID ();
+	templ.visualid = vid;
 	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
 
 	g_assert (n == 1);
 
+	X11ErrorTrapPush (dpy);
 	ctx = glXCreateContext (dpy, visinfo, 0, True);
-	if (!ctx) {
+	glXMakeCurrent (dpy, drawable, ctx);
+	XFree (visinfo);
+
+	if (X11ErrorTrapPop (dpy) != Success) {
 		g_warning ("Failed to create GLX context for VisualID: 0x%x",
-			   (int) templ.visualid);
-		XFree (visinfo);
-		return;
+			   (int) vid);
+		return false;
 	}
 
-	glXMakeCurrent (dpy, drawable, ctx);
+	if (atof ((const char *) glGetString (GL_VERSION)) < MIN_GL_VERSION)
+		return false;
+
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
 	GETPROCADDR (PFNGLCREATESHADERPROC, glCreateShader);
@@ -79,18 +124,18 @@ GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
 	GETPROCADDR (PFNGLCHECKFRAMEBUFFERSTATUSPROC,
 		     glCheckFramebufferStatus);
 
-	XFree (visinfo);
-}
+	printf ("Moonlight: OpenGL renderer: %s %s\n",
+		glGetString (GL_RENDERER),
+		glGetString (GL_VERSION));
 
-GLXContext::~GLXContext ()
-{
-	if (ctx)
-		glXDestroyContext (dpy, ctx);
+	return true;
 }
 
 void
 GLXContext::ForceCurrent ()
 {
+	g_assert (ctx);
+
 	if (glXGetCurrentContext () != ctx)
 		glXMakeCurrent (dpy, drawable, ctx);
 }
@@ -592,24 +637,6 @@ GLXContext::Flush ()
 	SyncDrawable ();
 
 	GLContext::Flush ();
-}
-
-bool
-GLXContext::CheckVersion ()
-{
-	if (!ctx)
-		return 0;
-
-	ForceCurrent ();
-
-	if (atof ((const char *) glGetString (GL_VERSION)) < MIN_GL_VERSION) {
-		printf ("Moonlight: OpenGL version %s < %.1f\n",
-			   glGetString (GL_VERSION),
-			   MIN_GL_VERSION);
-		return 0;
-	}
-
-	return 1;
 }
 
 };
