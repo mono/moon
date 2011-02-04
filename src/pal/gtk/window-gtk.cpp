@@ -92,6 +92,7 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 
 #ifdef USE_GLX
 	glxtarget = NULL;
+	glxctx = NULL;
 #endif
 
 }
@@ -119,6 +120,8 @@ MoonWindowGtk::~MoonWindowGtk ()
 		delete ctx;
 
 #ifdef USE_GLX
+	if (glxctx)
+		delete glxctx;
 	if (glxtarget)
 		glxtarget->unref ();
 #endif
@@ -543,23 +546,19 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 
 	gdk_drawable_get_size (w->window, &width, &height);
 
-	if (!ctx && (moonlight_flags & RUNTIME_INIT_HW_ACCELERATION)) {
+	if (!glxtarget && (moonlight_flags & RUNTIME_INIT_HW_ACCELERATION)) {
 		GLXContext *context;
 
 		glxtarget = new GLXSurface (dpy, win);
 		context = new GLXContext (glxtarget);
 
-		if (!context->Initialize ()) {
+		if (context->Initialize ())
+			glxctx = context;
+		else
 			delete context;
-			glxtarget->unref ();
-			glxtarget = NULL;
-		}
-		else {
-			ctx = context;
-		}
 	}
 
-	if (glxtarget) {
+	if (glxtarget && glxctx) {
 		Rect r0 = Rect (0, 0, width, height);
 		Rect r = Rect (event->area.x,
 			       event->area.y,
@@ -569,11 +568,11 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 
 		glxtarget->Reshape (width, height);
 
-		ctx->Push (Context::Clip (r));
-		surface->Paint (ctx, region, GetTransparent (), true);
-		ctx->Pop ();
+		static_cast<Context *> (glxctx)->Push (Context::Clip (r));
+		surface->Paint (glxctx, region, GetTransparent (), true);
+		static_cast<Context *> (glxctx)->Pop ();
 
-		ctx->Flush ();
+		glxctx->Flush ();
 
 		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
 			glXSwapBuffers (dpy, win);
