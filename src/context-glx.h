@@ -25,6 +25,8 @@ public:
 
 	bool Initialize ();
 
+	void MakeCurrent ();
+
 	void Push (Group extents);
 	cairo_t *Push (Cairo extents);
 	Rect Pop (MoonSurface **ref);

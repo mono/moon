@@ -132,12 +132,17 @@ GLXContext::Initialize ()
 }
 
 void
-GLXContext::ForceCurrent ()
+GLXContext::MakeCurrent ()
 {
 	g_assert (ctx);
+	glXMakeCurrent (dpy, drawable, ctx);
+}
 
+void
+GLXContext::ForceCurrent ()
+{
 	if (glXGetCurrentContext () != ctx)
-		glXMakeCurrent (dpy, drawable, ctx);
+		MakeCurrent ();
 }
 
 void
