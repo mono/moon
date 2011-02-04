@@ -105,11 +105,12 @@ private:
 
 	GtkWidget *container;
 
-	Context *ctx;
 	cairo_surface_t *native;
 
 #ifdef USE_GALLIUM
 	pipe_screen *screen;
+	Context *gctx;
+	static int gctxn;
 #endif
 
 #ifdef USE_GLX

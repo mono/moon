@@ -59,7 +59,15 @@
 //
 #define FULLSCREEN_BACKING_STORE_SOPTIMIZATION 0
 
+// Gallium context cache size.
+//
+#define CONTEXT_CACHE_SIZE 1
+
 using namespace Moonlight;
+
+#ifdef USE_GALLIUM
+int MoonWindowGtk::gctxn = 0;
+#endif
 
 MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (windowType, w, h, parent, surface)
@@ -83,11 +91,11 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 		break;
 	}
 
-	ctx = NULL;
 	native = NULL;
 
 #ifdef USE_GALLIUM
 	screen = NULL;
+	gctx = NULL;
 #endif
 
 #ifdef USE_GLX
@@ -116,8 +124,12 @@ MoonWindowGtk::~MoonWindowGtk ()
 	if (native)
 		cairo_surface_destroy (native);
 
-	if (ctx)
-		delete ctx;
+#ifdef USE_GALLIUM
+	if (gctx) {
+		delete gctx;
+		gctxn--;
+	}
+#endif
 
 #ifdef USE_GLX
 	if (glxctx)
@@ -963,13 +975,16 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 #endif
 	int width, height;
 	gdk_drawable_get_size (drawable, &width, &height);
+	Context *ctx;
 
 	if (!native)
 		native = CreateCairoSurface (drawable, visual, true, width, height);
 
-	if (!ctx) {
-
 #ifdef USE_GALLIUM
+	if (gctx) {
+		ctx = gctx;
+	}
+	else {
 		struct pipe_resource pt, *texture;
 		GalliumSurface       *target;
 
@@ -991,13 +1006,17 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		pipe_resource_reference (&texture, NULL);
 		ctx = new GalliumContext (target);
 		target->unref ();
-#else
-		CairoSurface *target = new CairoSurface (native, width, height);
-		ctx = new CairoContext (target);
-		target->unref ();
-#endif
 
+		if (gctxn < CONTEXT_CACHE_SIZE) {
+			gctxn++;
+			gctx = ctx;
+		}
 	}
+#else
+	CairoSurface *target = new CairoSurface (native, width, height);
+	ctx = new CairoContext (target);
+	target->unref ();
+#endif
 
 	bool use_image = moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE;
 	GdkRectangle area = event->area;
@@ -1054,10 +1073,10 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 		src->unref ();
 	}
 
-#ifndef USE_GALLIUM
-	delete ctx;
-	ctx = NULL;
+#ifdef USE_GALLIUM
+	if (ctx != gctx)
 #endif
+		delete ctx;
 
 	delete region;
 
