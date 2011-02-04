@@ -537,7 +537,16 @@ RichTextBox::SyncAndEmit (bool sync_text)
 void
 RichTextBox::Paste (MoonClipboard *clipboard, const char *str)
 {
-	// FIXME: implement this
+	// FIXME: ::Commit has some validation of the text selection.
+	// we should probably as well.
+
+	ResetIMContext ();
+
+	RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText (this, selection, str);
+
+	action->Do ();
+
+	undo->Push (action);
 }
 
 void
