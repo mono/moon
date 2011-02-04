@@ -206,6 +206,12 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		Deployment::SetCurrent (Deployment::desktop_deployment);
 		Deployment::desktop_deployment->EnsureManagedPeer ();
 
+		// we need to call this here so that the application's
+		// and surface's managed peer actually gets created.
+		// otherwise mopen ends up with an NRE doing
+		// Surface.get_Native.
+		Deployment::desktop_deployment->InitializeAppDomain ("System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
+
 		Application *desktop_app = MoonUnmanagedFactory::CreateApplication ();
 		desktop_deployment->SetCurrentApplication (desktop_app);
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
