@@ -817,7 +817,9 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 
 	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	EventClosure *next;
 	while (closure) {
+		next = (EventClosure *) closure->next;
 		if (closure->func == handler && closure->data == data) {
 			token = closure->token;
  			if (!events->lists [event_id].context_stack->IsEmpty()) {
@@ -829,7 +831,7 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 			break;
 		}
 		
-		closure = (EventClosure *) closure->next;
+		closure = next;
 	}
 	return token;
 }
@@ -851,7 +853,9 @@ EventObject::RemoveHandler (int event_id, int token)
 
 	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	EventClosure *next;
 	while (closure) {
+		next = (EventClosure *) closure->next;
 		if (closure->token == token) {
 			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				closure->pending_removal = true;
@@ -862,7 +866,7 @@ EventObject::RemoveHandler (int event_id, int token)
 			break;
 		}
 		
-		closure = (EventClosure *) closure->next;
+		closure = next;
 	}
 }
 
@@ -877,7 +881,9 @@ EventObject::RemoveAllHandlers (gpointer data)
 	
 	for (int i = 0; i < count; i++) {
 		EventClosure *closure = (EventClosure *) events->lists [i].event_list->First ();
+		EventClosure *next;
 		while (closure) {
+			next = (EventClosure *) closure->next;
 			if (closure->data == data) {
 				if (!events->lists [i].context_stack->IsEmpty()) {
 					closure->pending_removal = true;
@@ -888,7 +894,7 @@ EventObject::RemoveAllHandlers (gpointer data)
 				break;
 			}
 			
-			closure = (EventClosure *) closure->next;
+			closure = next;
 		}
 	}
 }
@@ -909,8 +915,10 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(int token, 
 	}
 
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
+	EventClosure *next;
 	bool is_shutting_down = GetDeployment ()->IsShuttingDown ();
 	while (c) {
+		next = (EventClosure *) c->next;
 		if (!predicate || predicate (c->token, c->func, c->data, closure)) {
 			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				c->pending_removal = true;
@@ -920,7 +928,7 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(int token, 
 			}
 		}
 		
-		c = (EventClosure *) c->next;
+		c = next;
 	}
 }
 
@@ -931,11 +939,13 @@ EventObject::ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpoin
 		return;
 
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	EventClosure *next;
 	int last_foreach_generation = events->lists [event_id].last_foreach_generation;
 	while (event_closure) {
+		next = (EventClosure *) event_closure->next;
 		if (!event_closure->pending_removal && (!only_new || event_closure->token >= last_foreach_generation))
 			(*m) (this, event_closure->token, closure);
-		event_closure = (EventClosure *) event_closure->next;
+		event_closure = next;
 	}
 	events->lists [event_id].last_foreach_generation = GetEventGeneration (event_id);
 }
@@ -959,12 +969,14 @@ EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer clos
 		return;
 
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	EventClosure *next;
 	while (event_closure) {
+		next = (EventClosure *) event_closure->next;
 		if (event_closure->token == token) {
 			(*m) (this, event_closure->token, closure);
 			break;
 		}
-		event_closure = (EventClosure *) event_closure->next;
+		event_closure = next;
 	}
 }
 
