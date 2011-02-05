@@ -67,7 +67,7 @@ namespace System.Windows {
 				// Type converting doesn't happen for TemplateBindings
 				Updating = true;
 				try {
-					Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType,
+					Target.SetValue (TargetProperty, Value.ToObject (SourceProperty.PropertyType,
 											     NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs)));
 				} catch {
 					Target.SetValue (TargetProperty, TargetProperty.GetDefaultValue (Target));

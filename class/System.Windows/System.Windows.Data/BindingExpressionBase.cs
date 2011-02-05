@@ -469,7 +469,7 @@ namespace System.Windows.Data {
 			try {
 				Updating = true;
 				Invalidate ();
-				Target.SetValueImpl (Property, this);
+				Target.SetValue (Property, this);
 			} catch (Exception ex) {
 				if (Binding.ValidatesOnExceptions) {
 					if (ex is TargetInvocationException)

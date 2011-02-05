@@ -295,7 +295,7 @@ namespace System.Windows {
 				return Dispatcher.Main;
 			}
 		}
-		
+
 		public void SetValue (DependencyProperty dp, object value)
 		{
 			if (dp == null)
