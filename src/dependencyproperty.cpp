@@ -68,7 +68,7 @@ DependencyProperty::Dispose ()
 	 */
 	if (default_value != NULL) {
 		Type::Kind k = default_value->GetKind ();
-		if (Type::IsSubclassOf (Deployment::GetCurrent (), k, Type::EVENTOBJECT)) {
+		if (Deployment::GetCurrent ()->GetTypes ()->Find (k)->IsEventObject ()) {
 			delete default_value;
 			default_value = new Value (k); /* null */
 		}

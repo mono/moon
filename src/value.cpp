@@ -91,7 +91,7 @@ Value::Clone (Value *v, Types *types)
 	if (!types)
 		types = Deployment::GetCurrent()->GetTypes();
 
-	if (!v->GetIsNull () && types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
+	if (!v->GetIsNull () && types->Find (v->k)->IsDependencyObject ()) {
 		return Value::CreateUnrefPtr (v->AsDependencyObject()->Clone (types));
 	}
 	else {
@@ -238,7 +238,7 @@ Value::Value (EventObject* obj)
 		k = Type::EVENTOBJECT;
 	}
 	else {
-		if (!Type::IsSubclassOf (obj->GetDeployment (), obj->GetObjectType (), Type::EVENTOBJECT)) {
+		if (!obj->GetType ()->IsEventObject ()) {
 			g_warning ("creating invalid dependency object Value");
 			k = Type::INVALID;
 			u.dependency_object = NULL;
@@ -471,11 +471,23 @@ Value::Value (ManagedTypeInfo *type_info)
 }
 
 bool
+Value::IsEventObject (Deployment *d)
+{
+	return d->GetTypes ()->Find (k)->IsEventObject ();
+}
+
+bool
+Value::IsDependencyObject (Deployment *d)
+{
+	return d->GetTypes ()->Find (k)->IsDependencyObject ();
+}
+
+bool
 Value::HoldManagedRef ()
 {
 	if (GetIsManaged ())
 		return true;
-	if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT)) {
+	if (IsEventObject (Deployment::GetCurrent ())) {
 		// These types are DOs in native and structs in managed,
 		// so it's impossible (currently) to hold a managed ref to them
 		// As they can't reference other objects, there's no chance of
@@ -500,7 +512,7 @@ Value::Strengthen ()
 			u.managed_object = d->CreateGCHandle (d->GetGCHandleTarget (handle)).ToIntPtr ();
 			d->FreeGCHandle (handle);
 		}
-	} else if (!GetNeedUnref () && Is (Deployment::GetCurrent (), Type::EVENTOBJECT)) {
+	} else if (!GetNeedUnref () && IsEventObject (Deployment::GetCurrent ())) {
 		SetNeedUnref (true);
 		if (u.dependency_object)
 			u.dependency_object->ref ();
@@ -517,7 +529,7 @@ Value::Weaken ()
 			u.managed_object = d->CreateWeakGCHandle (d->GetGCHandleTarget (handle)).ToIntPtr ();
 			d->FreeGCHandle (handle);
 		}
-	} else if (GetNeedUnref () && Is (Deployment::GetCurrent (), Type::EVENTOBJECT)) {
+	} else if (GetNeedUnref () && IsEventObject (Deployment::GetCurrent ())) {
 		SetNeedUnref (false);
 		if (u.dependency_object)
 			u.dependency_object->unref ();
@@ -686,7 +698,7 @@ Value::Copy (const Value& v)
 		}
 		break;
 	default:
-		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
+		if (IsEventObject (Deployment::GetCurrent ()) && u.dependency_object) {
 			u.dependency_object->ref ();
 			SetNeedUnref (true);
 			u.dependency_object->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
@@ -792,7 +804,7 @@ Value::FreeValueInternal ()
 		break;
 	default: {
 		Deployment *depl = Deployment::GetCurrent();
-		if (Is (depl, Type::EVENTOBJECT)) {
+		if (IsEventObject (depl)) {
 			if (u.dependency_object) {
 				u.dependency_object->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &u.dependency_object);
 				if (GetNeedUnref ()) {

@@ -853,7 +853,7 @@ ItemCollection::~ItemCollection ()
 bool
 ItemCollection::AddedToCollection (Value *value, MoonError *error)
 {
-	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+	if (value->IsDependencyObject (GetDeployment ())) {
 		DependencyObject *obj = value->AsDependencyObject ();
 	
 		obj->SetMentor (GetMentor ());
@@ -891,7 +891,7 @@ ItemCollection::AddedToCollection (Value *value, MoonError *error)
 void
 ItemCollection::RemovedFromCollection (Value *value, bool is_value_safe)
 {
-	if (is_value_safe && value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+	if (is_value_safe && value->IsDependencyObject (GetDeployment ())) {
 		DependencyObject *obj = value->AsDependencyObject ();
 
 		if (obj) {
@@ -914,7 +914,7 @@ ItemCollection::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	Types *types = GetDeployment()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
-		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+		if (value->IsDependencyObject (GetDeployment ())) {
 			obj = value->AsDependencyObject (types);
 			if (obj)
 				obj->UnregisterAllNamesRootedAt (from_ns);
@@ -936,7 +936,7 @@ ItemCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 			break;
 
 		value = (Value *) array->pdata[i];
-		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+		if (value->IsDependencyObject (GetDeployment ())) {
 			obj = value->AsDependencyObject (types);
 			if (obj)
 				obj->RegisterAllNamesRootedAt (to_ns, error);

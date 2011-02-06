@@ -53,7 +53,22 @@ Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_
 		this->interfaces = NULL;
 	}
 	this->deployment = deployment;
+	this->is_eventobject = false;
+	this->is_dependencyobject = false;
 }
+
+void
+Types::SetFastPaths ()
+{
+	for (int i = 0; i < types.GetCount (); i ++) {
+		Type *t = (Type *) types [i];
+		if (t) {
+			t->is_eventobject = IsSubclassOf (t->GetKind (), Type::EVENTOBJECT);
+			t->is_dependencyobject = IsSubclassOf (t->GetKind (), Type::DEPENDENCY_OBJECT);
+		}
+	}
+}
+
 		
 Type::~Type ()
 {
@@ -379,15 +394,21 @@ Type::GetValueType (Type::Kind type)
 }
 
 bool
-Type::IsDependencyObject (Type::Kind type)
+Type::IsDependencyObject ()
 {
-	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::DEPENDENCY_OBJECT);
+	return is_dependencyobject;
+}
+
+bool
+Type::IsEventObject ()
+{
+	return is_eventobject;
 }
 
 bool
 Type::IsEventObject (Type::Kind type)
 {
-	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::EVENTOBJECT);
+	return Deployment::GetCurrent ()->GetTypes ()->Find (type)->IsEventObject ();
 }
 
 DependencyObject *
@@ -423,6 +444,7 @@ Types::Types ()
 	//printf ("Types::Types (). this: %p\n", this);
 	types.SetCount ((int) Type::LASTTYPE + 1);
 	RegisterNativeTypes ();
+	SetFastPaths ();
 }
 
 void
@@ -506,7 +528,9 @@ Types::RegisterType (const char *name, const char *content_property, void *gc_ha
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	
 	type->SetKind ((Type::Kind) types.Add (type));
-	
+
+	type->is_eventobject = IsSubclassOf (type->GetKind (), Type::EVENTOBJECT);
+	type->is_dependencyobject = IsSubclassOf (type->GetKind (), Type::DEPENDENCY_OBJECT);
 	return type->GetKind ();
 }
 

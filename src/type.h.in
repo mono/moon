@@ -91,12 +91,12 @@ public:
 	/* @GeneratePInvoke */
 	static bool GetValueType (Type::Kind type);
 
-	/* @GeneratePInvoke */
-	static bool IsDependencyObject (Type::Kind type);
+	bool IsDependencyObject ();
+
+	bool IsEventObject ();
 
 	/* @GeneratePInvoke */
 	static bool IsEventObject (Type::Kind type);
-
 private:
 	Type () {}
 	
@@ -105,6 +105,8 @@ private:
 	bool is_enum;
 	bool is_value_type; // if this type is a value type
 	bool is_interface; // if this type is a value type
+	bool is_eventobject; // if this type is a value type
+	bool is_dependencyobject; // if this type is a value type
 
 	char *name; // The name as it appears in code.
 
@@ -135,6 +137,7 @@ private:
 	ArrayList properties;
 	
 	void RegisterNativeTypes ();
+	void SetFastPaths ();
 	void RegisterNativeProperties ();
 	
 public:

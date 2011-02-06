@@ -1540,7 +1540,7 @@ unregister_depobj_values (gpointer  key,
 	//DependencyProperty *prop = (DependencyProperty*)key;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (this_obj->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject(this_obj->GetDeployment()->GetTypes()) != NULL) {
+	if (v != NULL && v->IsDependencyObject (this_obj->GetDeployment ()) && v->AsDependencyObject(this_obj->GetDeployment()->GetTypes()) != NULL) {
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject (this_obj->GetDeployment()->GetTypes());
 		obj->RemovePropertyChangeListener (this_obj);
@@ -1656,7 +1656,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 	}
 
 	if (value != NULL && !value->GetIsNull ()) {
-		if (value->Is (GetDeployment (), Type::EVENTOBJECT) && !value->AsEventObject ()) {
+		if (value->IsEventObject (GetDeployment ()) && !value->AsEventObject ()) {
 			// if it's a null DependencyObject, it doesn't matter what type it is
 			return true;
 		}
@@ -1668,7 +1668,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 			return true;
 		}
 		
-		if (!Type::IsAssignableFrom (GetDeployment (), property->GetPropertyType(), value->GetKind())) {
+		if (property->GetPropertyType() != value->GetKind() && !Type::IsAssignableFrom (GetDeployment (), property->GetPropertyType(), value->GetKind())) {
 			char *error_msg = g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",
 							    GetTypeName (), property->GetName(), Type::Find (GetDeployment (), property->GetPropertyType())->GetName (),
@@ -1763,16 +1763,16 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (property->IsAutoCreated ())
 			providers.autocreate->ClearValue (property);
 		
-		if (value && (!property->IsAutoCreated () || !value->Is (deployment, Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
+		if (value && (!property->IsAutoCreated () || !value->IsDependencyObject (deployment) || value->AsDependencyObject () != NULL))
 			new_value = new Value (*value);
 		else
 			new_value = NULL;
 
 		// clear out the current value from the managed side if there's a ref to it
 		if (current_value) {
-			if (clearManagedRef && current_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
-					current_value->Strengthen ();
-					clearManagedRef (this, current_value, property);
+			if (clearManagedRef && current_value->HoldManagedRef () && !deployment->IsShuttingDown ()) {
+				current_value->Strengthen ();
+				clearManagedRef (this, current_value, property);
 			}
 		}
 
@@ -1862,7 +1862,7 @@ register_depobj_names (gpointer  key,
 
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (closure->to_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->IsDependencyObject (closure->to_ns->GetDeployment ()) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RegisterAllNamesRootedAt (closure->to_ns, closure->error);
 	}
@@ -1938,7 +1938,7 @@ unregister_depobj_names (gpointer  key,
 	Value *v = (Value*)value;
 	DependencyProperty *property = (DependencyProperty*)key;
 
-	if (!property->IsCustom () && v != NULL && v->Is (from_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (!property->IsCustom () && v != NULL && v->IsDependencyObject (from_ns->GetDeployment ()) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
@@ -2311,9 +2311,9 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// don't when they shouldn't.)
 		bool setsParent = set_parent && !property->IsCustom ();
 
-		if (old_value && old_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
+		if (old_value && old_value->IsDependencyObject (GetDeployment ()))
 			old_as_dep = old_value->AsDependencyObject ();
-		if (new_value && new_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
+		if (new_value && new_value->IsDependencyObject (GetDeployment ()))
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep) {
@@ -2475,7 +2475,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	
 	if (old_local_value) {
 		// detach from the existing value
-		if (old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+		if (old_local_value->IsDependencyObject (GetDeployment ())) {
 			DependencyObject *dob = old_local_value->AsDependencyObject();
 			
 			// Custom properties are non-parenting and so shouldn't clear the parent (same code
@@ -2527,7 +2527,7 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 
 	Types *types = deployment->GetTypes();
 	// detach from the existing value
-	if (v->Is (deployment, Type::DEPENDENCY_OBJECT)){
+	if (v->IsDependencyObject (deployment)){
 		DependencyObject *dob = v->AsDependencyObject(types);
 		
 		if (dob != NULL) {
@@ -2688,7 +2688,7 @@ DependencyObject::propagate_mentor (DependencyProperty *key, Value *value, gpoin
 {
 	Deployment *d = Deployment::GetCurrent ();
 	DependencyObject *mentor = (DependencyObject *) data;
-	if (value->Is (d, Type::DEPENDENCY_OBJECT)) {
+	if (value->IsDependencyObject (d)) {
 		DependencyObject *v = value->AsDependencyObject ();
 		if (v)
 			v->SetMentor (mentor);
@@ -2779,8 +2779,8 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 	// this should create the new object
 	Value *new_value = closure->new_do->GetValue (key, PropertyPrecedence_AutoCreate);
 
-	if (old_value && !old_value->GetIsNull() && old_value->Is (deployment, Type::DEPENDENCY_OBJECT) && 
-	    new_value && !new_value->GetIsNull() && new_value->Is (deployment, Type::DEPENDENCY_OBJECT)) {
+	if (old_value && !old_value->GetIsNull() && old_value->IsDependencyObject (deployment) &&
+	    new_value && !new_value->GetIsNull() && new_value->IsDependencyObject (deployment)) {
 		DependencyObject *new_obj = new_value->AsDependencyObject(closure->types);
 		DependencyObject *old_obj = old_value->AsDependencyObject(closure->types);
 
@@ -3242,7 +3242,7 @@ set_is_attached (gpointer key, gpointer value, gpointer data)
 	attach_data *adata = (attach_data *) data;
 	Value *v = (Value *) value;
 	
-	if (v && v->Is (adata->deployment, Type::DEPENDENCY_OBJECT)) {
+	if (v && v->IsDependencyObject (adata->deployment)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob)
 			dob->SetIsAttached (adata->value);
