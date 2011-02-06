@@ -2014,9 +2014,9 @@ DependencyObject::ReadLocalValueWithError (DependencyProperty *property, MoonErr
 }
 
 Value *
-DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error)
+DependencyObject::GetValueWithError (DependencyProperty *property, MoonError *error)
 {
-	if (!HasProperty (whatami, property, true)) {
+	if (!HasProperty (GetObjectType (), property, true)) {
 		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
 		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);

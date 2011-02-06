@@ -227,5 +227,18 @@ namespace Mono {
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static object event_object_get_managed_object (IntPtr handle);
+
+
+		public static IntPtr dependency_object_get_value (IntPtr dep_ob, IntPtr dp)
+		{
+			MoonError error;
+			var ret = dependency_object_get_value_with_error (dep_ob, dp, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return ret;
+		}
+
+		[MethodImpl (MethodImplOptions.InternalCall)]
+		extern static IntPtr dependency_object_get_value_with_error (IntPtr dep_ob, IntPtr dp, out MoonError error);
 	}
 }

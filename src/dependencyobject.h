@@ -363,9 +363,8 @@ public:
 	bool PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 				      DependencyObject *source, Value *new_value);
 
-	/* @GeneratePInvoke */
-	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
-	virtual Value *GetValue (DependencyProperty *property);
+	Value *GetValueWithError (DependencyProperty *property, MoonError *error);
+	Value *GetValue (DependencyProperty *property);
 	Value *GetValue (int id);
 	Value *GetValue (int id, PropertyPrecedence startingAtPrecedence);
 	Value *GetValue (int id, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);

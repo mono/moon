@@ -105,6 +105,11 @@ void *event_object_get_managed_object (EventObject *eo)
 	return eo->GetDeployment ()->GetGCHandleTarget (eo->GetManagedHandle ());
 }
 
+Value *dependency_object_get_value_icall (DependencyObject *dep_ob, DependencyProperty *dp, MoonError *error)
+{
+	return dep_ob->GetValueWithError (dp, error);
+}
+
 
 bool
 Deployment::Initialize (const char *platform_dir, bool create_root_domain)
@@ -192,14 +197,13 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		mono_set_break_policy (moonlight_should_insert_breakpoint);
 	
 		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
-		mono_add_internal_call ("Mono.NativeMethods::event_object_get_managed_object", (const void *)event_object_get_managed_object);
-
+		RegisterICalls ();
 		LOG_DEPLOYMENT ("Deployment::Initialize (): Root domain is %p\n", root_domain);
 	}
 	else {
 #endif
 		root_domain = mono_domain_get ();
-		mono_add_internal_call ("Mono.NativeMethods::event_object_get_managed_object", (const void *)event_object_get_managed_object);
+		RegisterICalls ();
 
 		Deployment::desktop_deployment = new Deployment ();
 		Deployment::desktop_deployment->InitializeDesktop (root_domain);
@@ -569,6 +573,13 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 	// FIXME: we need to figure out what type of exception it is
 	// and map it to the right MoonError::ExceptionType enum
 	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
+}
+
+void
+Deployment::RegisterICalls ()
+{
+	mono_add_internal_call ("Mono.NativeMethods::event_object_get_managed_object", (const void *)event_object_get_managed_object);
+	mono_add_internal_call ("Mono.NativeMethods::dependency_object_get_value_with_error", (const void *)dependency_object_get_value_icall);
 }
 
 void

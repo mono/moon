@@ -526,8 +526,8 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_template_owner(System.IntPtr)
 
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_(System.IntPtr,Mono.Kind,System.IntPtr,Mono.MoonError&)
+# internal call
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default_(System.IntPtr,System.IntPtr,Mono.MoonError&)

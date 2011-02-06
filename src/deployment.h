@@ -496,6 +496,7 @@ public:
 	Deployment ();
 	void Initialize (); /* This method must be called right after the ctor */
 	void InitializeDesktop (MonoDomain *domain);
+	static void RegisterICalls ();
 	
 	const static void *CurrentApplicationWeakRef;
 

@@ -174,7 +174,7 @@ namespace Mono {
 			
 			CheckNativeAndThread (wrapper);
 
-			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
+			IntPtr val = Mono.NativeMethods.dependency_object_get_value (wrapper.NativeHandle, dp.Native);
 			return Value.ToObject (dp.PropertyType, val);
 		}
 

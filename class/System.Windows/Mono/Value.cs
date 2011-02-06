@@ -359,9 +359,9 @@ namespace Mono {
 			case Kind.UNMANAGEDSTYLUSPOINT: {
 				var kind = value->k;
 				var ptr = value->u.p;
-				var x = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, kind, UnmanagedStylusPoint.XProperty.Native));
-				var y = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, kind, UnmanagedStylusPoint.YProperty.Native));
-				var pressure = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, kind, UnmanagedStylusPoint.PressureFactorProperty.Native));
+				var x = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, UnmanagedStylusPoint.XProperty.Native));
+				var y = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, UnmanagedStylusPoint.YProperty.Native));
+				var pressure = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, UnmanagedStylusPoint.PressureFactorProperty.Native));
 				return new StylusPoint { X = x, Y = y, PressureFactor = (float) pressure };
 			}
 
