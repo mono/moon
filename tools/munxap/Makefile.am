@@ -1,6 +1,6 @@
 moondir = $(pkglibdir)
 
-CECIL=$(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+CECIL=`pkg-config --variable=Libraries cecil`
 
 bin_SCRIPTS = munxap
 

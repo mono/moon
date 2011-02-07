@@ -1,6 +1,6 @@
 SUBDIRS=SecurityAttributes
 
-LINKER = ../lib/tuner/monolinker.exe
+LINKER = monolinker
 #GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
 
 TUNER_DESCS =	\
@@ -95,6 +95,9 @@ TUNER_STEPS = \
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
+$(top_srcdir)/class/lib/tuner/Mono.Tuner.dll: $(wildcard $(MCS_PATH)/tools/tuner/Mono.Tuner/*.cs)
+	cd $(MCS_PATH)/tools/tuner && mcs -r:System.dll -r:System.Core.dll -r:System.Xml.dll -r:monolinker.exe -r:`pkg-config --variable=Libraries cecil` -target:library -out:$(PWD)/$@ @$(MCS_PATH)/tools/tuner/Mono.Tuner.dll.sources -debug:full
+
 if HAVE_MONO_BASIC
 $(MONO_BASIC_DLLFILES): 
 	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune MCS_PATH=$(MCS_PATH) CECIL_LOCATION=$(MCS_PATH)/class/lib/basic
@@ -106,8 +109,8 @@ working.stamp: $(INPUT_FILES)
 	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb
 	touch $(WORKING_FILES) working.stamp
 
-output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
+output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO) $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll
+	MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i $(srcdir)/../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)
 	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR); done

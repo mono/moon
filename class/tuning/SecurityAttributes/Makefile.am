@@ -2,7 +2,7 @@ securitymodel_sources = \
 	$(srcdir)/CecilRocks.cs			\
 	$(srcdir)/PlatformCode.cs
 
-CECIL=-r:$(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+CECIL=-r:`pkg-config --variable=Libraries cecil`
 LIBS=$(CECIL) -r:Moonlight.SecurityModel.dll
 MONO_PLATFORM_CODE=$(MCS_PATH)/class/lib/net_2_1/
 MOONLIGHT_PLATFORM_CODE=$(pkglibdir)/plugin

@@ -41,7 +41,7 @@ CSCFLAGS += -d:HEAPVIZ
 endif
 
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
-SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
+SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
@@ -841,7 +841,7 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	$(AM_V_GEN)resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-LINKER = ../lib/tuner/monolinker.exe
+LINKER = monolinker
 
 LINKER_STEPS =	\
 	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
@@ -857,7 +857,7 @@ $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.res
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
@@ -876,7 +876,7 @@ $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Re
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
 		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 

@@ -25,7 +25,7 @@ REFERENCES = \
 
 CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -d:MOONLIGHT -target:library -debug+ -noconfig $(REFERENCES)
 
-SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mcs -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 FILES= $(shell cat $(srcdir)/$(assembly).sources)
 SOURCES = $(foreach file,$(FILES),$(SDK_SRCDIR)/$(file))

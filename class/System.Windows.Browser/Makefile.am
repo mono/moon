@@ -23,7 +23,7 @@ CSCFLAGS += -d:SANITY
 endif
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
-SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 
@@ -80,7 +80,7 @@ $(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/cl
 		-resource:$(assembly).g.resources
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
-LINKER = ../lib/tuner/monolinker.exe
+LINKER = monolinker
 
 LINKER_STEPS =	\
 	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
@@ -93,7 +93,7 @@ LINKER_FLAGS =	\
 	-m secattrs ../tuning/SecurityAttributes
 
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources

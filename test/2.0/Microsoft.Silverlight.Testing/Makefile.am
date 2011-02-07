@@ -4,7 +4,7 @@ if HEAPVIZ
 CSCFLAGS += -d:HEAPVIZ
 endif
 
-SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mcs -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 SOURCES = \
     $(srcdir)/UnitTestHarness/AsynchronousAttribute.cs\

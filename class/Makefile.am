@@ -9,20 +9,11 @@ if INCLUDE_DESKTOP_MANAGED_CODE
 SUBDIRS += Moon.Windows.Desktop
 endif
 
-if INCLUDE_BROWSER_MANAGED_CODE
-NET_2_0_ASSEMBLIES = monolinker.exe Mono.Tuner.dll Mono.Cecil.dll Mono.Cecil.Mdb.dll
-TUNER_ASSEMBLIES =  $(NET_2_0_ASSEMBLIES)
-LOCAL_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=lib/tuner/%)
-MCS_ASSEMBLIES = $(NET_2_0_ASSEMBLIES:%=$(MCS_PATH)/class/lib/basic/%)
-MCS_MDBS = $(MCS_ASSEMBLIES:%=%.mdb)
-
-endif
-
 EXTRA_DIST = mono.pub winfx3.pub mono.snk silverlight.pub
 
 # this is gross, but we have a circular dependency between System.Windows.dll and System.Windows.Browser.dll.
 #
-all-local: copy-mcs-assemblies
+all-local: make-lib-directories
 	@echo Bootstrapping circular build;
 if INCLUDE_BROWSER_MANAGED_CODE
 	$(MAKE) -C tuning
@@ -38,14 +29,6 @@ make-lib-directories:
 	@mkdir -p lib/moonlight-bootstrap
 	@mkdir -p lib/tuner
 
-if INCLUDE_BROWSER_MANAGED_CODE
-copy-mcs-assemblies: make-lib-directories $(MCS_ASSEMBLIES)
-	@cp $(MCS_ASSEMBLIES) lib/tuner
-	-@cp $(MCS_MDBS) lib/tuner
-else
-copy-mcs-assemblies: make-lib-directories
-endif
-
 clean-local:
 	-rm -rf lib
 
@@ -58,4 +41,4 @@ dist-hook:
 	find $(distdir)/Microsoft.SilverlightControls -name .svn | xargs rm -rf
 
 
-.PHONY: make-lib-directories copy-mcs-assemblies
+.PHONY: make-lib-directories

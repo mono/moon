@@ -1,4 +1,4 @@
-SMCS = mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+SMCS = mcs -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 
 noinst_DATA= Mono.Moonlight.UnitTesting.dll
 

@@ -16,7 +16,7 @@ $(XAPS): %Leak.xap: $(BUILD_FILES) %Test.cs
 	@cp $(BUILD_FILES) $*
 	@-(cd $* && $(SYSTEM_MONO) $(abs_top_builddir)/tools/xamlg/xamlg.exe -sl2app:Leak $(XAML_FILES))
 	@-(cd $* && $(SYSTEM_MONO) $(abs_top_builddir)/tools/respack/respack.exe Leak.g.resources $(XAML_FILES))
-	@-(cd $* && mono $(MCS_PATH)/class/lib/basic/mcs.exe -nostdlib -lib:$(abs_top_builddir)/class/lib/2.1 -r:mscorlib.dll -debug+ -r:System.Windows.dll -r:System.Windows.Browser.dll -target:library -out:Leak.dll -resource:Leak.g.resources -warnaserror+ $(SOURCE_FILES) Test.cs $(addsuffix .g.cs,$(XAML_FILES)))
+	@-(cd $* && mcs -nostdlib -lib:$(abs_top_builddir)/class/lib/2.1 -r:mscorlib.dll -debug+ -r:System.Windows.dll -r:System.Windows.Browser.dll -target:library -out:Leak.dll -resource:Leak.g.resources -warnaserror+ $(SOURCE_FILES) Test.cs $(addsuffix .g.cs,$(XAML_FILES)))
 	@-(cd $* && zip -q Leak.xap Leak.dll Leak.dll.mdb AppManifest.xaml Leak.dll Leak.dll.mdb)
 	@cp Leak.html $*
 

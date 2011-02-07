@@ -1,6 +1,6 @@
 noinst_DATA = unsign.exe
 
-CECIL=$(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+CECIL=`pkg-config --variable=Libraries cecil`
 
 CLEANFILES = unsign.exe \
 	     unsign.exe.mdb
