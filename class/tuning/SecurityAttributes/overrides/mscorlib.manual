@@ -434,3 +434,8 @@
 # unvalidated (caller responsability) IntPtr parameter
 +SC-M: System.Reflection.MethodAttributes System.Reflection.MonoMethodInfo::GetAttributes(System.IntPtr)
 
+# these are forwarded from System.Core
++SSC-M: System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
+# not included by the linker (with current code base) 2nd layer of protection if this ever change
++SC-M: System.Void System.TimeZoneInfo::set_TimeZoneDirectory(System.String)
+
