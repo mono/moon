@@ -124,8 +124,11 @@ GLXContext::Initialize ()
 	GETPROCADDR (PFNGLCHECKFRAMEBUFFERSTATUSPROC,
 		     glCheckFramebufferStatus);
 
-	printf ("Moonlight: OpenGL renderer: %s %s\n",
-		glGetString (GL_RENDERER),
+	printf ("Moonlight: OpenGL vendor string: %s\n",
+		glGetString (GL_VENDOR));
+	printf ("Moonlight: OpenGL renderer string: %s\n",
+		glGetString (GL_RENDERER));
+	printf ("Moonlight: OpenGL version string: %s\n",
 		glGetString (GL_VERSION));
 
 	return true;
