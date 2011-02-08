@@ -40,7 +40,6 @@ class MultiScaleImage : public MediaBase {
 	cairo_user_data_key_t full_opacity_at_key;
 	bool subimages_sorted;
 	List downloaders;
-	int n_downloading;
 	GHashTable *cache;
 	double zoom_target;
 	Point pan_target;

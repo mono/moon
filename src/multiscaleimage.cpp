@@ -333,7 +333,6 @@ MultiScaleImage::MultiScaleImage ()
 	subimages_sorted = false;
 	pan_target = Point (0, 0);
 	zoom_target = 1.0;
-	n_downloading = 0;
 	motion = 0;
 }
 
@@ -410,7 +409,7 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 bool
 MultiScaleImage::CanDownloadMoreTiles ()
 {
-	return n_downloading < MAX_DOWNLOADERS && !GetDeployment ()->IsShuttingDown ();
+	return downloaders.Length () < MAX_DOWNLOADERS && !GetDeployment ()->IsShuttingDown ();
 }
 
 void
@@ -447,8 +446,6 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	ctx->image->SetDownloadPolicy (MsiPolicy);
 	ctx->image->SetUriSource (tile);
 	SetIsIdle (false);
-	
-	n_downloading++;
 }
 
 // Only used for DeepZoom sources
@@ -570,7 +567,6 @@ MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 	downloaders.Unlink (ctx);
 	ctx->image->unref ();
 	delete ctx;
-	n_downloading--;
 	Invalidate ();
 }
 
@@ -594,7 +590,6 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 		downloaders.Unlink (ctx);
 		ctx->image->unref ();
 		delete ctx;
-		n_downloading--;
 		Invalidate ();
 	}
 	
@@ -614,8 +609,6 @@ MultiScaleImage::StopDownloading ()
 		ctx->image->unref ();
 		delete ctx;
 	}
-
-	n_downloading = 0;
 }
 
 void
@@ -1570,7 +1563,7 @@ MultiScaleImage::EmitMotionFinished ()
 void
 MultiScaleImage::MotionFinished ()
 {
-	SetIsIdle (n_downloading == 0);
+	SetIsIdle (downloaders.Length () == 0);
 	EmitMotionFinished ();
 }
 
@@ -1715,8 +1708,8 @@ MultiScaleImage::SetIsDownloading (bool value)
 void
 MultiScaleImage::UpdateIdleStatus ()
 {
-	SetIsIdle (n_downloading == 0 && !IS_IN_MOTION (motion));
-	SetIsDownloading (n_downloading > 0);
+	SetIsIdle (downloaders.Length () == 0 && !IS_IN_MOTION (motion));
+	SetIsDownloading (downloaders.Length () > 0);
 }
 
 int
