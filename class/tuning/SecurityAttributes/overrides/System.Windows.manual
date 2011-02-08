@@ -233,6 +233,7 @@
 
 # clipboard
 +SC-M: System.IntPtr System.Windows.Clipboard::GetClipboard()
++SC-M: System.Void System.Windows.Clipboard::CheckUserInitiated()
 
 # capture device
 +SC-M: System.IntPtr System.Windows.Media.CaptureDeviceConfiguration::GetAudioCaptureService()

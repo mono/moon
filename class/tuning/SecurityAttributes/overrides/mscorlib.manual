@@ -394,6 +394,7 @@
 
 +SC-M: System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.Int32,System.Int32)
 +SC-M: System.Int32 System.IO.FileStream::ReadInternal(System.Byte[],System.Int32,System.Int32)
++SC-M: System.Int32 System.IO.FileStream::ReadSegment(System.Byte[],System.Int32,System.Int32)
 +SC-M: System.Void System.IO.FileStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
 +SC-M: System.Void System.IO.FileStream::RefillBuffer()
 +SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::set_Quota(System.Int64)
@@ -435,7 +436,7 @@
 +SC-M: System.Reflection.MethodAttributes System.Reflection.MonoMethodInfo::GetAttributes(System.IntPtr)
 
 # these are forwarded from System.Core
-+SSC-M: System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
++SC-M: System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
 # not included by the linker (with current code base) 2nd layer of protection if this ever change
 +SC-M: System.Void System.TimeZoneInfo::set_TimeZoneDirectory(System.String)
 

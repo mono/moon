@@ -1,5 +1,2 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# not included by the linker (with current code base) 2nd layer of protection if this ever change
-+SC-M: System.Void System.TimeZoneInfo::set_TimeZoneDirectory(System.String)
-
