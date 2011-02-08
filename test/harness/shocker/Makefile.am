@@ -2,17 +2,17 @@
 
 lib_LTLIBRARIES = libshocker.la
 
-INCLUDES = -I$(top_srcdir)/plugin/moz-sdk $(SHOCKER_CFLAGS) -Wall -DDBUS_ENABLED
+INCLUDES = -I$(top_srcdir)/src -I$(top_srcdir)/plugin/moz-sdk $(SHOCKER_CFLAGS) -Wall -DDBUS_ENABLED
 
 libshocker_la_SOURCES = 	\
-	debug.cpp			\
-	debug.h				\
+	debug.cpp		\
+	debug.h			\
 	clipboard.cpp		\
-	clipboard.h			\
+	clipboard.h		\
 	shocker.cpp  		\
 	shocker.h		\
-	shocker-plugin.h		\
-	shocker-plugin.cpp		\
+	shocker-plugin.h	\
+	shocker-plugin.cpp	\
 	browser.h		\
 	browser.cpp		\
 	netscape.h		\
@@ -23,10 +23,12 @@ libshocker_la_SOURCES = 	\
 	input.cpp		\
 	image-capture.h		\
 	image-capture.cpp	\
-	harness.h			\
-	harness.cpp			\
+	harness.h		\
+	harness.cpp		\
 	shutdown-manager.h	\
 	shutdown-manager.cpp	\
+	texthelpers.h		\
+	texthelpers.cpp		\
 	$(top_srcdir)/src/moonlightconfiguration.cpp
 
 libshocker_la_LDFLAGS = \
