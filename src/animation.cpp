@@ -2196,10 +2196,19 @@ ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, NULL);
 		} else {
 			Value converted;
-			Application::GetCurrent ()->ConvertKeyframeValue (target->GetObjectType (), property, value, &converted);
+			Application *application = Application::GetCurrent ();
+			if (application == NULL) {
+#if SANITY
+				printf ("no application to convert value.\n");
+#endif
+				return false;
+			}
+			application->ConvertKeyframeValue (target->GetObjectType (), property, value, &converted);
 		
 			if (converted.GetKind () == Type::INVALID) {
+#if SANITY
 				printf ("Couldn't convert value.\n");
+#endif
 				return false;
 			}
 			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, converted);

@@ -93,10 +93,16 @@ Style::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 void
 Style::Seal ()
 {
+	Application *application;
+
 	if (GetIsSealed ())
 		return;
 
-	Application::GetCurrent ()->ConvertSetterValues (this);
+	application = Application::GetCurrent ();
+	if (application == NULL)
+		return;
+
+	application->ConvertSetterValues (this);
 	SetIsSealed (true);
 	GetSetters ()->Seal ();
 

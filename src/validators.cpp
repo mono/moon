@@ -507,6 +507,11 @@ static bool
 IsRunningOutOfBrowser (Deployment *deployment, MoonError *error)
 {
 	// fill in a NotSupportedException if not running Out-Of-Browser
+	if (deployment->GetCurrentApplication () == NULL) {
+		MoonError::FillIn (error, MoonError::NOT_SUPPORTED_EXCEPTION, "No current application");
+		return false;
+	}
+
 	if (!deployment->GetCurrentApplication ()->IsRunningOutOfBrowser ()) {
 		MoonError::FillIn (error, MoonError::NOT_SUPPORTED_EXCEPTION, "Can only be set when Out-Of-Browser");
 		return false;
