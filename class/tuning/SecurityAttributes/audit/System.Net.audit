@@ -1,5 +1,6 @@
-!SSC-A6D2A1DBFF5F1CA916AA7D141FCD5D33
+!SSC-F40DE13406B894A501FDA4BF0D09AC3D
 System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvailable()
+	20110208	spouliot - a7e40bc - pinvoke renamed (now prefixed with _moonlight_cbinding_*)
 	r156737		spouliot - pinvoke into NetworkChange.runtime_get_network_service and NetworkChange.moon_network_service_get_is_network_available (libmoon)
 
 !SSC-F61AE2B9D142E4296EDF51534C9E41A2
@@ -33,8 +34,9 @@ System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 	20101203	spouliot - ba9d007 - the 'address_family' field is now passed to the call to the RemoteEndPoint_internal icall
 	r142142		spouliot - calls into RemoteEndPoint_internal (icall) to retrieve a SocketAddress
 
-!SSC-FBFD299C422117A5412003A781D5B5A7
+!SSC-09165E5417642F46D731F1474161E4A1
 System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
+	20110208	spouliot - a7e40bc - pinvoke renamed (now prefixed with _moonlight_cbinding_*)
 	20101004	spouliot - 987ee7ee - pinvoke into moon_network_service_set_network_state_changed_callback using (pinvoked) runtime_get_network_service. note: changed (override) from SC to SSC since a [SecurityCritical] cctor behavior is not defined (who's the caller?)
 
 !SSC-E43FDEB57BE8D9FE9B68B0FD1FFE0FE6

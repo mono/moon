@@ -1,5 +1,6 @@
-!SSC-213FAFEEA29BAF45463F9CDAE78B3A11
+!SSC-19F6F05D28E19A46C78B1CF645496568
 System.Object System.Runtime.Serialization.SerializationMap::DeserializeContent(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer,System.String,System.Boolean)
+	20110208	spouliot - 8e916dc - fix for bnc666333 namespace mismatching
 	20101004	spouliot - 582a90e8 - an extra 'id' (string) parameter was added, which is turned over to a new (protected) HandleId method
 	r143412		spouliot - calls FormatterServices.GetUninitializedObject (mscorlib)
 

@@ -1628,6 +1628,10 @@ System.Threading.Thread System.Threading.Thread::get_CurrentThread()
 System.Threading.ThreadState System.Threading.Thread::get_ThreadState()
 	r142661		spouliot - call GetState(System.Threading.InternalThread) [SecurityCritical]
 
+!SSC-151B1EEC290682020F570DCD9EFD614B
+System.TimeZoneInfo System.TimeZoneInfo::get_Local()
+	20110208	spouliot - 54f4658c - call FindSystemTimeZoneByFileName with /etc/localtime or (if failing) in /usr/share/zoneinfo/localtime/usr/share/zoneinfo
+
 !SSC-A5816751FFC517EF47757540C1AE00F7
 System.Type System.Enum::GetUnderlyingType(System.Type)
 	r142142		spouliot - call get_underlying_type on non-null, enum, type
@@ -2132,10 +2136,6 @@ System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Ref
 System.Void System.Reflection.Emit.DynamicMethod::CreateDynMethod()
 	r142142		spouliot - call create_dynamic_method (icall named mono_reflection_create_dynamic_method in reflection.c) on 'this'
 
-!SSC-9C58C9F3DDE96AFE3AC7A4D5812F1882
-System.Void System.Reflection.Emit.DynamicMethod::Finalize()
-	r142142		spouliot - call destroy_dynamic_method (icall named mono_reflection_destroy_dynamic_method in reflection.c) on 'this'
-
 !SSC-D3D68B9DCE47CA3B7650BB678D7A2449
 System.Void System.Reflection.Emit.DynamicMethod::RejectIfCreated()
 	r155836		spouliot - call RuntimeMethodHandle.get_Value [SecurityCritical] to compare it with IntPtr.Zero
@@ -2200,8 +2200,9 @@ System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 	r143412		spouliot - internal type (needed to serialize CultureInfo and friends between appdomain/threads). Access multiple fields of BinaryFormatter [SecurityCritical] paramater
 
-!SSC-65FE8A38B8BDCD3AF048CCB14574E923
+!SSC-2ABB4F3F718210B61E39B32794C7EC5A
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
+	20110208	spouliot - 0dfe460 - fix reading objects with missing primitive members
 	r143412		spouliot - call FormatterServices [SecurityCritical] Get[Safe]UninitializedObject to create objects based on 'metadata' parameter
 
 !SSC-F4BCA02E42DD2A8F460049FEF3ECC3E1
