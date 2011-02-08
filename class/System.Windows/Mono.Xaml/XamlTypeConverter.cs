@@ -170,10 +170,8 @@ namespace Mono.Xaml {
 			// Try UIElement first since thats where most of these events live
 			if (typeof (UIElement).IsAssignableFrom (type)) {
 				res = RoutedEvent (eventids, "UIElement", event_name);
-				if (res != null) {
-					Console.WriteLine ("returning routed event:  {0}", res);
+				if (res != null)
 					return res;
-				}
 			}
 
 			if (!type.IsValueType) {
