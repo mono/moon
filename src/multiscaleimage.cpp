@@ -262,7 +262,7 @@ qtree_destroy (QTree *root)
  * BitmapImageContext
  */
 
-struct BitmapImageContext {
+struct BitmapImageContext : public List::Node {
 	MultiScaleImage *msi;
 	BitmapImage *image;
 	QTree *node;
@@ -330,7 +330,6 @@ MultiScaleImage::MultiScaleImage ()
 	// Note: cairo_user_data_key_t's do not need to be initialized
 	
 	cache = g_hash_table_new_full (g_int_hash, g_int_equal, int_free, (GDestroyNotify) qtree_destroy);
-	downloaders = g_ptr_array_new ();
 	subimages_sorted = false;
 	pan_target = Point (0, 0);
 	zoom_target = 1.0;
@@ -356,7 +355,6 @@ MultiScaleImage::~MultiScaleImage ()
 	if (source)
 		DisconnectSourceEvents (source);
 	
-	g_ptr_array_free (downloaders, true);
 	g_hash_table_destroy (cache);
 }
 
@@ -421,9 +419,8 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	BitmapImageContext *ctx;
 	
 	// Check that we aren't already downloading this tile
-	for (guint i = 0; i < downloaders->len; i++) {
-		ctx = (BitmapImageContext *) downloaders->pdata[i];
-		
+	for (ctx = static_cast<BitmapImageContext *> (downloaders.First ());
+	     ctx; ctx = static_cast<BitmapImageContext *> (ctx->next)) {
 		if (ctx->image->GetUriSource ()->operator==(*tile)) {
 			//LOG_MSI ("Tile %s is already being downloaded\n", tile->ToString ());
 			return;
@@ -444,7 +441,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	ctx->node = (QTree *) user_data;
 	ctx->retry = 0;
 
-	g_ptr_array_add (downloaders, ctx);
+	downloaders.Append (ctx);
 	
 	SetIsDownloading (true);
 	ctx->image->SetDownloadPolicy (MsiPolicy);
@@ -570,7 +567,7 @@ MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 {
 	ProcessTile (ctx);
 
-	g_ptr_array_remove_fast (downloaders, ctx);
+	downloaders.Unlink (ctx);
 	ctx->image->unref ();
 	delete ctx;
 	n_downloading--;
@@ -594,7 +591,7 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 	} else {
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_tile (ctx->node, NULL, 0.0);
-		g_ptr_array_remove_fast (downloaders, ctx);
+		downloaders.Unlink (ctx);
 		ctx->image->unref ();
 		delete ctx;
 		n_downloading--;
@@ -608,16 +605,16 @@ void
 MultiScaleImage::StopDownloading ()
 {
 	BitmapImageContext *ctx;
-	
-	for (guint i = 0; i < downloaders->len; i++) {
-		ctx = (BitmapImageContext *) downloaders->pdata[i];
+
+	while (!downloaders.IsEmpty ()) {
+		ctx = static_cast<BitmapImageContext *> (downloaders.First ());
+		downloaders.Unlink (ctx);
 		ctx->image->Abort ();
 		ctx->image->Dispose ();
 		ctx->image->unref ();
 		delete ctx;
 	}
-	
-	g_ptr_array_set_size (downloaders, 0);
+
 	n_downloading = 0;
 }
 
