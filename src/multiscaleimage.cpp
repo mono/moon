@@ -73,7 +73,7 @@ blur_factor_get_offset (double factor)
  */
 
 struct QTreeTile {
-	cairo_surface_t *image;
+	BitmapImage *image;
 	double opacity;
 };
 
@@ -146,11 +146,14 @@ qtree_insert (QTree *root, int level, guint64 x, guint64 y)
 }
 
 static void
-qtree_set_tile (QTree *node, cairo_surface_t *image, double opacity)
+qtree_set_tile (QTree *node, BitmapImage *image, double opacity)
 {
+	if (image)
+		image->ref ();
+
 	if (node->tile) {
 		if (node->tile->image)
-			cairo_surface_destroy (node->tile->image);
+			node->tile->image->unref ();
 	} else
 		node->tile = g_slice_new (QTreeTile);
 	
@@ -208,7 +211,7 @@ qtree_remove (QTree *node, int depth)
 	
 	if (node->tile) {
 		if (node->tile->image)
-			cairo_surface_destroy (node->tile->image);
+			node->tile->image->unref ();
 		g_slice_free (QTreeTile, node->tile);
 		node->tile = NULL;
 	}
@@ -244,7 +247,7 @@ qtree_destroy (QTree *root)
 	
 	if (root->tile) {
 		if (root->tile->image)
-			cairo_surface_destroy (root->tile->image);
+			root->tile->image->unref ();
 		g_slice_free (QTreeTile, root->tile);
 	}
 	
@@ -440,15 +443,19 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	
 	if (!avail) {
 		ctx = new BitmapImageContext ();
-		ctx->image = MoonUnmanagedFactory::CreateBitmapImage ();
 		ctx->msi = this;
-		
-		ctx->image->AddHandler (ctx->image->ImageOpenedEvent, tile_opened, ctx);
-		ctx->image->AddHandler (ctx->image->ImageFailedEvent, tile_failed, ctx);
 		g_ptr_array_add (downloaders, ctx);
 	} else
 		ctx = avail;
-	
+
+	ctx->image = MoonUnmanagedFactory::CreateBitmapImage ();
+	ctx->image->AddHandler (ctx->image->ImageOpenedEvent,
+				tile_opened,
+				ctx);
+	ctx->image->AddHandler (ctx->image->ImageFailedEvent,
+				tile_failed,
+				ctx);
+
 	ctx->node = (QTree *) user_data;
 	ctx->avail = false;
 	ctx->retry = 0;
@@ -577,7 +584,7 @@ MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 {
 	ProcessTile (ctx);
 	
-	ctx->image->SetUriSource (NULL);
+	ctx->image->unref ();
 	ctx->avail = true;
 	n_downloading--;
 	Invalidate ();
@@ -601,6 +608,7 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_tile (ctx->node, NULL, 0.0);
 		ctx->avail = true;
+		ctx->image->unref ();
 		n_downloading--;
 		Invalidate ();
 	}
@@ -756,14 +764,7 @@ MultiScaleImage::MeasureOverrideWithError (Size availableSize, MoonError *error)
 void
 MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 {
-	cairo_surface_t *surface;
 	double tile_fade;
-	
-	if (!(surface = cairo_surface_reference (ctx->image->GetSurface (NULL)))) {
-		LOG_MSI ("caching NULL for %s\n", ctx->image->GetUriSource ()->ToString ());
-		qtree_set_tile (ctx->node, NULL, 0.0);
-		return;
-	}
 	
 	if (!fadein_sb) {
 		fadein_sb = MoonUnmanagedFactory::CreateStoryboard ();
@@ -795,7 +796,7 @@ MultiScaleImage::ProcessTile (BitmapImageContext *ctx)
 	UpdateIdleStatus ();
 	
 	LOG_MSI ("caching %s\n", ctx->image->GetUriSource ()->ToString ());
-	qtree_set_tile (ctx->node, surface, tile_fade + 0.9);
+	qtree_set_tile (ctx->node, ctx->image, tile_fade + 0.9);
 }
 
 void
@@ -1053,7 +1054,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 									 (int)(-morton_y(sub_image->n) * render_layer2) % tile_height);
 						}
 						
-						cairo_set_source_surface (cr, tile->image, 0, 0);
+						cairo_set_source_surface (cr, tile->image->GetImageSurface (), 0, 0);
 						
 						double combined = 1.0;
 						
@@ -1298,7 +1299,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				
 				cairo_translate (cr, i * tile_width, j * tile_height);
 				
-				cairo_set_source_surface (cr, tile->image, 0, 0);
+				cairo_set_source_surface (cr, tile->image->GetImageSurface (), 0, 0);
 				
 				double combined = 1.0;
 				
