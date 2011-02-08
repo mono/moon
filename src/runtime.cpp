@@ -1926,10 +1926,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	bool mouse_down = (event_id == UIElement::MouseLeftButtonDownEvent ||
 			   event_id == UIElement::MouseRightButtonDownEvent);
 
-	if ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && 
-	    ((event_id == UIElement::MouseRightButtonDownEvent) || (event_id == UIElement::MouseRightButtonDownEvent)))
-		event_id = NO_EVENT_ID;
-		
 	// we can end up here if mozilla pops up the JS timeout
 	// dialog.  The problem is that JS might have registered a
 	// handler for the event we're going to emit, so when we end

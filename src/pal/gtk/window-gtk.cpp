@@ -163,8 +163,6 @@ MoonWindowGtk::ConnectToContainerPlatformWindow (gpointer container_window)
 			       GDK_FOCUS_CHANGE_MASK
 			       );
 
-	g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (MoonWindowGtk::container_button_press_callback), this);
-
 	gtk_container_add (GTK_CONTAINER (container), widget);
 	gtk_widget_show_all (container);
 }
@@ -678,22 +676,20 @@ gboolean
 MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
+	MoonEventStatus status = MoonEventNotHandled;
 
 	window->SetCurrentDeployment ();
 
 	if (event->button != 1 && event->button != 3)
 		return false;
 	
-	// If we don't support right clicks (i.e. inside the browser)
-	// return false here
-	if (event->button == 3 && (moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0)
-		return false;
-	
 	if (window->surface) {
 		MoonButtonEvent *mevent = (MoonButtonEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIButtonPress (mevent);
+		status = window->surface->HandleUIButtonPress (mevent);
 		delete mevent;
 	}
+	if (status == MoonEventNotHandled)
+		container_button_press_callback (widget, event, data);
 	// ignore HandleUIButtonPress's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;

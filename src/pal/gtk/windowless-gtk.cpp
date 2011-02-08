@@ -272,17 +272,16 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 			button.axes = NULL;
 			button.device = NULL;
 			
-			if (xev->type == ButtonPress && MoonWindowGtk::container_button_press_callback (NULL, &button, this))
-				handled = MoonEventHandled;
-			if (handled == MoonEventNotHandled) {
-				MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&button);
-				if (xev->type == ButtonPress)
-					handled = surface->HandleUIButtonPress (mevent);
-				else
-					handled = surface->HandleUIButtonRelease (mevent);
+			MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (&button);
+			if (xev->type == ButtonPress)
+				handled = surface->HandleUIButtonPress (mevent);
+			else
+				handled = surface->HandleUIButtonRelease (mevent);
 				
-				delete mevent;
-			}
+			delete mevent;
+
+			if (handled == MoonEventNotHandled && xev->type == ButtonPress && MoonWindowGtk::container_button_press_callback (NULL, &button, this))
+				handled = MoonEventHandled;
 		}
 		break;
 	}
