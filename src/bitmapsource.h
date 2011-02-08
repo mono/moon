@@ -24,7 +24,6 @@ namespace Moonlight {
 /* @Namespace=System.Windows.Media.Imaging */
 class BitmapSource : public ImageSource {
  private:
-	cairo_surface_t *native_surface;
 	gpointer data;
 	bool own_data; // if true, we free in the dtor.
  protected:

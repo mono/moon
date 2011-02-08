@@ -25,7 +25,6 @@ BitmapSource::BitmapSource ()
 {
 	SetObjectType (Type::BITMAPSOURCE);
 	image_surface = NULL;
-	native_surface = NULL;
 	data = NULL;
 	own_data = true;
 }
@@ -34,8 +33,6 @@ BitmapSource::~BitmapSource ()
 {
 	if (image_surface)
 		cairo_surface_destroy (image_surface);
-	if (native_surface)
-		cairo_surface_destroy (native_surface);
 
 	if (data && own_data)
 		g_free (data);
@@ -52,13 +49,8 @@ BitmapSource::OnIsAttachedChanged (bool value)
 {
 	ImageSource::OnIsAttachedChanged (value);
 
-	if (!value) {
-		if (native_surface) {
-			cairo_surface_destroy (native_surface);
-			native_surface = NULL;
-		}
-	} else {
-		if (native_surface == NULL && image_surface == NULL) {
+	if (value) {
+		if (image_surface == NULL) {
 			// #246 requires this - it detaches and then reattaches
 			// glyphs, and without this they don't show up again.
 			Invalidate ();
@@ -86,10 +78,6 @@ BitmapSource::Invalidate ()
 	if (GetPixelWidth () == 0 || GetPixelHeight () == 0)
 		return;
 
-	if (native_surface) {
-		cairo_surface_destroy (native_surface);
-		native_surface = NULL;
-	}
 	if (image_surface)
 		cairo_surface_destroy (image_surface);
 
