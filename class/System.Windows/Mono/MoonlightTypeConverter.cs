@@ -257,35 +257,35 @@ namespace Mono {
 		public static object ValueFromConvertible (Type type, IConvertible value)
 		{
 			if (type == typeof (string))
-				return Convert.ToString (value);
+				return Convert.ToString (value, CultureInfo.InvariantCulture);
 			if (type == typeof (bool))
-				return Convert.ToBoolean (value);
+				return Convert.ToBoolean (value, CultureInfo.InvariantCulture);
 			if (type == typeof (byte))
-				return Convert.ToByte (value);
+				return Convert.ToByte (value, CultureInfo.InvariantCulture);
 			if (type == typeof (char))
-				return Convert.ToChar (value);
+				return Convert.ToChar (value, CultureInfo.InvariantCulture);
 			if (type == typeof (DateTime))
-				return Convert.ToDateTime (value);
+				return Convert.ToDateTime (value, CultureInfo.InvariantCulture);
 			if (type == typeof (Decimal))
-				return Convert.ToDecimal (value);
+				return Convert.ToDecimal (value, CultureInfo.InvariantCulture);
 			if (type == typeof (double))
-				return Convert.ToDouble (value);
+				return Convert.ToDouble (value, CultureInfo.InvariantCulture);
 			if (type == typeof (Int16))
-				return Convert.ToInt16 (value);
+				return Convert.ToInt16 (value, CultureInfo.InvariantCulture);
 			if (type == typeof (Int32))
-				return Convert.ToInt32 (value);
+				return Convert.ToInt32 (value, CultureInfo.InvariantCulture);
 			if (type == typeof (Int64))
-				return Convert.ToInt64 (value);
+				return Convert.ToInt64 (value, CultureInfo.InvariantCulture);
 			if (type == typeof (SByte))
-				return Convert.ToSByte (value);
+				return Convert.ToSByte (value, CultureInfo.InvariantCulture);
 			if (type == typeof (Single))
-				return Convert.ToSingle (value);
+				return Convert.ToSingle (value, CultureInfo.InvariantCulture);
 			if (type == typeof (UInt16))
-				return Convert.ToUInt16 (value);
+				return Convert.ToUInt16 (value, CultureInfo.InvariantCulture);
 			if (type == typeof (UInt32))
-				return Convert.ToUInt32 (value);
+				return Convert.ToUInt32 (value, CultureInfo.InvariantCulture);
 			if (type == typeof (UInt64))
-				return Convert.ToUInt64 (value);
+				return Convert.ToUInt64 (value, CultureInfo.InvariantCulture);
 
 			return value;
 		}
