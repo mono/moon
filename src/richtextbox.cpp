@@ -982,7 +982,7 @@ RichTextBox::OnMouseMove (MouseEventArgs *args)
 		emit = NOTHING_CHANGED;
 
 		TextPointer *start = selection->GetStart();
-		TextPointer cursor = cursor = view->GetLocationFromXY (x, y);
+		TextPointer cursor = view->GetLocationFromXY (x, y);
 
 		selection->Select (start, &cursor);
 
