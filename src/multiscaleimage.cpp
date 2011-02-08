@@ -266,7 +266,6 @@ struct BitmapImageContext {
 	MultiScaleImage *msi;
 	BitmapImage *image;
 	QTree *node;
-	bool avail;
 	int retry;
 };
 
@@ -419,19 +418,11 @@ MultiScaleImage::CanDownloadMoreTiles ()
 void
 MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 {
-	BitmapImageContext *ctx, *avail = NULL;
+	BitmapImageContext *ctx;
 	
-	// Check that we aren't already downloading this tile and find an
-	// available BitmapImageContext
+	// Check that we aren't already downloading this tile
 	for (guint i = 0; i < downloaders->len; i++) {
 		ctx = (BitmapImageContext *) downloaders->pdata[i];
-		
-		if (ctx->avail) {
-			if (!avail)
-				avail = ctx;
-			
-			continue;
-		}
 		
 		if (ctx->image->GetUriSource ()->operator==(*tile)) {
 			//LOG_MSI ("Tile %s is already being downloaded\n", tile->ToString ());
@@ -441,13 +432,8 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	
 	//LOG_MSI ("downloading tile %s\n", tile->ToString ());
 	
-	if (!avail) {
-		ctx = new BitmapImageContext ();
-		ctx->msi = this;
-		g_ptr_array_add (downloaders, ctx);
-	} else
-		ctx = avail;
-
+	ctx = new BitmapImageContext ();
+	ctx->msi = this;
 	ctx->image = MoonUnmanagedFactory::CreateBitmapImage ();
 	ctx->image->AddHandler (ctx->image->ImageOpenedEvent,
 				tile_opened,
@@ -455,10 +441,10 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	ctx->image->AddHandler (ctx->image->ImageFailedEvent,
 				tile_failed,
 				ctx);
-
 	ctx->node = (QTree *) user_data;
-	ctx->avail = false;
 	ctx->retry = 0;
+
+	g_ptr_array_add (downloaders, ctx);
 	
 	SetIsDownloading (true);
 	ctx->image->SetDownloadPolicy (MsiPolicy);
@@ -583,9 +569,10 @@ void
 MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 {
 	ProcessTile (ctx);
-	
+
+	g_ptr_array_remove_fast (downloaders, ctx);
 	ctx->image->unref ();
-	ctx->avail = true;
+	delete ctx;
 	n_downloading--;
 	Invalidate ();
 }
@@ -607,8 +594,9 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 	} else {
 		LOG_MSI ("caching a NULL for %s\n", ctx->image->GetUriSource()->ToString ());
 		qtree_set_tile (ctx->node, NULL, 0.0);
-		ctx->avail = true;
+		g_ptr_array_remove_fast (downloaders, ctx);
 		ctx->image->unref ();
+		delete ctx;
 		n_downloading--;
 		Invalidate ();
 	}
