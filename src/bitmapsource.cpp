@@ -102,29 +102,7 @@ BitmapSource::Invalidate ()
 cairo_surface_t *
 BitmapSource::GetSurface (cairo_t *cr)
 {
-	if (image_surface == NULL)
-		return NULL;
-
-	if (native_surface)
-		return native_surface;
-	
-	if (cr == NULL) {
-		native_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, GetPixelWidth (), GetPixelHeight ());
-	} else {
-		native_surface = cairo_surface_create_similar (cairo_get_group_target (cr), 
-						       cairo_surface_get_content (image_surface), 
-						       GetPixelWidth (), GetPixelHeight ());
-	}
-
-	cairo_t *context = cairo_create (native_surface);
-
-	cairo_set_source_surface (context, image_surface, 0, 0);
-	cairo_pattern_set_filter (cairo_get_source (context), CAIRO_FILTER_FAST);
-
-	cairo_paint (context);
-	cairo_destroy (context);
-
-	return native_surface;
+	return image_surface;
 }
 
 };
