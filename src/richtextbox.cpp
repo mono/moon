@@ -587,17 +587,22 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
-#if notyet
-				if (selection_cursor != selection_anchor) {
-					// copy selection to the clipboard and then cut
-					clipboard->SetText (GetSelectedText (), -1);
+				// FIXME: what about cutting xaml?  do
+				// we need to store both xaml and text
+				// fragments in the clipboard and
+				// determine which to use on paste?
+				if (!selection->IsEmpty ()) {
+					char *selection_text = selection->GetText ();
+					clipboard->SetText (selection_text);
+					g_free (selection_text);
 				}
-#endif
 			}
-			
-#if notyet
-			SetSelectedText ("");
-#endif
+
+			// clear the selection
+			RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText(this, selection, "");
+			action->Do ();
+			undo->Push (action);
+
 			handled = true;
 		} else {
 			handled = KeyPressDelete (modifiers);
@@ -618,12 +623,15 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			// Control+Insert => Copy
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
-#if notyet
-				if (selection_cursor != selection_anchor) {
-					// copy selection to the clipboard
-					clipboard->SetText (GetSelectedText (), -1);
+				// FIXME: what about cutting xaml?  do
+				// we need to store both xaml and text
+				// fragments in the clipboard and
+				// determine which to use on paste?
+				if (!selection->IsEmpty ()) {
+					char *selection_text = selection->GetText ();
+					clipboard->SetText (selection_text);
+					g_free (selection_text);
 				}
-#endif
 			}
 			
 			handled = true;
@@ -664,33 +672,43 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 			case KeyC:
 				// Ctrl+C => Copy
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
-#if notyet
-					if (selection_cursor != selection_anchor) {
-						// copy selection to the clipboard
-						clipboard->SetText (GetSelectedText (), -1);
+					// FIXME: what about cutting xaml?  do
+					// we need to store both xaml and text
+					// fragments in the clipboard and
+					// determine which to use on paste?
+					if (!selection->IsEmpty ()) {
+						char *selection_text = selection->GetText ();
+						clipboard->SetText (selection_text);
+						g_free (selection_text);
 					}
-#endif
-				}
-				
+				}				
 				handled = true;
 				break;
-			case KeyX:
+			case KeyX: {
 				// Ctrl+X => Cut
 				if (GetIsReadOnly())
 					break;
 				
 				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
-#if notyet
-					if (selection_cursor != selection_anchor) {
-						// copy selection to the clipboard and then cut
-						clipboard->SetText (GetSelectedText(), -1);
+					// FIXME: what about cutting xaml?  do
+					// we need to store both xaml and text
+					// fragments in the clipboard and
+					// determine which to use on paste?
+					if (!selection->IsEmpty ()) {
+						char *selection_text = selection->GetText ();
+						clipboard->SetText (selection_text);
+						g_free (selection_text);
 					}
-#endif
 				}
-				
-				// FIXME: SetSelectedText ("");
+
+				// clear the selection
+				RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText(this, selection, "");
+				action->Do ();
+				undo->Push (action);
+
 				handled = true;
 				break;
+			}
 			case KeyV:
 				// Ctrl+V => Paste
 				if (GetIsReadOnly())
@@ -952,34 +970,36 @@ RichTextBox::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 void
 RichTextBox::OnMouseMove (MouseEventArgs *args)
 {
-#if notyet
-	int anchor = selection_anchor;
-	int cursor = selection_cursor;
-	MoonClipboard *clipboard;
-	double x, y;
-	
 	if (selecting) {
+		MoonClipboard *clipboard;
+		double x, y;
+
 		args->GetPosition (view, &x, &y);
 		args->SetHandled (true);
-		
-		cursor = view->GetCursorFromXY (x, y);
-		
+
+
 		BatchPush ();
 		emit = NOTHING_CHANGED;
-		//SetSelectionStart (MIN (anchor, cursor));
-		//SetSelectionLength (abs (cursor - anchor));
-		selection_anchor = anchor;
-		selection_cursor = cursor;
+
+		TextPointer *start = selection->GetStart();
+		TextPointer cursor = cursor = view->GetLocationFromXY (x, y);
+
+		selection->Select (start, &cursor);
+
+		delete start;
+
 		BatchPop ();
-		
+
 		SyncAndEmit ();
+
 		
 		if ((clipboard = GetClipboard (this, MoonClipboard_Primary))) {
 			// copy the selection to the primary clipboard
-			// FIXME: clipboard->SetText (GetSelectedText (), -1);
+			char *selection_text = selection->GetText ();
+			clipboard->SetText (selection_text);
+			g_free (selection_text);
 		}
 	}
-#endif
 }
 
 void
