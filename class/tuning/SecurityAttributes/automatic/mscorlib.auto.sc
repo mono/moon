@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 444 methods needs to be decorated.
+# 443 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -1149,9 +1149,6 @@
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.DynamicMethod::create_dynamic_method(System.Reflection.Emit.DynamicMethod)
-
-# internal call
-+SC-M: System.Void System.Reflection.Emit.DynamicMethod::destroy_dynamic_method(System.Reflection.Emit.DynamicMethod)
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.EnumBuilder::setup_enum_type(System.Type)

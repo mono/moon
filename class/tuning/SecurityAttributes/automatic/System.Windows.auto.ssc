@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 636 methods
+# 634 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -283,10 +283,8 @@
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.Control::GetTemplateChild(System.String)
 +SSC-M: System.Void System.Windows.Controls.Control::EmitCurrentContext(System.Int32,System.Windows.RoutedEventArgs)
-+SSC-M: System.Void System.Windows.Controls.Control::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.Control::.cctor()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.ItemContainerGenerator::GenerateNext(System.Boolean&)
-+SSC-M: System.Void System.Windows.Controls.ItemsControl::System.Collections.Specialized.IListenCollectionChanged.CollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::OnItemsClearing(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::AddItemsToPresenter(System.Windows.Controls.Primitives.GeneratorPosition,System.Int32)
 +SSC-M: System.Windows.Controls.ItemCollection System.Windows.Controls.ItemsControl::get_Items()

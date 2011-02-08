@@ -5,7 +5,7 @@
 +SC-M: System.Boolean System.Net.Dns::GetHostByName_internal(System.String,System.String&,System.String[]&,System.String[]&)
 
 # p/invoke declaration
-+SC-M: System.Boolean System.Net.NetworkInformation.NetworkChange::moon_network_service_get_is_network_available(System.IntPtr)
++SC-M: System.Boolean System.Net.NetworkInformation.NetworkChange::_moonlight_cbinding_moon_network_service_get_is_network_available(System.IntPtr)
 
 # internal call
 +SC-M: System.Boolean System.Net.Sockets.Socket::Poll_internal(System.IntPtr,System.Net.Sockets.SelectMode,System.Int32,System.Int32&)
@@ -20,7 +20,7 @@
 +SC-M: System.Int32 System.Net.Sockets.SocketException::WSAGetLastError_internal()
 
 # p/invoke declaration
-+SC-M: System.IntPtr System.Net.NetworkInformation.NetworkChange::runtime_get_network_service()
++SC-M: System.IntPtr System.Net.NetworkInformation.NetworkChange::_moonlight_cbinding_runtime_get_network_service()
 
 # internal call
 +SC-M: System.IntPtr System.Net.Sockets.Socket::Socket_internal(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType,System.Int32&)
@@ -29,7 +29,7 @@
 +SC-M: System.Net.SocketAddress System.Net.Sockets.Socket::RemoteEndPoint_internal(System.IntPtr,System.Int32,System.Int32&)
 
 # p/invoke declaration
-+SC-M: System.Void System.Net.NetworkInformation.NetworkChange::moon_network_service_set_network_state_changed_callback(System.IntPtr,System.Net.NetworkInformation.NetworkChange/NetworkStateChangedCallback,System.IntPtr)
++SC-M: System.Void System.Net.NetworkInformation.NetworkChange::_moonlight_cbinding_moon_network_service_set_network_state_changed_callback(System.IntPtr,System.Net.NetworkInformation.NetworkChange/NetworkStateChangedCallback,System.IntPtr)
 
 # internal call
 +SC-M: System.Void System.Net.Sockets.Socket::Close_internal(System.IntPtr,System.Int32&)
