@@ -83,6 +83,12 @@
 		try {
 			mediaElement.Source = null;
 			TestLogger.LogDebug ("Setting MediaElement.Source to null succeeded.");
+			if (mediaElement.Source != "") {
+				failed = true;
+				TestLogger.LogError ("Setting MediaElement.Source to null should return an empty string as the source");
+			} else {
+				TestLogger.LogDebug ("Checking that MediaElement.Source is '' after setting it to null succeeded.");
+			}
 		} catch (e) {
 			failed = true;
 			TestLogger.LogError ("Setting MediaElement.Source to null threw an exception.");
@@ -127,11 +133,6 @@
 </embed>
 </div>
 
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
 </body>
 
 </html>

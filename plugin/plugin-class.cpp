@@ -3272,6 +3272,14 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 			const char *name = enums_int_to_str ("MediaElementState", enum_value);
 			string_to_npvariant (name, result);
 			return true;
+		} else if (prop->GetId () == MediaElement::SourceProperty) {
+			const Uri *uri = ((MediaElement *) dob)->GetSource ();
+			if (uri == NULL) {
+				string_to_npvariant ("", result);
+			} else {
+				string_to_npvariant (uri->ToString (), result);
+			}
+			return true;
 		} else {
 			value = dob->GetValue (prop);
 		}
