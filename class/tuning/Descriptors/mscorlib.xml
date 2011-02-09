@@ -7,6 +7,7 @@
 		</type>
 		<type fullname="System.IO.FileSystemInfo" preserve="all" />
 		<type fullname="System.IO.IsolatedStorage.IsolatedStorage" preserve="all" />
+		<type fullname="System.MonoCQItem" preserve="all" />
 		<type fullname="System.Environment">
 			<method name="get_StackTrace" />
 		</type>
