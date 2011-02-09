@@ -108,6 +108,7 @@ namespace Mono {
 					if (String.Compare (str_val, "Auto", true) == 0)
 						return new GridLength (1, GridUnitType.Auto);
 					else {
+						str_val = str_val.Trim ();
 						var length = 1.0;
 						var type = str_val.EndsWith ("*") ? GridUnitType.Star : GridUnitType.Pixel;
 						if (str_val.Length == 0)
