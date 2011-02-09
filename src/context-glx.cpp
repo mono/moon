@@ -89,7 +89,10 @@ GLXContext::Initialize ()
 		return false;
 	}
 
-	if (atof ((const char *) glGetString (GL_VERSION)) < MIN_GL_VERSION)
+	// version can be NULL on error
+	const char *version = (const char*)glGetString (GL_VERSION);
+	
+	if (!version || atof (version) < MIN_GL_VERSION)
 		return false;
 
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &maxTextureSize);
