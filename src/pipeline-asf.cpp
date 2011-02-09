@@ -2681,10 +2681,15 @@ MmsSource::ReportDownloadFailure ()
 	LOG_MMS ("MmsSource::ReportDownloadFailure ()\n");
 	VERIFY_MAIN_THREAD;
 	
-	media = GetMediaReffed ();
-	
-	g_return_if_fail (media != NULL);
 	failure_reported = true;
+
+	media = GetMediaReffed ();
+
+	if (media == NULL) {
+		fprintf (stderr, "Moonlight: mms downloader failed");
+		return;
+	}
+
 	media->ReportErrorOccurred ("MmsDownloader failed");
 	media->unref ();
 }
