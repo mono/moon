@@ -302,7 +302,10 @@ TextSelection::GetText ()
 			}
 		}
 		else {
-			tp = tp.GetPositionAtOffset_np (1, tp.GetLogicalDirection());
+			TextPointer new_tp = tp.GetPositionAtOffset_np (1, tp.GetLogicalDirection());
+			if (new_tp.CompareTo_np (tp) == 0)
+				break;
+			tp = new_tp;
 		}
 	}
 

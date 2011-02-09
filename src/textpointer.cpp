@@ -255,10 +255,8 @@ PositionAtOffsetIterator::GetElementParent()
 bool
 PositionAtOffsetIterator::Step (int *offset)
 {
-	if (element == NULL) {
-		g_warning ("element is null, shouldn't happen. bailing out.");
+	if (element == NULL)
 		return false;
-	}
 
 	if (*offset == 0) {
 		// we're done stepping.  element/location should be valid.
