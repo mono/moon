@@ -427,6 +427,13 @@ HttpRequest::Started (HttpResponse *response)
 	if (this->response != NULL)
 		this->response->ref ();
 
+	if (this->response) {
+		guint64 content_length = this->response->GetContentLength ();
+		if (content_length != 0) {
+			NotifySize (content_length);
+		}
+	}
+
 	if (HasHandlers (StartedEvent))
 		Emit (StartedEvent);
 }
@@ -569,6 +576,7 @@ HttpResponse::HttpResponse (Type::Kind type, HttpRequest *request)
 	headers = NULL;
 	response_status = -1;
 	response_status_text = NULL;
+	content_length = 0;
 }
 
 HttpResponse::HttpResponse (HttpRequest *request)
@@ -578,6 +586,7 @@ HttpResponse::HttpResponse (HttpRequest *request)
 	headers = NULL;
 	response_status = -1;
 	response_status_text = NULL;
+	content_length = 0;
 }
 
 void
@@ -607,6 +616,12 @@ HttpResponse::AppendHeader (const char *header, const char *value)
 	if (headers == NULL)
 		headers = new List ();
 	headers->Append (new HttpHeader (header, value));
+
+	if (header != NULL) {
+		if (!strcmp (header, "Content-Length")) {
+			content_length = g_ascii_strtoull (value, NULL, 10);
+		}
+	}
 }
 
 void

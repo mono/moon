@@ -25,7 +25,6 @@ namespace Moonlight {
 class HttpHandler;
 class HttpRequest;
 class HttpResponse;
-class HttpResponse;
 
 /*
  * HttpRequestProgressChangedEventArgs
@@ -245,6 +244,7 @@ private:
 	List *headers;
 	gint32 response_status;
 	char *response_status_text;
+	guint64 content_length;
 
 protected:
 	/* @SkipFactories */
@@ -271,6 +271,8 @@ public:
 	const char *GetResponseStatusText () { return response_status_text; }
 
 	void SetStatus (gint32 status, const char *status_text);
+
+	guint64 GetContentLength () { return content_length; }
 };
 
 /*
