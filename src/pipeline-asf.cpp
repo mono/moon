@@ -1032,6 +1032,7 @@ ASFDemuxer::OpenDemuxer (MemoryBuffer *buffer)
 
 		if (stream_properties->IsAudio ()) {
 			AudioStream *audio = new AudioStream (media);
+			ASFExtendedStreamProperties *aesp;
 
 			stream = audio;
 
@@ -1061,6 +1062,10 @@ ASFDemuxer::OpenDemuxer (MemoryBuffer *buffer)
 			if (audio->GetExtraDataSize () > 0) {
 				audio->SetExtraData (g_malloc0 (audio->GetExtraDataSize ()));
 				memcpy (audio->GetExtraData (), wave->GetCodecSpecificData (), audio->GetExtraDataSize ());
+			}
+			aesp = GetExtendedStreamProperties (current_stream);
+			if (aesp != NULL) {
+				audio->SetPtsPerFrame (aesp->average_time_per_frame);
 			}
 		} else if (stream_properties->IsVideo ()) {
 			VideoStream* video = new VideoStream (media);
