@@ -40,9 +40,8 @@ public:
 class DirtyList : public List::Node
 {
 public:
-	DirtyList (int level)
+	DirtyList ()
 	{
-		this->level = level;
 		dirty_list = new List();
 	}
 
@@ -55,14 +54,8 @@ public:
 	{
 		return dirty_list;
 	}
-
-	int GetLevel ()
-	{
-		return level;
-	}
 private:
 	List *dirty_list;
-	int level;
 };
 
 DirtyLists::DirtyLists (bool ascending)
@@ -77,46 +70,31 @@ DirtyLists::~DirtyLists ()
 }
 
 DirtyList*
-DirtyLists::GetList (int level, bool create)
+DirtyLists::GetList (bool create)
 {
-	DirtyList *dl;
+	DirtyList *dl = NULL;
 
-	for (dl = (DirtyList*)lists->First(); dl; dl = (DirtyList*)dl->next) {
-		if (dl->GetLevel() == level)
-			return dl;
-		else if (dl->GetLevel() > level)
-			break;
+	dl = (DirtyList *)lists->First ();
+
+	if (!dl && create) {
+		lists->Append (new DirtyList ());
+		dl = (DirtyList *)lists->First ();
 	}
 
-	if (create) {
-		DirtyList *new_dl = new DirtyList (level);
-		lists->InsertBefore (new_dl, dl);
-		return new_dl;
-	}
-
-	return NULL;
+	return dl;
 }
 
 void
-DirtyLists::RemoveList (int level)
+DirtyLists::AddDirtyNode (List::Node *node)
 {
-	DirtyList *dl = (DirtyList*)GetList (level, false);
-	if (!dl)
-		return;
-	lists->Remove (dl);
-}
-
-void
-DirtyLists::AddDirtyNode (int level, List::Node *node)
-{
-	DirtyList *dl = (DirtyList*)GetList (level, true);
+	DirtyList *dl = (DirtyList*)GetList (true);
 	dl->GetDirtyNodes()->Append(node);
 }
 
 void
-DirtyLists::RemoveDirtyNode (int level, List::Node *node)
+DirtyLists::RemoveDirtyNode (List::Node *node)
 {
-	DirtyList *dl = (DirtyList*)GetList (level, false);
+	DirtyList *dl = (DirtyList*)GetList (false);
 	if (!dl)
 		return;
 	dl->GetDirtyNodes()->Remove(node);
@@ -176,7 +154,7 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 			return;
 		element->down_dirty_node = new DirtyNode (element);
 
-		down_dirty->AddDirtyNode (element->GetVisualLevel (), element->down_dirty_node);
+		down_dirty->AddDirtyNode (element->down_dirty_node);
 	}
 
 	if (dirt & UpDirtyState) {
@@ -184,7 +162,7 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 			return;
 		element->up_dirty_node = new DirtyNode (element);
 
-		up_dirty->AddDirtyNode (element->GetVisualLevel (), element->up_dirty_node);
+		up_dirty->AddDirtyNode (element->up_dirty_node);
 	}
 
 	GetTimeManager()->NeedRedraw ();
@@ -194,9 +172,9 @@ void
 Surface::RemoveDirtyElement (UIElement *element)
 {
 	if (element->up_dirty_node)
-		up_dirty->RemoveDirtyNode (element->GetVisualLevel(), element->up_dirty_node);
+		up_dirty->RemoveDirtyNode (element->up_dirty_node);
 	if (element->down_dirty_node)
-		down_dirty->RemoveDirtyNode (element->GetVisualLevel(), element->down_dirty_node);
+		down_dirty->RemoveDirtyNode (element->down_dirty_node);
 
 	element->down_dirty_node = NULL;
 	element->up_dirty_node = NULL;
@@ -336,7 +314,7 @@ Surface::ProcessDownDirtyElements ()
 
 		if (!(el->dirty_flags & DownDirtyState) && el->down_dirty_node) {
 		       
-			down_dirty->RemoveDirtyNode (el->GetVisualLevel (), el->down_dirty_node);
+			down_dirty->RemoveDirtyNode (el->down_dirty_node);
 			el->down_dirty_node = NULL;
 		}
 	}
@@ -422,7 +400,7 @@ Surface::ProcessUpDirtyElements ()
 		}
 
 		if (!(el->dirty_flags & UpDirtyState)) {
-			up_dirty->RemoveDirtyNode (el->GetVisualLevel (), el->up_dirty_node);
+			up_dirty->RemoveDirtyNode (el->up_dirty_node);
 			el->up_dirty_node = NULL;
 		}
 	}

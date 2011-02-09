@@ -106,9 +106,6 @@ public:
 	/* @GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
-	int GetVisualLevel () { return visual_level; }
-	void SetVisualLevel (int level) { visual_level = level; }
-
 	/* @GeneratePInvoke,ManagedAccess=Internal */
 	virtual void SetSubtreeObject (DependencyObject *value);
 

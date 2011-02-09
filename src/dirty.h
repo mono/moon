@@ -22,11 +22,10 @@ public:
 	DirtyLists (bool ascending);
 	~DirtyLists ();
 
-	DirtyList* GetList (int level, bool create = false);
-	void RemoveList (int level);
+	DirtyList* GetList (bool create = false);
 
-	void AddDirtyNode (int level, List::Node *node);
-	void RemoveDirtyNode (int level, List::Node *node);
+	void AddDirtyNode (List::Node *node);
+	void RemoveDirtyNode (List::Node *node);
 
 	List::Node *GetFirst ();
 

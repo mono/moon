@@ -783,7 +783,6 @@ UIElement::ElementRemoved (UIElement *item)
 void
 UIElement::ElementAdded (UIElement *item)
 {
-	item->SetVisualLevel (GetVisualLevel() + 1);
 	item->SetVisualParent (this);
 	item->UpdateTotalRenderVisibility ();
 	item->UpdateTotalHitTestVisibility ();
