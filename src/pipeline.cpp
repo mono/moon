@@ -4316,12 +4316,19 @@ IMediaDemuxer::FillBuffersInternal ()
 			continue;
 		}
 
-		if (buffered_size <= min_buffered_size) {
-			min_buffered_size = buffered_size;
-			request_stream = stream;
-			pc = c == NULL ? "buffered size smaller than min buffered size" : c;
-			p_last_enqueued_pts = last_enqueued_pts;
+		if (request_stream != NULL && last_enqueued_pts != G_MAXUINT64 && p_last_enqueued_pts < last_enqueued_pts) {
+			/* The current request_stream has less data demuxed than this stream */
+			LOG_BUFFERING ("%s::FillBuffersInternal (): %s has more data buffered than %s\n", GetTypeName (), stream->GetTypeName (), request_stream->GetTypeName ());
+			continue;
 		}
+
+		min_buffered_size = MIN (buffered_size, min_buffered_size);
+		request_stream = stream;
+		pc = c == NULL ? "smallest last_enqueued_pts" : c;
+		p_last_enqueued_pts = last_enqueued_pts;
+
+		if (last_enqueued_pts == G_MAXUINT64)
+			break; /* No other streams can win over this one */
 	}
 
 	if (request_stream != NULL) {
