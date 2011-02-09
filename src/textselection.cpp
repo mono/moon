@@ -288,9 +288,11 @@ TextSelection::GetText ()
 	TextPointer tp = anchor;
 
 	while (tp.CompareTo_np (moving) < 0) {
-		if (tp.GetParent()->Is (Type::RUN)) {
-			Run *run = (Run*)tp.GetParent();
-			if (tp.GetParent() == moving.GetParent()) {
+		DependencyObject *parent = tp.GetParent ();
+
+		if (parent && parent->Is (Type::RUN)) {
+			Run *run = (Run*)parent;
+			if (parent == moving.GetParent()) {
 				// tp and moving are in the same element, so we append the substring and set tp = moving.
 				g_string_append_len (gstr, run->GetText() + tp.ResolveLocation(), moving.ResolveLocation() - tp.ResolveLocation());
 				tp = moving;
