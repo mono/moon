@@ -1,8 +1,10 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 28 methods
+# 30 methods
 
 +SSC-M: System.Windows.Browser.ScriptObject System.Windows.Browser.HostServices::get_JsonSerializer()
++SSC-M: System.Windows.Browser.BrowserInformation System.Windows.Browser.HtmlPage::get_BrowserInformation()
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
++SSC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::get_Window()
 +SSC-M: System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
 +SSC-M: System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
 +SSC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::PopupWindow(System.Uri,System.String,System.Windows.Browser.HtmlPopupWindowOptions)

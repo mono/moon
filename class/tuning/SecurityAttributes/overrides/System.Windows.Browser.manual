@@ -20,4 +20,7 @@
 +SC-M: System.Void System.Windows.Browser.ScriptObject::AddEventHandler(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
 +SC-M: System.Void System.Windows.Browser.ScriptObject::RemoveEventHandler(System.String,System.Windows.Browser.ScriptObject)
 
+# play it safe with our unsafe methods
++SC-M: System.Windows.Browser.BrowserInformation System.Windows.Browser.HtmlPage::get_UnsafeBrowserInformation()
++SC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::get_UnsafeWindow()
 
