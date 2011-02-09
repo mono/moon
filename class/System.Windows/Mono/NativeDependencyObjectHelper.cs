@@ -370,6 +370,7 @@ namespace Mono {
 			case Kind.LINESEGMENT: return new LineSegment (raw, false);
 			case Kind.LOCALMESSAGERECEIVER: return new LocalMessageReceiver (raw, false);
 			case Kind.LOCALMESSAGESENDER: return new LocalMessageSender (raw, false);
+			case Kind.LOGREADYROUTEDEVENTARGS: return new LogReadyRoutedEventArgs (raw, false);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
 			case Kind.MATRIX3DPROJECTION: return new Matrix3DProjection (raw, false);
 			case Kind.NAMESCOPE: return new NameScope (raw, false);

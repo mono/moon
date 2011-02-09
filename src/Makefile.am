@@ -74,6 +74,7 @@ libmoon_include_headers = 	\
 	managedtypeinfo.h	\
 	media.h			\
 	mediaelement.h		\
+	medialog.h			\
 	mediaplayer.h		\
 	messaging.h		\
 	moon-curves.h		\
@@ -225,6 +226,7 @@ libmoon_la_SOURCES = 		\
 	managedtypeinfo.cpp	\
 	media.cpp		\
 	mediaelement.cpp	\
+	medialog.cpp		\
 	mediaplayer.cpp		\
 	messaging.cpp		\
 	moon-curves.c		\

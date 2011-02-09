@@ -95,8 +95,8 @@ namespace System.Windows.Controls {
 		
 		public void RequestLog ()
 		{
-			Console.WriteLine ("MediaElement.RequestLog (): Not implemented.");
-		}		
+			NativeMethods.media_element_request_log (native, LogSource.RequestLog);
+		}
 
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{

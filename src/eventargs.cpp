@@ -297,6 +297,11 @@ LogReadyRoutedEventArgs::LogReadyRoutedEventArgs ()
 	log_source = (LogSource) 0;
 }
 
+LogReadyRoutedEventArgs::~LogReadyRoutedEventArgs ()
+{
+	g_free (log);
+}
+
 MouseEventArgs::MouseEventArgs (MoonMouseEvent *event)
 	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {

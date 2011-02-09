@@ -439,6 +439,9 @@ class TypeReference {
 			case "FullScreenOptions":
 				managed_type = Value;
 				break;
+			case "LogSource":
+				managed_type = "System.Windows.Media.LogSource";
+				break;
 			case "GCHandle":
 			case "ManagedObject":
 				managed_type = "IntPtr";

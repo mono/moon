@@ -481,6 +481,7 @@ public:
 	/* Managed helpers */
 	char *CanonicalizeFileName (const char *filename, bool is_xap_mode);
 	const UriFunctions *GetUriFunctions () { return &uri_functions; }
+	char *CreateMediaLogXml (const char **names, const char **values);
 	/* @GeneratePInvoke */
 	void SetUriFunctions (const UriFunctions *value);
 
@@ -504,6 +505,9 @@ public:
 	static void RegisterICalls ();
 	
 	const static void *CurrentApplicationWeakRef;
+
+	const char *GetUserAgent () { return user_agent; }
+	void SetUserAgent (const char *value) { g_free (user_agent); user_agent = g_strdup (value); }
 
 protected:
 	virtual ~Deployment ();
@@ -571,6 +575,7 @@ private:
 
 	// xap filename, for use in installing apps
 	char *xap_filename;
+	char *user_agent;
 
 	// platform dir
 	static char *platform_dir;

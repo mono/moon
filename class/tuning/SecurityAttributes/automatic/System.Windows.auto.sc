@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 593 methods needs to be decorated.
+# 597 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -629,6 +629,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::local_message_sender_new(System.String,System.String)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::log_ready_routed_event_args_get_log_(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix_get_matrix_values(System.IntPtr)
 
 # p/invoke declaration
@@ -1033,6 +1036,9 @@
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
 
+# using 'System.IntPtr*' as a parameter type
++SC-M: System.String Mono.Helper::CreateMediaLogXml(System.IntPtr*,System.IntPtr*)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::LookupType(Mono.Value*,System.String,System.String)
 
@@ -1320,6 +1326,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_element_report_error_occurred(System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::media_element_request_log(System.IntPtr,System.Windows.Media.LogSource)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_element_set_stream_source(System.IntPtr,Mono.ManagedStreamCallbacks&)
@@ -1746,6 +1755,9 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.Interop.FullScreenOptions Mono.NativeMethods::surface_get_full_screen_options(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Windows.Media.LogSource Mono.NativeMethods::log_ready_routed_event_args_get_log_source(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Windows.MessageBoxResult Mono.NativeMethods::moon_windowing_system_show_message_box(System.IntPtr,System.Int32,System.String,System.String,System.Windows.MessageBoxButton)

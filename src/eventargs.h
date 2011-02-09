@@ -361,20 +361,26 @@ private:
 /* @Namespace=None */
 class LogReadyRoutedEventArgs : public RoutedEventArgs {
 public:
+	/* @GeneratePInvoke,ManagedAccess=Internal */
+	LogReadyRoutedEventArgs ();
+
+	/* @GeneratePInvoke */
 	const char *GetLog () { return log; }
+	/* @GeneratePInvoke */
 	LogSource GetLogSource () { return log_source; }
 
+	void SetLog (const char *value) { g_free (log); log = g_strdup (value); }
+	void SetLogSource (LogSource value) { log_source = value; }
+
 protected:
-	/* @GeneratePInvoke */
-	LogReadyRoutedEventArgs ();
 	
-	virtual ~LogReadyRoutedEventArgs () {}
+	virtual ~LogReadyRoutedEventArgs ();
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
 private:
-	const char *log;
+	char *log;
 	LogSource log_source;
 };
 

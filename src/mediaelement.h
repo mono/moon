@@ -30,6 +30,7 @@ class MediaElement : public FrameworkElement {
  private:	
 	Mutex mutex;
 	
+	List log_request_queue; // Thread-safe: Accesses to this field needs to use the mutex.
 	List *streamed_markers_queue; // Thread-safe: Accesses to this field needs to use the mutex.
 	TimelineMarkerCollection *streamed_markers; // Main thread only.
 	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
@@ -58,6 +59,9 @@ class MediaElement : public FrameworkElement {
 	// This is the position when Pause is called. Since the actually Pause is done async, we must report
 	// this value as the current Position.
 	guint64 paused_position;
+	// This is the position we started to play after a stop. This is used to calculate the amount
+	// of time we've been playing for the log.
+	guint64 log_position_start;
 	
 	guint64 first_pts; // the first pts, starts off at GUINT_MAX
 	int buffering_mode; // if we're in [3] or not: 0 = unknown, 1 = [1], etc.
@@ -103,6 +107,8 @@ class MediaElement : public FrameworkElement {
 	static void EmitStateChanged (EventObject *obj);
 	static void EmitMediaEnded (EventObject *obj);
 	static void ReportErrorOccurredCallback (EventObject *obj);
+	static void RequestLogAsyncCallback (EventObject *obj);
+	void RequestLog ();
 	
 	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
 	static MediaResult AddStreamedMarkerCallback (MediaClosure *closure); // Thread-safe
@@ -248,6 +254,9 @@ class MediaElement : public FrameworkElement {
 
 	void Seek (TimeSpan to, bool force); // Not thread-safe. 
 	
+	/* @GeneratePInvoke */
+	void RequestLog (LogSource log_source); // Thread-safe
+
 	void ReportErrorOccurred (ErrorEventArgs *args, bool force_async); // Thread safe
 	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GeneratePInvoke */

@@ -1,6 +1,6 @@
 <Project name="src" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
   <Policies>
-    <StandardHeader Text="/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */&#xA;/*&#xA; * ${FileName}&#xA; *&#xA; * Contact:&#xA; *   Moonlight List (moonlight-list@lists.ximian.com)&#xA; *&#xA; * Copyright ${Year} Novell, Inc. (http://www.novell.com)&#xA; *&#xA; * See the LICENSE file included with the distribution for details.&#xA; */&#xA;" inheritsSet="Apache2License" />
+    <StandardHeader Text="/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */&#xA;/*&#xA; * ${FileName}&#xA; *&#xA; * Contact:&#xA; *   Moonlight List (moonlight-list@lists.ximian.com)&#xA; *&#xA; * Copyright ${Year} Novell, Inc. (http://www.novell.com)&#xA; *&#xA; * See the LICENSE file included with the distribution for details.&#xA; */&#xA;" IncludeInNewFiles="True" />
   </Policies>
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar />
@@ -400,6 +400,8 @@
     <File subtype="Code" buildaction="Compile" name="factory.cpp" />
     <File subtype="Code" buildaction="Compile" name="pal/capture/pal-linux-audio-capture.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-audio-capture.h" />
+    <File subtype="Code" buildaction="Nothing" name="medialog.h" />
+    <File subtype="Code" buildaction="Compile" name="medialog.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

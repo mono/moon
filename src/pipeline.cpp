@@ -32,6 +32,7 @@
 #include "timesource.h"
 #include "pipeline-mp4.h"
 #include "factory.h"
+#include "medialog.h"
 
 #if CODECS_SUPPORTED
 #include "pipeline-ui.h"
@@ -82,6 +83,7 @@ Media::Media (PlaylistEntry *entry)
 	duration = G_MAXINT64;
 	seek_when_opened = true;
 	final_uri = NULL;
+	log = new MediaLog ();
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -90,6 +92,9 @@ Media::Media (PlaylistEntry *entry)
 Media::~Media ()
 {
 	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
+
+	delete log;
+	log = NULL;
 }
 
 void
@@ -190,6 +195,8 @@ Media::SetFinalUri (const Uri *value)
 
 	if (value != NULL) {
 		final_uri = Uri::Clone (value);
+		log->SetUrl (final_uri->ToString ());
+		log->SetUriStem (final_uri->GetPath ());
 	}
 }
 
@@ -1949,6 +1956,7 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 		if (media != NULL) {
 			if (media->GetFinalUri () == NULL)
 				media->SetFinalUri (cancellable->GetRequest ()->GetFinalUri ());
+			media->GetLog ()->SetFileSize (cancellable->GetRequest ()->GetNotifiedSize ());
 			media->unref ();
 		}
 	}

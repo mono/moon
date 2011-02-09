@@ -80,7 +80,7 @@ namespace Mono {
 		{
 			return SafeDispatcher ( (sender, calldata, closure) 
 						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
-							    NativeDependencyObjectHelper.FromIntPtr (calldata) as LogReadyRoutedEventArgs ?? new LogReadyRoutedEventArgs (calldata)) );
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as LogReadyRoutedEventArgs ?? new LogReadyRoutedEventArgs (calldata, false)) );
 		}
 		
 		public static UnmanagedEventHandler CreateTextCompositionEventHandlerDispatcher (TextCompositionEventHandler handler)

@@ -25,6 +25,7 @@
 #include "timeline.h"
 #include "timemanager.h"
 #include "factory.h"
+#include "medialog.h"
 
 namespace Moonlight {
 
@@ -441,6 +442,7 @@ MediaElement::OnIsAttachedChanged (bool value)
 
 	if (!value) {
 		LOG_MEDIAELEMENT ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
+		RequestLog (LogSourceMediaElementShutdown);
 		detached_state = state;
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
@@ -496,6 +498,7 @@ MediaElement::Reinitialize (bool is_shutting_down)
 	seeked_to_position = 0;
 	paused_position = 0;
 	buffering_mode = 0;
+	log_position_start = 0;
 	
 	mutex.Lock ();
 	delete streamed_markers_queue;
@@ -1148,6 +1151,7 @@ MediaElement::SeekCompletedHandler (Playlist *playlist, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	seek_to_position = -1;
+	log_position_start = GetPosition ();
 	SetMarkerTimeout (true);
 }
 
@@ -1170,6 +1174,7 @@ MediaElement::PauseHandler (Playlist *playlist, EventArgs *args)
 	
 	SetMarkerTimeout (false);
 	
+	RequestLog (LogSourcePause);
 	SetState (MediaElementStatePaused);
 }
 
@@ -1253,6 +1258,7 @@ MediaElement::MediaEndedHandler (Playlist *playlist, EventArgs *args)
 	
 	CheckMarkers ();
 	paused_position = GetNaturalDuration ()->GetTimeSpan ();
+	RequestLog (LogSourceEndOfStream);
 	SetState (MediaElementStatePaused);
 	AddTickCall (EmitMediaEnded); /* MediaEnded must be emitted after the (async) CurrentState -> Paused event. #7003. */
 }
@@ -1321,6 +1327,9 @@ MediaElement::SetUriSource (const Uri *uri)
 	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri ? uri->ToString () : NULL);
 	VERIFY_MAIN_THREAD;
 	
+	if (playlist != NULL)
+		RequestLog (LogSourceSourceChanged);
+
 	Reinitialize (false);
 	
 	g_return_if_fail (playlist == NULL);
@@ -1546,6 +1555,7 @@ MediaElement::Stop ()
 		
 		SetState (MediaElementStateStopped);
 		playlist->StopAsync ();
+		RequestLog (LogSourceStop);
 		break;
 	case MediaElementStateIndividualizing:
 	case MediaElementStateAcquiringLicense:
@@ -1679,6 +1689,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	} else if (args->GetId () == MediaElement::PositionProperty) {
 		Seek (args->GetNewValue()->AsTimeSpan (), false);
 		ClearValue (MediaElement::PositionProperty, false); // We need this, otherwise our property system will return the seeked-to position forever (MediaElementPropertyValueProvider isn't called).
+		RequestLog (LogSourceSeek);
 	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		if (mplayer)
 			mplayer->SetVolume (args->GetNewValue()->AsDouble ());
@@ -1691,6 +1702,80 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
+MediaElement::RequestLogAsyncCallback (EventObject *obj)
+{
+	((MediaElement *) obj)->RequestLog ();
+}
+
+void
+MediaElement::RequestLog ()
+{
+	LogSource log_source = LogSourceRequestLog;
+	mutex.Lock ();
+	if (log_request_queue.First () != NULL) {
+		log_source = ((List::GenericNode<LogSource> *) log_request_queue.First ())->GetElement ();
+		log_request_queue.Remove (log_request_queue.First ());
+	}
+	mutex.Unlock ();
+	RequestLog (log_source);
+}
+
+void
+MediaElement::RequestLog (LogSource log_source)
+{
+	PlaylistEntry *entry = NULL;
+	Media *media = NULL;
+	MediaLog *log = NULL;
+	LogReadyRoutedEventArgs *args;
+
+	LOG_MEDIAELEMENT ("MediaElement::RequestLog ()\n");
+
+	if (!Surface::InMainThread ()) {
+		mutex.Lock ();
+		log_request_queue.Append (new List::GenericNode<LogSource> (log_source));
+		mutex.Unlock ();
+		AddTickCall (RequestLogAsyncCallback);
+		return;
+	}
+
+	VERIFY_MAIN_THREAD;
+
+	if (GetDeployment ()->IsShuttingDown ())
+		return;
+
+	if (!HasHandlers (LogReadyEvent))
+		return;
+
+	if (playlist != NULL)
+		entry = playlist->GetCurrentEntryLeaf ();
+
+	if (entry != NULL)
+		media = entry->GetMedia ();
+
+	if (media != NULL)
+		log = media->GetLog ();
+
+	if (log != NULL) {
+		const Uri *source_location = GetDeployment ()->GetSourceLocation (NULL);
+		if (source_location != NULL)
+			log->SetReferrer (source_location->ToString ());
+		log->SetPlayerVersion (GetDeployment ()->GetRuntimeVersion ());
+		log->SetFileLength (TimeSpan_ToSeconds (GetNaturalDuration ()->GetTimeSpan ()));
+		if (GetState () == MediaElementStatePlaying || GetState () == MediaElementStatePaused) {
+			log->SetDuration (TimeSpan_ToSeconds (GetPosition () - log_position_start));
+		} else {
+			log->SetDuration (0);
+		}
+		log->SetUserAgent (GetDeployment ()->GetUserAgent ());
+		args = log->CreateEventArgs ();
+	} else {
+		args = MoonUnmanagedFactory::CreateLogReadyRoutedEventArgs ();
+	}
+	args->SetLogSource (log_source);
+	EmitAsync (LogReadyEvent, args);
 }
 
 bool 

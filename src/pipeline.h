@@ -72,6 +72,7 @@ class ProgressiveSource;
 class MediaMarkerFoundClosure;
 class Playlist;
 class MemoryBuffer;
+class MediaLog;
 
 /* @CBindingRequisite */
 typedef gint32 MediaResult;
@@ -646,6 +647,7 @@ private:
 	double buffering_progress;
 	TimeSpan start_time;
 	TimeSpan duration;
+	MediaLog *log;
 	
 	PlaylistEntry *entry;
 
@@ -770,6 +772,8 @@ public:
 	void SetFinalUri (const Uri *value); // main thread only
 	const Uri *GetFinalUri (); // main thread only
 	
+	MediaLog *GetLog () { return log; }
+
 	const static int OpeningEvent;
 	const static int OpenCompletedEvent;
 	const static int SeekingEvent;

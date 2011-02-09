@@ -299,6 +299,39 @@ namespace Mono {
 			return NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native);
 		}
 
+		public unsafe static string CreateMediaLogXml (IntPtr *names, IntPtr *values)
+		{
+			IntPtr name_ptr;
+			IntPtr value_ptr;
+			StringBuilder result = new StringBuilder ();
+			StringBuilder summary = new StringBuilder ();
+			System.Xml.XmlWriterSettings settings = new System.Xml.XmlWriterSettings ();
+			settings.Indent = true;
+			settings.OmitXmlDeclaration = true;
+			System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create (result, settings);
+
+			for (int c = 0; names [c] != IntPtr.Zero; c++) {
+				string value = Marshal.PtrToStringAnsi (values [c]).Replace (' ', '_');
+				summary.Append (value);
+				summary.Append (" ");
+			}
+			summary.Length -= 1;
+
+			writer.WriteStartElement ("XML");
+			writer.WriteElementString ("Summary", summary.ToString ());
+			for (int c = 0; names [c] != IntPtr.Zero; c++) {
+				string name = Marshal.PtrToStringAnsi (names [c]);
+				string value = Marshal.PtrToStringAnsi (values [c]).Replace (' ', '_');
+				writer.WriteElementString (name, value);
+
+			}
+			writer.WriteEndElement ();
+
+			writer.Flush ();
+
+			return result.ToString ();
+		}
+
 #if NET_2_1
 		// only for the plugin, not for the desktop
 

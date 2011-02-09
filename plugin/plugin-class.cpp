@@ -358,6 +358,7 @@ enum DependencyObjectClassNames {
 	TIMELINE_MARKER_ROUTED_EVENT_ARGS_CLASS,
 	MOUSE_EVENT_ARGS_CLASS,
 	DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS,
+	LOG_READY_ROUTED_EVENT_ARGS_CLASS,
 	MULTI_SCALE_IMAGE_CLASS,
 	GENERAL_TRANSFORM_CLASS,
 
@@ -1659,6 +1660,47 @@ MoonlightDownloadProgressEventArgsType::MoonlightDownloadProgressEventArgsType (
 
 MoonlightDownloadProgressEventArgsType *MoonlightDownloadProgressEventArgsClass;
 
+/*** MoonlightLogReadyRoutedEventArgsClass  **************************************************************/
+
+static NPObject *
+log_ready_routed_event_args_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightLogReadyRoutedEventArgs (instance);
+}
+
+static const MoonNameIdMapping
+log_ready_routed_event_args_mapping [] = {
+	{ "logsource", MoonId_LogSource },
+	{ "log", MoonId_Log },
+};
+
+bool
+MoonlightLogReadyRoutedEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	LogReadyRoutedEventArgs *event_args = GetLogReadyRoutedEventArgs ();
+
+	switch (id) {
+	case MoonId_LogSource:
+		INT32_TO_NPVARIANT ((int) event_args->GetLogSource (), *result);
+		return true;
+	case MoonId_Log:
+		string_to_npvariant (event_args->GetLog (), result);
+		return true;
+	default:
+		return MoonlightEventArgs::GetProperty (id, name, result);
+	}
+
+	return false;
+}
+
+MoonlightLogReadyRoutedEventArgsType::MoonlightLogReadyRoutedEventArgsType ()
+{
+	allocate = log_ready_routed_event_args_allocate;
+
+	AddMapping (log_ready_routed_event_args_mapping, G_N_ELEMENTS (log_ready_routed_event_args_mapping));
+}
+
+MoonlightLogReadyRoutedEventArgsType *MoonlightLogReadyRoutedEventArgsClass;
 
 /*** MoonlightMouseEventArgsClass  **************************************************************/
 
@@ -3665,6 +3707,9 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 	case Type::DOWNLOADPROGRESSEVENTARGS:
 		np_class = dependency_object_classes [DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS];
 		break;
+	case Type::LOGREADYROUTEDEVENTARGS:
+		np_class = dependency_object_classes [LOG_READY_ROUTED_EVENT_ARGS_CLASS];
+		break;
 	case Type::KEYEVENTARGS:
 		np_class = dependency_object_classes [KEY_EVENT_ARGS_CLASS];
 		break;
@@ -4022,6 +4067,7 @@ moonlight_media_element_mapping [] = {
 	{ "play", MoonId_Play },
 	{ "setsource", MoonId_SetSource },
 	{ "stop", MoonId_Stop },
+	{ "requestlog", MoonId_RequestLog },
 };
 
 bool
@@ -4057,6 +4103,16 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 			THROW_JS_EXCEPTION ("stop");
 
 		media->Stop ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+
+	case MoonId_RequestLog:
+		if (argCount != 0)
+			THROW_JS_EXCEPTION ("requestlog");
+
+		media->RequestLog (LogSourceRequestLog);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -5608,6 +5664,7 @@ plugin_init_classes (void)
 	dependency_object_classes [TIMELINE_MARKER_ROUTED_EVENT_ARGS_CLASS] = new MoonlightTimelineMarkerRoutedEventArgsType ();
 	dependency_object_classes [MOUSE_EVENT_ARGS_CLASS] = new MoonlightMouseEventArgsType ();
 	dependency_object_classes [DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS] = new MoonlightDownloadProgressEventArgsType ();
+	dependency_object_classes [LOG_READY_ROUTED_EVENT_ARGS_CLASS] = new MoonlightLogReadyRoutedEventArgsType ();
 	
 	MoonlightContentClass = new MoonlightContentType ();
 	MoonlightDurationClass = new MoonlightDurationType ();

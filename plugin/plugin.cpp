@@ -593,6 +593,8 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 
 	if (!CreatePluginDeployment ()) { 
 		g_warning ("Couldn't initialize Mono or create the plugin Deployment");
+	} else {
+		deployment->SetUserAgent (useragent);
 	}
 }
 

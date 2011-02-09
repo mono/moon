@@ -18,24 +18,38 @@ namespace System.Windows.Media
 	public sealed class LogReadyRoutedEventArgs : RoutedEventArgs
 	{
 		private string log;
-		private LogSource log_source;
+		private LogSource? log_source;
 		
 		public LogReadyRoutedEventArgs ()
 		{
-			log = null;
-			log_source = default (LogSource);
 		}
 		
-		internal LogReadyRoutedEventArgs (IntPtr calldata) : base (calldata, false)
+		internal LogReadyRoutedEventArgs (IntPtr calldata, bool dropref) : base (calldata, dropref)
 		{
 		}
 		
 		public string Log {
-			get { return log; }
+			get {
+				if (log == null) {
+					if (this.NativeHandle == IntPtr.Zero)
+						return null;
+					log = NativeMethods.log_ready_routed_event_args_get_log (NativeHandle);
+					if (log == null)
+						log = string.Empty;
+				}
+				return log;
+			}
 		}
 		
 		public LogSource LogSource {
-			get { return log_source; }
+			get {
+				if (!log_source.HasValue) {
+					if (this.NativeHandle == IntPtr.Zero)
+						return LogSource.RequestLog;
+					log_source = (LogSource) NativeMethods.log_ready_routed_event_args_get_log_source (NativeHandle);
+				}
+				return log_source.Value;
+			}
 		}
 	}
 }

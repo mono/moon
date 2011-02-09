@@ -500,6 +500,7 @@ Deployment::Deployment()
 	http_handler = NULL;
 	default_http_handler = NULL;
 	domain = NULL;
+	user_agent = NULL;
 
 #if OBJECT_TRACKING
 	objects_alive = NULL;
@@ -1287,6 +1288,9 @@ Deployment::Dispose ()
 	surface_mutex.Unlock ();
 	if (surface)
 		surface->unref ();
+
+	g_free (user_agent);
+	user_agent = NULL;
 
 #if EVENT_ARG_REUSE
 	if (change_args) {
@@ -2135,6 +2139,47 @@ Deployment::CanonicalizeFileName (const char *filename, bool is_xap_mode)
 	char *r = mono_string_to_utf8 ((MonoString *) result);
 
 	LOG_DEPLOYMENT ("Deployment::CanonicalizeFileName (%s, %i) => %s\n", filename, is_xap_mode, r);
+
+	return r;
+}
+
+char *
+Deployment::CreateMediaLogXml (const char **names, const char **values)
+{
+	MonoObject *exc = NULL;
+	MonoObject *result;
+	MonoClass *mono_helper;
+	MonoMethod *create_xml;
+	void *params [2];
+
+	LOG_DEPLOYMENT ("Deployment::CreateMediaLogXml (%p, %p)\n", names, values);
+
+	mono_helper = mono_class_from_name (system_windows_image, "Mono", "Helper");
+	if (mono_helper == NULL) {
+		printf ("Moonlight: Could not find managed Mono.Helper type.\n");
+		return NULL;
+	}
+
+	create_xml  = MonoGetMethodFromName (mono_helper, "CreateMediaLogXml", 2);
+
+	if (!create_xml) {
+		printf ("Moonlight: Could not find managed method Mono.Helper.CreateMediaLogXml.\n");
+		return NULL;
+	}
+
+	params [0] = names;
+	params [1] = values;
+	result = mono_runtime_invoke (create_xml, NULL, params, &exc);
+
+	if (exc) {
+		printf ("Moonlight: Exception in call to Mono.Helper.CreateMediaLogXml.\n");
+		// surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return NULL;
+	}
+
+	char *r = mono_string_to_utf8 ((MonoString *) result);
+
+	LOG_DEPLOYMENT ("Deployment::CreateMediaLogXml (%p, %p) => \n%s\n", names, values, r);
 
 	return r;
 }

@@ -111,6 +111,8 @@ enum PluginPropertyId {
 	MoonId_Value,
 	MoonId_Accessibility,
 	MoonId_MultiScaleImage_Source,
+	MoonId_LogSource,
+	MoonId_Log,
 
 	// event names (handled by the property setters)
 	MoonId_BufferingProgressChanged,
@@ -176,6 +178,7 @@ enum PluginPropertyId {
 	MoonId_Seek,
 	MoonId_Stop,
 	MoonId_Play,
+	MoonId_RequestLog,
 	MoonId_SetSource,
 	MoonId_SetFontSource,
 	MoonId_Abort,
@@ -830,6 +833,21 @@ struct MoonlightDownloadProgressEventArgs : MoonlightEventArgs {
 	}
 
 	DownloadProgressEventArgs *GetDownloadProgressEventArgs () { return (DownloadProgressEventArgs *) eo; }
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+};
+
+/*** MoonlightLogReadyRoutedEventArgsClass ******************************************************/
+struct MoonlightLogReadyRoutedEventArgsType : MoonlightEventArgsType {
+	MoonlightLogReadyRoutedEventArgsType ();
+};
+
+struct MoonlightLogReadyRoutedEventArgs : MoonlightEventArgs {
+	MoonlightLogReadyRoutedEventArgs (NPP instance) : MoonlightEventArgs (instance)
+	{
+		moonlight_type = Type::LOGREADYROUTEDEVENTARGS;
+	}
+
+	LogReadyRoutedEventArgs *GetLogReadyRoutedEventArgs () { return (LogReadyRoutedEventArgs *) eo; }
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 631 methods
+# 634 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -279,6 +279,7 @@
 +SSC-M: System.Void System.Windows.Controls.MediaElement::SetSource(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Controls.MediaElement::SetSource(System.Windows.Media.MediaStreamSource)
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Stop()
++SSC-M: System.Void System.Windows.Controls.MediaElement::RequestLog()
 +SSC-M: System.Void System.Windows.Controls.Control::Initialize()
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.Control::GetTemplateChild(System.String)
@@ -558,6 +559,8 @@
 +SSC-M: System.Windows.Rect System.Windows.Media.Geometry::get_Bounds()
 +SSC-M: System.String System.Windows.Media.GlyphTypeface::get_FontFileName()
 +SSC-M: System.Double System.Windows.Media.GlyphTypeface::get_Version()
++SSC-M: System.String System.Windows.Media.LogReadyRoutedEventArgs::get_Log()
++SSC-M: System.Windows.Media.LogSource System.Windows.Media.LogReadyRoutedEventArgs::get_LogSource()
 +SSC-M: System.Void System.Windows.Media.Matrix::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.MediaStreamDescription::Finalize()
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::Finalize()
