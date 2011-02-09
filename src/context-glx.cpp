@@ -75,8 +75,11 @@ GLXContext::Initialize ()
 
 	templ.visualid = vid;
 	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
-
-	g_assert (n == 1);
+	
+	if (n != 1) {
+		g_warning ("Found more than one matching visual, falling back");
+		return false;
+	}
 
 	X11ErrorTrapPush (dpy);
 	ctx = glXCreateContext (dpy, visinfo, 0, True);
