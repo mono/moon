@@ -865,7 +865,11 @@ CurlHttpHandler::Dispose ()
 
 	ExecuteHandleActions ();
 
-	curl_share_cleanup(sharecurl);
+	if (sharecurl != NULL) {
+		curl_share_cleanup (sharecurl);
+		sharecurl = NULL;
+	}
+
 	CurlNode* node = (CurlNode *) pool.First ();
 	// No need to lock worker_mutex here, since the curl thread isn't running anymore
 	while (node != NULL) {
@@ -874,11 +878,10 @@ CurlHttpHandler::Dispose ()
 	}
 	pool.Clear (true);
 
-	curl_multi_cleanup(multicurl);
-	curl_global_cleanup ();
-
-	pthread_mutex_destroy (&worker_mutex),
-	pthread_cond_destroy (&worker_cond);
+	if (multicurl != NULL) {
+		curl_multi_cleanup (multicurl);
+		multicurl = NULL;
+	}
 
 	HttpHandler::Dispose ();
 }
@@ -895,6 +898,11 @@ CurlHttpHandler::~CurlHttpHandler ()
 		close (fds [1]);
 		fds [1] = -1;
 	}
+
+	pthread_mutex_destroy (&worker_mutex),
+	pthread_cond_destroy (&worker_cond);
+
+	curl_global_cleanup ();
 }
 
 CURL*
