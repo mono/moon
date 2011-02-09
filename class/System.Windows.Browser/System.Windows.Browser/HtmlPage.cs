@@ -62,14 +62,20 @@ namespace System.Windows.Browser {
 		public static BrowserInformation BrowserInformation {
 			get {
 				CheckHtmlAccess();
+				return UnsafeBrowserInformation;
+			}
+		}
 
+		// some features, like ScriptObjectHelper, needs to work without EnableHtmlAccess
+		internal static BrowserInformation UnsafeBrowserInformation {
+			get {
 				if (browser_info == null)
-					browser_info = new BrowserInformation (Window);
+					browser_info = new BrowserInformation (UnsafeWindow);
 
 				return browser_info;
 			}
 		}
-		
+
 		public static bool IsEnabled {		
 			get { return enabled; }
 		}
@@ -158,7 +164,7 @@ namespace System.Windows.Browser {
 		}
 
 		// some features, like PopupWindow, works (within some limits) without EnableHtmlAccess
-		static HtmlWindow UnsafeWindow {
+		internal static HtmlWindow UnsafeWindow {
 			get {
 				CheckThread ();
 				if (window == null)

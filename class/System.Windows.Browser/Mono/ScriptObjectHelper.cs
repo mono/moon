@@ -40,8 +40,8 @@ namespace Mono {
 		static ScriptObjectHelper ()
 		{
 			string comparison = "(new function () {{ this.ci = function (a, b) {{ return a == b; }}; }}).ci";
-			comparer = (ScriptObject) HtmlPage.Window.Eval (comparison);
-			isChrome = HtmlPage.BrowserInformation.UserAgent.ToLower().Contains("chrome");
+			comparer = (ScriptObject) HtmlPage.UnsafeWindow.Eval (comparison);
+			isChrome = HtmlPage.UnsafeBrowserInformation.UserAgent.ToLower().Contains("chrome");
 		}
 
 		public static bool TryChangeType (object value, Type type, CultureInfo culture, out object ret)
