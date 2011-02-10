@@ -83,8 +83,6 @@ send_ctrl_w (gpointer dummy)
 	return false;
 }
 
-
-
 static int xlib_shutdown_error_handler (Display *d, XErrorEvent *error_event)
 {
 	char error_msg [1024];
@@ -99,7 +97,8 @@ static int xlib_shutdown_error_handler (Display *d, XErrorEvent *error_event)
 	return 0;
 }
 
-static void send_wm_delete (Window window)
+static gboolean
+send_wm_delete (Window window)
 {
 	printf ("[%i shocker] sending WM_DELETE_WINDOW event to %p\n", getpid (), (void*) window);
 
@@ -123,13 +122,13 @@ static void send_wm_delete (Window window)
 	XCloseDisplay (display);
 
 	XSetErrorHandler (previous_handler);
+
+	return false;
 }
 
 static void
 execute_shutdown ()
 {
-	char executable [1024];
-
 	LOG_SHUTDOWN ("[%i shocker] execute_shutdown\n", getpid ())
 
 	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
@@ -143,30 +142,33 @@ execute_shutdown ()
 
 		send_wm_delete (PluginObject::browser_app_context);
 		PluginObject::browser_app_context = 0;
-
-		memset (executable, 0, sizeof (executable));
-		readlink ("/proc/self/exe", executable, sizeof (executable) - 1);
-		printf ("[%i shocker] executable: %s\n", getpid (), executable);
-
-		if (executable [0] == 0 || strstr (executable, "chrome") != NULL) {
-			/* This happens on OS 11.2 causing readlink to fail: /proc/self/exe: /lib64/libz.so.1: no version information available (required by /proc/self/exe)
-			 * readlink does not fail for firefox. */
-			LOG_SHUTDOWN ("[%i shocker] we're executing inside chrome ('%s' to be exact), sending ctrl+w\n", getpid (), executable);
-			send_ctrl_w (NULL);
-		} else {
-			/* Some other browser (firefox), don't send anything since it messes with oob tests
-			 * because it is racy: the current process might not be the one with the focus. */
-		}
 	} else {
 		WindowInfoEx ex;
 		int backup_timeout = 5000;
-		memset (&ex, 0, sizeof (ex));
-		memcpy (ex.wi.title, "IWANTEX", sizeof ("IWANTEX"));
-		if (WindowHelper_GetWindowInfo (getpid (), (WindowInfo *) &ex) == 0 && ex.window != 0) {
-			send_wm_delete (ex.window);
-		} else {
-			backup_timeout = 10; // no need for the backup to wait if there is nothing else we can do
+		int pid_tree [16];
+		int count;
+		Harness::GetProcessTree (getpid (), pid_tree, sizeof (pid_tree) / sizeof (int), &count);
+		bool wm_delete_sent = false;
+		for (int i = count - 1; i >= 0; i--) {
+			if (pid_tree [i] == 0)
+				continue;
+
+			memset (&ex, 0, sizeof (ex));
+			if (!WindowHelper_GetWindowInfoInternal (pid_tree [i], (WindowInfo *) &ex, true) == 0 && ex.window != 0) {
+				continue;
+			}
+
+			int timeout = (count - i - 1) * 1000;
+			if (timeout == 0) {
+				send_wm_delete (ex.window);
+			} else {
+				g_timeout_add (timeout, (GSourceFunc) send_wm_delete, (void *) ex.window);
+			}
+			wm_delete_sent = true;
 		}
+
+		if (!wm_delete_sent)
+			backup_timeout = 10; // no need for the backup to wait if there is nothing else we can do
 
 		// have a backup
 		// note that this is racy: the current process might not be the one with the focus.

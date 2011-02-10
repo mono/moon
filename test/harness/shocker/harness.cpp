@@ -321,6 +321,132 @@ Harness::FindProcesses (const char *processName, guint32 **processes, guint32 *p
 	return result;
 }
 
+int
+Harness::GetChromePid ()
+{
+	int chrome_pid = 0;
+	gsize size;
+	char *cmdline;
+	char *arg;
+	gboolean res;
+
+	res = g_file_get_contents ("/proc/self/cmdline", &cmdline, &size, NULL);
+	if (res) {
+		/*/proc/self/cmdline should be an array of null-terminated strings
+		 * but chrome doesn't do it that way */
+		/*
+		arg = cmdline;
+		while (*arg != 0) {
+			printf ("checking arg: %s\n", arg);
+			if (strncmp (arg, "--channel=", 10)) {
+				*strchr (arg, '.') = 0;
+				chrome_pid = atoi (arg + 10);
+				printf ("found pid: %i\n", chrome_pid);
+				break;
+			}
+			arg += strlen (arg) + 1;
+		}
+		*/
+
+		/* We need to find --channel=<pid>.<something else> */
+		arg = strstr (cmdline, "--channel=");
+		if (arg != NULL) {
+			arg += 10;
+			*strchr (arg, '.') = 0;
+			chrome_pid = atoi (arg);
+			LOG_SHUTDOWN ("[%i shocker] Harness::GetChromePid () found chrome pid: %i\n", getpid (), chrome_pid);
+		}
+	}
+	g_free (cmdline);
+
+	return chrome_pid;
+}
+
+void
+Harness::GetProcessTree (int pid, int *pids, int size, int *count)
+{
+	char executable [1024];
+	int cur_pid = pid;
+	int ppid;
+	char *filename;
+	gchar *contents;
+	gchar *ptr;
+	gboolean res;
+	bool is_chrome = true;
+
+	*count = 0;
+
+	do {
+		LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): adding pid %i to tree count: %i\n", getpid (), pid, cur_pid, *count);
+		pids [*count] = cur_pid;
+		*count += 1;
+
+		// find the parent pid
+		filename = g_strdup_printf ("/proc/%i/stat", cur_pid);
+		res = g_file_get_contents (filename, &contents, NULL, NULL);
+		g_free (filename);
+		if (res == FALSE) {
+			LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): can't read /proc/%i/stat\n", getpid (), cur_pid, cur_pid);
+			return;
+		}
+	
+		ppid = -1;
+		ptr = contents;
+		while (*ptr && *ptr != ')') {
+			ptr++;
+		}
+		if (*ptr) {
+			ptr++;
+			if (*ptr) {
+				ptr++;
+				while (*ptr && *ptr != ' ') {
+					ptr++;
+				}
+				if (*ptr) {
+					ptr++;
+					if (*ptr) {
+						ppid = atoi (ptr);
+					}
+				}
+			}
+		}
+		g_free (contents);
+		LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): found ppid %i of pid %i\n", getpid (), pid, ppid, cur_pid);
+	
+		if (ppid == -1) {
+			LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): could not find ppid of pid %i\n", getpid (), pid, cur_pid);
+			return;
+		}
+	
+		/* Check if the specified ppid is a browser */
+		memset (executable, 0, sizeof (executable));
+		filename = g_strdup_printf ("/proc/%i/exe", ppid);
+		readlink (filename, executable, sizeof (executable) - 1);
+		g_free (filename);
+		LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): executable of %i: %s\n", getpid (), pid, ppid, executable);
+
+		if (strstr (executable, "chrome")) {
+			/* google-chrome */
+			is_chrome = true;
+		} else if (strstr (executable, "chromium")) {
+			/* chromium */
+			is_chrome = true;
+		} else if (strstr (executable, "firefox")) {
+			/* firefox */
+		} else {
+			LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): parent of pid %i is not a browser.\n", getpid (), pid, cur_pid);
+			if (is_chrome) {
+				pids [*count] = GetChromePid ();
+				*count += 1;
+				LOG_SHUTDOWN ("[%i shocker] Harness::GetProcessTree (%i): added chrome pid %i.\n", getpid (), pid, pids [(*count) - 1]);
+			}
+			return;
+		}
+
+		cur_pid = ppid;
+	} while (1);
+}
+
 int ProcessHelper_GetCurrentProcessID (guint32 *id)
 {
 	*id = getpid ();
@@ -465,6 +591,11 @@ find_window (guint32 pid, GSList **result)
 
 int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 {
+	return WindowHelper_GetWindowInfoInternal (pid, wi, false);
+}
+
+int WindowHelper_GetWindowInfoInternal (guint32 pid, WindowInfo *wi, bool is_window_info_ex)
+{
 	WindowInfoEx *wix;
 	GSList *windows = NULL;
 	GSList *next;
@@ -479,7 +610,7 @@ int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi)
 		next = windows;
 		while (next != NULL) {
 			wix = (WindowInfoEx *) next->data;
-			if (!strncmp (wi->title, "IWANTEX", sizeof ("IWANTEX"))) {
+			if (is_window_info_ex) {
 				*(WindowInfoEx *) wi = *wix;
 			} else {
 				*wi = wix->wi;

@@ -34,6 +34,8 @@ public:
 
 	static char *GetRuntimePropertyValue (const char *propertyName);
 	static void SetRuntimePropertyValue (const char *propertyName, const char *value);
+	static void GetProcessTree (int pid, int *pids, int size, int *count);
+	static int GetChromePid ();
 };
 
 #define MAX_WINDOW_TITLE 512
@@ -78,6 +80,7 @@ int ProcessHelper_KillProcess (guint32 processId);
 int ProcessHelper_CloseTestWindows ();
 
 int WindowHelper_GetWindowInfo (guint32 pid, WindowInfo *wi);
+int WindowHelper_GetWindowInfoInternal (guint32 pid, WindowInfo *wi, bool is_window_info_ex); // this is not used by the tests
 int WindowHelper_GetNotificationWindowInfo (guint32 pid, WindowInfo *wi);
 int WindowHelper_Maximize (guint32 pid);
 int WindowHelper_Minimize (guint32 pid);
