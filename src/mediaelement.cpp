@@ -427,7 +427,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		mk->SetTime (marker->GetTime () - start_time);
 		mk->SetText (marker->GetText ());
 		mk->SetType (marker->GetType ());
-		Emit (MarkerReachedEvent, new TimelineMarkerRoutedEventArgs (mk));
+		Emit (MarkerReachedEvent, MoonUnmanagedFactory::CreateTimelineMarkerRoutedEventArgs (mk));
 		marker->unref ();
 		mk->unref ();
 	}
