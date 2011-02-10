@@ -87,7 +87,8 @@ GLContext::SetFramebuffer ()
 				texture,
 				0);
 	status = glCheckFramebufferStatus (GL_FRAMEBUFFER);
-	g_assert (status == GL_FRAMEBUFFER_COMPLETE);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		g_warning ("GLContext::SetFramebuffer status not complete");
 
 	ms->unref ();
 }
