@@ -88,8 +88,6 @@ GLXContext::Initialize ()
 
 	if (visinfo == NULL) {
 		g_warning ("Found no visuals matching VisualID 0x%x, disabling GLX", (int) vid);
-		if (visinfo)
-			XFree (visinfo);
 		return false;
 	}
 
