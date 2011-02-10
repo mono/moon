@@ -46,32 +46,29 @@ GLXContext::Initialize ()
 	XVisualInfo templ, *visinfo;
 	int         n;
 
-	GLXSurface::X11ErrorTrapPush (dpy);
-	XWindowAttributes attr;
-	XGetWindowAttributes (dpy, drawable, &attr);
-	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
-		g_warning ("Invalid window: 0x%x VisualID: 0x%x",
-			   (int) drawable,
-			   (int) vid);
-		return false;
-	}
-
 	templ.visualid = vid;
 	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
-
 	if (visinfo == NULL) {
-		g_warning ("Found no visuals matching VisualID 0x%x, disabling GLX", (int) vid);
+		g_warning ("Found no visuals matching VisualID 0x%x, "
+			   "disabling GLX", (int) vid);
 		return false;
 	}
 
 	GLXSurface::X11ErrorTrapPush (dpy);
 	ctx = glXCreateContext (dpy, visinfo, 0, True);
-	glXMakeCurrent (dpy, drawable, ctx);
 	XFree (visinfo);
 
 	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
 		g_warning ("Failed to create GLX context for VisualID: 0x%x",
 			   (int) vid);
+		return false;
+	}
+
+	GLXSurface::X11ErrorTrapPush (dpy);
+	glXMakeCurrent (dpy, drawable, ctx);
+	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
+		g_warning ("Failed to make GLX context current for drawable: "
+			   "0x%x", (int) drawable);
 		return false;
 	}
 

@@ -24,14 +24,24 @@ int (*GLXSurface::SavedX11ErrorHandler) (Display *, XErrorEvent *);
 GLXSurface::GLXSurface (Display *dpy, XID win) : GLSurface ()
 {
 	XWindowAttributes attr;
-
-	XGetWindowAttributes (dpy, win, &attr);
+	Status            status;
 
 	display = dpy;
-	window  = win;
-	size[0] = attr.width;
-	size[1] = attr.height;
-	vid     = XVisualIDFromVisual (attr.visual);
+	window  = 0;
+	size[0] = 0;
+	size[1] = 0;
+	vid     = 0;
+
+	X11ErrorTrapPush (dpy);
+	status = XGetWindowAttributes (dpy, win, &attr);
+	if (X11ErrorTrapPop (dpy) == Success)
+		window = win;
+
+	if (status) {
+		size[0] = attr.width;
+		size[1] = attr.height;
+		vid     = XVisualIDFromVisual (attr.visual);
+	}
 }
 
 GLXSurface::GLXSurface (GLsizei w, GLsizei h) : GLSurface (w, h)
