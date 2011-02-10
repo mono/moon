@@ -19,6 +19,8 @@
 #include <GL/glx.h>
 #undef GLXContext
 
+typedef int (*PFNX11ERRORHANDLERPROC) (Display *, XErrorEvent *);
+
 namespace Moonlight {
 
 class MOON_API GLXSurface : public GLSurface {
@@ -35,10 +37,18 @@ public:
 	cairo_surface_t *Cairo ();
 	bool HasTexture ();
 
+	static void X11ErrorTrapPush (Display *dpy);
+	static int X11ErrorTrapPop (Display *dpy);
+
 private:
 	Display  *display;
 	XID      window;
 	VisualID vid;
+
+	static int X11Error;
+	static PFNX11ERRORHANDLERPROC SavedX11ErrorHandler;
+	static int X11ErrorHandler (Display     *display,
+				    XErrorEvent *event);
 };
 
 };

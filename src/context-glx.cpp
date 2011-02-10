@@ -26,9 +26,6 @@
 
 namespace Moonlight {
 
-int GLXContext::X11Error;
-int (*GLXContext::SavedX11ErrorHandler) (Display *, XErrorEvent *);
-
 GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
 {
 	dpy = surface->GetDisplay ();
@@ -43,40 +40,16 @@ GLXContext::~GLXContext ()
 		glXDestroyContext (dpy, ctx);
 }
 
-int
-GLXContext::X11ErrorHandler (Display     *display,
-			     XErrorEvent *event)
-{
-	X11Error = event->type;
-	return False;
-}
-
-void
-GLXContext::X11ErrorTrapPush (Display *dpy)
-{
-	XSync (dpy, False);
-	X11Error = Success;
-	SavedX11ErrorHandler = XSetErrorHandler (X11ErrorHandler);
-}
-
-int
-GLXContext::X11ErrorTrapPop (Display *dpy)
-{
-	XSync (dpy, False);
-	XSetErrorHandler (SavedX11ErrorHandler);
-	return X11Error;
-}
-
 bool
 GLXContext::Initialize ()
 {
 	XVisualInfo templ, *visinfo;
 	int         n;
 
-	X11ErrorTrapPush (dpy);
+	GLXSurface::X11ErrorTrapPush (dpy);
 	XWindowAttributes attr;
 	XGetWindowAttributes (dpy, drawable, &attr);
-	if (X11ErrorTrapPop (dpy) != Success) {
+	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
 		g_warning ("Invalid window: 0x%x VisualID: 0x%x",
 			   (int) drawable,
 			   (int) vid);
@@ -91,12 +64,12 @@ GLXContext::Initialize ()
 		return false;
 	}
 
-	X11ErrorTrapPush (dpy);
+	GLXSurface::X11ErrorTrapPush (dpy);
 	ctx = glXCreateContext (dpy, visinfo, 0, True);
 	glXMakeCurrent (dpy, drawable, ctx);
 	XFree (visinfo);
 
-	if (X11ErrorTrapPop (dpy) != Success) {
+	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
 		g_warning ("Failed to create GLX context for VisualID: 0x%x",
 			   (int) vid);
 		return false;

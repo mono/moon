@@ -18,6 +18,9 @@
 
 namespace Moonlight {
 
+int GLXSurface::X11Error;
+int (*GLXSurface::SavedX11ErrorHandler) (Display *, XErrorEvent *);
+
 GLXSurface::GLXSurface (Display *dpy, XID win) : GLSurface ()
 {
 	XWindowAttributes attr;
@@ -36,6 +39,30 @@ GLXSurface::GLXSurface (GLsizei w, GLsizei h) : GLSurface (w, h)
 	display = NULL;
 	window  = 0;
 	vid     = 0;
+}
+
+int
+GLXSurface::X11ErrorHandler (Display     *display,
+			     XErrorEvent *event)
+{
+	X11Error = event->type;
+	return False;
+}
+
+void
+GLXSurface::X11ErrorTrapPush (Display *dpy)
+{
+	XSync (dpy, False);
+	X11Error = Success;
+	SavedX11ErrorHandler = XSetErrorHandler (X11ErrorHandler);
+}
+
+int
+GLXSurface::X11ErrorTrapPop (Display *dpy)
+{
+	XSync (dpy, False);
+	XSetErrorHandler (SavedX11ErrorHandler);
+	return X11Error;
 }
 
 VisualID
