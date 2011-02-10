@@ -87,10 +87,4 @@ BitmapSource::Invalidate ()
 	Emit (BitmapSource::PixelDataChangedEvent);
 }
 
-cairo_surface_t *
-BitmapSource::GetSurface (cairo_t *cr)
-{
-	return image_surface;
-}
-
 };

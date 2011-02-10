@@ -382,7 +382,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 		if (image.width == 0.0 && image.height == 0.0)
 			goto cleanup;
 
-		pattern = cairo_pattern_create_for_surface (source->GetSurface (cr));
+		pattern = cairo_pattern_create_for_surface (source->GetImageSurface ());
 		image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, 
 						    image.width, image.height,
 						    GetStretch (), 
@@ -430,7 +430,7 @@ Image::ComputeActualSize ()
 		if (ReadLocalValue (LayoutInformation::LayoutSlotProperty))
 			return result;
 	
-	if (source && source->GetSurface (NULL)) {
+	if (source && source->GetImageSurface ()) {
 		Size available = Size (INFINITY, INFINITY);
 		available = ApplySizeConstraints (available);
 		// FIXME - Propagate properly

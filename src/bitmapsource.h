@@ -58,9 +58,8 @@ class BitmapSource : public ImageSource {
 	
 	/* @GeneratePInvoke */
 	virtual void Invalidate ();
-	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 
-	cairo_surface_t *GetImageSurface () { return image_surface; }
+	virtual cairo_surface_t *GetImageSurface () { return image_surface; }
 	virtual void OnIsAttachedChanged (bool value);
 };
 

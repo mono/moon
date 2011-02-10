@@ -62,7 +62,7 @@ ImageSource::SetPixelHeight (gint32 height)
 }
 
 cairo_surface_t *
-ImageSource::GetSurface (cairo_t *cr)
+ImageSource::GetImageSurface ()
 {
 	return NULL;
 }

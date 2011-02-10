@@ -833,7 +833,7 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 
 	source->Lock ();
 
-	surface = source->GetSurface (cr);
+	surface = source->GetImageSurface ();
 
 	stretch = GetStretch ();
 
