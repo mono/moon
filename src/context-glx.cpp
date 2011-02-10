@@ -73,11 +73,23 @@ GLXContext::Initialize ()
 	XVisualInfo templ, *visinfo;
 	int         n;
 
+	X11ErrorTrapPush (dpy);
+	XWindowAttributes attr;
+	XGetWindowAttributes (dpy, drawable, &attr);
+	if (X11ErrorTrapPop (dpy) != Success) {
+		g_warning ("Invalid window: 0x%x VisualID: 0x%x",
+			   (int) drawable,
+			   (int) vid);
+		return false;
+	}
+
 	templ.visualid = vid;
 	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
-	
-	if (n != 1) {
-		g_warning ("Found %d matching visuals, falling back", n);
+
+	if (visinfo == NULL) {
+		g_warning ("Found no visuals matching VisualID 0x%x, disabling GLX", (int) vid);
+		if (visinfo)
+			XFree (visinfo);
 		return false;
 	}
 
