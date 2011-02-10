@@ -11,6 +11,7 @@
 #include <config.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 #define __MOON_GLX__
 
@@ -45,6 +46,11 @@ GLXContext::Initialize ()
 {
 	XVisualInfo templ, *visinfo;
 	int         n;
+	const char  *requiredExtension[] = {
+		"GL_EXT_framebuffer_object",
+		"GL_ARB_texture_non_power_of_two",
+		"GL_ARB_shading_language_100"
+	};
 
 	templ.visualid = vid;
 	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
@@ -72,13 +78,31 @@ GLXContext::Initialize ()
 		return false;
 	}
 
-	// version can be NULL on error
-	const char *version = (const char*)glGetString (GL_VERSION);
-	
-	if (!version || atof (version) < MIN_GL_VERSION)
+	const char *version = (const char *) glGetString (GL_VERSION);
+
+	if (!version) {
+		g_warning ("glGetString returned NULL");
 		return false;
+	}
+	
+	if (atof (version) < MIN_GL_VERSION) {
+		g_warning ("Insufficient OpenGL version: %s", version);
+		return false;
+	}
+
+	const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+
+	for (guint i = 0; i < G_N_ELEMENTS (requiredExtension); i++) {
+		if (!strstr (extensions, requiredExtension[i])) {
+			g_warning ("%s missing", requiredExtension[i]);
+			return false;
+		}
+	}
 
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+
+	if (maxTextureSize < 2048)
+		g_warning ("OpenGL max texture size: %d", maxTextureSize);
 
 	GETPROCADDR (PFNGLCREATESHADERPROC, glCreateShader);
 	GETPROCADDR (PFNGLSHADERSOURCEPROC, glShaderSource);
