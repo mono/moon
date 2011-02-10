@@ -77,7 +77,7 @@ GLXContext::Initialize ()
 	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
 	
 	if (n != 1) {
-		g_warning ("Found more than one matching visual, falling back");
+		g_warning ("Found %d matching visuals, falling back", n);
 		return false;
 	}
 
