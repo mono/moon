@@ -358,7 +358,7 @@ GECKO_SYM(BrowserHttpRequest)::SetBodyImpl (const void *body, guint32 size)
 		g_string_set_size (headers, 0);
 	}
 	if (size > 0) {
-		output->Write ("\n", 1, &written);
+		output->Write ("\r\n", 2, &written);
 		output->Write ((const char *)body, size, &written);
 	} else {
 		output->Write ("\r\n", 2, &written);
