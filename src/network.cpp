@@ -364,7 +364,7 @@ HttpRequest::Abort ()
 }
 
 void
-HttpRequest::SetBody (void *body, gint32 length)
+HttpRequest::SetBody (const void *body, gint32 length)
 {
 	VERIFY_MAIN_THREAD;
 	LOG_DOWNLOADER ("HttpRequest::SetBody (%p, %i)\n", body, length);

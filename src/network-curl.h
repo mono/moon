@@ -142,7 +142,7 @@ class CurlDownloaderRequest : public HttpRequest {
 	virtual void OpenImpl () { /* Nothing to do */ }
 	virtual void SendImpl ();
 	virtual void SetHeaderImpl (const char *name, const char *value, bool disable_folding);
-	virtual void SetBodyImpl (void *ptr, guint32 size);
+	virtual void SetBodyImpl (const void *ptr, guint32 size);
 
 	bool isPost () { return strstr (GetVerb (), "POST"); }
 	void Close ();

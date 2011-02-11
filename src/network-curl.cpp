@@ -334,9 +334,9 @@ void CurlDownloaderRequest::SetHeaderImpl (const char *name, const char *value, 
 	headers = curl_slist_append(headers, header);
 }
 
-void CurlDownloaderRequest::SetBodyImpl (void *ptr, guint32 size)
+void CurlDownloaderRequest::SetBodyImpl (const void *ptr, guint32 size)
 {
-	LOG_CURL ("BRIDGE CurlDownloaderRequest::SetBody %p\n", this);
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::SetBody (%p, %u) %p\n", ptr, size, this);
 
 	body = (void *) g_malloc (size);
 	memcpy(body, ptr, size);

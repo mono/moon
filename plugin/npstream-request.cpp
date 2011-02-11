@@ -119,7 +119,7 @@ NPStreamRequest::AbortImpl ()
 }
 
 void
-NPStreamRequest::SetBodyImpl (void *body, guint32 length)
+NPStreamRequest::SetBodyImpl (const void *body, guint32 length)
 {
 	printf ("Moonlight: NPStreamRequest does not support SetBody\n");
 }

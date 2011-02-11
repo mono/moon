@@ -26,7 +26,7 @@ private:
 	virtual void OpenImpl ();
 	virtual void SendImpl ();
 	virtual void AbortImpl ();
-	virtual void SetBodyImpl (void *body, guint32 size);
+	virtual void SetBodyImpl (const void *body, guint32 size);
 	virtual void SetHeaderImpl (const char *name, const char *value, bool disable_folding);
 
 public:

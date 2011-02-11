@@ -130,7 +130,7 @@ public:
 	/* @GeneratePInvoke */
 	void Abort ();
 	/* @GeneratePInvoke */
-	void SetBody (/* @MarshalAs=byte[] */ void *body, gint32 length);
+	void SetBody (/* @MarshalAs=byte[] */ const void *body, gint32 length);
 	/* @GeneratePInvoke */
 	void SetHeader (const char *header, const char *value, bool disable_folding);
 	void SetHeaderFormatted (const char *header, char *value, bool disable_folding);
@@ -166,7 +166,7 @@ protected:
 	virtual void OpenImpl () = 0;
 	virtual void SendImpl () = 0;
 	virtual void AbortImpl () = 0;
-	virtual void SetBodyImpl (void *body, guint32 length) = 0;
+	virtual void SetBodyImpl (const void *body, guint32 length) = 0;
 	virtual void SetHeaderImpl (const char *header, const char *value, bool disable_folding) = 0;
 
 	/* This method must be called before starting to serve any data */

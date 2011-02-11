@@ -100,7 +100,7 @@ public:
 	virtual void OpenImpl ();
 	virtual void SendImpl ();
 	virtual void SetHeaderImpl (const char *name, const char *value, bool disable_folding);
-	virtual void SetBodyImpl (void *body, guint32 size);
+	virtual void SetBodyImpl (const void *body, guint32 size);
 	
 	void OnStartRequest ();
 	void OnStopRequest (nsresult status);
@@ -331,7 +331,7 @@ GECKO_SYM(BrowserHttpRequest)::SetHeaderImpl (const char *name, const char *valu
 }
 
 void
-GECKO_SYM(BrowserHttpRequest)::SetBodyImpl (void *body, guint32 size)
+GECKO_SYM(BrowserHttpRequest)::SetBodyImpl (const void *body, guint32 size)
 {
 	nsCOMPtr<nsIUploadChannel> upload;
 	nsCOMPtr<nsIStorageStream> storage;
