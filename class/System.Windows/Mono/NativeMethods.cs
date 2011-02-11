@@ -43,6 +43,7 @@ namespace Mono {
 		DisableCache = 2,
 		DisableFileStorage = 4, /* Data will not be written to disk. User must listen to the Write event */
 		DisableAsyncSend = 8,
+		ForceHttp_1_0 = 16,
 	}
 	
 	internal enum DownloaderAccessPolicy {

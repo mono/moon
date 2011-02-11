@@ -374,6 +374,10 @@ void CurlDownloaderRequest::SendImpl ()
 	curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, header_received);
 	curl_easy_setopt (curl, CURLOPT_WRITEHEADER, response);
 
+	if ((GetOptions () & HttpRequest::ForceHttp_1_0) == ForceHttp_1_0) {
+		curl_easy_setopt (curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+	}
+
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::Send %p handle: %p URL: %s\n", this, curl, GetUri ()->GetHttpRequestString ());
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::Send %p handle: %p headers: %p\n", this, curl, headers);
 

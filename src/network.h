@@ -114,6 +114,8 @@ public:
 		DisableFileStorage = 4,
 		/* Disables async Send. At least the Downloader class should use this, since Downloader already has an async Send. */
 		DisableAsyncSend = 8,
+		/* Forces HTTP/1.0. This is required for media logs sent to windows media servers, since curl will confuse the server otherwise. */
+		ForceHttp_1_0 = 16,
 		/* Keep in sync with HttpRequestOptions in NativeMethods.cs */
 	};
 
