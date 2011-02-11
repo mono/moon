@@ -34,7 +34,10 @@ libshocker_la_SOURCES = 	\
 libshocker_la_LDFLAGS = \
 	-avoid-version -module
 
-libshocker_la_LIBADD = $(SHOCKER_LIBS)
+libshocker_la_LIBADD = \
+	$(SHOCKER_LIBS) \
+	$(top_builddir)/plugin/libmoonplugin.la
+
 
 debug:
 	LD_LIBRARY_PATH=.libs gdb .libs/demo
