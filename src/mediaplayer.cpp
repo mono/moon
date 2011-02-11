@@ -575,9 +575,6 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (IsPaused ())
 		return;
-	
-	if (GetBit (VideoEnded))
-		return;
 
 	if (!HasVideo ())
 		return;
@@ -614,7 +611,10 @@ MediaPlayer::AdvanceFrame ()
 	
 	this->target_pts = target_pts;
 	media->SetTargetPts (target_pts);
-		
+
+	if (GetBit (VideoEnded))
+		return;
+
 	target_pts_start = target_pts_delta > target_pts ? 0 : target_pts - target_pts_delta;
 	target_pts_end = target_pts + target_pts_delta;
 	
@@ -978,12 +978,13 @@ MediaPlayer::GetTargetPts ()
 	
 	audio = GetAudio ();
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %" G_GUINT64_FORMAT ", HasAudio (): %i, audio->GetCurrentPts (): %" G_GUINT64_FORMAT "\n", target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0);
-
 	if (audio != NULL && audio->GetState () == AudioPlaying)
 		result = audio->GetCurrentPts ();
 	else
 		result = target_pts;
+
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %" G_GUINT64_FORMAT ", HasAudio (): %i, audio->GetCurrentPts (): %" G_GUINT64_FORMAT " audio->state: %i result: %" G_GUINT64_FORMAT"\n",
+		target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0, audio->GetState (), result);
 
 	if (audio)
 		audio->unref ();
