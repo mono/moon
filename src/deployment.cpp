@@ -1297,7 +1297,9 @@ Deployment::Dispose ()
 void
 Deployment::Shutdown ()
 {
-	printf ("Shutting down\n");
+#if DEBUG
+	printf ("Moonlight: Shutting down\n");
+#endif
 	LOG_DEPLOYMENT ("Deployment::Shutdown ()\n");
 
 	/*
