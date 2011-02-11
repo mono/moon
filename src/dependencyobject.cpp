@@ -1130,6 +1130,8 @@ class AsyncEventClosure : public EventObject {
 		this->generation = generation;
 		
 		sender->ref ();
+		if (args)
+			args->ref ();
 	}
 	
  protected:
@@ -1137,11 +1139,8 @@ class AsyncEventClosure : public EventObject {
 	{
 		sender->unref ();
 
-		// FIXME: we need this to fix a leak, but enabling it crashes
-		// Microsoft.SilverlightControls/site/ControlsExtended.Test.html
-		//
-		// if (args)
-		// 	args->unref ();
+		if (args)
+			args->unref ();
 	}
 };
 
@@ -1149,7 +1148,9 @@ void
 EventObject::emit_async (EventObject *calldata)
 {
 	AsyncEventClosure *async = (AsyncEventClosure *) calldata;
-	
+
+	if (async->args)
+		async->args->ref ();
 	async->sender->Emit (async->event_id, async->args, async->unemitted, async->generation);
 }
 
@@ -1167,6 +1168,8 @@ EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 	async = new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id));
 	AddTickCall (EventObject::emit_async, async);
 	async->unref ();
+	if (calldata)
+		calldata->unref ();
 	
 	return true;
 }
