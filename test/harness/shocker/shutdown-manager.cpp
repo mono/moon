@@ -140,7 +140,7 @@ execute_shutdown ()
 	if (PluginObject::browser_app_context != 0) {
 		printf ("[%i shocker] shutting down browser...\n", getpid ());
 
-		send_wm_delete (PluginObject::browser_app_context);
+		g_timeout_add (50, (GSourceFunc) send_wm_delete, (void *) PluginObject::browser_app_context);
 		PluginObject::browser_app_context = 0;
 	} else {
 		WindowInfoEx ex;
@@ -158,12 +158,8 @@ execute_shutdown ()
 				continue;
 			}
 
-			int timeout = (count - i - 1) * 1000;
-			if (timeout == 0) {
-				send_wm_delete (ex.window);
-			} else {
-				g_timeout_add (timeout, (GSourceFunc) send_wm_delete, (void *) ex.window);
-			}
+			int timeout = (count - i - 1) * 1000 + 50;
+			g_timeout_add (timeout, (GSourceFunc) send_wm_delete, (void *) ex.window);
 			wm_delete_sent = true;
 		}
 
