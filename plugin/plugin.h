@@ -119,6 +119,7 @@ class PluginInstance
 	bool GetAllowHtmlPopupWindow ();
 	/* @GeneratePInvoke */
 	bool GetWindowless ();
+	bool GetEnableGpuAcceleration ();
 	bool IsLoaded ();
 	
 	/* @GeneratePInvoke */
@@ -258,6 +259,7 @@ private:
 	bool loading_splash;
 	bool is_splash;
 	bool is_reentrant_mess;
+	bool enable_gpu_acceleration;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;

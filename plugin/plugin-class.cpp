@@ -2613,6 +2613,7 @@ moonlight_settings_mapping [] = {
 	// http://msdn.microsoft.com/en-us/library/dd833071(v=VS.95).aspx
 	{ "enablenavigation", MoonId_EnableNavigation },
 	{ "enableredrawregions", MoonId_EnableRedrawRegions },
+	{ "enablegpuacceleration", MoonId_EnableGpuAcceleration },
 	{ "getsystemglyphtypefaces", MoonId_GetSystemGlyphTypefaces },
 	{ "maxframerate", MoonId_MaxFrameRate },
 	{ "version", MoonId_Version },
@@ -2635,6 +2636,10 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 
 	case MoonId_EnableRedrawRegions:
 		BOOLEAN_TO_NPVARIANT (plugin->GetEnableRedrawRegions (), *result);
+		return true;
+
+	case MoonId_EnableGpuAcceleration:
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableGpuAcceleration (), *result);
 		return true;
 
 	case MoonId_EnableHtmlAccess:

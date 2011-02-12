@@ -123,6 +123,7 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	allow_html_popup_window = false;
 	enable_redraw_regions = false;
 	enable_navigation = true;		// true (all / default), false (none)
+	enable_gpu_acceleration = false;
 	xembed_supported = FALSE;
 	loading_splash = false;
 	is_splash = false;
@@ -181,7 +182,7 @@ PluginInstance::Recreate (const char *source)
 		"enablehtmlaccess", "allowhtmlpopupwindow", "splashscreensource",
 		"enablenavigation",
 		"onSourceDownloadProgressChanged", "onSourceDownloadComplete",
-		"culture", "uiculture", NULL };
+		"culture", "uiculture", "enablegpuacceleration", NULL };
 	const char *argv [] = 
 		{ initParams, onLoad, onError, onResize,
 		source, background, windowless ? "true" : "false", maxFramerate, id,
@@ -190,7 +191,7 @@ PluginInstance::Recreate (const char *source)
 		enable_html_access ? "true" : "false", allow_html_popup_window ? "true" : "false", splashscreensource,
 		GetEnableNavigation () ? "all" : "none",
 		onSourceDownloadProgressChanged, onSourceDownloadComplete,
-		culture, uiCulture, NULL };
+		culture, uiCulture, enable_gpu_acceleration ? "true" : "false", NULL };
 
 	PluginInstance *result;
 	result = new PluginInstance (instance, mode);
@@ -477,6 +478,9 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "enableRedrawRegions")) {
 			enable_redraw_regions = parse_bool_arg (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "enableGpuAcceleration")) {
+			enable_gpu_acceleration = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "id")) {
 			id = g_strdup (argv [i]);
@@ -1681,6 +1685,12 @@ bool
 PluginInstance::GetWindowless ()
 {
 	return windowless;
+}
+
+bool
+PluginInstance::GetEnableGpuAcceleration ()
+{
+	return enable_gpu_acceleration;
 }
 
 int
