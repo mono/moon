@@ -58,7 +58,6 @@ static void _abort (EventObject *sender);
 static void _started (CallData *sender);
 static void _visitor (CallData *sender);
 static void _available (CallData *sender);
-static void _failed (CallData *sender);
 //static void _finished (CallData *sender);
 
 
@@ -254,14 +253,6 @@ _available (CallData *sender)
 	CallData* data = ((CallData*)sender);
 	CurlDownloaderResponse* res = data->res;
 	res->Available (data->buffer, data->size);
-}
-
-static void
-_failed (CallData *sender)
-{
-	CallData *data = (CallData *) sender;
-	CurlDownloaderResponse *res = data->res;
-	res->Failed (data->buffer);
 }
 
 static inline const char *
@@ -518,12 +509,6 @@ CurlDownloaderRequest::NotifyFinalUri (const char *value)
 }
 
 void
-CurlDownloaderRequest::Failed (const char *error_message)
-{
-	HttpRequest::Failed (error_message);
-}
-
-void
 CurlDownloaderResponse::Abort ()
 {
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Abort request:%p response:%p\n", request, this);
@@ -604,13 +589,6 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 		if (status != 100)
 			state = STARTED;
 
-		if (status >= 400) {
-			bridge->AddCallback (_failed, this, g_strdup (statusText), 0, NULL, NULL);
-			return;
-		}
-
-		state = STARTED;
-
 		return;
 	}
 
@@ -681,17 +659,6 @@ CurlDownloaderResponse::Visitor (const char *name, const char *val)
 	LOG_CURL ("BRIDGE CurlDownloaderResponse::Visitor %p name: %s val: %s\n", this, name, val);
 	SetCurrentDeployment ();
 	AppendHeader (name, val);
-}
-
-void
-CurlDownloaderResponse::Failed (const char *error_message)
-{
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::Failed %p %s\n", this, error_message);
-	SetCurrentDeployment ();
-	if (request != NULL) {
-		request->Failed (error_message);
-		request->Abort ();
-	}
 }
 
 void
