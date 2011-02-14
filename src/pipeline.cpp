@@ -4294,6 +4294,12 @@ IMediaDemuxer::FillBuffersInternal ()
 		c = NULL;
 		last_enqueued_pts = stream->GetLastEnqueuedDemuxedPts ();
 		last_decoded_enqueued_pts = stream->GetLastEnqueuedDecodedPts ();
+
+		if (last_enqueued_pts != G_MAXUINT64)
+			last_enqueued_pts -= stream->GetFirstPts ();
+		if (last_decoded_enqueued_pts != G_MAXUINT64)
+			last_decoded_enqueued_pts -= stream->GetFirstPts ();
+
 		if (last_decoded_enqueued_pts != G_MAXUINT64 && last_decoded_enqueued_pts > last_enqueued_pts)
 			last_enqueued_pts = last_decoded_enqueued_pts;
 

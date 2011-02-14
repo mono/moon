@@ -597,7 +597,7 @@ MediaPlayer::AdvanceFrame ()
 		guint64 now = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
 		guint64 elapsed_pts = now - start_time;
 		
-		target_pts = elapsed_pts;
+		target_pts = elapsed_pts + first_live_pts;
 		
 		/*
 		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, start_time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
@@ -984,7 +984,7 @@ MediaPlayer::GetTargetPts ()
 		result = target_pts;
 
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::GetTargetPts (): target_pts: %" G_GUINT64_FORMAT ", HasAudio (): %i, audio->GetCurrentPts (): %" G_GUINT64_FORMAT " audio->state: %i result: %" G_GUINT64_FORMAT"\n",
-		target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0, audio->GetState (), result);
+		target_pts, audio != NULL, audio != NULL ? audio->GetCurrentPts () : 0, audio != NULL ? audio->GetState () : 0, result);
 
 	if (audio)
 		audio->unref ();
