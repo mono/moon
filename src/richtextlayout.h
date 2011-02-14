@@ -48,7 +48,7 @@ public:
 	RichTextLayout *layout;
 	GPtrArray *inlines;
 	double descend;
-	int y;
+	double y;
 	Size size;
 };
 

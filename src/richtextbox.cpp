@@ -591,6 +591,10 @@ RichTextBox::CursorDown (const TextPointer& cursor, bool page)
 	
 	if (page) {
 		// calculate the number of lines to skip over
+
+		// FIXME: this only worked for TextBox where lines
+		// were not different heights.  we can't know how many
+		// lines we have to skip by doing this math.
 		n = GetActualHeight () / line->size.height;
 	} else {
 		n = 1;
@@ -613,8 +617,37 @@ RichTextBox::CursorDown (const TextPointer& cursor, bool page)
 TextPointer
 RichTextBox::CursorUp (const TextPointer& cursor, bool page)
 {
-	// FIXME
-	return cursor;
+	double y = view->GetCursor ().y;
+	double x = GetCursorOffset ();
+	RichTextLayoutLine *line;
+	int index, n;
+	
+	if (!(line = view->GetLineFromY (y, &index)))
+		return cursor;
+	
+	if (page) {
+		// calculate the number of lines to skip over
+
+		// FIXME: this only worked for TextBox where lines
+		// were not different heights.  we can't know how many
+		// lines we have to skip by doing this math.
+		n = GetActualHeight () / line->size.height;
+	} else {
+		n = 1;
+	}
+	
+	if (index - n < 0) {
+		// go to the end of the last line
+		line = view->GetLineFromIndex (0);
+		
+		have_offset = false;
+		
+		return line->start;
+	}
+	
+	line = view->GetLineFromIndex (index - n);
+	
+	return line->GetLocationFromX (Point (), x);
 }
 
 TextPointer
@@ -772,7 +805,32 @@ RichTextBox::KeyPressPageDown (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressPageUp (MoonModifier modifiers)
 {
-	return false;
+	TextPointer *anchor = selection->GetAnchor();
+	TextPointer cursor;
+	bool handled = false;
+	bool have;
+	
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
+		delete anchor;
+		return false;
+	}
+	
+	// move the cursor down by one line from its current position
+	cursor = CursorUp (cursor, false);
+	have = have_offset;
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		// clobber the selection
+		selection->Select (&cursor, &cursor);
+	}
+
+	emit |= SELECTION_CHANGED;
+	have_offset = have;
+	handled = true;
+
+	delete anchor;
+	
+	return handled;
 }
 
 bool
