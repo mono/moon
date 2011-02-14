@@ -1,6 +1,6 @@
-AC_INIT([moonlight], [2.99.0.9.99])
+AC_INIT([moonlight], [3.99.0.1])
 
-AC_DEFINE([PREVIEW_VERSION], ["9"], "")
+AC_DEFINE([PREVIEW_VERSION], ["1"], "")
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR(README)
