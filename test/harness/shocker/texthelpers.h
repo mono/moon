@@ -16,6 +16,7 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
+
 #include "uielement.h"
 
 using namespace Moonlight;
@@ -49,6 +50,8 @@ enum TextHelpers_ContentType {
 guint32 TextHelpers_GetContentType (UIElement *pUIElement,
 				    guint32 iTextPosition,
 				    TextHelpers_ContentType *pContentType);
+
+void TextHelpers_GetGlyphRuns ();
 
 };
 

@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "debug.h"
+#include "shocker.h"
 #include "texthelpers.h"
 
 guint32
@@ -30,6 +31,7 @@ TextHelpers_TextPositionToPixelPosition (UIElement *pUIElement,
 					 float *lineBaseline,
 					 float *lineOffset)
 {
+	Shocker_FailTestFast ("TextHelpers_TextPositionToPixelPosition not implemented\n");
 	return 0;
 }
 
@@ -40,6 +42,7 @@ TextHelpers_TransformToTextView (UIElement *pUIElement,
 				 float *transformedX,
 				 float *transformedY)
 {
+	Shocker_FailTestFast ("TextHelpers_TransformToTextView not implemented\n");
 	return 0;
 }
 
@@ -48,5 +51,13 @@ TextHelpers_GetContentType (UIElement *pUIElement,
 			    guint32 iTextPosition,
 			    TextHelpers_ContentType *pContentType)
 {
+	Shocker_FailTestFast ("TextHelpers_GetContentType not implemented\n");
 	return 0;
+}
+
+
+void
+TextHelpers_GetGlyphRuns ()
+{
+	Shocker_FailTestFast ("TextHelpers_GetGlyphRuns not implemented\n");
 }
