@@ -1,13 +1,30 @@
-<Canvas x:Class="TextBoxExample.Page"
+<Grid x:Class="TextBoxExample.Page"
        xmlns="http://schemas.microsoft.com/client/2007"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
        Width="800" Height="600">
 
-  <TextBox Canvas.Left="5" Canvas.Top="5" x:Name="txtTextBox" Width="640" Height="480" MaxLength="0" FontFamily="Arial Unicode MS"
-   AcceptsReturn="true" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
-  <TextBlock Canvas.Left="650" Canvas.Top="5" x:Name="txtTextBlock" Width="640" Height="480" 
-   TextWrapping="NoWrap" Text="This is a TextBlock mirror of the TextBox content"/>
-  <Rectangle Canvas.Left="5" Canvas.Top="500" x:Name="rectSelection" Width="640" Height="480" Fill="white"/>
-  <TextBlock Canvas.Left="5" Canvas.Top="500" x:Name="txtSelection" Text="This is the selected text"/>
-  <TextBlock Canvas.Left="650" Canvas.Top="500" x:Name="txtSelectionState" Text=""/>
-</Canvas>
+<Grid.ColumnDefinitions>
+  <ColumnDefinition Width="*" />
+  <ColumnDefinition Width="*" />
+</Grid.ColumnDefinitions>
+<Grid.RowDefinitions>
+  <RowDefinition Height="*" />
+  <RowDefinition Height="150" />
+</Grid.RowDefinitions>
+
+  <Grid Grid.Column="0" Grid.Row="0">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal" Grid.Row="0">
+      <Button x:Name="boldButton" Content="Bold" /> <Button x:Name="italicsButton" Content="Italics" /> <Button x:Name="underlineButton" Content="Underline" /><!-- <Button x:Name="selectionButton" Content="Show Selection" /> -->
+    </StackPanel>
+    <RichTextBox Grid.Row="1" x:Name="txtTextBox" FontFamily="Arial Unicode MS"
+     AcceptsReturn="true" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
+  </Grid>
+  <TextBox Grid.Column="1" Grid.Row="0" x:Name="txtTextBlock"
+   Text="This is a TextBlock mirror of the TextBox content"/>
+
+  <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" x:Name="txtSelection" Text="This is the selected text"/>
+</Grid>
