@@ -601,7 +601,9 @@ ImageBrush::DownloadProgress ()
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
 	SetDownloadProgress (source->GetProgress ());
-	Emit (DownloadProgressChangedEvent);
+	
+	if (HasHandlers (DownloadProgressChangedEvent))
+		Emit (DownloadProgressChangedEvent);
 }
 
 void
@@ -613,8 +615,10 @@ ImageBrush::ImageOpened (RoutedEventArgs *args)
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 	
-	args->ref (); // to counter the unref in Emit
-	Emit (ImageOpenedEvent, args);
+	if (HasHandlers (ImageOpenedEvent)) {
+		args->ref (); // to counter the unref in Emit
+		Emit (ImageOpenedEvent, args);
+	}
 }
 
 void
@@ -625,9 +629,11 @@ ImageBrush::ImageFailed (ImageErrorEventArgs *args)
 	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-
-	args->ref (); // to counter the unref in Emit
-	Emit (ImageFailedEvent, args);
+	
+	if (HasHandlers (ImageFailedEvent)) {
+		args->ref (); // to counter the unref in Emit
+		Emit (ImageFailedEvent, args);
+	}
 }
 
 void
