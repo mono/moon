@@ -45,7 +45,7 @@ enum TreeColumns {
 #ifdef DEBUG
 
 static void reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store,
-					       GtkTreeIter *node, bool node_is_self);
+					       GtkTreeIter *node, bool node_is_self, GHashTable *reflected_objects);
 
 struct AddNamescopeItemData {
 	GtkTreeStore *store;
@@ -91,7 +91,7 @@ timespan_to_str (TimeSpan ts)
 }
 
 static void
-reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const char *type_name, Value *value)
+reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const char *type_name, Value *value, GHashTable *reflected_objects)
 {
 	DependencyObject *dobj;
 	const char *str = NULL;
@@ -109,7 +109,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 				    -1);
 		
 		if (dobj)
-			reflect_dependency_object_in_tree (dobj, store, node, true);
+			reflect_dependency_object_in_tree (dobj, store, node, true, reflected_objects);
 		return;
 	}
 
@@ -233,12 +233,27 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 }
 
 static void
-reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, GtkTreeIter *node, bool node_is_self)
+reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, GtkTreeIter *node, bool node_is_self, GHashTable *reflected_objects)
 {
+	GtkTreeIter iter;
+
 	if (obj == NULL)
 		return;
 
-	GtkTreeIter iter;
+	if (g_hash_table_lookup (reflected_objects, obj)) {
+		gtk_tree_store_append (store, &iter, node);
+		char *markup = g_strdup_printf ("<b>%s (Already in tree)</b>", obj->GetName() ? obj->GetName() : "");
+		gtk_tree_store_set (store, &iter,
+				    COL_NAME, markup,
+				    COL_TYPE_NAME, obj->GetTypeName(),
+				    COL_ELEMENT_PTR, obj,
+				    -1);
+		g_free (markup);
+
+		node = &iter;
+		return;
+	}
+	g_hash_table_insert (reflected_objects, obj, obj);
 
 	if (!node_is_self) {
 		gtk_tree_store_append (store, &iter, node);
@@ -281,7 +296,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 			prop_type = Type::Find (obj->GetDeployment (), properties[i]->GetPropertyType ());
 			value = obj->GetValue (properties[i]);
 			
-			reflect_value (store, &iter, markup, prop_type ? prop_type->GetName () : "(unknown)", value);
+			reflect_value (store, &iter, markup, prop_type ? prop_type->GetName () : "(unknown)", value, reflected_objects);
 			
 			g_free (markup);
 		}
@@ -316,7 +331,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 				gtk_tree_store_append (store, &child_iter, &elements_iter);
 
-				reflect_value (store, &child_iter, markup, NULL, v);
+				reflect_value (store, &child_iter, markup, NULL, v, reflected_objects);
 
 				g_free (markup);
 			}
@@ -330,7 +345,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 		Value v(((Control*)obj)->GetSubtreeObject());
 
-		reflect_value (store, &subobject_iter, "Visual Child", NULL, &v);
+		reflect_value (store, &subobject_iter, "Visual Child", NULL, &v, reflected_objects);
 	}
 
 	if (obj->Is (Type::NAMESCOPE)) {
@@ -451,7 +466,9 @@ show_debug (MoonWindowGtk* window)
 						       G_TYPE_STRING,
 						       G_TYPE_POINTER);
 
-	reflect_dependency_object_in_tree (window->GetSurface()->GetToplevel (), tree_store, NULL, false);
+	GHashTable *reflected_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+	reflect_dependency_object_in_tree (window->GetSurface()->GetToplevel (), tree_store, NULL, false, reflected_objects);
+	g_hash_table_destroy (reflected_objects);
 
 #if false
  	GtkTreeModel *sorted_model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (tree_store));
