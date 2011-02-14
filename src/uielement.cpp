@@ -1657,12 +1657,11 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_EFFECT) {
+		Effect      *effect;
 		MoonSurface *src;
 		Rect        r = ctx->Pop (&src);
 
-		if (!r.IsEmpty ()) {
-			Effect *effect = GetRenderEffect ();
-
+		if (!r.IsEmpty () && (effect = GetRenderEffect ())) {
 			effect->Render (ctx, src, r.x, r.y);
 
 			src->unref ();
