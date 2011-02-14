@@ -667,15 +667,27 @@ RichTextBox::CursorPrevWord (const TextPointer& cursor)
 TextPointer
 RichTextBox::CursorLineBegin (const TextPointer& cursor)
 {
-	// FIXME
-	return cursor;
+	double y = view->GetCursor ().y;
+	RichTextLayoutLine *line;
+	int index;
+
+	if (!(line = view->GetLineFromY (y, &index)))
+		return cursor;
+
+	return line->start;
 }
 
 TextPointer
 RichTextBox::CursorLineEnd (const TextPointer& cursor, bool include)
 {
-	// FIXME
-	return cursor;
+	double y = view->GetCursor ().y;
+	RichTextLayoutLine *line;
+	int index;
+
+	if (!(line = view->GetLineFromY (y, &index)))
+		return cursor;
+
+	return line->start;
 }
 
 bool
@@ -805,13 +817,12 @@ RichTextBox::KeyPressPageDown (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressPageUp (MoonModifier modifiers)
 {
-	TextPointer *anchor = selection->GetAnchor();
+	TextPointer anchor = selection->GetAnchor_np();
 	TextPointer cursor;
 	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
-		delete anchor;
 		return false;
 	}
 	
@@ -828,21 +839,18 @@ RichTextBox::KeyPressPageUp (MoonModifier modifiers)
 	have_offset = have;
 	handled = true;
 
-	delete anchor;
-	
 	return handled;
 }
 
 bool
 RichTextBox::KeyPressDown (MoonModifier modifiers)
 {
-	TextPointer *anchor = selection->GetAnchor();
+	TextPointer anchor = selection->GetAnchor_np();
 	TextPointer cursor;
 	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
-		delete anchor;
 		return false;
 	}
 	
@@ -858,8 +866,6 @@ RichTextBox::KeyPressDown (MoonModifier modifiers)
 	emit |= SELECTION_CHANGED;
 	have_offset = have;
 	handled = true;
-
-	delete anchor;
 	
 	return handled;
 }
@@ -867,13 +873,12 @@ RichTextBox::KeyPressDown (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressUp (MoonModifier modifiers)
 {
-	TextPointer *anchor = selection->GetAnchor();
+	TextPointer anchor = selection->GetAnchor_np();
 	TextPointer cursor;
 	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
-		delete anchor;
 		return false;
 	}
 	
@@ -890,21 +895,89 @@ RichTextBox::KeyPressUp (MoonModifier modifiers)
 	have_offset = have;
 	handled = true;
 
-	delete anchor;
-
 	return handled;
 }
 
 bool
 RichTextBox::KeyPressHome (MoonModifier modifiers)
 {
-	return false;
+	bool handled = false;
+	
+	if ((modifiers & ALT_MASK) != 0)
+		return false;
+
+	TextPointer anchor = selection->GetAnchor_np ();
+	TextPointer moving = selection->GetMoving_np ();
+	TextPointer new_moving;
+
+	if ((modifiers & CONTROL_MASK) != 0) {
+		// move the moving pointer to the beginning of the buffer
+		new_moving = TextPointer (this, CONTENT_START, LogicalDirectionForward);
+
+	} else {
+		// move the moving pointer to the beginning of the line
+		new_moving = CursorLineBegin (moving);
+	}
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		if (!anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		// clobber the selection
+		anchor = new_moving;
+		moving = new_moving;
+	}
+	else {
+		if (anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		moving = new_moving;
+	}
+
+	selection->Select (&anchor, &moving);
+
+	
+	return handled;
 }
 
 bool
 RichTextBox::KeyPressEnd (MoonModifier modifiers)
 {
-	return false;
+	bool handled = false;
+	
+	if ((modifiers & ALT_MASK) != 0)
+		return false;
+
+	TextPointer anchor = selection->GetAnchor_np ();
+	TextPointer moving = selection->GetMoving_np ();
+	TextPointer new_moving;
+
+	if ((modifiers & CONTROL_MASK) != 0) {
+		// move the moving pointer to the end of the buffer
+		new_moving = TextPointer (this, CONTENT_END, LogicalDirectionForward);
+	} else {
+		// move the moving pointer to the end of the line
+		new_moving = CursorLineEnd (moving);
+	}
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		if (!anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		// clobber the selection
+		anchor = new_moving;
+		moving = new_moving;
+	}
+	else {
+		if (anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		moving = new_moving;
+	}
+
+	selection->Select (&anchor, &moving);
+	
+	return handled;
 }
 
 bool
@@ -913,16 +986,14 @@ RichTextBox::KeyPressRight (MoonModifier modifiers)
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 
-	TextPointer anchor = *selection->GetAnchor ();
-	TextPointer moving = *selection->GetMoving ();
+	TextPointer anchor = selection->GetAnchor_np ();
+	TextPointer moving = selection->GetMoving_np ();
 
-	if ((modifiers & SHIFT_MASK) != 0) {
-	}
-	else {
+	if ((modifiers & SHIFT_MASK) == 0) {
 		if (!selection->IsEmpty()) {
-			selection->Select (&anchor, &anchor);
+			selection->Select (&moving, &moving);
 			emit |= SELECTION_CHANGED;
-			return false;
+			return true;
 		}
 	}
 
@@ -1846,13 +1917,13 @@ RichTextBox::GetPositionFromPoint (Point point)
 TextPointer*
 RichTextBox::GetContentStart ()
 {
-	return new TextPointer (this, 0, LogicalDirectionBackward);
+	return new TextPointer (this, CONTENT_START, LogicalDirectionBackward);
 }
 
 TextPointer*
 RichTextBox::GetContentEnd ()
 {
-	return new TextPointer (this, -1, LogicalDirectionForward);
+	return new TextPointer (this, CONTENT_END, LogicalDirectionForward);
 }
 
 static TextElement*

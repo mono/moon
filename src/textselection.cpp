@@ -551,6 +551,18 @@ TextSelection::GetMoving ()
 	return new TextPointer (moving);
 }
 
+TextPointer
+TextSelection::GetAnchor_np ()
+{
+	return anchor;
+}
+
+TextPointer
+TextSelection::GetMoving_np ()
+{
+	return moving;
+}
+
 bool
 TextSelection::IsEmpty ()
 {

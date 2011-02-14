@@ -65,6 +65,9 @@ public:
 	TextPointer *GetAnchor ();
 	TextPointer *GetMoving ();
 
+	TextPointer GetAnchor_np ();
+	TextPointer GetMoving_np ();
+
 	bool IsEmpty ();
 
 private:
