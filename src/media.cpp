@@ -235,6 +235,9 @@ Image::download_progress (EventObject *sender, EventArgs *calldata, gpointer clo
 {
 	Image *media = (Image *) closure;
 
+	if (media->GetSource () != sender)
+		return;
+
 	media->DownloadProgress ();
 }
 
@@ -242,6 +245,9 @@ void
 Image::image_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
+
+	if (media->GetSource () != sender)
+		return;
 
 	media->ImageOpened ((RoutedEventArgs*)calldata);
 }
@@ -251,6 +257,9 @@ Image::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
 
+	if (media->GetSource () != sender)
+		return;
+
 	media->ImageFailed ((ImageErrorEventArgs*)calldata);
 }
 
@@ -258,6 +267,9 @@ void
 Image::source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
+
+	if (media->GetSource () != sender)
+		return;
 
 	media->SourcePixelDataChanged ();
 }
