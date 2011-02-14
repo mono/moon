@@ -1697,6 +1697,9 @@ MmsSource::CreateDownloaders (const char *method, HttpRequest **req, HttpRequest
 
 	*req = NULL;
 
+	if (IsDisposed ())
+		return;
+
 	request = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableCache | HttpRequest::DisableFileStorage | additional_options));
 	*req = request;
 	if (request == NULL) {
@@ -1770,6 +1773,9 @@ MmsSource::SendDescribeRequest ()
 	LOG_MMS ("MmsSource::SendDescribeRequest () uri: %s request_uri: %s state: %i\n", uri->GetOriginalString (), request_uri->GetOriginalString (), waiting_state);
 	VERIFY_MAIN_THREAD;
 	HttpRequest *request;
+
+	if (IsDisposed ())
+		return;
 
 	g_return_if_fail (waiting_state == MmsInitialization);
 
@@ -1982,7 +1988,10 @@ MmsSource::ProcessResponseHeader (const char *header, const char *value)
 		return;
 
 	request = GetRequestReffed ();
-	g_return_if_fail (request != NULL);
+	if (request == NULL) {
+		/* Probably disposed */
+		return;
+	}
 
 	// check response code
 	HttpResponse *response = request->GetResponse ();
