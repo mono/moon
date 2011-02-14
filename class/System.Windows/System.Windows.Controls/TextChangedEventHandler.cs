@@ -25,5 +25,5 @@
 //
 
 namespace System.Windows.Controls {
-	public delegate void TextChangedEventHandler (object sender, TextChangedEventArgs args);
+	public delegate void TextChangedEventHandler (object sender, TextChangedEventArgs e);
 }

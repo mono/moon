@@ -27,6 +27,6 @@
 
 namespace System.Windows.Controls.Primitives {
 
-	public delegate void ItemsChangedEventHandler (object sender, ItemsChangedEventArgs args);
+	public delegate void ItemsChangedEventHandler (object sender, ItemsChangedEventArgs e);
 
 }

@@ -311,17 +311,17 @@ namespace System.Windows.Browser
 		/// </summary>
 		/// <param name="s">The HTML string to decode. </param>
 		/// <returns>The decoded text.</returns>
-		public static string HtmlDecode (string s) 
+		public static string HtmlDecode (string html) 
 		{
-			if (s == null)
+			if (html == null)
 				throw new ArgumentNullException ("s");
 
-			if (s.IndexOf ('&') == -1)
-				return s;
+			if (html.IndexOf ('&') == -1)
+				return html;
 
 			StringBuilder entity = new StringBuilder ();
 			StringBuilder output = new StringBuilder ();
-			int len = s.Length;
+			int len = html.Length;
 			// 0 -> nothing,
 			// 1 -> right after '&'
 			// 2 -> between '&' and ';' but no '#'
@@ -331,7 +331,7 @@ namespace System.Windows.Browser
 			bool have_trailing_digits = false;
 	
 			for (int i = 0; i < len; i++) {
-				char c = s [i];
+				char c = html [i];
 				if (state == 0) {
 					if (c == '&') {
 						entity.Append (c);
@@ -420,14 +420,14 @@ namespace System.Windows.Browser
 		/// </summary>
 		/// <param name="s">The text string to encode. </param>
 		/// <returns>The HTML-encoded text.</returns>
-		public static string HtmlEncode (string s) 
+		public static string HtmlEncode (string html) 
 		{
-			if (s == null)
+			if (html == null)
 				return null;
 
 			bool needEncode = false;
-			for (int i = 0; i < s.Length; i++) {
-				char c = s [i];
+			for (int i = 0; i < html.Length; i++) {
+				char c = html [i];
 				if (c == '&' || c == '"' || c == '<' || c == '>' || c > 159) {
 					needEncode = true;
 					break;
@@ -435,13 +435,13 @@ namespace System.Windows.Browser
 			}
 
 			if (!needEncode)
-				return s;
+				return html;
 
 			StringBuilder output = new StringBuilder ();
 			
-			int len = s.Length;
+			int len = html.Length;
 			for (int i = 0; i < len; i++) 
-				switch (s [i]) {
+				switch (html [i]) {
 				case '&' :
 					output.Append ("&amp;");
 					break;
@@ -458,12 +458,12 @@ namespace System.Windows.Browser
 					// MS starts encoding with &# from 160 and stops at 255.
 					// We don't do that. One reason is the 65308/65310 unicode
 					// characters that look like '<' and '>'.
-					if (s [i] > 159) {
+					if (html [i] > 159) {
 						output.Append ("&#");
-						output.Append (((int) s [i]).ToString (CultureInfo.InvariantCulture));
+						output.Append (((int) html [i]).ToString (CultureInfo.InvariantCulture));
 						output.Append (";");
 					} else {
-						output.Append (s [i]);
+						output.Append (html [i]);
 					}
 					break;
 				}
@@ -522,9 +522,9 @@ namespace System.Windows.Browser
 			return val;
 		}
 		
-		public static string UrlDecode (string str) 
+		public static string UrlDecode (string url) 
 		{
-			return UrlDecode(str, Encoding.UTF8);
+			return UrlDecode (url, Encoding.UTF8);
 		}
 	
 		internal static string UrlDecode (string str, Encoding e)
@@ -587,15 +587,15 @@ namespace System.Windows.Browser
 			return output.ToString ();
 		}
 	
-		public static string UrlEncode (string str) 
+		public static string UrlEncode (string url) 
 		{
-			if (str == null)
+			if (url == null)
 				return null;
 
-			if (str.Length == 0)
+			if (url.Length == 0)
 				return String.Empty;
 
-			byte [] bytes = Encoding.UTF8.GetBytes (str);
+			byte [] bytes = Encoding.UTF8.GetBytes (url);
 			bytes = UrlEncodeToBytes (bytes, 0, bytes.Length);
 			char [] copy = new char [bytes.Length];
 			for (int i = 0; i < bytes.Length; i++)

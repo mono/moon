@@ -25,5 +25,5 @@
 //
 
 namespace System.Windows.Controls {
-	public delegate void ContentChangedEventHandler (object sender, ContentChangedEventArgs args);
+	public delegate void ContentChangedEventHandler (object sender, ContentChangedEventArgs e);
 }

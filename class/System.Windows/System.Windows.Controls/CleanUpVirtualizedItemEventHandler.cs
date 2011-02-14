@@ -30,6 +30,6 @@ using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Controls {
 
-	public delegate void CleanUpVirtualizedItemEventHandler (object sender, CleanUpVirtualizedItemEventArgs args);
+	public delegate void CleanUpVirtualizedItemEventHandler (object sender, CleanUpVirtualizedItemEventArgs e);
 
 }

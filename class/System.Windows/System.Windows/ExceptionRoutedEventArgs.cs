@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Windows
 {
-	public class ExceptionRoutedEventArgs : RoutedEventArgs
+	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
 	{
 		internal ExceptionRoutedEventArgs (Exception ex)
 		{
