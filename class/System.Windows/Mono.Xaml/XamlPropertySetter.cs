@@ -255,8 +255,15 @@ namespace Mono.Xaml {
 				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", tb.SourcePropertyName);
 
 			DependencyProperty prop = LookupDependencyProperty ();
-			if (prop == null)
+			if (prop == null) {
+				var propInfo = property_lookup_type.GetProperty (tb.SourcePropertyName, XamlParser.PROPERTY_BINDING_FLAGS);
+				if (!propInfo.PropertyType.IsInstanceOfType (tb)) {
+					// If there is a CLR property with the correct name and there's no DP registered with that name
+					// we should silently ignore the invalid TemplateBinding
+					return;
+				}
 				throw Parser.ParseException ("Invalid TemplateBinding, property {0} could not be found.", Name);
+			}
 
 			tb.TargetProperty = prop;
 			tb.SourceProperty = source_prop;

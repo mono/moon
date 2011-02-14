@@ -22,6 +22,13 @@ using System.Reflection;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class ClrPropertyNoDP : FrameworkElement {
+		public int MyProperty {
+			get;
+			set;
+		}
+	}
+
 	public class FakeConverter : TypeConverter {
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
@@ -2527,6 +2534,24 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 				Assert.AreEqual (5, grid.Height, "#3");
 				Assert.AreEqual (0, grid.RowDefinitions [0].MinHeight, "#4");
 			});
+		}
+
+		[TestMethod]
+		public void TemplateBinding_NoDP_WithClrWrapper ()
+		{
+			var c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+				xmlns:clr=""clr-namespace:System;assembly=mscorlib""
+				xmlns:c=""clr-namespace:MoonTest.System.Windows.Data;assembly=moon-unit"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<c:ClrPropertyNoDP MyProperty=""{TemplateBinding Width}"" />
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>");
+			c.ApplyTemplate ();
+			c.UpdateLayout ();
 		}
 
 		[TestMethod]
