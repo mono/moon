@@ -21,8 +21,80 @@
 
 namespace Moonlight {
 
-#define CONTENT_START (0)
-#define CONTENT_END ((guint32)-1)
+//
+// DocumentWalker
+//
+
+DocumentWalker::DocumentWalker (IDocumentNode *node, DocumentWalker::Direction direction)
+{
+	this->node = node;
+	this->child_index = 0;
+	this->direction = direction;
+}
+
+DocumentWalker::~DocumentWalker ()
+{
+}
+
+DocumentWalker::StepType
+DocumentWalker::Step (IDocumentNode **node_return)
+{
+	DependencyObjectCollection *children = node->GetDocumentChildren();
+	if (direction == DocumentWalker::Forward) {
+		if (children && children->GetCount() > child_index) {
+			// 1) if node is a container, step into the child
+			node = IDocumentNode::CastToIDocumentNode (children->GetValueAt (child_index)->AsTextElement());
+			child_index = 0;
+			if (node_return)
+				*node_return = node;
+			return Enter;
+		}
+		else {
+			// 2) if it's not a container, then we walk up a level, step out of this node
+			IDocumentNode *parent_node = node->GetParentDocumentNode();
+			DependencyObjectCollection *parent_children= parent_node->GetDocumentChildren();
+			int i = parent_children->IndexOf (node->AsDependencyObject());
+
+			if (node_return)
+				*node_return = node;
+
+			child_index = i + 1;
+			node = parent_node;
+			return Leave;
+		}
+	}
+	else {
+		if (children && children->GetCount() > child_index && child_index >= 0) {
+			// 1) if node is a container, step into the child
+			node = IDocumentNode::CastToIDocumentNode (children->GetValueAt (child_index)->AsTextElement());
+			children = node->GetDocumentChildren ();
+			child_index = children ? children->GetCount() - 1 : 0;
+			if (node_return)
+				*node_return = node;
+			return Enter;
+		}
+		else {
+			// 2) if it's not a container, then we walk up a level, step out of this node
+			IDocumentNode *parent_node = node->GetParentDocumentNode();
+			DependencyObjectCollection *parent_children= parent_node->GetDocumentChildren();
+			int i = parent_children->IndexOf (node->AsDependencyObject());
+
+			if (node_return)
+				*node_return = node;
+
+			child_index = i - 1;
+			node = parent_node;
+			return Leave;
+		}
+	}
+}
+
+IDocumentNode *
+DocumentWalker::GetNode ()
+{
+	return node;
+}
+
 
 //
 // TextPointer
@@ -45,25 +117,20 @@ compare_locations (guint32 loc1, guint32 loc2)
 }
 
 static bool
-verify_textpointer_in_document (TextPointer *pointer, MoonError *error)
+verify_textpointer_in_document (const TextPointer *pointer, MoonError *error)
 {
-	DependencyObject *el = pointer->GetParent();
-	while (el) {
-		if (el->Is (Type::RICHTEXTBOX))
-			return true;
-		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
-		if (!el)
-			break;
-	}
+	RichTextBox *rtb = pointer->GetRichTextBox ();
+
+	if (rtb)
+		return true;
 
 	MoonError::FillIn (error, MoonError::NOT_SUPPORTED_EXCEPTION, "Can't use a TextPointer which is outside of a RichTextBox's document");
-
 	return false;
 }
 
 
 int
-TextPointer::CompareToWithError (TextPointer *pointer, MoonError *error)
+TextPointer::CompareToWithError (const TextPointer *pointer, MoonError *error) const
 {
 	if (!verify_textpointer_in_document (this, error) ||
 	    !verify_textpointer_in_document (pointer, error))
@@ -159,49 +226,50 @@ TextPointer::CompareToWithError (TextPointer *pointer, MoonError *error)
 }
 
 int
-TextPointer::CompareTo_np (TextPointer pointer)
+TextPointer::CompareTo_np (const TextPointer& pointer) const
 {
 	MoonError error;
 	return CompareToWithError (&pointer, &error);
 }
 
 int
-TextPointer::CompareTo (TextPointer *pointer)
+TextPointer::CompareTo (const TextPointer *pointer)
 {
 	MoonError error;
 	return CompareToWithError (pointer, &error);
 }
 
-Rect
-TextPointer::GetCharacterRect (LogicalDirection dir)
+bool
+TextPointer::Equal (const TextPointer& pointer) const
 {
-	DependencyObject *el = GetParent();
-	while (el) {
-		if (el->Is (Type::RICHTEXTBOX))
-			break;
-		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
-		if (!el)
-			break;
-	}
-	if (!el) {
+	return parent == pointer.parent && location == pointer.location;
+}
+
+Rect
+TextPointer::GetCharacterRect (LogicalDirection dir) const
+{
+	RichTextBox *rtb = GetRichTextBox ();
+	if (!rtb) {
 		g_warning ("a TextPointer outside of a RichTextBox?  say it ain't so...");
 		return Rect::ManagedEmpty;
 	}
 
-	return ((RichTextBox*)el)->GetCharacterRect (this, dir);
+	return rtb->GetCharacterRect (this, dir);
 }
 
 TextPointer *
-TextPointer::GetNextInsertionPosition (LogicalDirection dir)
+TextPointer::GetNextInsertionPosition (LogicalDirection dir) const
 {
 	// FIXME: implement this
+	printf ("NIEX: TextPointer::GetNextInsertionPosition\n");
 	return NULL;
 }
 
 TextPointer
-TextPointer::GetNextInsertionPosition_np (LogicalDirection dir)
+TextPointer::GetNextInsertionPosition_np (LogicalDirection dir) const
 {
 	// FIXME: implement this
+	printf ("NIEX: TextPointer::GetNextInsertionPosition_np\n");
 	return *this;
 }
 
@@ -439,7 +507,7 @@ PositionAtOffsetIterator::Step (int *offset)
 
 
 TextPointer *
-TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir)
+TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir) const
 {
 	PositionAtOffsetIterator iter ((TextElement*)GetParent(), GetLocation(), GetLogicalDirection());
 
@@ -447,7 +515,7 @@ TextPointer::GetPositionAtOffset (int offset, LogicalDirection dir)
 }
 
 TextPointer
-TextPointer::GetPositionAtOffset_np (int offset, LogicalDirection dir)
+TextPointer::GetPositionAtOffset_np (int offset, LogicalDirection dir) const
 {
 	TextPointer *tp = GetPositionAtOffset (offset, dir);
 	if (tp == NULL)
@@ -458,7 +526,7 @@ TextPointer::GetPositionAtOffset_np (int offset, LogicalDirection dir)
 }
 
 int
-TextPointer::ResolveLocation ()
+TextPointer::ResolveLocation () const
 {
 	if (location != CONTENT_END)
 		return location;
@@ -482,13 +550,100 @@ TextPointer::ResolveLocation ()
 }
 
 bool
-TextPointer::GetIsAtInsertionPosition ()
+TextPointer::GetIsAtInsertionPosition () const
 {
 	// FIXME we need a bunch more tests to see if this is correct, but it seems to work for the tests we have..
 	if (parent != NULL)
 		return parent->Is (Type::RUN);
 
 	return false;
+}
+
+TextPointer
+TextPointer::GetPositionInsideRun (int offset) const
+{
+	if (!GetParent()->Is (Type::RUN)) {
+		g_warning ("TextPointer::GetPositionInsideRun only works with Runs");
+		return *this;
+	}
+
+	int location = ResolveLocation ();
+	if (offset > 0) {
+		const char *text = ((Run*)GetParent())->GetText();
+		if ((guint)location < strlen (text)) {
+			return GetPositionAtOffset_np (1, LogicalDirectionForward);
+		}
+		else {
+			// we're at the end of the run.  we need to walk the document until we hit another run.
+			DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Forward);
+			walker.Step ();
+
+			while (true) {
+				IDocumentNode *node;
+				DocumentWalker::StepType type = walker.Step (&node);
+
+				switch (type) {
+				case DocumentWalker::Done:
+					// there is no position beyond this
+					return *this;
+				case DocumentWalker::Enter:
+					if (node->AsDependencyObject()->Is(Type::RUN))
+						return ((Run*)node->AsDependencyObject())->GetContentStart_np();
+					break;
+				case DocumentWalker::Leave:
+					// do nothing here
+					break;
+				}
+
+			}
+		}
+	}
+	else {
+		if (location == 0) {
+			// we're at the end of the run.  we need to walk the document until we hit another run.
+			DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Backward);
+			walker.Step ();
+
+			while (true) {
+				IDocumentNode *node;
+				DocumentWalker::StepType type = walker.Step (&node);
+
+				switch (type) {
+				case DocumentWalker::Done:
+					// there is no position before this
+					return *this;
+				case DocumentWalker::Enter:
+					if (node->AsDependencyObject()->Is(Type::RUN))
+						return ((Run*)node->AsDependencyObject())->GetContentStart_np();
+					break;
+				case DocumentWalker::Leave:
+					// do nothing here
+					break;
+				}
+
+			}
+		}
+		else {
+			return GetPositionAtOffset_np (-1, LogicalDirectionForward);
+		}
+	}
+
+	return *this;
+}
+
+RichTextBox *
+TextPointer::GetRichTextBox () const
+{
+	DependencyObject *el = GetParent();
+	while (el) {
+		if (el->Is (Type::RICHTEXTBOX))
+			return (RichTextBox*)el;
+		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+		if (!el)
+			break;
+	}
+
+	return NULL;
 }
 
 #undef CONTENT_START

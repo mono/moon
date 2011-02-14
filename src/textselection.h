@@ -52,7 +52,7 @@ public:
 	char *GetText ();
 	
 	/* @GeneratePInvoke */
-	void SetXaml (const char *xaml);
+	void SetXamlWithError (const char *xaml, MoonError *error);
 	/* @GeneratePInvoke */
 	char *GetXaml ();
 
@@ -62,6 +62,9 @@ public:
 	/* @GeneratePInvoke */
 	TextPointer *GetEnd ();
 
+	TextPointer *GetAnchor ();
+	TextPointer *GetMoving ();
+
 	bool IsEmpty ();
 
 private:
@@ -69,6 +72,13 @@ private:
 
 	TextPointer anchor;
 	TextPointer moving;
+
+	// the same text pointers as above, only sorted such that start.CompareTo(end) is always <= 0
+	TextPointer start;
+	TextPointer end;
+
+	char *xaml;
+	char *text;
 };
 
 };

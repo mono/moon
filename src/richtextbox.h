@@ -65,6 +65,8 @@ protected:
 	
 	TextSelection *selection;
 
+	ArrayList* flattened;
+
 	Stack *undo;
 	Stack *redo;
 	double cursor_offset;
@@ -78,7 +80,6 @@ protected:
 	short captured:1;
 	short focused:1;
 	
-	short events_mask:2;
 	short emit:2;
 	
 	short batch;
@@ -144,12 +145,11 @@ protected:
 	void BatchPush ();
 	void BatchPop ();
 	
-	void SyncAndEmit (bool sync_text = true);
+	void SyncAndEmit ();
 	
 	//
 	// Protected Property Accessors
 	//
-	bool HasSelectedText () { return false; /* FIXME */ }
 	//TextBuffer *GetBuffer () { return buffer; }
 	bool IsFocused () { return focused; }
 	
@@ -202,10 +202,13 @@ protected:
 	// IDocumentNode interface
 	virtual IDocumentNode* GetParentDocumentNode ();
 	virtual DependencyObjectCollection* GetDocumentChildren ();
-	virtual DependencyObject* Split (int loc);
+	virtual DependencyObject* Split (int loc, TextElement *into);
+	virtual DependencyObject* AsDependencyObject () { return this; }
 
 	virtual void SerializeText (GString *str) {}
 	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str) {}
+	virtual void SerializeXamlEndElement (GString *str) {}
 	virtual void SerializeXamlProperties (bool force, GString *str);
 
 	//
@@ -216,6 +219,11 @@ protected:
 	virtual TextDecorations Decorations () { return TextDecorationsNone; }
 	virtual Brush *Background (bool selected) { return NULL; }
 	virtual Brush *Foreground (bool selected) { return NULL; }
+
+	// ITextLayoutContainer interface
+	void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);
+	void DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args);
+
 
 	/* @GeneratePInvoke */
 	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
@@ -298,7 +306,7 @@ protected:
 	void SetXaml (const char *xaml);
 	const char *GetXaml ();
 
-	Rect GetCharacterRect (TextPointer *tp, LogicalDirection direction);
+	Rect GetCharacterRect (const TextPointer *tp, LogicalDirection direction);
 
 	RichTextBoxView *GetView () { return view; }
 
@@ -384,7 +392,7 @@ class RichTextBoxView : public FrameworkElement {
 	RichTextLayoutLine *GetLineFromIndex (int index);
 	
 	TextPointer GetLocationFromXY (double x, double y);
-	Rect GetCharacterRect (TextPointer *tp, LogicalDirection direction);
+	Rect GetCharacterRect (const TextPointer* tp, LogicalDirection direction);
 	Rect GetCursor () { return cursor; }
 	
 	void OnLostFocus ();
@@ -396,9 +404,7 @@ class RichTextBoxView : public FrameworkElement {
 
 	void OnModelChanged (RichTextBoxModelChangeType change, PropertyChangedEventArgs *args);
 
-	// ITextLayoutContainer interface
-	void DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args);
-	void DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args);
+	void DocumentChanged (TextElement *onElement);
 
 	//
 	// Property Accessors

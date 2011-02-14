@@ -134,10 +134,13 @@ class TextBlock : public FrameworkElement, public ITextLayoutContainer, public I
 	// IDocumentNode interface
 	virtual IDocumentNode* GetParentDocumentNode ();
 	virtual DependencyObjectCollection* GetDocumentChildren ();
-	virtual DependencyObject* Split (int loc);
+	virtual DependencyObject* Split (int loc, TextElement *into);
+	virtual DependencyObject* AsDependencyObject () { return this; }
 
 	virtual void SerializeText (GString *str);
 	virtual void SerializeXaml (GString *str) {}
+	virtual void SerializeXamlStartElement (GString *str) {}
+	virtual void SerializeXamlEndElement (GString *str) {}
 	virtual void SerializeXamlProperties (bool force, GString *str) {}
 
 	// ITextLayoutContainer interface

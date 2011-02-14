@@ -43,14 +43,16 @@ namespace System.Windows.Documents {
 		
 		public object GetPropertyValue (DependencyProperty formattingProperty)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.GetPropertyValue () NIEX");
-			throw new NotImplementedException ();
+			IntPtr val = NativeMethods.text_selection_get_property_value (native, formattingProperty.Native);
+			return Value.ToObject (null, val);
 		}
 
 		public void ApplyPropertyValue (DependencyProperty formattingProperty, object value)
 		{
-			Console.WriteLine ("System.Windows.Documents.TextSelection.ApplyPropertyValue: () NIEX");
-			throw new NotImplementedException ();
+			using (var val = Value.FromObject (value)) {
+				var v = val;
+				NativeMethods.text_selection_apply_property_value (native, formattingProperty.Native, ref v);
+			}
 		}
 
 		public void Insert (TextElement element)

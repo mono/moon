@@ -68,6 +68,8 @@ public:
 
 	virtual const char *GetText() { return ""; }
 
+	virtual double GetXOffsetByIndex (int index) { return 0.0; }
+
 	TextLayoutAttributes *attrs;
 	RichTextLayoutLine *line;
 	TextPointer start;
@@ -84,16 +86,19 @@ public:
 	  : RichTextLayoutInline (line, attrs, start, end)
 	{
 		path = NULL;
-		offset_into_text = 0;
+		xoffset_table = NULL;
 	}
 
 	virtual ~RichTextLayoutInlineGlyphs ()
 	{
 		if (path)
 			moon_path_destroy (path);
+		delete xoffset_table;
 	}
 
-	virtual const char *GetText() { return ((Run*)start.GetParent())->GetText() + offset_into_text; }
+	virtual const char *GetText() { return ((Run*)start.GetParent())->GetText(); }
+
+	virtual double GetXOffsetByIndex (int index);
 
 	virtual void Render (cairo_t *cr, const Point &origin, double x, double y, bool is_last_run);
 
@@ -101,8 +106,8 @@ public:
 	void ClearCache ();
 
 	moon_path *path;
+	double *xoffset_table;
 	double uadvance;
-	int offset_into_text;
 };
 
 class RichTextLayoutInlineUIElement : public RichTextLayoutInline {
@@ -120,6 +125,7 @@ public:
 };
 
 class RichTextLayout {
+ public:
 	TextPointer selection_start;
 	TextPointer selection_end;
 
@@ -140,7 +146,6 @@ class RichTextLayout {
 	void ClearCache ();
 	void ClearLines ();
 	
- public:
 	RichTextLayout ();
 	~RichTextLayout ();
 	
@@ -188,7 +193,7 @@ class RichTextLayout {
 	
 	RichTextLayoutLine *GetLineFromY (const Point &offset, double y, int *index = NULL);
 	RichTextLayoutLine *GetLineFromIndex (int index);
-	Rect GetCharacterRect (TextPointer *tp, LogicalDirection direction);
+	Rect GetCharacterRect (const TextPointer *tp, LogicalDirection direction);
 	int GetLineCount () { return lines->len; }
 	
 	TextPointer GetLocationFromXY (const Point &offset, double x, double y);

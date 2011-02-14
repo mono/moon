@@ -159,7 +159,7 @@ TextBlock::DocumentCollectionChanged (TextElement *onElement, Collection *col, C
 }
 
 DependencyObject* 
-TextBlock::Split (int loc)
+TextBlock::Split (int loc, TextElement *into)
 {
 	return NULL;
 }

@@ -24,25 +24,18 @@ namespace Moonlight {
 
 TextSelection::TextSelection ()
 {
+	xaml = NULL;
+	text = NULL;
 }
 
 void
 TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
 {
-	DependencyObject *el = anchor.GetParent();
-	while (el) {
-		if (el->Is (Type::RICHTEXTBOX))
-			break;
-		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
-		if (!el)
-			break;
-	}
-	if (el == NULL) {
+	RichTextBox *rtb = anchor.GetRichTextBox ();
+	if (rtb == NULL) {
 		g_warning ("this shouldn't happen...");
 		return;
 	}
-	
-	RichTextBox *rtb = (RichTextBox*)el;
 
 	rtb->ApplyFormattingToSelection (this, formatting, value);
 }
@@ -119,6 +112,12 @@ TextSelection::ClearSelection ()
 		// harder case, anchor/moving are in different elements
 		printf ("NIEX hard case TextSelection::ClearSelection\n");
 	}
+
+	g_free (text);
+	text = NULL;
+
+	g_free (xaml);
+	xaml = NULL;
 }
 
 
@@ -129,7 +128,6 @@ TextSelection::Insert (TextElement *element)
 		// if either are null we're going nowhere fast...
 		return;
 
-	// refactor out the "clear out selection" from SetText
 	ClearSelection ();
 
 	// at this point both anchor and moving are the same location
@@ -165,22 +163,35 @@ TextSelection::Insert (TextElement *element)
 		// with new_el's index as @loc.
 		IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (el_parent);
 		DependencyObjectCollection *parents_children = parent_node ? parent_node->GetDocumentChildren () : NULL;
-		DependencyObject *new_el = node ? node->Split (loc) : NULL;
 
-		if (!new_el) {
-			g_warning ("split failed");
-			return;
+		DependencyObject *new_el;
+		if (element->Is (el->GetObjectType()) /* a more precise check perhaps?  instead of subclass? */) {
+			// we don't need to split the node.  we just
+			// need to reach in and reparent children
+			// after @loc into element.
+			new_el = node ? node->Split (loc, element) : NULL;
+		}
+		else {
+			new_el = node ? node->Split (loc) : NULL;
 		}
 
 		int new_el_loc = parents_children->IndexOf (el) + 1;
-		parents_children->Insert (new_el_loc, new_el);
+
+		if (new_el)
+			parents_children->Insert (new_el_loc, new_el);
+
 		el = el_parent;
 		loc = new_el_loc;
-		new_el->unref ();
+		if (new_el && new_el != element)
+			new_el->unref ();
+
+		if (new_el == element) {
+			// we've already inserted the element as part of the split.
+			return;
+		}
 	}
 
-
-	printf ("TextSelection::Insert\n");
+	printf ("NIEX TextSelection::Insert\n");
 }
 
 bool
@@ -190,10 +201,23 @@ TextSelection::SelectWithError (TextPointer *anchorPosition, TextPointer *moving
 	
 	// once we've verified, just set start and end
 
-	// FIXME: is @movingPosition always End?  do we need to compare and swap them?
+	anchor = *anchorPosition;
+	moving = *movingPosition;
 
-	this->anchor = *anchorPosition;
-	this->moving = *movingPosition;
+	if (anchor.CompareTo_np (moving) < 0) {
+		start = anchor;
+		end = moving;
+	}
+	else {
+		start = moving;
+		end = anchor;
+	}
+
+	g_free (text);
+	text = NULL;
+
+	g_free (xaml);
+	xaml = NULL;
 
 	return true;
 }
@@ -244,6 +268,15 @@ TextSelection::SetText (const char *text)
 			}
 
 			g_free (new_text);
+
+			if (anchor.CompareTo_np (moving) < 0) {
+				start = anchor;
+				end = moving;
+			}
+			else {
+				start = moving;
+				end = anchor;
+			}
 		}
 		else {
 			IDocumentNode *node = anchor.GetParentNode();
@@ -273,19 +306,46 @@ TextSelection::SetText (const char *text)
 			anchor = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
 			moving = TextPointer (r, CONTENT_END, anchor.GetLogicalDirection());
 			r->unref ();
+
+			if (anchor.CompareTo_np (moving) < 0) {
+				start = anchor;
+				end = moving;
+			}
+			else {
+				start = moving;
+				end = anchor;
+			}
 		}
 	}
+
+	g_free (this->text);
+	this->text = g_strdup (text);
 }
 
 char*
 TextSelection::GetText ()
 {
-	if (anchor.GetParent() == moving.GetParent() &&
-	    anchor.GetLocation () == moving.GetLocation())
-	    return g_strdup ("");
+	GString *gstr;
+	TextPointer tp;
 
-	GString *gstr = g_string_new ("");
-	TextPointer tp = anchor;
+
+	if (text)
+		goto done;
+
+	if (anchor.GetParent() == NULL ||
+	    moving.GetParent() == NULL) {
+		text = g_strdup ("");
+		goto done;
+	}
+
+	if (anchor.GetParent() == moving.GetParent() &&
+	    anchor.GetLocation () == moving.GetLocation()) {
+		text = g_strdup ("");
+		goto done;
+	}
+
+	gstr = g_string_new ("");
+	tp = anchor;
 
 	while (tp.CompareTo_np (moving) < 0) {
 		DependencyObject *parent = tp.GetParent ();
@@ -311,14 +371,15 @@ TextSelection::GetText ()
 		}
 	}
 
-	printf ("returning %s from TextSelection::GetText\n", gstr->str);
+	text = g_string_free (gstr, FALSE);
 
-	return g_string_free (gstr, FALSE);
+ done:
+	return g_strdup (text);
 }
 
 	
 void
-TextSelection::SetXaml (const char *xaml)
+TextSelection::SetXamlWithError (const char *xaml, MoonError *error)
 {
 	printf ("setting xaml to %s\n", xaml);
 }
@@ -326,42 +387,166 @@ TextSelection::SetXaml (const char *xaml)
 char*
 TextSelection::GetXaml ()
 {
-	if (anchor.GetLocation () == moving.GetLocation())
-		return g_strdup ("");
+	const char *header = "<Section xml:space=\"preserve\" HasTrailingParagraphBreakOnPaste=\"False\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">";
+	const char *trailer = "</Section>";
 
-	// I'm guessing this should only include ancestors (up to the
-	// root) that are required to serialize the actual selection,
-	// but for now let's just serialize the entire contents of the
-	// RTB.
+	GString *str;
+	ArrayList ancestors;
+	DependencyObject *el;
 
-	DependencyObject *el = anchor.GetParent();
-	while (el) {
-		if (el->Is (Type::RICHTEXTBOX))
-			break;
+	if (xaml)
+		goto done;
+
+	if (!anchor.GetParent() || !moving.GetParent()) {
+		xaml = g_strdup ("");
+		goto done;
+	}
+
+	if (anchor.GetParent() == moving.GetParent() && anchor.GetLocation () == moving.GetLocation()) {
+		xaml = g_strdup ("");
+		goto done;
+	}
+
+	str = g_string_new (header);
+
+	// first we serialize the xaml start elements for all
+	// TextElements that contain the selection start (but not the
+	// most deeply nested element itself)
+
+	el = anchor.GetParent();
+	if (el && !el->Is (Type::RICHTEXTBOX)) {
+		// skip anchor.GetParent() here.
 		el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
-		if (!el)
-			break;
-	}
-	if (el == NULL) {
-		g_warning ("this shouldn't happen...");
-		return NULL;
+		while (el) {
+			if (el->Is (Type::RICHTEXTBOX))
+				break;
+			ancestors.Add (el);
+			el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+			if (!el)
+				break;
+		}
 	}
 
-	// el should be the RichTextBox now.
-	GString *str = g_string_new ("");
-	IDocumentNode *node = IDocumentNode::CastToIDocumentNode (el);
-	node->SerializeXaml(str);
-	return g_string_free (str, FALSE);
+	for (int i = ancestors.GetCount() - 1; i >= 0; i --) {
+		TextElement *te = (TextElement*)ancestors[i];
+		IDocumentNode *node = IDocumentNode::CastToIDocumentNode (te);
+		node->SerializeXamlStartElement (str);
+	}
+
+
+
+
+	// now we output the start element (and deal with the case where start_element == end_element)
+	el = anchor.GetParent ();
+	if (el->Is (Type::RUN)) {
+		if (el == moving.GetParent()) {
+			// if both textpointers are in the same
+			// element, we need to use start+length form
+			((Run*)el)->SerializeXaml (str, anchor.ResolveLocation (), moving.ResolveLocation () - anchor.ResolveLocation());
+		}
+		else {
+			// since the moving textpointer is outside
+			// this run, we just use the start form.
+			((Run*)el)->SerializeXaml (str, anchor.ResolveLocation ());
+		}
+	}
+	else {
+		((TextElement*)el)->SerializeXaml (str);
+	}
+
+	if (anchor.GetParent() != moving.GetParent()) {
+		// now walk the document from start element to end element, outputting everything manually along the way.
+		DocumentWalker walker (anchor.GetParentNode(), DocumentWalker::Forward);
+
+		walker.Step (); // step out of the start element
+
+		while (true) {
+			IDocumentNode *node;
+			DocumentWalker::StepType stepType = walker.Step (&node);
+			if (node == moving.GetParentNode())
+				break;
+			if (stepType == DocumentWalker::Enter)
+				node->SerializeXamlStartElement(str);
+			else
+				node->SerializeXamlEndElement(str);
+		}
+
+		// now we output the end element
+		el = moving.GetParent ();
+		if (el->Is (Type::RUN)) {
+			((Run*)el)->SerializeXaml (str, 0, moving.ResolveLocation ());
+		}
+		else {
+			((TextElement*)el)->SerializeXaml (str);
+		}
+	}
+
+	// now serialize the xaml end elements for all TextElements
+	// that contain the selection end (but not the most deeply
+	// nested element itself)
+
+	if (anchor.GetParent() == moving.GetParent ()) {
+		// this case is trivial, we just output the same list
+		// of end elements that we outputted the start
+		// elements before
+		for (int i = ancestors.GetCount() - 1; i >= 0; i --) {
+			TextElement *te = (TextElement*)ancestors[i];
+			IDocumentNode *node = IDocumentNode::CastToIDocumentNode (te);
+			node->SerializeXamlEndElement (str);
+		}
+	}
+	else {
+		ancestors.SetCount (0);
+
+		DependencyObject *el = moving.GetParent();
+		if (el && !el->Is (Type::RICHTEXTBOX)) {
+			// skip moving.GetParent() here.
+			el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+			while (el) {
+				if (el->Is (Type::RICHTEXTBOX))
+					break;
+				ancestors.Add (el);
+				el = el->GetParent() ? el->GetParent()->GetParent() : NULL;
+				if (!el)
+					break;
+			}
+		}
+
+		for (int i = ancestors.GetCount() - 1; i >= 0; i --) {
+			TextElement *te = (TextElement*)ancestors[i];
+			IDocumentNode *node = IDocumentNode::CastToIDocumentNode (te);
+			node->SerializeXamlEndElement (str);
+		}
+	}
+
+	g_string_append (str, trailer);
+
+	xaml = g_string_free (str, FALSE);
+
+ done:
+	return g_strdup (xaml);
 }
 
 TextPointer*
 TextSelection::GetStart ()
 {
-	return new TextPointer (anchor);
+	return new TextPointer (start);
 }
 
 TextPointer*
 TextSelection::GetEnd ()
+{
+	return new TextPointer (end);
+}
+
+TextPointer*
+TextSelection::GetAnchor ()
+{
+	return new TextPointer (anchor);
+}
+
+TextPointer*
+TextSelection::GetMoving ()
 {
 	return new TextPointer (moving);
 }
@@ -369,7 +554,7 @@ TextSelection::GetEnd ()
 bool
 TextSelection::IsEmpty ()
 {
-	return anchor.CompareTo_np (moving) == 0;
+	return anchor.Equal (moving);
 }
 
 };

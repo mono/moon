@@ -27,6 +27,17 @@
 
 namespace Moonlight {
 
+extern "C" void dump_rtb_text (RichTextBox *rtb)
+{
+	GString *str = g_string_new("");
+
+	rtb->SerializeXaml (str);
+
+	printf ("%s\n", str->str);
+
+	g_string_free (str, TRUE);
+}
+
 class RichTextBoxProvider : public FrameworkElementProvider {
 	Value *xaml_value;
 	Value *baseline_offset_value;
@@ -74,14 +85,188 @@ public:
 	virtual ~RichTextBoxAction () {}
 	virtual void Do () = 0;
 	virtual void Undo () = 0;
+
+	enum RichTextBoxActionType {
+		APPLY_FORMATTING,
+		SET_SELECTION_TEXT,
+		BACKSPACE
+	};
+
+	RichTextBoxActionType GetType () { return type; }
+
+protected:
+	RichTextBoxAction (RichTextBox *rtb, RichTextBoxActionType type) : rtb(rtb), type(type) { }
+
+	RichTextBox *rtb;
+	RichTextBoxActionType type;
 };
+
+class RichTextBoxActionBackspace : public RichTextBoxAction {
+public:
+	RichTextBoxActionBackspace (RichTextBox* rtb, TextSelection *selection)
+		: RichTextBoxAction (rtb, RichTextBoxAction::BACKSPACE)
+	{
+		pointer = selection->GetStart();
+		new_pointer = NULL;
+
+		old_run_text = NULL;
+	}
+
+	virtual ~RichTextBoxActionBackspace ()
+	{
+		delete pointer;
+		delete new_pointer;
+
+		g_free (old_run_text);
+	}
+
+	virtual void Do ();
+	virtual void Undo ();
+
+private:
+	TextPointer *pointer;
+	TextPointer *new_pointer;
+
+	enum BackspaceType {
+		ENTIRELY_IN_RUN,
+		SIBLING_RUNS
+	};
+
+
+	BackspaceType backspace_type;
+
+	char *old_run_text;
+
+	void RemoveCharacterFromRun (Run *run, int loc);
+};
+
+static Run*
+FindPreviousRun (Run *r)
+{
+	DocumentWalker walker (IDocumentNode::CastToIDocumentNode (r), DocumentWalker::Backward);
+
+	while (true) {
+		IDocumentNode *node;
+		DocumentWalker::StepType step = walker.Step (&node);
+
+		switch (step) {
+		case DocumentWalker::Enter:
+			if (node->AsDependencyObject ()->Is(Type::RUN))
+				return ((Run*)node->AsDependencyObject());
+			break;
+		case DocumentWalker::Leave:
+			break;
+		case DocumentWalker::Done:
+			return NULL;
+		}
+	}
+}
+
+void
+RichTextBoxActionBackspace::RemoveCharacterFromRun (Run *run, int loc)
+{
+	old_run_text = g_strdup (run->GetText());
+
+	char *new_text = g_strdup (old_run_text);
+
+	char *p = g_utf8_prev_char (new_text + loc);
+	int length_of_char = new_text + loc - p;
+
+	memmove (p, new_text + loc, strlen (new_text + loc));
+
+	new_text[strlen (new_text) - length_of_char] = 0;
+
+	run->SetText (new_text);
+}
+
+void
+RichTextBoxActionBackspace::Do ()
+{
+	TextSelection* selection = rtb->GetSelection();
+
+	if (pointer->GetParent()->Is (Type::RUN)) {
+		Run *run = (Run*)pointer->GetParent();
+		int loc = pointer->ResolveLocation();
+
+		if (loc > 0) {
+			// we can handle it entirely within this run.
+			// easiest case.
+
+			RemoveCharacterFromRun (run, loc);
+
+			new_pointer = pointer->GetPositionAtOffset (-1, LogicalDirectionForward);
+			selection->Select (new_pointer, new_pointer);
+		}
+		else {
+			Run *prev_run = FindPreviousRun (run);
+
+			// if there's no previous run, we do nothing,
+			// since we're already at the beginning of the
+			// document.
+			if (!prev_run)
+				return;
+
+			// we need to delete the first character in
+			// the previous run, pulling this run along
+			// with us as we go.  this has a couple of
+			// implications:
+
+			// if @run and @run-before-this-run are in the
+			// same parent container, we just transfer the
+			// pointer to the new run and delete the last
+			// character there.
+
+			// if @run and @run-before-this-run are in
+			// separate parent containers, we need to
+			// remove all the intervening parents (FIXME:
+			// and save them in this action?) and transfer
+			// @run and all its siblings into the other
+			// container.
+
+			if (prev_run->GetParent()->GetParent() == run->GetParent()->GetParent()) {
+				// the runs share a parent, so we just
+				// move the selection to the
+				// previous_run and delete a character
+				// from there.
+
+				TextPointer content_end = prev_run->GetContentEnd_np();
+				
+				RemoveCharacterFromRun (prev_run, content_end.ResolveLocation ());
+
+				new_pointer = content_end.GetPositionAtOffset (-1, LogicalDirectionForward);
+				selection->Select (new_pointer, new_pointer);
+			}
+			else {
+				printf ("NIEX: RichTextBoxActionBackspace::Do with run/prev-run not in the same container\n");
+			}
+		}
+	}
+	else {
+		printf ("NIEX: RichTextBoxActionBackspace::Do with textpointer in a %s element\n", pointer->GetParent()->GetTypeName());
+	}
+	
+}
+
+void
+RichTextBoxActionBackspace::Undo ()
+{
+	TextSelection* selection = rtb->GetSelection();
+
+	switch (backspace_type) {
+	case RichTextBoxActionBackspace::ENTIRELY_IN_RUN:
+		((Run*)pointer->GetParent())->SetText (old_run_text);
+		selection->Select (pointer, pointer);
+		break;
+	case RichTextBoxActionBackspace::SIBLING_RUNS:
+		break;
+	}
+}
 
 class RichTextBoxActionApplyFormatting : public RichTextBoxAction {
 public:
 	RichTextBoxActionApplyFormatting (RichTextBox* rtb, TextSelection* selection, DependencyProperty* prop, Value* v)
+		: RichTextBoxAction (rtb, RichTextBoxAction::APPLY_FORMATTING)
 	{
-		this->rtb = rtb;
-
 		start = selection->GetStart();
 		end = selection->GetEnd();
 		
@@ -91,15 +276,11 @@ public:
 
 	virtual ~RichTextBoxActionApplyFormatting ()
 	{
+		delete start;
+		delete end;
 	}
 
-	virtual void Do ()
-	{
-		TextSelection* selection = rtb->GetSelection();
-		selection->Select (start, end);
-
-		printf ("NIEX: RichTextBoxActionApplyFormatting::Do\n");
-	}
+	virtual void Do ();
 
 	virtual void Undo ()
 	{
@@ -112,14 +293,77 @@ private:
 
 	TextPointer* start;
 	TextPointer* end;
-	RichTextBox* rtb;
 };
+
+void
+RichTextBoxActionApplyFormatting::Do ()
+{
+	TextSelection* selection = rtb->GetSelection();
+	selection->Select (start, end);
+
+	TextPointer s = *start;
+	TextPointer e = *end;
+
+	// advance "start" until we hit a run.
+	while (!s.GetParent()->Is (Type::RUN) && s.CompareTo_np (e) < 0)
+		s = s.GetPositionAtOffset_np (1, LogicalDirectionForward);
+
+	// move "end" back until we hit a run.
+	while (!e.GetParent()->Is (Type::RUN) && s.CompareTo_np (e) < 0)
+		e = e.GetPositionAtOffset_np (-1, LogicalDirectionBackward);
+
+	if (s.Equal (e)) // selection is empty for whatever reason
+		return;
+
+	if (s.GetParent() == e.GetParent()) {
+		// easy, the selection starts and ends in the same element.
+
+		if (s.GetLocation() == CONTENT_START && e.GetLocation () == CONTENT_END) {
+			// it's the entire run, so just change
+			// the formatting on it.
+			s.GetParent ()->SetValue (prop, &v);
+		}
+		else {
+			int loc1 = s.ResolveLocation ();
+			int loc2 = e.ResolveLocation ();
+
+			if (loc1 == loc2)
+				return;
+			else if (loc1 > loc2) {
+				// swap them so loc1 < loc2
+				int tmp = loc2;
+				loc2 = loc1;
+				loc1 = tmp;
+			}
+
+			DependencyObjectCollection *parents_children = s.GetParentNode()->GetParentDocumentNode()->GetDocumentChildren();
+			int index_in_parent = parents_children->IndexOf (s.GetParent());
+
+			// we split at loc2 first since
+			// splitting at loc1 would modify what
+			// loc2 is
+			Run *trailing_run = (Run*)s.GetParentNode()->Split (loc2);
+			Run *formatted_run = (Run*)s.GetParentNode()->Split (loc1);
+
+			if (trailing_run)
+				parents_children->Insert (index_in_parent+1, trailing_run);
+			if (formatted_run) {
+				formatted_run->SetValue (prop, &v);
+				parents_children->Insert (index_in_parent+1, formatted_run);
+			}
+		}
+	}
+	else {
+		printf ("NIEX: RichTextBoxActionApplyFormatting::Do\n");
+	}
+}
 
 class RichTextBoxActionSetSelectionText : public RichTextBoxAction {
 public:
-	RichTextBoxActionSetSelectionText (RichTextBox* rtb, TextSelection* selection, const char* text)
+	RichTextBoxActionSetSelectionText (RichTextBox* rtb, TextSelection* selection, const char* text, bool insert_paragraph = false)
+		: RichTextBoxAction (rtb, RichTextBoxAction::SET_SELECTION_TEXT)
 	{
-		this->rtb = rtb;
+		this->insert_paragraph = insert_paragraph;
 
 		start = selection->GetStart();
 		end = selection->GetEnd();
@@ -137,27 +381,58 @@ public:
 		g_free (previous_text);
 	}
 
-	virtual void Do ()
-	{
-		TextSelection *selection = rtb->GetSelection();
-		selection->Select (start, end);
-		previous_text = selection->GetText ();
-		selection->SetText (text);
-	}
+	virtual void Do ();
 
-	virtual void Undo ()
-	{
-		printf ("NIEX: RichTextBoxActionApplyFormatting::Undo\n");
-	}
+	virtual void Undo ();
 
+	void AppendText (const char *text_);
 private:
 	char* text;
 	char* previous_text;
 
 	TextPointer* start;
 	TextPointer* end;
-	RichTextBox* rtb;
+	bool insert_paragraph; // if true we insert a new paragraph at the beginning of ::Do (before inserting the text)
 };
+
+void
+RichTextBoxActionSetSelectionText::Do ()
+{
+	TextSelection *selection = rtb->GetSelection();
+	selection->Select (start, end);
+	previous_text = selection->GetText ();
+
+	if (insert_paragraph)
+		selection->Insert (MoonUnmanagedFactory::CreateParagraph());
+
+	selection->SetText (text);
+}
+
+void
+RichTextBoxActionSetSelectionText::Undo ()
+{
+	TextSelection *selection = rtb->GetSelection();
+	TextPointer *new_end = selection->GetEnd();
+
+	// we need to remove the currently inserted text, replacing it with the old text
+	selection->Select (start, new_end);
+	selection->SetText (previous_text);
+	selection->Select (start, end);
+}
+
+void
+RichTextBoxActionSetSelectionText::AppendText (const char *text_)
+{
+	// this should be valid.  if we're able to append text
+	// to this action then the selection should be empty.
+	TextSelection *selection = rtb->GetSelection();
+
+	selection->SetText (text_);
+
+	char *new_text = g_strconcat (text, text_, NULL);
+	g_free (text);
+	text = new_text;
+}
 
 
 
@@ -217,7 +492,6 @@ RichTextBox::RichTextBox ()
 	undo = new Stack (10);
 	redo = new Stack (10);
 	
-	events_mask = CONTENT_CHANGED | SELECTION_CHANGED;
 	emit = NOTHING_CHANGED;
 
 	cursor_offset = 0.0;
@@ -231,6 +505,8 @@ RichTextBox::RichTextBox ()
 	focused = false;
 
 	selection = NULL;
+
+	flattened = new ArrayList ();
 
 	delete providers.dynamicvalue;
 	providers.dynamicvalue = new RichTextBoxProvider (this, PropertyPrecedence_DynamicValue);
@@ -305,8 +581,33 @@ RichTextBox::GetCursorOffset ()
 TextPointer
 RichTextBox::CursorDown (const TextPointer& cursor, bool page)
 {
-	// FIXME
-	return cursor;
+	double y = view->GetCursor ().y;
+	double x = GetCursorOffset ();
+	RichTextLayoutLine *line;
+	int index, n;
+	
+	if (!(line = view->GetLineFromY (y, &index)))
+		return cursor;
+	
+	if (page) {
+		// calculate the number of lines to skip over
+		n = GetActualHeight () / line->size.height;
+	} else {
+		n = 1;
+	}
+	
+	if (index + n >= view->GetLineCount ()) {
+		// go to the end of the last line
+		line = view->GetLineFromIndex (view->GetLineCount () - 1);
+		
+		have_offset = false;
+		
+		return line->end;
+	}
+	
+	line = view->GetLineFromIndex (index + n);
+	
+	return line->GetLocationFromX (Point (), x);
 }
 
 TextPointer
@@ -347,23 +648,26 @@ RichTextBox::CursorLineEnd (const TextPointer& cursor, bool include)
 bool
 RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 {
-#if 1
-	return false;
-#else
-	TextSelection *selection = GetSelection ();
-
-	TextBoxAction *action;
-	int start = 0, length = 0;
-	bool handled = false;
-
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
 		return false;
 
-	if (!selection->IsEmpty ()) {
+	RichTextBoxAction *action;
+
+	if (selection->IsEmpty ()) {
+		// BackSpace w/o active selection: delete just the previous character (and other magic)
+		action = new RichTextBoxActionBackspace(this, selection);
+	}
+	else {
 		// BackSpace w/ active selection: delete the selected text
-		length = abs (cursor - anchor);
-		start = MIN (anchor, cursor);
-	} else if ((modifiers & CONTROL_MASK) != 0) {
+		action = new RichTextBoxActionSetSelectionText(this, selection, "");
+	}
+
+	action->Do ();
+	undo->Push (action);
+	return true;
+
+#if false
+	else if ((modifiers & CONTROL_MASK) != 0) {
 		// Ctrl+BackSpace: delete the word ending at the cursor
 		start = CursorPrevWord (cursor);
 		length = cursor - start;
@@ -407,7 +711,56 @@ RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressDelete (MoonModifier modifiers)
 {
-	return false;
+	bool handled = false;
+
+	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
+		return false;
+
+	if (!selection->IsEmpty ()) {
+		// Delete w/ active selection: delete the selected text
+		RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText(this, selection, "");
+		action->Do ();
+		undo->Push (action);
+		return true;
+	}
+	
+#if 0
+	if ((modifiers & CONTROL_MASK) != 0) {
+		// Ctrl+Delete: delete the word starting at the cursor
+		length = CursorNextWord (cursor) - cursor;
+		start = cursor;
+	} else if (cursor < buffer->len) {
+		// Delete: delete the char after the cursor position
+		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n')
+			length = 2;
+		else
+			length = 1;
+		
+		start = cursor;
+	}
+	
+	if (length > 0) {
+		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
+		undo->Push (action);
+		redo->Clear ();
+		
+		buffer->Cut (start, length);
+		emit |= TEXT_CHANGED;
+		handled = true;
+	}
+	
+	// check to see if selection has changed
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		emit |= SELECTION_CHANGED;
+		handled = true;
+	}
+	
+#endif
+	return handled;
 }
 
 bool
@@ -425,13 +778,63 @@ RichTextBox::KeyPressPageUp (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressDown (MoonModifier modifiers)
 {
-	return false;
+	TextPointer *anchor = selection->GetAnchor();
+	TextPointer cursor;
+	bool handled = false;
+	bool have;
+	
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
+		delete anchor;
+		return false;
+	}
+	
+	// move the cursor down by one line from its current position
+	cursor = CursorDown (cursor, false);
+	have = have_offset;
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		// clobber the selection
+		selection->Select (&cursor, &cursor);
+	}
+
+	emit |= SELECTION_CHANGED;
+	have_offset = have;
+	handled = true;
+
+	delete anchor;
+	
+	return handled;
 }
 
 bool
 RichTextBox::KeyPressUp (MoonModifier modifiers)
 {
-	return false;
+	TextPointer *anchor = selection->GetAnchor();
+	TextPointer cursor;
+	bool handled = false;
+	bool have;
+	
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
+		delete anchor;
+		return false;
+	}
+	
+	// move the cursor down by one line from its current position
+	cursor = CursorUp (cursor, false);
+	have = have_offset;
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		// clobber the selection
+		selection->Select (&cursor, &cursor);
+	}
+
+	emit |= SELECTION_CHANGED;
+	have_offset = have;
+	handled = true;
+
+	delete anchor;
+
+	return handled;
 }
 
 bool
@@ -449,19 +852,101 @@ RichTextBox::KeyPressEnd (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressRight (MoonModifier modifiers)
 {
+	if ((modifiers & ALT_MASK) != 0)
+		return false;
+
+	TextPointer anchor = *selection->GetAnchor ();
+	TextPointer moving = *selection->GetMoving ();
+
+	if ((modifiers & SHIFT_MASK) != 0) {
+	}
+	else {
+		if (!selection->IsEmpty()) {
+			selection->Select (&anchor, &anchor);
+			emit |= SELECTION_CHANGED;
+			return false;
+		}
+	}
+
+	if ((modifiers & CONTROL_MASK) != 0) {
+		// move the cursor to the beginning of the next word
+		moving = CursorNextWord (moving);
+	}
+	else {
+		moving = moving.GetPositionInsideRun (1);
+	}
+
+	if ((modifiers & SHIFT_MASK) != 0) {
+		// we're extending/trimming the selection
+		selection->Select (&anchor, &moving);
+	}
+	else {
+		// we aren't extending the selection, so set both start/end to the new location
+		selection->Select (&moving, &moving);
+	}
+
 	return false;
 }
 
 bool
 RichTextBox::KeyPressLeft (MoonModifier modifiers)
 {
+	if ((modifiers & ALT_MASK) != 0)
+		return false;
+
+	TextPointer anchor = *selection->GetAnchor ();
+	TextPointer moving = *selection->GetMoving ();
+
+	if ((modifiers & SHIFT_MASK) != 0) {
+	}
+	else {
+		if (!selection->IsEmpty()) {
+			selection->Select (&anchor, &anchor);
+			emit |= SELECTION_CHANGED;
+			return false;
+		}
+	}
+
+	if ((modifiers & CONTROL_MASK) != 0) {
+		// move the cursor to the beginning of the previous word
+		moving = CursorPrevWord (moving);
+	}
+	else {
+		// FIXME this likely isn't right since it can
+		// land us between runs and I'm pretty sure we
+		// want the cursor to always be inside a
+		// run...
+		moving = moving.GetPositionAtOffset_np (-1, LogicalDirectionForward);
+	}
+
+	if ((modifiers & SHIFT_MASK) != 0) {
+		// we're extending/trimming the selection
+		selection->Select (&anchor, &moving);
+	}
+	else {
+		// we aren't extending the selection, so set both start/end to the new location
+		selection->Select (&moving, &moving);
+	}
+
 	return false;
 }
 
 bool
 RichTextBox::KeyPressUnichar (gunichar c)
 {
-	return false;
+	if (c != '\r') { 
+		printf ("NIEX: KeyPressUnichar %x\n", c);
+		return false;
+	}
+
+	if (!accepts_return)
+		return false;
+
+	RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText(this, selection, "", true);
+	action->Do ();
+	undo->Push (action);
+
+	return true;
 }
 
 void
@@ -484,6 +969,8 @@ RichTextBox::BatchPop ()
 void
 RichTextBox::EmitSelectionChanged ()
 {
+	if (view)
+		view->OnModelChanged (RichTextBoxModelChangedSelection, NULL);
 	EmitAsync (RichTextBox::SelectionChangedEvent, MoonUnmanagedFactory::CreateRoutedEventArgs ());
 }
 
@@ -500,30 +987,15 @@ RichTextBox::SyncSelection ()
 }
 
 void
-RichTextBox::SyncContent ()
-{
-	// FIXME: generate the proper xaml
-	char *xaml = NULL;
-	
-	SetValue (RichTextBox::XamlProperty, Value (xaml, true));
-}
-
-void
-RichTextBox::SyncAndEmit (bool sync_text)
+RichTextBox::SyncAndEmit ()
 {
 	if (batch != 0 || emit == NOTHING_CHANGED)
 		return;
-	
-	if (sync_text && (emit & CONTENT_CHANGED))
-		SyncContent ();
 	
 	if (emit & SELECTION_CHANGED)
 		SyncSelection ();
 	
 	if (IsLoaded ()) {
-		// eliminate events that we can't emit
-		emit &= events_mask;
-		
 		if (emit & CONTENT_CHANGED)
 			EmitContentChanged ();
 		
@@ -544,7 +1016,12 @@ RichTextBox::Paste (MoonClipboard *clipboard, const char *str)
 
 	RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText (this, selection, str);
 
+	BatchPush ();
+
 	action->Do ();
+
+	BatchPop ();
+	SyncAndEmit ();
 
 	undo->Push (action);
 }
@@ -834,15 +1311,33 @@ RichTextBox::retrieve_surrounding (MoonIMContext *context, gpointer user_data)
 void
 RichTextBox::Commit (const char *str)
 {
+	RichTextBoxActionSetSelectionText *set_selection;
+
 	TextSelection *selection = GetSelection();
 	if (selection->GetStart()->GetParent() == NULL)
 		SelectAll();
 
-	RichTextBoxActionSetSelectionText *action = new RichTextBoxActionSetSelectionText(this, selection, str);
+	BatchPush ();
 
-	action->Do ();
+	if (selection->IsEmpty ()) {
+		// we only do this if the selection is empty (we're
+		// blinking a cursor) because if we're going to clear
+		// a selection we need to start a new action for that.
+		RichTextBoxAction *action = (RichTextBoxAction*)undo->Top ();
+		if (action && action->GetType () == RichTextBoxAction::SET_SELECTION_TEXT) {
+			((RichTextBoxActionSetSelectionText*)action)->AppendText (str);
+			goto done;
+		}
+	}
 
-	undo->Push (action);
+	set_selection = new RichTextBoxActionSetSelectionText(this, selection, str);
+
+	set_selection->Do ();
+	undo->Push (set_selection);
+
+ done:
+	BatchPop ();
+	SyncAndEmit ();
 }
 
 void
@@ -856,7 +1351,10 @@ RichTextBox::ApplyFormattingToSelection (TextSelection *selection, DependencyPro
 {
 	RichTextBoxActionApplyFormatting *action = new RichTextBoxActionApplyFormatting (this, selection, prop, value);
 
+	BatchPush ();
 	action->Do ();
+	BatchPop ();
+	SyncAndEmit ();
 
 	undo->Push (action);
 }
@@ -891,10 +1389,8 @@ RichTextBox::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 		selecting = true;
 		
 		BatchPush ();
-		emit = NOTHING_CHANGED;
-		printf ("> mouse left button down\n");
+		emit = SELECTION_CHANGED;
 		GetSelection()->Select (&cursor, &cursor);
-		printf ("< mouse left button down\n");
 		BatchPop ();
 		
 		SyncAndEmit ();
@@ -979,19 +1475,18 @@ RichTextBox::OnMouseMove (MouseEventArgs *args)
 
 
 		BatchPush ();
-		emit = NOTHING_CHANGED;
 
 		TextPointer *start = selection->GetStart();
 		TextPointer cursor = view->GetLocationFromXY (x, y);
 
 		selection->Select (start, &cursor);
+		emit = SELECTION_CHANGED;
 
 		delete start;
 
 		BatchPop ();
 
 		SyncAndEmit ();
-
 		
 		if ((clipboard = GetClipboard (this, MoonClipboard_Primary))) {
 			// copy the selection to the primary clipboard
@@ -999,6 +1494,9 @@ RichTextBox::OnMouseMove (MouseEventArgs *args)
 			clipboard->SetText (selection_text);
 			g_free (selection_text);
 		}
+
+		// FIXME: this sucks.  we should only invalidate the selection area (the union between old and new areas, that is..)
+		Invalidate (); 
 	}
 }
 
@@ -1239,7 +1737,7 @@ RichTextBox::OnApplyTemplate ()
 }
 
 DependencyObject* 
-RichTextBox::Split (int loc)
+RichTextBox::Split (int loc, TextElement *into)
 {
 	return NULL;
 }
@@ -1376,26 +1874,17 @@ RichTextBox::CanRedo ()
 void
 RichTextBox::Undo ()
 {
-	//RichTextBoxActionReplace *replace;
-	//RichTextBoxActionInsert *insert;
-	//RichTextBoxActionDelete *dele;
-	RichTextBoxAction *action;
-
 	if (undo->IsEmpty ())
 		return;
 	
-	action = (RichTextBoxAction*)undo->Pop ();
+	BatchPush ();
+
+	RichTextBoxAction *action = (RichTextBoxAction*)undo->Pop ();
 	redo->Push (action);
 	action->Undo ();
 	
-	BatchPush ();
-	//SetSelectionStart (MIN (anchor, cursor));
-	//SetSelectionLength (abs (cursor - anchor));
-	emit = CONTENT_CHANGED | SELECTION_CHANGED;
-#if notyet
-	selection_anchor = anchor;
-	selection_cursor = cursor;
-#endif
+	//emit = CONTENT_CHANGED | SELECTION_CHANGED;
+
 	BatchPop ();
 	
 	SyncAndEmit ();
@@ -1404,37 +1893,56 @@ RichTextBox::Undo ()
 void
 RichTextBox::Redo ()
 {
-	//RichTextBoxActionReplace *replace;
-	//RichTextBoxActionInsert *insert;
-	//RichTextBoxActionDelete *dele;
-	RichTextBoxAction *action;
-
 	if (redo->IsEmpty ())
 		return;
 	
-	action = (RichTextBoxAction*)redo->Pop ();
+	BatchPush ();
+
+	RichTextBoxAction *action = (RichTextBoxAction*)redo->Pop ();
 	undo->Push (action);
 
 	action->Do ();
 	
-	BatchPush ();
-	//SetSelectionStart (MIN (anchor, cursor));
-	//SetSelectionLength (abs (cursor - anchor));
-	emit = CONTENT_CHANGED | SELECTION_CHANGED;
-#if notyet
-	selection_anchor = anchor;
-	selection_cursor = cursor;
-#endif
+	//emit = CONTENT_CHANGED | SELECTION_CHANGED;
+
 	BatchPop ();
 	
 	SyncAndEmit ();
 }
 
 Rect
-RichTextBox::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
+RichTextBox::GetCharacterRect (const TextPointer *tp, LogicalDirection direction)
 {
 	return view ? view->GetCharacterRect (tp, direction) : Rect::ManagedEmpty;
 }
+
+void
+RichTextBox::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args)
+{
+	BatchPush ();
+	emit = CONTENT_CHANGED;
+
+	if (view)
+		view->DocumentChanged (onElement);
+
+	BatchPop ();
+	SyncAndEmit ();
+}
+
+void
+RichTextBox::DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args)
+{
+	BatchPush ();
+	emit = CONTENT_CHANGED;
+
+	if (view)
+		view->DocumentChanged (onElement);
+
+	BatchPop ();
+	SyncAndEmit ();
+}
+
+
 
 
 //
@@ -1493,7 +2001,7 @@ RichTextBoxView::GetLocationFromXY (double x, double y)
 
 
 Rect
-RichTextBoxView::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
+RichTextBoxView::GetCharacterRect (const TextPointer *tp, LogicalDirection direction)
 {
 	return layout->GetCharacterRect (tp, direction);
 }
@@ -1595,7 +2103,7 @@ RichTextBoxView::EndCursorBlink ()
 void
 RichTextBoxView::ResetCursorBlink (bool delay)
 {
-	if (textbox->IsFocused () && !textbox->HasSelectedText ()) {
+	if (textbox->IsFocused () && textbox->GetSelection()->IsEmpty()) {
 		if (enable_cursor) {
 			// cursor is blinkable... proceed with blinkage
 			if (delay)
@@ -1763,7 +2271,7 @@ RichTextBoxView::Paint (cairo_t *cr)
 		double h = round (cursor.height);
 		double x = cursor.x;
 		double y = cursor.y;
-		
+
 		// disable antialiasing
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 		
@@ -1779,7 +2287,7 @@ RichTextBoxView::Paint (cairo_t *cr)
 			unref = true;
 		}
 		caret->SetupBrush (cr, cursor);
-		
+
 		// draw the cursor
 		cairo_set_line_width (cr, 1.0);
 		cairo_move_to (cr, x, y);
@@ -1804,10 +2312,7 @@ RichTextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	UpdateCursor (false);
 	
-	if (selection_changed) {
-		//layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
-		selection_changed = false;
-	}
+	layout->Select (textbox->GetSelection());
 	
 	cairo_save (cr);
 	
@@ -1834,9 +2339,9 @@ RichTextBoxView::OnModelChanged (RichTextBoxModelChangeType change, PropertyChan
 			dirty = true;
 		break;
 	case RichTextBoxModelChangedSelection:
-		if (had_selected_text || textbox->HasSelectedText ()) {
+		if (had_selected_text || !textbox->GetSelection()->IsEmpty()) {
 			// the selection has changed, update the layout's selection
-			had_selected_text = textbox->HasSelectedText ();
+			had_selected_text = !textbox->GetSelection()->IsEmpty();
 			selection_changed = true;
 			ResetCursorBlink (false);
 		} else {
@@ -1962,7 +2467,7 @@ RichTextBoxView::SetTextBox (RichTextBox *textbox)
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
 
-		had_selected_text = textbox->HasSelectedText ();
+		had_selected_text = !textbox->GetSelection()->IsEmpty();
 		selection_changed = true;
 		UpdateText ();
 	} else {
@@ -1976,20 +2481,7 @@ RichTextBoxView::SetTextBox (RichTextBox *textbox)
 }
 
 void
-RichTextBoxView::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEventArgs *args)
-{
-	// for now just relayout the entire RTB.  in the future, bump
-	// up to onElement's parent Paragraph and just relayout that
-	// paragraph.
-
-	layout->ResetState();
-	GetChildren()->Clear(); // FIXME: pretty sure we need to ElementRemoved for all the children here.
-	InvalidateMeasure ();
-	UpdateBounds (true);
-}
-
-void
-RichTextBoxView::DocumentCollectionChanged (TextElement *onElement, Collection *col, CollectionChangedEventArgs *args)
+RichTextBoxView::DocumentChanged (TextElement *onElement)
 {
 	// for now just relayout the entire RTB.  in the future, bump
 	// up to onElement's parent Paragraph and just relayout that

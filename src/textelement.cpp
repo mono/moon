@@ -31,6 +31,13 @@
 
 namespace Moonlight {
 
+#define COPY_VALUE(p,into) do { \
+	v = ReadLocalValue (p); \
+	if (v && !v->GetIsNull()) \
+		(into)->SetValue (p, v); \
+	} while (0)
+
+
 //
 // IDocumentNode
 //
@@ -38,6 +45,9 @@ namespace Moonlight {
 IDocumentNode*
 IDocumentNode::CastToIDocumentNode (DependencyObject *obj)
 {
+	if (!obj)
+		return NULL;
+
 	if (obj->Is (Type::RICHTEXTBOX))
 		return (RichTextBox*)obj;
 	else if (obj->Is (Type::TEXTELEMENT))
@@ -81,9 +91,7 @@ TextElement::NotifyLayoutContainerOnPropertyChanged (PropertyChangedEventArgs *a
 			return;
 		}
 		else if (el->Is (Type::RICHTEXTBOX)) {
-			RichTextBoxView *view = ((RichTextBox*)el)->GetView();
-			if (view)
-				view->DocumentPropertyChanged (this, args);
+			((RichTextBox*)el)->DocumentPropertyChanged (this, args);
 			return;
 		}
 		else {
@@ -103,9 +111,7 @@ TextElement::NotifyLayoutContainerOnCollectionChanged (Collection *col, Collecti
 			return;
 		}
 		else if (el->Is (Type::RICHTEXTBOX)) {
-			RichTextBoxView* view = ((RichTextBox*)el)->GetView();
-			if (view)
-				view->DocumentCollectionChanged (this, col, args);
+			((RichTextBox*)el)->DocumentCollectionChanged (this, col, args);
 			return;
 		}
 		else {
@@ -388,6 +394,21 @@ TextElement::GetParentDocumentNode ()
 }
 
 void
+TextElement::SerializeXaml (GString *str)
+{
+	SerializeXamlStartElement (str);
+
+	DependencyObjectCollection *col = GetDocumentChildren ();
+	int c = col->GetCount();
+	for (int i = 0; i < c; i ++) {
+		TextElement *te = (TextElement*)col->GetValueAt(i)->AsTextElement();
+		te->SerializeXaml(str);
+	}
+
+	SerializeXamlEndElement (str);
+}
+
+void
 TextElement::SerializeXamlProperties (bool force, GString *str)
 {
 	if (force || LocalValueOverrides (FontSizeProperty))
@@ -405,6 +426,22 @@ TextElement::SerializeXamlProperties (bool force, GString *str)
 		g_string_append_printf (str, " FontStyle=\"%s\"", enums_int_to_str ("FontStyle", GetFontStyle()->style));
 	if (force || LocalValueOverrides (FontStretchProperty))
 		g_string_append_printf (str, " FontStretch=\"%s\"", enums_int_to_str ("FontStretch", GetFontStretch()->stretch));
+}
+
+void
+TextElement::CopyValuesOnSplit (TextElement *into)
+{
+	Value *v;
+
+	COPY_VALUE (TextElement::FontFamilyProperty, into);
+	COPY_VALUE (TextElement::FontSizeProperty, into);
+	COPY_VALUE (TextElement::FontStretchProperty, into);
+	COPY_VALUE (TextElement::FontStyleProperty, into);
+	COPY_VALUE (TextElement::FontWeightProperty, into);
+	COPY_VALUE (TextElement::ForegroundProperty, into);
+	COPY_VALUE (TextElement::LanguageProperty, into);
+	COPY_VALUE (TextElement::TextDecorationsProperty, into);
+	COPY_VALUE (TextElement::FontResourceProperty, into);
 }
 
 //
@@ -484,6 +521,12 @@ LineBreak::SerializeText (GString *str)
 void
 LineBreak::SerializeXaml (GString *str)
 {
+	SerializeXamlStartElement (str);
+}
+
+void
+LineBreak::SerializeXamlStartElement (GString *str)
+{
 	g_string_append (str, "<LineBreak ");
 	SerializeXamlProperties (false, str);
 	g_string_append (str, "/>");
@@ -533,20 +576,44 @@ Run::Equals (Inline *item)
 	return true;
 }
 
-DependencyObject*
-Run::Split (int loc)
+void
+Run::CopyValuesOnSplit (TextElement *into)
 {
-	char *existing_text = g_strdup (GetText());
-	if (!existing_text)
+	TextElement::CopyValuesOnSplit (into);
+
+	Value *v;
+
+	COPY_VALUE (Run::FlowDirectionProperty, into);
+}
+
+DependencyObject*
+Run::Split (int loc, TextElement *into)
+{
+	if (into != NULL && !into->Is (Type::RUN)) {
+		g_warning ("Run::Split called with into != Type::RUN");
 		return NULL;
+	}
+
+	const char *t = GetText();
+	if (!t)
+		return NULL;
+
+#if 0
+	if (loc == 0 || loc == strlen (t))
+		return NULL;
+#endif
+
+	char *existing_text = g_strdup (t);
 
 	char *right_text = g_strdup (existing_text + loc);
 	existing_text[loc] = 0;
 
-	Run *new_r = MoonUnmanagedFactory::CreateRun ();
+	Run *new_r = into ? (Run*)into : MoonUnmanagedFactory::CreateRun ();
 	new_r->SetText (right_text);
 
 	SetText (existing_text);
+
+	CopyValuesOnSplit (new_r);
 
 	g_free (right_text);
 	g_free (existing_text);
@@ -557,12 +624,7 @@ Run::Split (int loc)
 void
 Run::SerializeXamlProperties (bool force, GString *str)
 {
-	Inline::SerializeXamlProperties (force, str);
-
-	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(FlowDirectionProperty)) == PropertyPrecedence_LocalValue)
-		g_string_append_printf (str, " FlowDirection=\"%s\"", enums_int_to_str ("FlowDirection", GetFlowDirection()));
-
-	g_string_append_printf (str, " Text=\"%s\" ", GetText ());
+	SerializeXamlProperties (force, str, 0, -1);
 }
 
 void
@@ -576,9 +638,39 @@ Run::SerializeText (GString *str)
 void
 Run::SerializeXaml (GString *str)
 {
+	SerializeXaml (str, 0, -1);
+}
+
+void
+Run::SerializeXamlStartElement (GString *str)
+{
 	g_string_append (str, "<Run");
 	SerializeXamlProperties (false, str);
 	g_string_append (str, "/>");
+}
+
+void
+Run::SerializeXaml (GString *str, int start, int length)
+{
+	g_string_append (str, "<Run");
+	SerializeXamlProperties (false, str, start, length);
+	g_string_append (str, "/>");
+}
+
+void
+Run::SerializeXamlProperties (bool force, GString *str, int start, int length)
+{
+	Inline::SerializeXamlProperties (force, str);
+
+	if (force || GetPropertyValueProvider (Deployment::GetCurrent()->GetTypes()->GetProperty(FlowDirectionProperty)) == PropertyPrecedence_LocalValue)
+		g_string_append_printf (str, " FlowDirection=\"%s\"", enums_int_to_str ("FlowDirection", GetFlowDirection()));
+
+	char *text = (char*)GetText();
+	if (length > 0)
+		text = g_strndup (GetText() + start, length);
+	g_string_append_printf (str, " Text=\"%s\" ", text);
+	if (length > 0)
+		g_free (text);
 }
 
 bool
@@ -635,19 +727,26 @@ Paragraph::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 }
 
 DependencyObject*
-Paragraph::Split (int loc)
+Paragraph::Split (int loc, TextElement *into)
 {
+	if (into != NULL && !into->Is (Type::PARAGRAPH)) {
+		g_warning ("Paragraph::Split called with into != Type::PARAGRAPH");
+		return NULL;
+	}
+
 	InlineCollection *inlines = GetInlines();
 	int count = inlines->GetCount();
 
-	Paragraph *new_p = MoonUnmanagedFactory::CreateParagraph ();
+	Paragraph *new_p = into ? (Paragraph*)into : MoonUnmanagedFactory::CreateParagraph ();
 	InlineCollection *new_inlines = new_p->GetInlines();
 
-	for (int i = loc + 1; i < count; i ++) {
-		Inline *inline_ = inlines->GetValueAt (loc + 1)->AsInline();
-		inlines->RemoveAt (loc + 1);
+	for (int i = loc; i < count; i ++) {
+		Inline *inline_ = inlines->GetValueAt (loc)->AsInline();
+		inlines->RemoveAt (loc);
 		new_inlines->Add (inline_);
 	}
+
+	CopyValuesOnSplit (new_p);
 
 	return new_p;
 }
@@ -663,19 +762,18 @@ Paragraph::SerializeText (GString *str)
 }
 
 void
-Paragraph::SerializeXaml (GString *str)
+Paragraph::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Paragraph");
 
 	SerializeXamlProperties (true, str);
 
 	g_string_append (str, ">");
+}
 
-	int c = GetInlines()->GetCount();
-	for (int i = 0; i < c; i ++) {
-		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		il->SerializeXaml(str);
-	}
+void
+Paragraph::SerializeXamlEndElement (GString *str)
+{
 	g_string_append (str, "</Paragraph>");
 }
 
@@ -688,13 +786,28 @@ Section::Section ()
 	SetObjectType (Type::SECTION);
 }
 
-DependencyObject*
-Section::Split (int loc)
+void
+Section::CopyValuesOnSplit (TextElement *into)
 {
+	TextElement::CopyValuesOnSplit (into);
+
+	Value *v;
+
+	COPY_VALUE (Section::HasTrailingParagraphBreakOnPasteProperty, into);
+}
+
+DependencyObject*
+Section::Split (int loc, TextElement *into)
+{
+	if (into != NULL && !into->Is (Type::SECTION)) {
+		g_warning ("Section::Split called with into != Type::SECTION");
+		return NULL;
+	}
+
 	BlockCollection *blocks = GetBlocks();
 	int count = blocks->GetCount();
 
-	Section *new_s = MoonUnmanagedFactory::CreateSection ();
+	Section *new_s = into ? (Section*)into : MoonUnmanagedFactory::CreateSection ();
 	BlockCollection *new_blocks = new_s->GetBlocks();
 
 	for (int i = loc + 1; i < count; i ++) {
@@ -702,6 +815,8 @@ Section::Split (int loc)
 		blocks->RemoveAt (loc + 1);
 		new_blocks->Add (block);
 	}
+
+	CopyValuesOnSplit (new_s);
 
 	return new_s;
 }
@@ -717,14 +832,14 @@ Section::SerializeText (GString *str)
 }
 
 void
-Section::SerializeXaml (GString *str)
+Section::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Section>");
-	int c = GetBlocks()->GetCount();
-	for (int i = 0; i < c; i ++) {
-		Block *b = GetBlocks()->GetValueAt(i)->AsBlock();
-		b->SerializeXaml(str);
-	}
+}
+
+void
+Section::SerializeXamlEndElement (GString *str)
+{
 	g_string_append (str, "</Section>");
 }
 
@@ -764,12 +879,17 @@ Span::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 }
 
 DependencyObject*
-Span::Split (int loc)
+Span::Split (int loc, TextElement *into)
 {
+	if (into != NULL && !into->Is (Type::SPAN)) {
+		g_warning ("Span::Split called with into != Type::SPAN");
+		return NULL;
+	}
+
 	InlineCollection *inlines = GetInlines();
 	int count = inlines->GetCount();
 
-	Span *new_s = MoonUnmanagedFactory::CreateSpan ();
+	Span *new_s = into ? (Span*)into : MoonUnmanagedFactory::CreateSpan ();
 	InlineCollection *new_inlines = new_s->GetInlines();
 
 	for (int i = loc + 1; i < count; i ++) {
@@ -777,6 +897,8 @@ Span::Split (int loc)
 		inlines->RemoveAt (loc + 1);
 		new_inlines->Add (inline_);
 	}
+
+	CopyValuesOnSplit (new_s);
 
 	return new_s;
 }
@@ -814,14 +936,14 @@ Bold::Bold ()
 }
 
 void
-Bold::SerializeXaml (GString *str)
+Bold::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Bold>");
-	int c = GetInlines()->GetCount();
-	for (int i = 0; i < c; i ++) {
-		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		il->SerializeXaml(str);
-	}
+}
+
+void
+Bold::SerializeXamlEndElement (GString *str)
+{
 	g_string_append (str, "</Bold>");
 }
 
@@ -838,14 +960,14 @@ Italic::Italic ()
 }
 
 void
-Italic::SerializeXaml (GString *str)
+Italic::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Italic>");
-	int c = GetInlines()->GetCount();
-	for (int i = 0; i < c; i ++) {
-		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		il->SerializeXaml(str);
-	}
+}
+
+void
+Italic::SerializeXamlEndElement (GString *str)
+{
 	g_string_append (str, "</Italic>");
 }
 
@@ -860,14 +982,14 @@ Underline::Underline ()
 }
 
 void
-Underline::SerializeXaml (GString *str)
+Underline::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Underline>");
-	int c = GetInlines()->GetCount();
-	for (int i = 0; i < c; i ++) {
-		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		il->SerializeXaml(str);
-	}
+}
+
+void
+Underline::SerializeXamlEndElement (GString *str)
+{
 	g_string_append (str, "</Underline>");
 }
 
@@ -908,19 +1030,18 @@ Hyperlink::SerializeXamlProperties (bool force, GString *str)
 }
 
 void
-Hyperlink::SerializeXaml (GString *str)
+Hyperlink::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Hyperlink");
 	SerializeXamlProperties (false, str);
 	g_string_append (str, ">");
-	int c = GetInlines()->GetCount();
-	for (int i = 0; i < c; i ++) {
-		Inline *il = GetInlines()->GetValueAt(i)->AsInline();
-		il->SerializeXaml(str);
-	}
-	g_string_append (str, "</Hyperlink>");
 }
 
+void
+Hyperlink::SerializeXamlEndElement (GString *str)
+{
+	g_string_append (str, "</Hyperlink>");
+}
 
 //
 // InlineUIContainer
@@ -933,6 +1054,12 @@ InlineUIContainer::InlineUIContainer ()
 
 void
 InlineUIContainer::SerializeXaml (GString *str)
+{
+	SerializeXamlStartElement (str);
+}
+
+void
+InlineUIContainer::SerializeXamlStartElement (GString *str)
 {
 	g_string_append (str, "<Run Text=\"\"/>");
 }

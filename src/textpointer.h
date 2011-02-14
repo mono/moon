@@ -18,16 +18,22 @@
 #include "rect.h"
 #include "error.h"
 
+#define CONTENT_START (0)
+#define CONTENT_END ((guint32)-1)
+
 namespace Moonlight {
 
 class DependencyObject;
 class DependencyObjectCollection;
 class TextPointer;
+class RichTextBox;
+class TextElement;
 
 class IDocumentNode {
 public:
 	// splits this node at loc, with locations 0-loc remaining in @this, and (loc+1)... moving to the return value
-	virtual DependencyObject *Split (int loc) = 0;
+	// if @into is provided, the elements from (loc+1)... are reparented into it and it is returned.
+	virtual DependencyObject *Split (int loc, TextElement *into = NULL) = 0;
 
 	virtual IDocumentNode *GetParentDocumentNode () = 0;
 	virtual DependencyObjectCollection *GetDocumentChildren () = 0;
@@ -36,9 +42,37 @@ public:
 	virtual void SerializeXaml (GString *str) = 0;
 	virtual void SerializeXamlProperties (bool force, GString *str) = 0;
 
+	virtual void SerializeXamlStartElement (GString* str) = 0;
+	virtual void SerializeXamlEndElement (GString* str) = 0;
+
+	virtual DependencyObject *AsDependencyObject() = 0;
 	static IDocumentNode* CastToIDocumentNode (DependencyObject *obj);
 };
 
+class DocumentWalker {
+public:
+	enum Direction {
+		Forward,
+		Backward
+	};
+
+	DocumentWalker (IDocumentNode *node, Direction direction);
+	~DocumentWalker ();
+
+	enum StepType {
+		Enter,
+		Leave,
+		Done
+	};
+
+	StepType Step (IDocumentNode **node_return = NULL);
+	IDocumentNode *GetNode ();
+
+private:
+	IDocumentNode *node;
+	int child_index;
+	Direction direction;
+};
 
 
 class TextPointer {
@@ -61,31 +95,37 @@ public:
 	static void Free (TextPointer *pointer) { delete pointer; }
 
 	/* @GeneratePInvoke */
-	int CompareToWithError (TextPointer *pointer, MoonError *error);
+	int CompareToWithError (const TextPointer *pointer, MoonError *error) const;
 	/* @GeneratePInvoke */
-	Rect GetCharacterRect (LogicalDirection dir);
+	Rect GetCharacterRect (LogicalDirection dir) const;
 	/* @GeneratePInvoke */
-	TextPointer *GetNextInsertionPosition (LogicalDirection dir);
+	TextPointer *GetNextInsertionPosition (LogicalDirection dir) const;
 	/* @GeneratePInvoke */
-	TextPointer *GetPositionAtOffset (int offset, LogicalDirection dir);
+	TextPointer *GetPositionAtOffset (int offset, LogicalDirection dir) const;
 
-	TextPointer GetNextInsertionPosition_np (LogicalDirection dir);
-	TextPointer GetPositionAtOffset_np (int offset, LogicalDirection dir);
-	int CompareTo_np (TextPointer pointer);
-	int CompareTo (TextPointer *pointer);
+	TextPointer GetNextInsertionPosition_np (LogicalDirection dir) const;
+	TextPointer GetPositionAtOffset_np (int offset, LogicalDirection dir) const;
+	int CompareTo_np (const TextPointer& pointer) const;
+	int CompareTo (const TextPointer *pointer);
+
+	bool Equal (const TextPointer& pointer) const;
 
 	/* @GeneratePInvoke */
-	bool GetIsAtInsertionPosition ();
+	bool GetIsAtInsertionPosition () const;
 	/* @GeneratePInvoke */
-	LogicalDirection GetLogicalDirection () { return direction; }
+	LogicalDirection GetLogicalDirection () const { return direction; }
 	/* @GeneratePInvoke */
-	guint32 GetLocation () { return location; }
+	guint32 GetLocation () const { return location; }
 	/* @GeneratePInvoke */
-	DependencyObject *GetParent () { return parent; }
+	DependencyObject *GetParent () const { return parent; }
 
-	IDocumentNode *GetParentNode () { return IDocumentNode::CastToIDocumentNode (parent); }
+	IDocumentNode *GetParentNode () const { return IDocumentNode::CastToIDocumentNode (parent); }
 
-	int ResolveLocation ();
+	TextPointer GetPositionInsideRun (int offset) const;
+
+	int ResolveLocation () const;
+
+	RichTextBox *GetRichTextBox () const;
 
 private:
 	DependencyObject *parent; // weakref?

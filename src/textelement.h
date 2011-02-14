@@ -72,6 +72,8 @@ protected:
 
 	bool LocalValueOverrides (int prop_id);
 
+	virtual void CopyValuesOnSplit (TextElement *into);
+
 public:
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
@@ -98,10 +100,13 @@ public:
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	virtual IDocumentNode* GetParentDocumentNode ();
+	virtual DependencyObject* AsDependencyObject () { return this; }
 	virtual DependencyObjectCollection *GetDocumentChildren () { return NULL; }
-	virtual DependencyObject *Split (int loc) { return NULL; }
+	virtual DependencyObject *Split (int loc, TextElement *into) { return NULL; }
 	virtual void SerializeText (GString *str) { }
-	virtual void SerializeXaml (GString *str) { }
+	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString* str) { }
+	virtual void SerializeXamlEndElement (GString* str) { }
 	virtual void SerializeXamlProperties (bool force, GString *str);
 
 	//
@@ -212,6 +217,7 @@ class LineBreak : public Inline {
 	//
 	virtual void SerializeText (GString *str);
 	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -228,6 +234,8 @@ class Run : public Inline {
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+	virtual void CopyValuesOnSplit (TextElement *into);
 	
  public:
 	/* @PropertyType=FlowDirection,DefaultValue=FlowDirectionLeftToRight,GenerateAccessors */
@@ -249,8 +257,13 @@ class Run : public Inline {
 	//
 	virtual void SerializeText (GString *str);
 	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
 	virtual void SerializeXamlProperties (bool force, GString *str);
-	virtual DependencyObject* Split (int loc);
+
+	void SerializeXaml (GString *str, int start, int length = -1);
+	void SerializeXamlProperties (bool force, GString *str, int start, int length = -1);
+
+	virtual DependencyObject* Split (int loc, TextElement *into);
 
 	//
 	// Property Accessors
@@ -325,9 +338,10 @@ class Paragraph : public Block {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
-	virtual DependencyObject *Split (int loc);
+	virtual DependencyObject *Split (int loc, TextElement *into);
 	virtual void SerializeText (GString *str);
-	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
+	virtual void SerializeXamlEndElement (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -341,6 +355,8 @@ class Section : public Block {
 	
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
+
+	virtual void CopyValuesOnSplit (TextElement *into);
 
  public:
 	/* @PropertyType=BlockCollection,AutoCreateValue,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Internal*/
@@ -363,9 +379,10 @@ class Section : public Block {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetBlocks(); }
-	virtual DependencyObject* Split (int loc);
+	virtual DependencyObject* Split (int loc, TextElement *into);
 	virtual void SerializeText (GString *str);
-	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
+	virtual void SerializeXamlEndElement (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -396,7 +413,7 @@ class Span : public Inline {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual DependencyObjectCollection *GetDocumentChildren () { return GetInlines(); }
-	virtual DependencyObject* Split (int loc);
+	virtual DependencyObject* Split (int loc, TextElement *into);
 	virtual void SerializeText (GString *str);
 
 	static Value *CreateInlineCollection (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
@@ -416,7 +433,8 @@ class Bold : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
+	virtual void SerializeXamlEndElement (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -433,7 +451,8 @@ class Italic : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
+	virtual void SerializeXamlEndElement (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -450,7 +469,8 @@ class Underline : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
+	virtual void SerializeXamlEndElement (GString *str);
 };
 
 /* @Namespace=System.Windows.Documents */
@@ -497,7 +517,8 @@ class Hyperlink : public Span {
 	//
 	// IDocumentNode Interface Method Overrides
 	//
-	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
+	virtual void SerializeXamlEndElement (GString *str);
 	virtual void SerializeXamlProperties (bool force, GString *str);
 };
 
@@ -527,6 +548,7 @@ class InlineUIContainer : public Inline {
 	// IDocumentNode Interface Method Overrides
 	//
 	virtual void SerializeXaml (GString *str);
+	virtual void SerializeXamlStartElement (GString *str);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };

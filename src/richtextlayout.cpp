@@ -1215,17 +1215,11 @@ RichTextLayout::ClearCache ()
 void
 RichTextLayout::Select (TextSelection *selection)
 {
-#if notyet
 	if (!blocks)
 		return;
 
-	ClearCurrentSelection ();
-
-	if (selection->IsEmpty())
-		SetCurrentSelection (NULL, NULL);
-	else
-		SetCurrentSelection (selection->GetStart(), selection->GetEnd());
-#endif
+	selection_start = *selection->GetStart();
+	selection_end = *selection->GetEnd();
 }
 
 void
@@ -1256,7 +1250,7 @@ RichTextLayout::GetLineFromIndex (int index)
 }
 
 Rect
-RichTextLayout::GetCharacterRect (TextPointer *tp, LogicalDirection direction)
+RichTextLayout::GetCharacterRect (const TextPointer *tp, LogicalDirection direction)
 {
 	if (lines->len == 0)
 		return Rect::ManagedEmpty;
@@ -1729,10 +1723,8 @@ RichTextLayout::GetCursor (const Point &offset, TextPointer *tp)
 			for (guint j = 0; j < line->inlines->len; j ++) {
 				RichTextLayoutInline *inline_ = (RichTextLayoutInline*)line->inlines->pdata[j];
 				if (tp->CompareTo_np (inline_->start) >= 0 && tp->CompareTo_np (inline_->end) <= 0) {
-					// the cursor is in this inline
-
-					// FIXME just set the cursor to blink at the start of the inline
-					r.x += inline_->position.x;
+					// FIXME this math presumes bytes instead of unicode characters which is what the xoffset_table uses
+					r.x += inline_->position.x + inline_->GetXOffsetByIndex (tp->ResolveLocation() - inline_->start.ResolveLocation() - 1);
 					break;
 				}
 			}
@@ -1883,6 +1875,74 @@ RichTextLayoutLine::Render (cairo_t *cr, const Point &origin, double left, doubl
 	y0 = top + size.height + descend;
 	x0 = left;
 	
+	if (layout->selection_end.CompareTo_np (start) < 0 ||
+	    layout->selection_start.CompareTo_np (end) > 0) {
+		// the selection is entirely outside this line, so we do nothing
+	}
+	else {	
+		Rect selection_rectangle;
+		double left = -1, right = -1;
+
+		selection_rectangle.height = size.height;
+		if (layout->selection_end.CompareTo_np (end) >= 0) {
+			// if the end of the selection is beyond the
+			// end of the line, we draw the selected
+			// rectangle all the way to the end of the
+			// line.
+			right = size.width;
+		}
+		if (layout->selection_start.CompareTo_np (start) <= 0) {
+			// if the start of the selection is before the
+			// start of the line, we draw the selected
+			// rectangle all the way to the start of the
+			// line.
+			left = 0;
+		}
+
+		if (left == -1 || right == -1) {
+			// iterate over the runs to determine if the
+			// selection is inside them, then use the
+			// XOffset table to figure out the actual
+			// coordinates of it.
+			for (guint i = 0; i < inlines->len; i++) {
+				RichTextLayoutInline *inl = (RichTextLayoutInline *) inlines->pdata[i];
+				if (left == -1) {
+					// check the selection_start
+					if (layout->selection_start.CompareTo_np (inl->start) >= 0 &&
+					    layout->selection_start.CompareTo_np (inl->end) <= 0) {
+						left = inl->position.x + inl->GetXOffsetByIndex (layout->selection_start.ResolveLocation () - inl->start.ResolveLocation ());
+					}
+				}
+
+				if (right == -1) {
+					// check the selection_start
+					if (layout->selection_end.CompareTo_np (inl->start) >= 0 &&
+					    layout->selection_end.CompareTo_np (inl->end) <= 0) {
+						right = inl->position.x + inl->GetXOffsetByIndex (layout->selection_end.ResolveLocation () - inl->start.ResolveLocation ());
+					}
+				}
+
+				// if we've located both, quit looping
+				if (right != -1 && left != -1)
+					break;
+			}
+		}
+
+		selection_rectangle.width = right - left;
+		selection_rectangle.x = left;
+		selection_rectangle.y = y;
+
+		//selection_brush->SetupBrush (cr, selection_rectangle);
+		Color color (0xFF6D8DD1);
+		color.Lighten ();
+		cairo_set_source_rgba (cr, color.r, color.g, color.b, color.a);
+		selection_rectangle.Draw (cr);
+		cairo_fill (cr);
+	}
+
+
+
+		
 	for (guint i = 0; i < inlines->len; i++) {
 		RichTextLayoutInline *inl = (RichTextLayoutInline *) inlines->pdata[i];
 		inl->Render (cr, origin, x0, y0, (i + 1) < inlines->len);
@@ -1922,8 +1982,8 @@ RichTextLayoutLine::GetLocationFromX (const Point &offset, double x)
 		if (!text || !*text)
 			return inline_->end;
 
-		const char *inptr = text + inline_->start.GetLocation();
-		int end_loc = inline_->end.GetLocation() == (guint32)-1 ? strlen (text) : inline_->end.GetLocation();
+		const char *inptr = text + inline_->start.ResolveLocation();
+		int end_loc = inline_->end.ResolveLocation ();
 		const char *inend = text + end_loc;
 		GlyphInfo *prev, *glyph;
 		TextFont *font;
@@ -1985,8 +2045,8 @@ RichTextLayoutLine::GetLocationFromX (const Point &offset, double x)
 		if (!text || !*text)
 			return inline_->end;
 
-		const char *inptr = text + inline_->start.GetLocation();
-		int end_loc = inline_->end.GetLocation() == (guint32)-1 ? strlen (text) : inline_->end.GetLocation();
+		const char *inptr = text + inline_->start.ResolveLocation();
+		int end_loc = inline_->end.ResolveLocation();
 		const char *inend = text + end_loc;
 		const char *ch = inptr;
 		gunichar c;
@@ -2031,20 +2091,36 @@ RichTextLayoutLine::AddInline (RichTextLayoutInline *inline_)
 	end = inline_->end;
 }
 
+double
+RichTextLayoutInlineGlyphs::GetXOffsetByIndex (int index)
+{
+	if (xoffset_table == NULL || index < 0 || index > strlen (GetText() + start.ResolveLocation ()))
+		return 0.0;
+
+	if (index == strlen (GetText () + start.ResolveLocation ()))
+		return size.width;
+
+	return xoffset_table[index];
+}
+
 void
 RichTextLayoutInlineGlyphs::GenerateCache ()
 {
 	Run *run = (Run*)start.GetParent();
-	const char *inptr = run->GetText() + start.GetLocation();
-	int end_loc = end.GetLocation() == (guint32)-1 ? strlen (inptr) : end.GetLocation();
-	const char *inend = inptr + (end_loc - start.GetLocation());
+	const char *inptr = run->GetText() + start.ResolveLocation();
+	int end_loc = end.ResolveLocation ();
+	const char *inend = inptr + (end_loc - start.ResolveLocation());
 	GlyphInfo *prev = NULL /* FIXME *pglyph */;
 	TextFont *font = attrs->Font ();
 	double x0, x1, y0;
 	GlyphInfo *glyph;
 	int path_size = 0;
 	gunichar c;
-	
+	int xoffset = 0;
+
+	delete xoffset_table;
+	xoffset_table = new double[end.ResolveLocation () - start.ResolveLocation ()];
+
 	// set y0 to the baseline
 	y0 = font->Ascender ();
 	x0 = 0.0;
@@ -2072,7 +2148,7 @@ RichTextLayoutInlineGlyphs::GenerateCache ()
 	if (path_size > 0) {
 		// generate the cached path for the cluster
 		path = moon_path_new (path_size);
-		inptr = run->GetText() + start.GetLocation();
+		inptr = run->GetText() + start.ResolveLocation();
 		
 		while (inptr < inend) {
 			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
@@ -2096,6 +2172,7 @@ RichTextLayoutInlineGlyphs::GenerateCache ()
 			}
 			
 			font->AppendPath (path, glyph, x0, y0);
+			xoffset_table[xoffset++] = x0;
 			x0 += glyph->metrics.horiAdvance;
 			prev = glyph;
 			
@@ -2106,8 +2183,8 @@ RichTextLayoutInlineGlyphs::GenerateCache ()
 		moon_close_path (path);
 	}
 	
-	uadvance = x1;	
-	size.width = x0;
+	uadvance = x1;
+	size.width = /*x0*/ x1;
 	
 	/* FIXME *pglyph = prev; */
 }
