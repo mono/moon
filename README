@@ -33,8 +33,8 @@ Requirements
             git clone git://anongit.freedesktop.org/mesa/mesa
             cd mesa && git reset --hard 3ed0a099c && cd ..
 
-	The revision the codecs currently are at is: edad8039 (only applicable to buildbots
-	and developers on the Moonlight team). For SVN users, the revision is: 9376
+	The revision the codecs currently are at is: 5e5ebbc4 (only applicable to buildbots
+	and developers on the Moonlight team). For SVN users, the revision is: 9476
 
 	The package wnck-sharp is also required, it can be found in the gnome-desktop-sharp
 	repository on github:
