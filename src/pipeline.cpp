@@ -1937,6 +1937,8 @@ void
 ProgressiveSource::Notify (NotifyType type, gint64 args)
 {
 	Media *media;
+	HttpRequest *request;
+	HttpResponse *response;
 
 	LOG_PIPELINE ("ProgressiveSource::Notify (%i = %s, %" G_GINT64_FORMAT ") current range request: %" G_GINT64_FORMAT "\n",
 		type, 
@@ -1953,13 +1955,23 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 		return;
 	}
 
-	if (cancellable != NULL && cancellable->GetRequest () != NULL) {
-		media = GetMediaReffed ();
-		if (media != NULL) {
-			if (media->GetFinalUri () == NULL)
-				media->SetFinalUri (cancellable->GetRequest ()->GetFinalUri ());
-			media->GetLog ()->SetFileSize (cancellable->GetRequest ()->GetNotifiedSize ());
-			media->unref ();
+	if (error_occurred)
+		return;
+
+	if (cancellable != NULL) {
+		request = cancellable->GetRequest ();
+		if (request != NULL) {
+			media = GetMediaReffed ();
+			if (media != NULL) {
+				if (media->GetFinalUri () == NULL)
+					media->SetFinalUri (request->GetFinalUri ());
+				media->GetLog ()->SetFileSize (request->GetNotifiedSize ());
+				media->unref ();
+			}
+			response = request->GetResponse ();
+			if (response != NULL && response->GetResponseStatus () >= 400) {
+				DownloadFailed ();
+			}
 		}
 	}
 
@@ -2402,7 +2414,10 @@ void
 ProgressiveSource::DownloadFailed ()
 {
 	LOG_PIPELINE ("ProgressiveSource::DownloadFailed ().\n");
-	
+
+	if (error_occurred)
+		return;
+
 	error_occurred = true;
 	ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 }
