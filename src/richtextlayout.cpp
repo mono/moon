@@ -1862,7 +1862,6 @@ RichTextLayoutLine::GetLocationFromX (const Point &offset, double x)
 {
 	RichTextLayoutInline *inline_;
 	double x0;
-	double m;
 	guint i;
 
 	// adjust x0 for horizontal alignment
@@ -1921,10 +1920,10 @@ RichTextLayoutInlineGlyphs::GetIndexByXOffset (double xoffset)
 double
 RichTextLayoutInlineGlyphs::GetXOffsetByIndex (int index)
 {
-	if (xoffset_table == NULL || index < 0 || index > strlen (GetText() + start.ResolveLocation ()))
+	if (xoffset_table == NULL || index < 0 || (guint32)index > strlen (GetText() + start.ResolveLocation ()))
 		return 0.0;
 
-	if (index == strlen (GetText () + start.ResolveLocation ()))
+	if ((guint32)index == strlen (GetText () + start.ResolveLocation ()))
 		return size.width;
 
 	return xoffset_table[index];

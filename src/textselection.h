@@ -39,7 +39,7 @@ public:
 	/* @GeneratePInvoke */
 	void ApplyPropertyValue (DependencyProperty *formatting, Value *value);
 	/* @GeneratePInvoke */
-	Value *GetPropertyValue (DependencyProperty *formatting);
+	Value *GetPropertyValue (DependencyProperty *formatting) const;
 	/* @GeneratePInvoke */
 	void Insert (TextElement *element);
 	/* @GeneratePInvoke */
@@ -57,18 +57,18 @@ public:
 	char *GetXaml ();
 
 	/* @GeneratePInvoke */
-	TextPointer *GetStart ();
+	TextPointer *GetStart () const;
 
 	/* @GeneratePInvoke */
-	TextPointer *GetEnd ();
+	TextPointer *GetEnd () const;
 
-	TextPointer *GetAnchor ();
-	TextPointer *GetMoving ();
+	TextPointer *GetAnchor () const;
+	TextPointer *GetMoving () const;
 
-	TextPointer GetAnchor_np ();
-	TextPointer GetMoving_np ();
+	TextPointer GetAnchor_np () const;
+	TextPointer GetMoving_np () const;
 
-	bool IsEmpty ();
+	bool IsEmpty () const;
 
 private:
 	void ClearSelection ();

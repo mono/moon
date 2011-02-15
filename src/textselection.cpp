@@ -41,7 +41,7 @@ TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
 }
 
 Value *
-TextSelection::GetPropertyValue (DependencyProperty *formatting)
+TextSelection::GetPropertyValue (DependencyProperty *formatting) const
 {
 	printf ("TextSelection::GetPropertyValue\n");
 	// FIXME: implement this
@@ -528,43 +528,43 @@ TextSelection::GetXaml ()
 }
 
 TextPointer*
-TextSelection::GetStart ()
+TextSelection::GetStart () const
 {
 	return new TextPointer (start);
 }
 
 TextPointer*
-TextSelection::GetEnd ()
+TextSelection::GetEnd () const
 {
 	return new TextPointer (end);
 }
 
 TextPointer*
-TextSelection::GetAnchor ()
+TextSelection::GetAnchor () const
 {
 	return new TextPointer (anchor);
 }
 
 TextPointer*
-TextSelection::GetMoving ()
+TextSelection::GetMoving () const
 {
 	return new TextPointer (moving);
 }
 
 TextPointer
-TextSelection::GetAnchor_np ()
+TextSelection::GetAnchor_np () const
 {
 	return anchor;
 }
 
 TextPointer
-TextSelection::GetMoving_np ()
+TextSelection::GetMoving_np () const
 {
 	return moving;
 }
 
 bool
-TextSelection::IsEmpty ()
+TextSelection::IsEmpty () const
 {
 	return anchor.Equal (moving);
 }
