@@ -42,6 +42,7 @@
 #include "incomplete-support.h"
 #include "framerate-display.h"
 #include "drm.h"
+#include "jpeg.h"
 #include "utils.h"
 #include "timemanager.h"
 #include "factory.h"
@@ -400,6 +401,7 @@ Surface::Surface (MoonWindow *window)
 	
 	incomplete_support_message = NULL;
 	drm_message = NULL;
+	jpeg_message = NULL;
 	full_screen_message = NULL;
 	source_location = NULL;
 
@@ -1237,6 +1239,57 @@ Surface::HideIncompleteSilverlightSupportMessage ()
 		DetachLayer (incomplete_support_message);
 		incomplete_support_message->unref ();
 		incomplete_support_message = NULL;
+	}
+}
+
+void
+Surface::ShowJpegMessage ()
+{
+	if (jpeg_message != NULL) {
+		return; /* We're already showing it */
+	}
+
+	Type::Kind element_type;
+
+	SL4XamlLoader loader (this);
+	MoonError error;
+	Value *objv = loader.CreateFromStringWithError (JPEG_MESSAGE, true, &element_type, 0, &error, NULL);
+	DependencyObject *message;
+
+	if (!objv || objv->GetIsNull() || !(message = objv->AsDependencyObject())) {
+		g_warning ("Unable to create jpeg message.\n");
+		return;
+	}
+
+	if (!message->Is (Type::PANEL)) {
+		g_warning ("Unable to create jpeg message, got a %s, expected at least a FrameworkElement.\n", message->GetTypeName ());
+		message->unref ();
+		return;
+	}
+
+	jpeg_message = (Panel *) message;
+	AttachLayer (jpeg_message);
+
+	/* Hide the message when clicked */
+	jpeg_message->AddHandler (UIElement::MouseLeftButtonDownEvent, HideJpegMessageCallback, this);
+
+	// make the message take up the full width of the window
+	jpeg_message->SetValue (FrameworkElement::WidthProperty, Value ((double)active_window->GetWidth()));
+}
+
+void
+Surface::HideJpegMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface *) closure)->HideJpegMessage ();
+}
+
+void 
+Surface::HideJpegMessage ()
+{
+	if (jpeg_message) {
+		DetachLayer (jpeg_message);
+		jpeg_message->unref ();
+		jpeg_message = NULL;
 	}
 }
 

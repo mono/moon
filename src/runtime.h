@@ -352,6 +352,7 @@ public:
 	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
 
 	void ShowDrmMessage ();
+	void ShowJpegMessage ();
 
 	guint32 GetRuntimeOptions ();
 	void SetRuntimeOptions (guint32 flags);
@@ -430,6 +431,7 @@ private:
 	
 	Panel *incomplete_support_message;
 	Panel *drm_message;
+	Panel *jpeg_message;
 	
 	// True once we have received at least one user initiated event
 	bool first_user_initiated_event;
@@ -489,6 +491,9 @@ private:
 
 	void HideDrmMessage ();
 	static void HideDrmMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
+
+	void HideJpegMessage ();
+	static void HideJpegMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
 
 	void ShowIncompleteSilverlightSupportMessage ();
 	void HideIncompleteSilverlightSupportMessage ();

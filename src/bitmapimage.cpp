@@ -536,7 +536,7 @@ check_pixbuf_loader_for_version_80 (char *path)
 }
 
 static bool
-jpeg_loader_is_disabled ()
+jpeg_loader_is_disabled (Surface *surface)
 {
 	static bool disabled = false;
 	static bool disabled_checked = false;
@@ -588,7 +588,10 @@ jpeg_loader_is_disabled ()
 
 	disabled = found_62_in_map && found_80_in_loader;
 
-	g_warning ("found both libjpeg.so.62 and libjpeg.so.80, disabling jpeg image loading to avoid crashing.");
+	if (disabled) {
+		g_warning ("found both libjpeg.so.62 and libjpeg.so.80, disabling jpeg image loading to avoid crashing.");
+		surface->ShowJpegMessage();
+	}
 
 	return disabled;
 }
@@ -604,7 +607,7 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		// ff d8 ff e0 == jfif magic
 		else if (buffer[0] == 0xff
 #if linux
-			 && !jpeg_loader_is_disabled ()
+			 && !jpeg_loader_is_disabled (GetDeployment()->GetSurface())
 #endif
 			 ) {
 			loader = Runtime::GetWindowingSystem ()->CreatePixbufLoader ("jpeg");

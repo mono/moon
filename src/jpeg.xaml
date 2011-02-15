@@ -1,0 +1,29 @@
+<Grid
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Name="DrmMessage"
+	Visibility="Visible"
+	Opacity="1"
+	CacheMode="BitmapCache"
+	>
+	<Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="8" Padding="10" MaxWidth="458">
+		<Border.Background>
+			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+				<GradientStop Color="#FF242323" Offset="0"/>
+				<GradientStop Color="#FF515151" Offset="1"/>
+			</LinearGradientBrush>
+		</Border.Background>
+		<Grid>
+                  <Grid.ColumnDefinitions>
+		    <ColumnDefinition Width="*" />
+		    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+		  <Grid.RowDefinitions>
+		    <RowDefinition Height="*" />
+		    <RowDefinition Height="30" />
+		  </Grid.RowDefinitions>
+		  <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" TextAlignment="Center" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message" Text="Due to conflicting versions of libjpeg, jpeg image loading has been disabled.  This is only known be to caused by a bug in google chrome builds for liux." />
+		  <Grid Grid.Column="0" Grid.Row="1"><HyperlinkButton NavigateUri="http://www.mono-project.com/Release_Notes_Moonlight4_Preview#Linux_Chrome_libjpeg_issue" TargetName="_blank" Content="More information..." /></Grid>
+		</Grid>
+	</Border>
+</Grid>
