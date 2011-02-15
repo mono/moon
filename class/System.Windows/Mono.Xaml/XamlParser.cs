@@ -104,6 +104,11 @@ namespace Mono.Xaml {
 			set;
 		}
 
+		public object Owner {
+			get;
+			set;
+		}
+
 		public NameScope NameScope {
 			get;
 			private set;
@@ -213,11 +218,12 @@ namespace Mono.Xaml {
 			return obj.Object;
 		}
 
-		public static Value CreateFromString (string xaml, bool create_namescope, bool validate_templates)
+		public static Value CreateFromString (string xaml, bool create_namescope, bool validate_templates, IntPtr owner)
 		{
 			XamlParser p = new XamlParser () {
 				CreateNameScope = create_namescope,
 				ValidateTemplates = validate_templates,
+				Owner = NativeDependencyObjectHelper.FromIntPtr (owner)
 			};
 
 			object v = p.ParseString (xaml);
@@ -943,7 +949,10 @@ namespace Mono.Xaml {
 
 			if (obj != null) {
 				if (typeof (DependencyObject).IsAssignableFrom (obj.Type)) {
-					DependencyObject dob = (DependencyObject) obj.Object;
+					object target = obj.Object;
+					if (target is MutableObject)
+						target = ((MutableObject)target).Object;
+					DependencyObject dob = (DependencyObject) target;
 					NameScope.SetNameScope (dob, NameScope);
 				}
 			}
@@ -1354,6 +1363,14 @@ namespace Mono.Xaml {
 			if (o == null && HasDefaultConstructor (type))
 				o = Activator.CreateInstance (type);
 
+			if (o == null && IsSpecialInternalType (type))
+			{
+				o = Activator.CreateInstance (type,
+					BindingFlags.CreateInstance | BindingFlags.NonPublic |
+					BindingFlags.Instance | BindingFlags.OptionalParamBinding,
+					null, new object[] {}, null);
+			}
+
 			if (o == null && IsLegalCorlibType (type))
 				o = DefaultValueForCorlibType (type);
 
@@ -1509,6 +1526,13 @@ namespace Mono.Xaml {
 			if (t == typeof (System.Windows.Input.Cursor))
 				return true;
 			
+			return false;
+		}
+
+		private bool IsSpecialInternalType (Type t)
+		{
+			if (t == typeof (Section) && Owner is RichTextBox)
+				return true;
 			return false;
 		}
 

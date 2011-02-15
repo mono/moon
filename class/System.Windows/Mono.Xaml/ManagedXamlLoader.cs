@@ -245,7 +245,7 @@ namespace Mono.Xaml
 					flags |= XamlLoaderFlags.ValidateTemplates;
 				if (import_default_xmlns)
 					flags |= XamlLoaderFlags.ImportDefaultXmlns;
-				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind, (int) flags);
+				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind, (int) flags, IntPtr.Zero);
 			}
 			finally {
 				FreeNativeLoader ();

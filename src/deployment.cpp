@@ -848,7 +848,7 @@ Deployment::InitializeManagedXamlParser (MonoImage *system_windows_image)
 	if (!mono_xaml_parser_create_from_file)
 		return false;
 
-	mono_xaml_parser_create_from_string = MonoGetMethodFromName (mono_xaml_parser, "CreateFromString", 3);
+	mono_xaml_parser_create_from_string = MonoGetMethodFromName (mono_xaml_parser, "CreateFromString", 4);
 	if (!mono_xaml_parser_create_from_string)
 		return false;
 
@@ -888,7 +888,7 @@ Deployment::MonoXamlParserCreateFromFile (const char *file, bool create_namescop
 }
 
 Value *
-Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namescope, bool validate_templates, MoonError *error)
+Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namescope, bool validate_templates, MoonError *error, DependencyObject* owner)
 {
 	Value *v;
 	void *params [3];
@@ -900,6 +900,7 @@ Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namesc
 	params [0] = mono_string_new (mono_domain_get (), xaml);
 	params [1] = &create_namescope;
 	params [2] = &validate_templates;
+	params [3] = &owner;
 
 	ret = mono_runtime_invoke (mono_xaml_parser_create_from_string, NULL, params, &exc);
 

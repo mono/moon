@@ -1116,7 +1116,7 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			printf ("setting xaml to %s\n", xaml);
 
 			SL4XamlLoader *loader = new SL4XamlLoader (GetDeployment()->GetSurface()); // XXX we're leaking this
-			objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, &error);
+			objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, &error, this);
 			if (element_type != Type::SECTION) {
 				g_warning ("awww, crap");
 				return;

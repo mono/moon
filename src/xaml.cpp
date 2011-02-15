@@ -1666,9 +1666,9 @@ SL4XamlLoader::CreateFromFileWithError (const char *xaml, bool create_namescope,
 }
 
 Value *
-SL4XamlLoader::CreateFromStringWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
+SL4XamlLoader::CreateFromStringWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error, DependencyObject* owner)
 {
-	Value *v = deployment->MonoXamlParserCreateFromString (xaml, create_namescope, false, error);
+	Value *v = deployment->MonoXamlParserCreateFromString (xaml, create_namescope, false, error, owner);
 	if (!v) {
 		*element_type = Type::INVALID;
 		return NULL;
@@ -2717,7 +2717,7 @@ SL3XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_names
 }
 
 Value *
-SL3XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
+SL3XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error, DependencyObject* owner)
 {
 	Value *res = CreateFromString (xaml, create_namescope, element_type, flags);
 	if (error_args && error_args->GetErrorCode () != -1)
