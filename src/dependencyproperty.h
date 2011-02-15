@@ -79,7 +79,7 @@ class DependencyProperty {
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
 	bool Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error);
-
+	bool HasCoercer () { return coercer != NULL; }
 	/* @GeneratePInvoke */
 	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);
 	

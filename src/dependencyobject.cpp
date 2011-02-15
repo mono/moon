@@ -1796,24 +1796,21 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 bool
 DependencyObject::SetValueWithError (DependencyProperty *property, Value *value, MoonError *error)
 {
-	Value *coerced = NULL;
+	bool ret;
+	Value *coerced = value;
+	bool hasCoercer = property->HasCoercer ();
 
-	if (!property->Coerce (this, value, &coerced, error)) {
-		delete coerced;
-		return false;
+	if ((hasCoercer && !property->Coerce (this, value, &coerced, error)) ||
+		!IsValueValid (property, coerced, error) ||
+		!property->Validate (this, coerced, error)) {
+		ret = false;
+	} else {
+		ret = SetValueWithErrorImpl (property, coerced, error);
 	}
-	if (!IsValueValid (property, coerced, error)) {
+
+	if (hasCoercer)
 		delete coerced;
-		return false;
-	}
-	if (!property->Validate (this, coerced, error)) {
-		delete coerced;
-		return false;
-	}
-	
-	bool rv = SetValueWithErrorImpl (property, coerced, error);
-	delete coerced;
-	return rv;
+	return ret;
 }
 
 // sets the inherited property source on this object to @source.
