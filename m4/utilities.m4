@@ -20,7 +20,7 @@ AC_CONFIG_SUBDIRS([$1])
 m4_ifblank([$2], [rm -f $1/configure.gnu],
     [AX_PRINT_TO_FILE([$1/configure.gnu],
 [#!/bin/sh
-./configure $2
+./configure $2 --cache-file=../config.cache
 ])
 ])
 

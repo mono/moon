@@ -9,4 +9,9 @@ cd $srcdir
 autoreconf -v --install || exit 1
 cd $ORIGDIR || exit $?
 
-$srcdir/configure "$@"
+if test x$NOCONFIGURE = x; then
+  echo Running $srcdir/configure $conf_flags "$@" ...
+  $srcdir/configure "$@"
+else
+  echo Skipping configure process.
+fi

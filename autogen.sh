@@ -128,7 +128,7 @@ autoconf || { echo "**Error**: autoconf failed."; exit 1; }
 
 if test -d $srcdir/pixman; then
   echo Running pixman/autogen.sh ...
-  (cd $srcdir/pixman ; ./autogen.sh "$@")
+  (cd $srcdir/pixman ; NOCONFIGURE=1 ./autogen.sh "$@")
   echo Done running pixman/autogen.sh ...
 fi
 
@@ -146,7 +146,7 @@ if test -d $srcdir/cairo; then
       export PKG_CONFIG_PATH
   fi
 
-  (cd $srcdir/cairo ; ./autogen.sh "$@")
+  (cd $srcdir/cairo ; NOCONFIGURE=1 ./autogen.sh "$@")
 
   echo Done running cairo/autogen.sh ...
 fi
@@ -212,7 +212,7 @@ if [ $configure_gallium -eq 1 ] ; then
   fi
 fi
 
-conf_flags="--enable-maintainer-mode --enable-compile-warnings --with-sanity-checks" #--enable-iso-c
+conf_flags="--enable-maintainer-mode --enable-compile-warnings --with-sanity-checks -C" #--enable-iso-c
 
 if test x$NOCONFIGURE = x; then
   echo Running $srcdir/configure $conf_flags "$@" ...
