@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 591 methods needs to be decorated.
+# 590 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -198,9 +198,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_get_value_type(Mono.Kind)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::type_is_dependency_object(Mono.Kind)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_is_event_object(Mono.Kind)
@@ -526,11 +523,11 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_template_owner(System.IntPtr)
 
-# internal call
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value(System.IntPtr,System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default_(System.IntPtr,System.IntPtr,Mono.MoonError&)
+
+# internal call
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_with_error(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_(System.IntPtr,System.IntPtr,Mono.MoonError&)
@@ -812,7 +809,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_file_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_string_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_create_from_string_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::sl3_xaml_loader_get_context(System.IntPtr)
@@ -953,7 +950,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
