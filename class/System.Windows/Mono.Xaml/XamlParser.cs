@@ -53,6 +53,7 @@ namespace Mono.Xaml {
 	internal class XamlParser {
 
 		internal static readonly BindingFlags METHOD_BINDING_FLAGS = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+		internal static readonly BindingFlags FIELD_BINDING_FLAGS = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		internal static readonly BindingFlags PROPERTY_BINDING_FLAGS = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		internal static readonly BindingFlags EVENT_BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance;
 
@@ -1661,9 +1662,14 @@ namespace Mono.Xaml {
 		{
 			DependencyProperty dp;
 			
-			if (!DependencyProperty.TryLookup (kind, name, out dp))
-				if (!DependencyProperty.TryLookup (kind, name + "Property", out dp))
-					return null;
+			if (!DependencyProperty.TryLookup (kind, name, out dp)) {
+				var type = Deployment.Current.Types.KindToType (kind);
+				var field = type.GetField (name + "Property", FIELD_BINDING_FLAGS);
+				if (field != null && typeof (DependencyProperty).IsAssignableFrom (field.FieldType))
+					dp = (DependencyProperty) field.GetValue (null);
+				else
+					dp = null;
+			}
 
 			return dp;
 		}

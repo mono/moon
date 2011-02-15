@@ -1701,6 +1701,84 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (typeof (object), obj.GetType (), "!AppDomainManager");
 		}
 #endregion
+
+		[TestMethod]
+		public void StyleProperty_FieldAndDPDoNotExist()
+		{
+			// There is no property of name 'A' and no field called 'AProperty'
+			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"
+<x:MisnamedDps	xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+						A=""{Binding}"" />")
+			);
+		}
+
+        [TestMethod]
+		public void StyleProperty_FieldExistsButDPDoesNot()
+		{
+			// There is no property of name 'B' but there is a field called 'BProperty'
+			var x = (MisnamedDps)XamlReader.Load(@"
+<x:MisnamedDps	xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+						B=""{Binding}"" />");
+			Assert.IsInstanceOfType<BindingExpressionBase>(x.ReadLocalValue(MisnamedDps.BProperty), "#1");
+		}
+
+		[TestMethod]
+		public void StyleProperty_DPNameEndsWithProperty()
+		{
+			// There is no property of name 'B' but there is a field called 'BProperty'
+			Assert.Throws<XamlParseException>(() => XamlReader.Load(@"
+<x:MisnamedDps	xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+						C=""{Binding}"" />")
+			);
+		}
+
+		[TestMethod]
+		public void StyleProperty_MatchSolelyOnFieldName()
+		{
+			// There is no property of name 'B' but there is a field called 'BProperty'
+			var x = (MisnamedDps) XamlReader.Load(@"
+<x:MisnamedDps	xmlns=""http://schemas.microsoft.com/client/2007""
+				xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+				Bar=""{Binding}"" />");
+			Assert.IsInstanceOfType <BindingExpressionBase>(x.ReadLocalValue (MisnamedDps.BarProperty), "#1");
+		}
+	}
+
+	public class MisnamedDps : FrameworkElement
+	{
+		// DP with field 'AProp' and DP name is prepended with a space
+		public static readonly DependencyProperty AProp = DependencyProperty.Register(" A", typeof(int), typeof(MisnamedDps), null);
+
+		// DP with field called 'BProperty' and DP name is prepended with  a space
+		public static readonly DependencyProperty BProperty = DependencyProperty.Register(" B", typeof(int), typeof(MisnamedDps), null);
+
+		// DP which follows the convention of appending 'Property' to the name
+		public static readonly DependencyProperty CProp = DependencyProperty.Register("CProperty", typeof(int), typeof(MisnamedDps), null);
+
+		// Dp whose field name is completely different to its DP and field does not match the
+		public static readonly DependencyProperty foo = DependencyProperty.Register("D", typeof(int), typeof(MisnamedDps), null);
+
+		// Field called BarProperty but no DP called Bar
+		public static readonly DependencyProperty BarProperty = DependencyProperty.Register("E", typeof(int), typeof(MisnamedDps), null);
+
+		public int A {
+			get; set;
+		}
+
+		public int B {
+			get; set;
+		}
+
+		public int C {
+			get; set;
+		}
+
+		public int Bar {
+			get; set;
+		}
 	}
 	
 	public class ManagedIComparable : IComparable { public int CompareTo (object o) { return 0; } }
