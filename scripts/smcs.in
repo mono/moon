@@ -1,2 +1,2 @@
 #!/bin/sh
-exec @prefix@/bin/mono $MONO_OPTIONS @MCS_PATH@/class/lib/basic/mcs.exe -nostdlib -lib:@prefix@/lib/moonlight/2.0 -r:@MCS_PATH@/class/lib/basic/mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll "$@"
+mcs -noconfig -lib:@prefix@/lib/moonlight/2.0 -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll "$@"
