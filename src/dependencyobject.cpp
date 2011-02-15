@@ -3282,7 +3282,6 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 		return;
 	}
 	
-#if DEBUG
 	// Check for circular families
 	DependencyObject *current = parent;
 	while (current != NULL) {
@@ -3292,7 +3291,6 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 		}
 		current = current->GetParent ();
 	}
-#endif
 
 	if (!this->parent) {
 		if (parent) {
