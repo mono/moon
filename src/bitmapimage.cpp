@@ -512,24 +512,12 @@ static bool
 check_pixbuf_loader_for_version_80 (char *path)
 {
 	// because I despise the thought of linking in libelf, or of implementing grep in code...
-	char *command = g_strdup_printf ("grep libjpeg.so.8 %s", path);
 	bool matches = false;
 
-	FILE *fp = popen (command, "r");
-	if (fp) {
-		while (!feof (fp)) {
-			char buf[1000];
-
-			if (!fgets (buf, sizeof (buf), fp))
-				break;
-
-			if (strstr (buf, "matches")) {
-				matches = true;
-				break;
-			}
-		}
-		pclose (fp);
-	}
+	char *command = g_strdup_printf ("grep -q libjpeg.so.8 %s", path);
+	int status = system (command);
+	if (status != -1 && WIFEXITED (status))
+		matches = WEXITSTATUS(status) == 0;
 
 	g_free (command);
 	return matches;
@@ -567,6 +555,8 @@ jpeg_loader_is_disabled (Surface *surface)
 		fclose (fp);
 	}
 
+	if (!found_62_in_map)
+		return false;
 
 	fp = popen ("gdk-pixbuf-query-loaders", "r");
 	if (fp) {
