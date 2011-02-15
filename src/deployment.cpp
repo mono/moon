@@ -891,7 +891,7 @@ Value *
 Deployment::MonoXamlParserCreateFromString (const char *xaml, bool create_namescope, bool validate_templates, MoonError *error, DependencyObject* owner)
 {
 	Value *v;
-	void *params [3];
+	void *params [4];
 	MonoObject *ret;
 	MonoObject *exc = NULL;
 
