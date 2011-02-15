@@ -43,9 +43,34 @@ TextSelection::ApplyPropertyValue (DependencyProperty *formatting, Value *value)
 Value *
 TextSelection::GetPropertyValue (DependencyProperty *formatting) const
 {
-	printf ("TextSelection::GetPropertyValue\n");
-	// FIXME: implement this
-	return NULL;
+	Value *value = start.GetParent()->GetValue (formatting);
+	Value *current_value;
+
+	DocumentWalker walker (start.GetParentNode(), DocumentWalker::Forward);
+
+	walker.Step ();// skip the ::Leave for the start node
+
+	while (true) {
+		IDocumentNode *node;
+		DocumentWalker::StepType step = walker.Step (&node);
+		switch (step) {
+		case DocumentWalker::Enter:
+			current_value = node->AsDependencyObject()->GetValue (formatting);
+			if (!Value::AreEqual (value, current_value))
+				return NULL;
+
+			if (node == end.GetParentNode())
+				return value;
+
+		case DocumentWalker::Leave:
+			break;
+		case DocumentWalker::Done:
+			// this shouldn't happen, but do we care?
+			g_warning ("TextSelecion::GetPropertyValue document walker found the end of the document before finding the selection end.");
+			break;
+			return NULL;
+		}
+	}
 }
 
 void
@@ -195,7 +220,7 @@ TextSelection::Insert (TextElement *element)
 }
 
 bool
-TextSelection::SelectWithError (TextPointer *anchorPosition, TextPointer *movingPosition, MoonError *error)
+TextSelection::SelectWithError (const TextPointer *anchorPosition, const TextPointer *movingPosition, MoonError *error)
 {
 	// FIXME: we need to verify that both TextPointers come from the same RTB, and if they don't, raise ArgExc.
 	
@@ -223,11 +248,17 @@ TextSelection::SelectWithError (TextPointer *anchorPosition, TextPointer *moving
 }
 
 bool
-TextSelection::Select (TextPointer *anchorPosition, TextPointer *movingPosition)
+TextSelection::Select (const TextPointer *anchorPosition, const TextPointer *movingPosition)
 {
 	MoonError err;
 	
 	return SelectWithError (anchorPosition, movingPosition, &err);
+}
+
+bool
+TextSelection::Select (const TextPointer& anchorPosition, const TextPointer& movingPosition)
+{
+	return Select (&anchorPosition, &movingPosition);
 }
 
 void
@@ -537,6 +568,18 @@ TextPointer*
 TextSelection::GetEnd () const
 {
 	return new TextPointer (end);
+}
+
+TextPointer
+TextSelection::GetStart_np () const
+{
+	return start;
+}
+
+TextPointer
+TextSelection::GetEnd_np () const
+{
+	return end;
 }
 
 TextPointer*

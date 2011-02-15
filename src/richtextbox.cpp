@@ -267,8 +267,8 @@ public:
 	RichTextBoxActionApplyFormatting (RichTextBox* rtb, TextSelection* selection, DependencyProperty* prop, Value* v)
 		: RichTextBoxAction (rtb, RichTextBoxAction::APPLY_FORMATTING)
 	{
-		start = selection->GetStart();
-		end = selection->GetEnd();
+		start = selection->GetStart_np();
+		end = selection->GetEnd_np();
 		
 		this->prop = prop;
 		this->v = *v;
@@ -276,8 +276,6 @@ public:
 
 	virtual ~RichTextBoxActionApplyFormatting ()
 	{
-		delete start;
-		delete end;
 	}
 
 	virtual void Do ();
@@ -291,26 +289,72 @@ private:
 	DependencyProperty* prop;
 	Value v;
 
-	TextPointer* start;
-	TextPointer* end;
+	TextPointer start;
+	TextPointer end;
 };
 
 void
 RichTextBoxActionApplyFormatting::Do ()
 {
 	TextSelection* selection = rtb->GetSelection();
-	selection->Select (start, end);
 
-	TextPointer s = *start;
-	TextPointer e = *end;
+	TextPointer s = start;
+	TextPointer e = end;
 
-	// advance "start" until we hit a run.
-	while (!s.GetParent()->Is (Type::RUN) && s.CompareTo_np (e) < 0)
-		s = s.GetPositionAtOffset_np (1, LogicalDirectionForward);
+	if (!s.GetParent()->Is (Type::RUN)) {
+		// walk the document forward from s.GetParent() until we hit a run
+		DocumentWalker walker (s.GetParentNode (), DocumentWalker::Forward);
 
-	// move "end" back until we hit a run.
-	while (!e.GetParent()->Is (Type::RUN) && s.CompareTo_np (e) < 0)
-		e = e.GetPositionAtOffset_np (-1, LogicalDirectionBackward);
+		while (true) {
+			IDocumentNode *node;
+			DependencyObject *obj;
+			DocumentWalker::StepType step = walker.Step(&node);
+
+			switch (step) {
+			case DocumentWalker::Enter:
+				obj = node->AsDependencyObject();
+				if (obj->Is (Type::RUN)) {
+					s = ((TextElement*)obj)->GetContentStart_np();
+				}
+				break;
+			case DocumentWalker::Leave:
+				// nothing to do on leave
+				break;
+			case DocumentWalker::Done:
+				// we didn't find a run, bail early
+				g_warning ("Didn't find a Run to apply formatting changes to, bailing");
+				return;
+			}
+		}
+	}
+
+	if (!e.GetParent()->Is (Type::RUN)) {
+		// walk the document backward from e.GetParent() until we hit a run
+		DocumentWalker walker (e.GetParentNode (), DocumentWalker::Backward);
+
+		while (true) {
+			IDocumentNode *node;
+			DependencyObject *obj;
+			DocumentWalker::StepType step = walker.Step(&node);
+
+			switch (step) {
+			case DocumentWalker::Enter:
+				obj = node->AsDependencyObject();
+				if (obj->Is (Type::RUN)) {
+					e = ((TextElement*)obj)->GetContentEnd_np();
+				}
+				break;
+			case DocumentWalker::Leave:
+				// nothing to do on leave
+				break;
+			case DocumentWalker::Done:
+				// we didn't find a run, bail early
+				g_warning ("Didn't find a Run to apply formatting changes to, bailing");
+				return;
+			}
+		}
+
+	}
 
 	if (s.Equal (e)) // selection is empty for whatever reason
 		return;
@@ -350,11 +394,59 @@ RichTextBoxActionApplyFormatting::Do ()
 			if (formatted_run) {
 				formatted_run->SetValue (prop, &v);
 				parents_children->Insert (index_in_parent+1, formatted_run);
+
+				selection->Select (formatted_run->GetContentStart_np(), formatted_run->GetContentEnd_np());
 			}
 		}
 	}
 	else {
-		printf ("NIEX: RichTextBoxActionApplyFormatting::Do\n");
+		Run *run;
+
+		// split the start run and format the section that needs it
+		run = (Run*)s.GetParentNode()->Split (s.ResolveLocation ());
+		if (run) {
+			DependencyObjectCollection *parents_children = e.GetParentNode()->GetParentDocumentNode()->GetDocumentChildren();
+			int index_in_parent = parents_children->IndexOf (s.GetParent());
+			run->SetValue (prop, &v);
+			parents_children->Insert (index_in_parent+1, run);
+			s = run->GetContentStart_np();
+		}
+
+		// now walk the document until we reach the end parent, apply the formatting to all runs along the way
+		DocumentWalker walker (s.GetParentNode(), DocumentWalker::Forward);
+		while (true) {
+			IDocumentNode *node;
+			DocumentWalker::StepType step = walker.Step(&node);
+
+			switch (step) {
+			case DocumentWalker::Enter:
+				if (e.GetParentNode() == node) {
+					goto split_end_node;
+				}
+				break;
+			case DocumentWalker::Leave:
+				// nothing to do on leave
+				break;
+			case DocumentWalker::Done:
+				// we didn't run into the end parent?  uhhhh
+				g_warning ("badness, we didn't see the end element while iterating the document");
+				return;
+			}
+		}
+
+		// split the end run and format the section that needs it
+	split_end_node:
+		run = (Run*)e.GetParentNode()->Split (e.ResolveLocation ());
+		// in this case the returned run is the text we *don't* want to format
+		e.GetParent()->SetValue (prop, &v);
+		e = ((Run*)e.GetParent())->GetContentEnd_np();
+		if (run) {
+			DependencyObjectCollection *parents_children = e.GetParentNode()->GetParentDocumentNode()->GetDocumentChildren();
+			int index_in_parent = parents_children->IndexOf (e.GetParent());
+			parents_children->Insert (index_in_parent+1, run);
+		}
+
+		selection->Select (&s, &e);
 	}
 }
 

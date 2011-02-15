@@ -43,8 +43,10 @@ public:
 	/* @GeneratePInvoke */
 	void Insert (TextElement *element);
 	/* @GeneratePInvoke */
-	bool SelectWithError (TextPointer *anchorPosition, TextPointer *movingPosition, MoonError *error);
-	bool Select (TextPointer *anchorPosition, TextPointer *movingPosition);
+	bool SelectWithError (const TextPointer *anchorPosition, const TextPointer *movingPosition, MoonError *error);
+	bool Select (const TextPointer *anchorPosition, const TextPointer *movingPosition);
+
+	bool Select (const TextPointer& anchorPosition, const TextPointer& movingPosition);
 	
 	/* @GeneratePInvoke */
 	void SetText (const char *text);
@@ -64,6 +66,9 @@ public:
 
 	TextPointer *GetAnchor () const;
 	TextPointer *GetMoving () const;
+
+	TextPointer GetStart_np () const;
+	TextPointer GetEnd_np () const;
 
 	TextPointer GetAnchor_np () const;
 	TextPointer GetMoving_np () const;

@@ -1538,7 +1538,7 @@
 +SC-M: System.Void Mono.NativeMethods::text_selection_set_text(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_selection_set_xaml(System.IntPtr,System.String)
++SC-M: System.Void Mono.NativeMethods::text_selection_set_xaml_(System.IntPtr,System.String,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_add_dispatcher_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)

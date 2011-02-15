@@ -143,6 +143,8 @@ public:
 	bool GetNeedUnref () const;
 	void SetNeedUnref (bool needUnref);
 
+	static bool AreEqual (const Value *v1, const Value *v2);
+
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
 

@@ -988,6 +988,28 @@ Value::operator== (const Value &v) const
 	return true;
 }
 
+bool
+Value::AreEqual (const Value *v1, const Value *v2)
+{
+	// either one is null but not the other
+	if (!!v1 != !!v2)
+		return false;
+
+	if (v1 && v2) {
+		return *v1 == *v2;
+	}
+	else if (v1 && v1->GetIsNull ()) {
+		// since we know v2 is null, return true here
+		return true;
+	}
+	else if (v2 && v2->GetIsNull ()) {
+		// since we know v1 is null, return true here
+		return true;
+	}
+
+	return false;
+}
+
 Value&
 Value::operator= (const Value& other)
 {

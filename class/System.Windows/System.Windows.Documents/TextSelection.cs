@@ -44,6 +44,8 @@ namespace System.Windows.Documents {
 		public object GetPropertyValue (DependencyProperty formattingProperty)
 		{
 			IntPtr val = NativeMethods.text_selection_get_property_value (native, formattingProperty.Native);
+			if (val == IntPtr.Zero)
+				return DependencyProperty.UnsetValue;
 			return Value.ToObject (null, val);
 		}
 
