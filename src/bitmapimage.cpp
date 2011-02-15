@@ -25,6 +25,10 @@
 #include "debug.h"
 #include "factory.h"
 
+#if linux
+#include <gdk-pixbuf/gdk-pixbuf-io.h>
+#endif
+
 namespace Moonlight {
 
 #ifdef WORDS_BIGENDIAN
@@ -486,6 +490,110 @@ BitmapImage::CleanupLoader ()
 	}
 }
 
+#if linux
+// linux is such a special beast, matched only in its
+// unique-snowflakeness by google-chrome
+//
+// chrome links dynamically to libjpeg.so.62 which is distributed by
+// everyone under the sun.  some linux distros distribute it for
+// compatability reasons, and have moved to libjpeg.so.8 for their own
+// uses.  The problem is that it's *quite* easy to end up in a
+// situation where both are loaded at the same time, and code that was
+// compiled against libjpeg.so.8 finds itself calling through .62
+// symbols, which fails spectacularly.
+//
+// this hits moonlight because libjpeg.so.62 is already loaded into
+// chrome by the time we initialize ourselves, and because openSuSE's
+// (at the very least) libgdkpixbufloader-jpeg.so links agianst
+// libjpeg.so.8.  So, we check for both of these conditions, and if
+// they both match, we disable jpeg loading entirely.
+
+static bool
+check_pixbuf_loader_for_version_80 (char *path)
+{
+	// because I despise the thought of linking in libelf, or of implementing grep in code...
+	char *command = g_strdup_printf ("grep libjpeg.so.8 %s", path);
+	bool matches = false;
+
+	FILE *fp = popen (command, "r");
+	if (fp) {
+		while (!feof (fp)) {
+			char buf[1000];
+
+			if (!fgets (buf, sizeof (buf), fp))
+				break;
+
+			if (strstr (buf, "matches")) {
+				matches = true;
+				break;
+			}
+		}
+		pclose (fp);
+	}
+
+	g_free (command);
+	return matches;
+}
+
+static bool
+jpeg_loader_is_disabled ()
+{
+	static bool disabled = false;
+	static bool disabled_checked = false;
+
+	if (disabled_checked)
+		return disabled;
+
+	disabled_checked = true;
+
+	FILE *fp;
+	bool found_62_in_map = false;
+	bool found_80_in_loader = false;
+
+	// first check our maps to see if libjpeg.so.62 is included
+	fp = fopen ("/proc/self/maps", "r");
+	if (fp) {
+		while (!feof (fp)) {
+			char buf[1000];
+
+			if (!fgets (buf, sizeof (buf), fp))
+				break;
+
+			if (strstr (buf, "libjpeg.so.62")) {
+				found_62_in_map = true;
+				break;
+			}
+		}
+		fclose (fp);
+	}
+
+
+	fp = popen ("gdk-pixbuf-query-loaders", "r");
+	if (fp) {
+		while (!feof (fp)) {
+			char buf[1000];
+
+			if (!fgets (buf, sizeof (buf), fp))
+				break;
+
+			if (strstr (buf, "libpixbufloader-jpeg.so")) {
+				// the line has quotes around it, so zero out the last one
+				buf[strlen(buf)-2] = 0;
+				found_80_in_loader = check_pixbuf_loader_for_version_80 (buf + 1);
+				break;
+			}
+		}
+		pclose (fp);
+	}
+
+	disabled = found_62_in_map && found_80_in_loader;
+
+	g_warning ("found both libjpeg.so.62 and libjpeg.so.80, disabling jpeg image loading to avoid crashing.");
+
+	return disabled;
+}
+#endif
+
 void
 BitmapImage::CreateLoader (unsigned char *buffer)
 {
@@ -494,9 +602,13 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		if (buffer[0] == 0x89)
 			loader = Runtime::GetWindowingSystem ()->CreatePixbufLoader ("png");
 		// ff d8 ff e0 == jfif magic
-		else if (buffer[0] == 0xff)
+		else if (buffer[0] == 0xff
+#if linux
+			 && !jpeg_loader_is_disabled ()
+#endif
+			 ) {
 			loader = Runtime::GetWindowingSystem ()->CreatePixbufLoader ("jpeg");
-
+		}
 		else {
 			Abort ();
 			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "unsupported image type");
