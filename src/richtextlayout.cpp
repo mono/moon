@@ -1339,7 +1339,6 @@ RichTextLayout::AddWordsToLine (RichTextLayoutLine *line, TextLayoutAttributes *
 		layout_lwsp (&word, inptr, inend);
 				
 		if (word.length > 0) {
-			line->size.width += word.advance;
 			inline_->size.width += word.advance;
 
 			inptr += word.length;
@@ -1603,7 +1602,7 @@ RichTextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 }
 
 Rect
-RichTextLayout::GetCursor (const Point &offset, TextPointer *tp)
+RichTextLayout::GetCursor (const Point &offset, const TextPointer& tp)
 {
 	Rect r (offset, Size (1.0, 0.0));
 
@@ -1613,8 +1612,8 @@ RichTextLayout::GetCursor (const Point &offset, TextPointer *tp)
 		int start_compare, end_compare;
 		bool in_this_line = false;
 
-		start_compare = tp->CompareTo_np (line->start);
-		end_compare = tp->CompareTo_np (line->end);
+		start_compare = tp.CompareTo_np (line->start);
+		end_compare = tp.CompareTo_np (line->end);
 
 		if (start_compare == 0) {
 			// the cursor is at the beginning of the line
@@ -1630,9 +1629,9 @@ RichTextLayout::GetCursor (const Point &offset, TextPointer *tp)
 
 			for (guint j = 0; j < line->inlines->len; j ++) {
 				RichTextLayoutInline *inline_ = (RichTextLayoutInline*)line->inlines->pdata[j];
-				if (tp->CompareTo_np (inline_->start) >= 0 && tp->CompareTo_np (inline_->end) <= 0) {
+				if (tp.CompareTo_np (inline_->start) >= 0 && tp.CompareTo_np (inline_->end) <= 0) {
 					// FIXME this math presumes bytes instead of unicode characters which is what the xoffset_table uses
-					r.x += inline_->position.x + inline_->GetXOffsetByIndex (tp->ResolveLocation() - inline_->start.ResolveLocation() - 1);
+					r.x += inline_->position.x + inline_->GetXOffsetByIndex (tp.ResolveLocation() - inline_->start.ResolveLocation() - 1);
 					break;
 				}
 			}

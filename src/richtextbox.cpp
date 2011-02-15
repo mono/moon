@@ -1600,16 +1600,13 @@ RichTextBox::OnMouseMove (MouseEventArgs *args)
 		args->GetPosition (view, &x, &y);
 		args->SetHandled (true);
 
-
 		BatchPush ();
 
-		TextPointer *start = selection->GetStart();
-		TextPointer cursor = view->GetLocationFromXY (x, y);
+		TextPointer anchor = selection->GetAnchor_np();
+		TextPointer moving = view->GetLocationFromXY (x, y);
 
-		selection->Select (start, &cursor);
+		selection->Select (&anchor, &moving);
 		emit = SELECTION_CHANGED;
-
-		delete start;
 
 		BatchPop ();
 
@@ -2270,7 +2267,7 @@ RichTextBoxView::HideCursor ()
 void
 RichTextBoxView::UpdateCursor (bool invalidate)
 {
-	TextPointer* cur = textbox->GetSelection()->GetStart();
+	TextPointer cur = textbox->GetSelection()->GetAnchor_np();
 
 	Rect current = cursor;
 	Rect rect;

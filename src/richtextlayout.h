@@ -200,7 +200,7 @@ class RichTextLayout {
 	
 	TextPointer GetLocationFromXY (const Point &offset, double x, double y);
 
-	Rect GetCursor (const Point &offset, TextPointer* tp);
+	Rect GetCursor (const Point &offset, const TextPointer& tp);
 	
 	void GetActualExtents (double *width, double *height);
 	Rect GetRenderExtents ();
