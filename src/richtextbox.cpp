@@ -983,81 +983,79 @@ RichTextBox::KeyPressEnd (MoonModifier modifiers)
 bool
 RichTextBox::KeyPressRight (MoonModifier modifiers)
 {
+	bool handled = false;
+	
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 
 	TextPointer anchor = selection->GetAnchor_np ();
 	TextPointer moving = selection->GetMoving_np ();
-
-	if ((modifiers & SHIFT_MASK) == 0) {
-		if (!selection->IsEmpty()) {
-			selection->Select (&moving, &moving);
-			emit |= SELECTION_CHANGED;
-			return true;
-		}
-	}
+	TextPointer new_moving;
 
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the next word
-		moving = CursorNextWord (moving);
+		new_moving = CursorNextWord (moving);
+	} else {
+		new_moving = moving.GetPositionInsideRun (1);
+	}
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		if (!anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		// clobber the selection
+		anchor = new_moving;
+		moving = new_moving;
 	}
 	else {
-		moving = moving.GetPositionInsideRun (1);
+		if (anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		moving = new_moving;
 	}
 
-	if ((modifiers & SHIFT_MASK) != 0) {
-		// we're extending/trimming the selection
-		selection->Select (&anchor, &moving);
-	}
-	else {
-		// we aren't extending the selection, so set both start/end to the new location
-		selection->Select (&moving, &moving);
-	}
-
-	return false;
+	selection->Select (&anchor, &moving);
+	
+	return handled;
 }
 
 bool
 RichTextBox::KeyPressLeft (MoonModifier modifiers)
 {
+	bool handled = false;
+	
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 
-	TextPointer anchor = *selection->GetAnchor ();
-	TextPointer moving = *selection->GetMoving ();
-
-	if ((modifiers & SHIFT_MASK) != 0) {
-	}
-	else {
-		if (!selection->IsEmpty()) {
-			selection->Select (&anchor, &anchor);
-			emit |= SELECTION_CHANGED;
-			return false;
-		}
-	}
+	TextPointer anchor = selection->GetAnchor_np ();
+	TextPointer moving = selection->GetMoving_np ();
+	TextPointer new_moving;
 
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
-		moving = CursorPrevWord (moving);
+		new_moving = CursorPrevWord (moving);
+	} else {
+		new_moving = moving.GetPositionInsideRun (-1);
+	}
+	
+	if ((modifiers & SHIFT_MASK) == 0) {
+		if (!anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		// clobber the selection
+		anchor = new_moving;
+		moving = new_moving;
 	}
 	else {
-		// FIXME this likely isn't right since it can
-		// land us between runs and I'm pretty sure we
-		// want the cursor to always be inside a
-		// run...
-		moving = moving.GetPositionAtOffset_np (-1, LogicalDirectionForward);
+		if (anchor.Equal (moving))
+			emit |= SELECTION_CHANGED;
+
+		moving = new_moving;
 	}
 
-	if ((modifiers & SHIFT_MASK) != 0) {
-		// we're extending/trimming the selection
-		selection->Select (&anchor, &moving);
-	}
-	else {
-		// we aren't extending the selection, so set both start/end to the new location
-		selection->Select (&moving, &moving);
-	}
-
-	return false;
+	selection->Select (&anchor, &moving);
+	
+	return handled;
 }
 
 bool

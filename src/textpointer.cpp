@@ -614,7 +614,7 @@ TextPointer::GetPositionInsideRun (int offset) const
 					return *this;
 				case DocumentWalker::Enter:
 					if (node->AsDependencyObject()->Is(Type::RUN))
-						return ((Run*)node->AsDependencyObject())->GetContentStart_np();
+						return ((Run*)node->AsDependencyObject())->GetContentEnd_np();
 					break;
 				case DocumentWalker::Leave:
 					// do nothing here

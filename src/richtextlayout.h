@@ -68,6 +68,7 @@ public:
 
 	virtual const char *GetText() { return ""; }
 
+	virtual int GetIndexByXOffset (double xoffset) { return 0; }
 	virtual double GetXOffsetByIndex (int index) { return 0.0; }
 
 	TextLayoutAttributes *attrs;
@@ -98,6 +99,7 @@ public:
 
 	virtual const char *GetText() { return ((Run*)start.GetParent())->GetText(); }
 
+	virtual int GetIndexByXOffset (double xoffset);
 	virtual double GetXOffsetByIndex (int index);
 
 	virtual void Render (cairo_t *cr, const Point &origin, double x, double y, bool is_last_run);

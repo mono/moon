@@ -971,98 +971,6 @@ print_lines (GPtrArray *lines)
 }
 #endif
 
-#if notyet
-struct TextRegion {
-	int start, length;
-	bool select;
-};
-
-static void
-UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
-{
-	TextLayoutGlyphCluster *cluster;
-	TextLayoutLine *line;
-	TextLayoutRun *run;
-	guint i, j;
-	
-	// first update pre-region
-	for (i = 0; i < lines->len; i++) {
-		line = (TextLayoutLine *) lines->pdata[i];
-		
-		if (pre->start >= line->start + line->length) {
-			// pre-region not on this line...
-			continue;
-		}
-		
-		for (j = 0; j < line->runs->len; j++) {
-			run = (TextLayoutRun *) line->runs->pdata[j];
-			
-			if (pre->start >= run->start + run->length) {
-				// pre-region not in this run...
-				continue;
-			}
-			
-			if (pre->start <= run->start) {
-				if (pre->start + pre->length >= run->start + run->length) {
-					// run is fully contained within the pre-region
-					if (run->clusters->len == 1) {
-						cluster = (TextLayoutGlyphCluster *) run->clusters->pdata[0];
-						cluster->selected = pre->select;
-					} else {
-						run->ClearCache ();
-					}
-				} else {
-					run->ClearCache ();
-				}
-			} else {
-				run->ClearCache ();
-			}
-			
-			if (pre->start + pre->length <= run->start + run->length)
-				break;
-		}
-	}
-	
-	// now update the post region...
-	for ( ; i < lines->len; i++, j = 0) {
-		line = (RichTextLayoutLine *) lines->pdata[i];
-		
-		if (post->start >= line->start + line->length) {
-			// pre-region not on this line...
-			continue;
-		}
-		
-		for ( ; j < line->runs->len; j++) {
-			run = (TextLayoutRun *) line->runs->pdata[j];
-			
-			if (post->start >= run->start + run->length) {
-				// post-region not in this run...
-				continue;
-			}
-			
-			if (post->start <= run->start) {
-				if (post->start + post->length >= run->start + run->length) {
-					// run is fully contained within the pre-region
-					if (run->clusters->len == 1) {
-						cluster = (TextLayoutGlyphCluster *) run->clusters->pdata[0];
-						cluster->selected = post->select;
-					} else {
-						run->ClearCache ();
-					}
-				} else {
-					run->ClearCache ();
-				}
-			} else {
-				run->ClearCache ();
-			}
-			
-			if (post->start + post->length <= run->start + run->length)
-				break;
-		}
-	}
-}
-#endif
-
 static double
 GetWidthConstraint (double avail_width, double max_width, double actual_width)
 {
@@ -1975,102 +1883,8 @@ RichTextLayoutLine::GetLocationFromX (const Point &offset, double x)
 
 	int cursor = 0;
 
-	if (inline_ != NULL) {
-		const char *text = inline_->GetText();
-
-		// empty inlines just put the location at the end.
-		if (!text || !*text)
-			return inline_->end;
-
-		const char *inptr = text + inline_->start.ResolveLocation();
-		int end_loc = inline_->end.ResolveLocation ();
-		const char *inend = text + end_loc;
-		GlyphInfo *prev, *glyph;
-		TextFont *font;
-
-		font = inline_->attrs->Font ();
-		
-		while (inptr < inend) {
-			const char *ch = inptr;
-			gunichar c;
-
-			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
-				continue;
-			
-			if (UnicharIsLineBreak (c)) {
-				inptr = ch;
-				break;
-			}
-			
-			cursor++;
-			
-			// we treat tabs as a single space
-			if (c == '\t')
-				c = ' ';
-			
-			if (!(glyph = font->GetGlyphInfo (c)))
-				continue;
-			
-			if ((prev != NULL) && APPLY_KERNING (c))
-				x0 += font->Kerning (prev, glyph);
-			else if (glyph->metrics.horiBearingX < 0)
-				x0 += glyph->metrics.horiBearingX;
-			
-			// calculate midpoint of the character
-			m = glyph->metrics.horiAdvance / 2.0;
-			
-			// if x is <= the midpoint, then the cursor is
-			// considered to be at the start of this character.
-
-			// FIXME should this alter the logical direction instead of the "cursor"?
-			if (x <= x0 + m) {
-				inptr = ch;
-				cursor--;
-				break;
-			}
-			
-			x0 += glyph->metrics.horiAdvance;
-			prev = glyph;
-		}
-	} else if (i > 0) {
-		// FIXME:  this should just be
-		// return end;
-
-		// x is beyond the end of the last inline
-		inline_= (RichTextLayoutInline*)inlines->pdata[i-1];
-
-		const char *text = inline_->GetText();
-
-		// empty inlines just put the location at the end.
-		if (!text || !*text)
-			return inline_->end;
-
-		const char *inptr = text + inline_->start.ResolveLocation();
-		int end_loc = inline_->end.ResolveLocation();
-		const char *inend = text + end_loc;
-		const char *ch = inptr;
-		gunichar c;
-
-		cursor = inend - inptr;
-
-		if ((ch = g_utf8_find_prev_char (inptr, inend)))
-			c = utf8_getc (&ch, inend - ch);
-		else
-			c = (gunichar) -1;
-		
-		if (c == '\n') {
-			cursor--;
-			inend--;
-			
-			if (inend > inptr && inend[-1] == '\r') {
-				cursor--;
-				inend--;
-			}
-		} else if (UnicharIsLineBreak (c)) {
-			cursor--;
-			inend--;
-		}
-	}
+	if (inline_ != NULL)
+		cursor = inline_->GetIndexByXOffset (x - x0);
 
 	return inline_->start.GetPositionAtOffset_np (cursor, LogicalDirectionForward);
 }
@@ -2089,6 +1903,20 @@ RichTextLayoutLine::AddInline (RichTextLayoutInline *inline_)
 	g_ptr_array_add (inlines, inline_);
 
 	end = inline_->end;
+}
+
+int
+RichTextLayoutInlineGlyphs::GetIndexByXOffset (double xoffset)
+{
+	if (xoffset_table == NULL)
+		return -1;
+
+	for (int i = 0; i < end.ResolveLocation () + start.ResolveLocation() - 1; i ++) {
+		if (xoffset > xoffset_table[i] && xoffset <= xoffset_table[i+1])
+			return i;
+	}
+
+	return -1;
 }
 
 double
