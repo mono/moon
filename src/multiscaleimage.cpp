@@ -566,6 +566,12 @@ MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 
 	downloaders.Unlink (ctx);
 	ctx->image->unref ();
+	ctx->image->RemoveHandler (ctx->image->ImageOpenedEvent,
+				tile_opened,
+				ctx);
+	ctx->image->RemoveHandler (ctx->image->ImageFailedEvent,
+				tile_failed,
+				ctx);
 	delete ctx;
 	Invalidate ();
 }
@@ -589,6 +595,12 @@ MultiScaleImage::TileFailed (BitmapImageContext *ctx)
 		qtree_set_tile (ctx->node, NULL, 0.0);
 		downloaders.Unlink (ctx);
 		ctx->image->unref ();
+		ctx->image->RemoveHandler (ctx->image->ImageOpenedEvent,
+					   tile_opened,
+					   ctx);
+		ctx->image->RemoveHandler (ctx->image->ImageFailedEvent,
+					   tile_failed,
+					   ctx);
 		delete ctx;
 		Invalidate ();
 	}
@@ -603,6 +615,12 @@ MultiScaleImage::StopDownloading ()
 
 	while (!downloaders.IsEmpty ()) {
 		ctx = static_cast<BitmapImageContext *> (downloaders.First ());
+		ctx->image->RemoveHandler (ctx->image->ImageOpenedEvent,
+					   tile_opened,
+					   ctx);
+		ctx->image->RemoveHandler (ctx->image->ImageFailedEvent,
+					   tile_failed,
+					   ctx);
 		downloaders.Unlink (ctx);
 		ctx->image->Abort ();
 		ctx->image->Dispose ();
