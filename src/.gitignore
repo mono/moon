@@ -20,6 +20,7 @@ fullscreen.h
 incomplete-support.h
 framerate-display.h
 drm.h
+jpeg.h
 xaml-to-header.exe
 icon128.h
 png-to-header.exe
