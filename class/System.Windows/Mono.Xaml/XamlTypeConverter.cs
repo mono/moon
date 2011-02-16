@@ -139,7 +139,7 @@ namespace Mono.Xaml {
 			if (converter == null || ConverterIsBlackListed (converter))
 				converter = new XamlTypeConverter (parser, element, prop_name, dest_type);
 
-			return converter.ConvertFrom (null, CultureInfo.InvariantCulture, val);
+			return converter.ConvertFrom (null, Helper.DefaultCulture, val);
 		}
 
 		//
