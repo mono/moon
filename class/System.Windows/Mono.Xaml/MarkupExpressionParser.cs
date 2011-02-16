@@ -287,7 +287,7 @@ namespace Mono.Xaml {
 			string remaining = expression;
 			string piece = GetNextPiece (ref remaining, out next);
 
-			if (piece == "{")
+			if (piece.StartsWith ("{"))
 				throw new Exception ("{{ not permissible in this context");
 
 			if (next == '=')
