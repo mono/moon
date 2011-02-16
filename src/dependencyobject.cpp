@@ -2728,11 +2728,11 @@ DependencyObject::GetResourceBase ()
 const Uri *
 DependencyObject::GetResourceBaseRecursive ()
 {
-	if (resource_base)
+	if (!Uri::IsNullOrEmpty(resource_base))
 		return resource_base;
 	if (parent != NULL)
 		return parent->GetResourceBaseRecursive ();
-	return NULL;
+	return resource_base;
 }
 
 void
