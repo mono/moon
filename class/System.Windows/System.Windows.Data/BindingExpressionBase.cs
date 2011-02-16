@@ -595,9 +595,6 @@ namespace System.Windows.Data {
 						return;
 					}
 				}
-				else if (Helper.AreEqual (cachedValue, value)) {
-					return;
-				}
 
 				Updating = true;
 				node.SetValue (value);
