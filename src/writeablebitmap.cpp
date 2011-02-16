@@ -95,7 +95,11 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 		cairo_matrix_scale (&xform, -1, 1);
 	}
 
-	element->Paint (target, bounds, &xform);
+	Context *ctx = new CairoContext (target);
+
+	element->Paint (ctx, bounds, &xform);
+
+	delete ctx;
 
 	target->unref ();
 	cairo_surface_flush (surface);

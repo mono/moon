@@ -1755,7 +1755,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 }
 
 void
-UIElement::Paint (CairoSurface *target,  Rect bounds, cairo_matrix_t *xform)
+UIElement::Paint (Context *ctx,  Rect bounds, cairo_matrix_t *xform)
 {
 	Region region (bounds.RoundOut ());
 
@@ -1772,13 +1772,9 @@ UIElement::Paint (CairoSurface *target,  Rect bounds, cairo_matrix_t *xform)
 	if (xform)
 		cairo_matrix_multiply (&inverse, &inverse, xform);
 
-	Context *ctx = new CairoContext (target);
-
 	ctx->Push (Context::Transform (inverse));
 	DoRender (ctx, &region);
 	ctx->Pop ();
-
-	delete ctx;
 
 #if OCCLUSION_CULLING_STATS
 	printf ("%d UIElements rendered front-to-back for: %s(%p)\n", GetDeployment ()->GetSurface ()->uielements_rendered_with_occlusion_culling, GetName (), this);

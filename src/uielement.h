@@ -192,7 +192,7 @@ public:
 	//   Do an optimized render pass on the this element and it's
 	//   subtree.
 	//
-	void Paint (CairoSurface *target, Rect bounds, cairo_matrix_t *matrix);
+	void Paint (Context *ctx, Rect bounds, cairo_matrix_t *matrix);
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
