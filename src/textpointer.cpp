@@ -52,6 +52,9 @@ DocumentWalker::Step (IDocumentNode **node_return)
 		else {
 			// 2) if it's not a container, then we walk up a level, step out of this node
 			IDocumentNode *parent_node = node->GetParentDocumentNode();
+			if (parent_node == NULL)
+				return Done;
+
 			DependencyObjectCollection *parent_children= parent_node->GetDocumentChildren();
 			int i = parent_children->IndexOf (node->AsDependencyObject());
 
@@ -76,6 +79,9 @@ DocumentWalker::Step (IDocumentNode **node_return)
 		else {
 			// 2) if it's not a container, then we walk up a level, step out of this node
 			IDocumentNode *parent_node = node->GetParentDocumentNode();
+			if (parent_node == NULL)
+				return Done;
+
 			DependencyObjectCollection *parent_children= parent_node->GetDocumentChildren();
 			int i = parent_children->IndexOf (node->AsDependencyObject());
 
@@ -562,69 +568,63 @@ TextPointer::GetIsAtInsertionPosition () const
 TextPointer
 TextPointer::GetPositionInsideRun (int offset) const
 {
-	if (!GetParent()->Is (Type::RUN)) {
-		g_warning ("TextPointer::GetPositionInsideRun only works with Runs");
-		return *this;
-	}
-
-	int location = ResolveLocation ();
 	if (offset > 0) {
-		const char *text = ((Run*)GetParent())->GetText();
-		if ((guint)location < strlen (text)) {
-			return GetPositionAtOffset_np (1, LogicalDirectionForward);
+		if (GetParent()->Is(Type::RUN)) {
+			int location = ResolveLocation ();
+			const char *text = ((Run*)GetParent())->GetText();
+			if ((guint)location < strlen (text))
+				return GetPositionAtOffset_np (1, LogicalDirectionForward);
 		}
-		else {
-			// we're at the end of the run.  we need to walk the document until we hit another run.
-			DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Forward);
-			walker.Step ();
 
-			while (true) {
-				IDocumentNode *node;
-				DocumentWalker::StepType type = walker.Step (&node);
+		// we're at the end of the run (or not in a run at all).  we need to walk the document until we hit another run.
+		DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Forward);
+		walker.Step ();
 
-				switch (type) {
-				case DocumentWalker::Done:
-					// there is no position beyond this
-					return *this;
-				case DocumentWalker::Enter:
-					if (node->AsDependencyObject()->Is(Type::RUN))
-						return ((Run*)node->AsDependencyObject())->GetContentStart_np();
-					break;
-				case DocumentWalker::Leave:
-					// do nothing here
-					break;
-				}
+		while (true) {
+			IDocumentNode *node;
+			DocumentWalker::StepType type = walker.Step (&node);
 
+			switch (type) {
+			case DocumentWalker::Done:
+				// there is no position beyond this
+				return *this;
+			case DocumentWalker::Enter:
+				if (node->AsDependencyObject()->Is(Type::RUN))
+					return ((Run*)node->AsDependencyObject())->GetContentStart_np();
+				break;
+			case DocumentWalker::Leave:
+				// do nothing here
+				break;
 			}
 		}
 	}
 	else {
-		if (location == 0) {
-			// we're at the end of the run.  we need to walk the document until we hit another run.
-			DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Backward);
-			walker.Step ();
-
-			while (true) {
-				IDocumentNode *node;
-				DocumentWalker::StepType type = walker.Step (&node);
-
-				switch (type) {
-				case DocumentWalker::Done:
-					// there is no position before this
-					return *this;
-				case DocumentWalker::Enter:
-					if (node->AsDependencyObject()->Is(Type::RUN))
-						return ((Run*)node->AsDependencyObject())->GetContentEnd_np();
-					break;
-				case DocumentWalker::Leave:
-					// do nothing here
-					break;
-				}
-
-			}
+		if (GetParent()->Is(Type::RUN)) {
+			int location = ResolveLocation ();
+			if (location > 0)
+				return GetPositionAtOffset_np (-1, LogicalDirectionForward);
 		}
-		else {
-			return GetPositionAtOffset_np (-1, LogicalDirectionForward);
+
+		// we're at the start of the run (or not in a run at all).  we need to walk the document until we hit another run.
+		DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Backward);
+		walker.Step ();
+
+		while (true) {
+			IDocumentNode *node;
+			DocumentWalker::StepType type = walker.Step (&node);
+
+			switch (type) {
+			case DocumentWalker::Done:
+				// there is no position before this
+				return *this;
+			case DocumentWalker::Enter:
+				if (node->AsDependencyObject()->Is(Type::RUN))
+					return ((Run*)node->AsDependencyObject())->GetContentEnd_np();
+				break;
+			case DocumentWalker::Leave:
+				// do nothing here
+				break;
+			}
 		}
 	}
 
