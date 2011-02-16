@@ -378,7 +378,7 @@ class RichTextBoxView : public FrameworkElement {
 	//
 	// Overrides
 	//
-	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
+	virtual void PostRender (Context *ctx, Region *region, bool skip_children);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Size ComputeActualSize ();
 	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);

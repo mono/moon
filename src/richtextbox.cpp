@@ -184,6 +184,9 @@ RichTextBoxActionBackspace::Do ()
 {
 	TextSelection* selection = rtb->GetSelection();
 
+	if (pointer->GetParent() == NULL)
+		return;
+
 	if (pointer->GetParent()->Is (Type::RUN)) {
 		Run *run = (Run*)pointer->GetParent();
 		int loc = pointer->ResolveLocation();
@@ -1823,18 +1826,15 @@ RichTextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		// FIXME: need to sync the XAML to Blocks
 		char *xaml = args->GetNewValue()->AsString();
 		Type::Kind element_type;
-		MoonError error;
 		Value *objv = NULL;
 
 		if (xaml) {
 			printf ("setting xaml to %s\n", xaml);
 
 			SL4XamlLoader *loader = new SL4XamlLoader (GetDeployment()->GetSurface()); // XXX we're leaking this
-			objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, &error, this);
-			if (element_type != Type::SECTION) {
-				g_warning ("awww, crap");
+			objv = loader->CreateFromStringWithError (xaml, true, &element_type, 0, error, this);
+			if (element_type != Type::SECTION || error->code)
 				return;
-			}
 		}
 
 		// FIXME: we need to figure out if this is done before
@@ -2522,22 +2522,37 @@ RichTextBoxView::Paint (cairo_t *cr)
 }
 
 void
-RichTextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
+RichTextBoxView::PostRender (Context *ctx, Region *region, bool skip_children)
 {
-	Size renderSize = GetRenderSize ();
+	// render our chidren if we need to
+	if (!skip_children) {
+		VisualTreeWalker walker = VisualTreeWalker (this, ZForward, false);
+		while (UIElement *child = walker.Step ())
+			child->DoRender (ctx, region);
+	}
+
+	if (ctx->IsMutable ()) {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+
+		Size renderSize = GetRenderSize ();
 	
-	UpdateCursor (false);
+		UpdateCursor (false);
 	
-	layout->Select (textbox->GetSelection());
+		layout->Select (textbox->GetSelection());
 	
-	cairo_save (cr);
-	
-	if (!path_only)
+		cairo_save (cr);
+
 		RenderLayoutClip (cr);
 	
-	layout->SetAvailableWidth (renderSize.width);
-	Paint (cr);
-	cairo_restore (cr);
+		layout->SetAvailableWidth (renderSize.width);
+		Paint (cr);
+		cairo_restore (cr);
+
+		ctx->Pop ();
+	}
+
+	// Chain up, but skip children since we've already rendered them here.
+	UIElement::PostRender (ctx, region, true);
 }
 
 void
