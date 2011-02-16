@@ -188,6 +188,9 @@ namespace Mono.Xaml {
 			if (expression.StartsWith ("{}"))
 				return expression.Substring (2);
 
+			if (expression [expression.Length - 1] != '}')
+				throw new Exception ("Expression must end with '}'");
+
 			object result = null;
 			bool rv = false;
 
