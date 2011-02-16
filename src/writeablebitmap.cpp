@@ -20,6 +20,52 @@
 #include "writeablebitmap.h"
 #include "surface-cairo.h"
 
+#ifdef USE_GALLIUM
+#define __MOON_GALLIUM__
+#include "context-gallium.h"
+extern "C" {
+#include "pipe/p_screen.h"
+#ifdef CLAMP
+#undef CLAMP
+#endif
+#include "util/u_inlines.h"
+#include "util/u_debug.h"
+#define template templat
+#include "state_tracker/sw_winsys.h"
+#include "sw/null/null_sw_winsys.h"
+#include "softpipe/sp_public.h"
+#ifdef USE_LLVM
+#include "llvmpipe/lp_public.h"
+#endif
+};
+
+static struct pipe_screen *
+swrast_screen_create (struct sw_winsys *ws)
+{
+	const char         *default_driver;
+	const char         *driver;
+	struct pipe_screen *screen = NULL;
+
+#ifdef USE_LLVM
+	default_driver = "llvmpipe";
+#else
+	default_driver = "softpipe";
+#endif
+
+	driver = debug_get_option ("GALLIUM_DRIVER", default_driver);
+
+#ifdef USE_LLVM
+	if (screen == NULL && strcmp (driver, "llvmpipe") == 0)
+		screen = llvmpipe_create_screen (ws);
+#endif
+
+	if (screen == NULL)
+		screen = softpipe_create_screen (ws);
+
+	return screen;
+}
+#endif
+
 namespace Moonlight {
 
 WriteableBitmap::WriteableBitmap ()
@@ -70,7 +116,8 @@ WriteableBitmap::Unlock ()
 void
 WriteableBitmap::Render (UIElement *element, Transform *transform)
 {
-	CairoSurface *target;
+	MoonSurface *src;
+	Context     *ctx;
 
 	if (!element)
 		return;
@@ -81,7 +128,39 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 
 	Rect bounds (0, 0, GetPixelWidth (), GetPixelHeight ());
 
+#ifdef USE_GALLIUM
+	struct pipe_resource pt, *texture;
+	GalliumSurface       *target;
+	struct pipe_screen   *screen =
+		swrast_screen_create (null_sw_create ());
+
+	memset (&pt, 0, sizeof (pt));
+	pt.target = PIPE_TEXTURE_2D;
+	pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
+	pt.width0 = 1;
+	pt.height0 = 1;
+	pt.depth0 = 1;
+	pt.last_level = 0;
+	pt.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_TRANSFER_WRITE |
+		PIPE_BIND_TRANSFER_READ;
+
+	texture = (*screen->resource_create) (screen, &pt);
+
+	target = new GalliumSurface (texture);
+	pipe_resource_reference (&texture, NULL);
+	ctx = new GalliumContext (target);
+	target->unref ();
+
+	ctx->Push (Context::Group (bounds));
+#else
+	CairoSurface *target;
+
 	target = new CairoSurface (surface, bounds.width, bounds.height);
+	ctx = new CairoContext (target);
+	target->unref ();
+
+	ctx->Push (Context::Clip (bounds));
+#endif
 
 	cairo_matrix_t xform;
 	cairo_matrix_init_identity (&xform);
@@ -95,14 +174,26 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 		cairo_matrix_scale (&xform, -1, 1);
 	}
 
-	Context *ctx = new CairoContext (target);
-
 	element->Paint (ctx, bounds, &xform);
+
+	bounds = ctx->Pop (&src);
+	if (!bounds.IsEmpty ()) {
+		cairo_surface_t *image = src->Cairo ();
+		cairo_t         *cr = cairo_create (surface);
+
+		cairo_set_source_surface (cr, image, 0, 0);
+		cairo_paint (cr);
+		cairo_destroy (cr);
+		cairo_surface_destroy (image);
+		src->unref ();
+	}
 
 	delete ctx;
 
-	target->unref ();
-	cairo_surface_flush (surface);
+#ifdef USE_GALLIUM
+	screen->destroy (screen);
+#endif
+
 }
 
 };
