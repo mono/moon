@@ -488,12 +488,14 @@ TextSelection::GetXaml ()
 	if (anchor.GetParent() != moving.GetParent()) {
 		// now walk the document from start element to end element, outputting everything manually along the way.
 		DocumentWalker walker (anchor.GetParentNode(), DocumentWalker::Forward);
+		IDocumentNode *node;
+		DocumentWalker::StepType stepType;
 
-		walker.Step (); // step out of the start element
+		stepType = walker.Step (); // step out of the start element
 
-		while (true) {
-			IDocumentNode *node;
-			DocumentWalker::StepType stepType = walker.Step (&node);
+		while (stepType != DocumentWalker::Done) {
+			stepType = walker.Step (&node);
+
 			if (node == moving.GetParentNode())
 				break;
 			if (stepType == DocumentWalker::Enter)
