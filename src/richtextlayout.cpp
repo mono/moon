@@ -1840,7 +1840,7 @@ RichTextLayoutLine::Render (cairo_t *cr, const Point &origin, double left, doubl
 		selection_rectangle.y = y;
 
 		//selection_brush->SetupBrush (cr, selection_rectangle);
-		Color color (0xFF6D8DD1);
+		Color color (0x666D8DD1);
 		color.Lighten ();
 		cairo_set_source_rgba (cr, color.r, color.g, color.b, color.a);
 		selection_rectangle.Draw (cr);
@@ -1881,10 +1881,14 @@ RichTextLayoutLine::GetLocationFromX (const Point &offset, double x)
 
 	int cursor = 0;
 
-	if (inline_ != NULL)
+	if (inline_ != NULL) {
 		cursor = inline_->GetIndexByXOffset (x - x0);
 
-	return inline_->start.GetPositionAtOffset_np (cursor, LogicalDirectionForward);
+		return inline_->start.GetPositionAtOffset_np (cursor, LogicalDirectionForward);
+	}
+	else {
+		return end;
+	}
 }
 
 void
