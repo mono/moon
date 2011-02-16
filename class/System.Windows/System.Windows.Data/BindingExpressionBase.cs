@@ -386,13 +386,13 @@ namespace System.Windows.Data {
 
 			cached = true;
 			if (DataSource == null || PropertyPathWalker.IsPathBroken) {
-				// If it the path is broken, don't call the converter unless we use the fallback.
-				// FIXME: Add an explicit test on this.
-				if (Binding.FallbackValue == null) {
+				if (Binding.TargetNullValue != null) {
+					cachedValue = Binding.TargetNullValue;
+				} else if (Binding.FallbackValue != null) {
+					cachedValue = Binding.FallbackValue;
+				} else {
 					cachedValue = dp.GetDefaultValue (Target);
-					return cachedValue;
 				}
-				cachedValue = Binding.FallbackValue;
 			}
 			else {
 				cachedValue = PropertyPathWalker.Value;
