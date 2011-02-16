@@ -52,8 +52,6 @@
 #include "context-glx.h"
 #endif
 
-#define PLUGIN_OURNAME      "Novell Moonlight"
-
 // change this to "1" if you want fullscreen redraws to allocate a new
 // pixmap per redraw just at the size of the expose area.
 //
@@ -1123,9 +1121,7 @@ MoonWindowGtk::RightClickMenu ()
 
 	menu = gtk_menu_new();
 
-	name = g_strdup_printf ("%s %s", PLUGIN_OURNAME, VERSION);
-	menu_item = gtk_menu_item_new_with_label (name);
-	g_free (name);
+	menu_item = gtk_menu_item_new_with_label ("Moonlight Settings");
 
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (show_moonlight_dialog), this);
