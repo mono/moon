@@ -525,8 +525,9 @@ namespace System.Windows.Data {
 
 		internal void TryUpdateSourceObject (object value)
 		{
-			if (!Updating && Binding.Mode == BindingMode.TwoWay && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default)
+			if (!Updating && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default) {
 				UpdateSourceObject (value);
+			}
 		}
 
 		internal bool TryUseParseMethod (string value, Type target, ref object result)
@@ -549,6 +550,10 @@ namespace System.Windows.Data {
 
 		internal void UpdateSourceObject (object value)
 		{
+			// We can only update two way bindings.
+			if (Binding.Mode != BindingMode.TwoWay)
+				return;
+
 			string dataError = null;
 			Exception exception = null;
 			bool oldUpdating = Updating;
