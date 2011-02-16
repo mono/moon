@@ -22,7 +22,7 @@
 		    <RowDefinition Height="*" />
 		    <RowDefinition Height="30" />
 		  </Grid.RowDefinitions>
-		  <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" TextAlignment="Center" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message" Text="Due to conflicting versions of libjpeg, jpeg image loading has been disabled.  This is only known be to caused by a bug in google chrome builds for liux." />
+		  <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" TextAlignment="Center" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message" Text="Due to conflicting versions of libjpeg, jpeg image loading has been disabled.  This is only known be to caused by a bug in google chrome builds for linux." />
 		  <Grid Grid.Column="0" Grid.Row="1"><HyperlinkButton NavigateUri="http://www.mono-project.com/Release_Notes_Moonlight4_Preview#Linux_Chrome_libjpeg_issue" TargetName="_blank" Content="More information..." /></Grid>
 		</Grid>
 	</Border>
