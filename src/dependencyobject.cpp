@@ -2722,7 +2722,7 @@ DependencyObject::SetResourceBase (const Uri *resourceBase)
 const Uri *
 DependencyObject::GetResourceBase ()
 {
-	return resource_base;
+	return GetResourceBaseRecursive ();
 }
 
 const Uri *
