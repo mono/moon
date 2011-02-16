@@ -42,8 +42,6 @@ class WriteableBitmap : public BitmapSource {
 	virtual void Lock ();
 	/* @GeneratePInvoke */
 	virtual void Unlock ();
-
-	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 };
 
 };

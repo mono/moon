@@ -67,12 +67,6 @@ WriteableBitmap::Unlock ()
 	pthread_mutex_unlock (&surface_mutex);
 }
 
-cairo_surface_t *
-WriteableBitmap::GetSurface (cairo_t *cr)
-{
-	return image_surface;
-}
-
 void
 WriteableBitmap::Render (UIElement *element, Transform *transform)
 {
@@ -81,14 +75,9 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	if (!element)
 		return;
 
-	cairo_surface_t *surface = GetSurface (NULL);
-	if (!surface) {
-		Invalidate ();
-		// it could still be NULL (e.g. directly inheriting UIElement)
-		surface = GetSurface (NULL);
-		if (!surface)
-			return;
-	}
+	cairo_surface_t *surface = GetImageSurface ();
+	if (!surface)
+		return;
 
 	Rect bounds (0, 0, GetPixelWidth (), GetPixelHeight ());
 
