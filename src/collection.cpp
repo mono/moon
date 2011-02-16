@@ -232,12 +232,13 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 
 		delete added_copy;
 
-		if (addManagedRef && added->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+		Deployment *deployment = GetDeployment ();
+		if (addManagedRef && added->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
 			/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
 			* contains UnmanagedStylusPoint objects. This means that UnmanagedStylusPoint's managed peer is not
 			* reachable, so if it's unreffed here, it ends up getting gc'ed pretty quickly. DRTs: #TopXXScenarios5 and #TopXXScenarios6 */
 			if (GetObjectType () != Type::STYLUSPOINT_COLLECTION)
-				added->Weaken ();
+				added->Weaken (deployment);
 		}
 
 		return true;
@@ -363,12 +364,13 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 	
 		EmitChanged (CollectionChangedActionReplace, added, removed, index);
 
-		if (addManagedRef && added->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+		Deployment *deployment = GetDeployment ();
+		if (addManagedRef && added->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
 			/* The managed StylusPointCollection contains StylusPoint objects, while the native StylusPointCollection
 			* contains UnmanagedStylusPoint objects. This means that UnmanagedStylusPoint's managed peer is not
 			* reachable, so if it's unreffed here, it ends up getting gc'ed pretty quickly. DRTs: #TopXXScenarios5 and #TopXXScenarios6 */
 			if (GetObjectType () != Type::STYLUSPOINT_COLLECTION)
-				added->Weaken ();
+				added->Weaken (deployment);
 		}
 
 		delete removed;

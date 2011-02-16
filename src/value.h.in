@@ -78,9 +78,9 @@ class PlaylistEntry;
 struct MOON_API Value {
 public:
 	void Init ();
-	void Strengthen ();
-	void Weaken ();
-	bool HoldManagedRef ();
+	void Strengthen (Deployment *deployment);
+	void Weaken (Deployment *deployment);
+	bool HoldManagedRef (Deployment *deployment);
 	
 	Value ();
 	Value (const Value& v);

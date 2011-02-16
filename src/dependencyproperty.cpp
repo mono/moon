@@ -268,7 +268,7 @@ DependencyProperty::RegisterCustomProperty (const char *name, Type::Kind propert
 
 	// We retain the default value in managed land, so weaken it here
 	if (default_value)
-		default_value->Weaken ();
+		default_value->Weaken (Deployment::GetCurrent ());
 	id = DependencyProperty::RegisterFull (types, owner_type, name, true, default_value, property_type, attached, readonly, false, callback, NULL, NULL, NULL, false);
 	
 	return types->GetProperty (id);

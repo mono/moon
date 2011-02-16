@@ -483,11 +483,11 @@ Value::IsDependencyObject (Deployment *d)
 }
 
 bool
-Value::HoldManagedRef ()
+Value::HoldManagedRef (Deployment *deployment)
 {
 	if (GetIsManaged ())
 		return true;
-	if (IsEventObject (Deployment::GetCurrent ())) {
+	if (IsEventObject (deployment)) {
 		// These types are DOs in native and structs in managed,
 		// so it's impossible (currently) to hold a managed ref to them
 		// As they can't reference other objects, there's no chance of
@@ -503,16 +503,15 @@ Value::HoldManagedRef ()
 }
 
 void
-Value::Strengthen ()
+Value::Strengthen (Deployment *deployment)
 {
 	if (GetIsManaged ()) {
 		if (GCHandle (this->u.managed_object).IsWeak ()) {
-			Deployment *d = Deployment::GetCurrent ();
 			void *handle = this->u.managed_object;
-			u.managed_object = d->CreateGCHandle (d->GetGCHandleTarget (handle)).ToIntPtr ();
-			d->FreeGCHandle (handle);
+			u.managed_object = deployment->CreateGCHandle (deployment->GetGCHandleTarget (handle)).ToIntPtr ();
+			deployment->FreeGCHandle (handle);
 		}
-	} else if (!GetNeedUnref () && IsEventObject (Deployment::GetCurrent ())) {
+	} else if (!GetNeedUnref () && IsEventObject (deployment)) {
 		SetNeedUnref (true);
 		if (u.dependency_object)
 			u.dependency_object->ref ();
@@ -520,16 +519,15 @@ Value::Strengthen ()
 }
 
 void
-Value::Weaken ()
+Value::Weaken (Deployment *deployment)
 {
 	if (GetIsManaged ()) {
 		if (GCHandle (this->u.managed_object).IsNormal ()) {
-			Deployment *d = Deployment::GetCurrent ();
 			void *handle = this->u.managed_object;
-			u.managed_object = d->CreateWeakGCHandle (d->GetGCHandleTarget (handle)).ToIntPtr ();
-			d->FreeGCHandle (handle);
+			u.managed_object = deployment->CreateWeakGCHandle (deployment->GetGCHandleTarget (handle)).ToIntPtr ();
+			deployment->FreeGCHandle (handle);
 		}
-	} else if (GetNeedUnref () && IsEventObject (Deployment::GetCurrent ())) {
+	} else if (GetNeedUnref () && IsEventObject (deployment)) {
 		SetNeedUnref (false);
 		if (u.dependency_object)
 			u.dependency_object->unref ();

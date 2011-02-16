@@ -252,7 +252,7 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 		g_hash_table_insert (hash, g_strdup (key), v);
 
 		Value *v_copy = new Value (*v);
-		v->Weaken ();
+		v->Weaken (GetDeployment ());
 
 		EmitChanged (CollectionChangedActionAdd, v_copy, NULL, key);
 
@@ -411,7 +411,7 @@ ResourceDictionary::Set (const char *key, Value *value)
 
 	g_hash_table_replace (hash, g_strdup (key), v);
 
-	v->Weaken ();
+	v->Weaken (GetDeployment ());
 	EmitChanged (CollectionChangedActionReplace, v, orig_copy, key);
 	delete orig_copy;
 
@@ -531,7 +531,7 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		Value *obj_value_copy = new Value (*obj_value);
 
-		obj_value->Weaken ();
+		obj_value->Weaken (GetDeployment ());
 		EmitChanged (CollectionChangedActionAdd, obj_value_copy, NULL, key);
 		delete obj_value_copy;
 	}

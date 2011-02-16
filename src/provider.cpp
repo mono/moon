@@ -112,7 +112,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Pr
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
 		if (new_value != NULL) {
 			new_value = new Value (*new_value);
-			new_value->Weaken ();
+			new_value->Weaken (style->GetDeployment ());
 		}
 
 		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
@@ -136,6 +136,7 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 
 	Setter *oldSetter = oldWalker.Step ();
 	Setter *newSetter = newWalker.Step ();
+	Deployment *deployment = style ? style->GetDeployment () : Deployment::GetCurrent ();
 
 	while (oldSetter || newSetter) {
 
@@ -162,7 +163,7 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
 			if (newValue != NULL) {
 				newValue = new Value (*newValue);
-				newValue->Weaken ();
+				newValue->Weaken (deployment);
 			}
 
 			g_hash_table_insert (style_hash, oldProp, newValue);
@@ -176,7 +177,7 @@ StylePropertyValueProvider::UpdateStyle (Style *style, MoonError *error)
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
 			if (newValue != NULL) {
 				newValue = new Value (*newValue);
-				newValue->Weaken ();
+				newValue->Weaken (deployment);
 			}
 
 			g_hash_table_insert (style_hash, newProp, newValue);
@@ -259,7 +260,7 @@ ImplicitStylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
 		if (new_value != NULL) {
 			new_value = new Value (*new_value);
-			new_value->Weaken ();
+			new_value->Weaken (setter->GetDeployment ());
 		}
 
 		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
@@ -310,7 +311,7 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
 			if (newValue != NULL) {
 				newValue = new Value (*newValue);
-				newValue->Weaken ();
+				newValue->Weaken (newSetter->GetDeployment ());
 			}
 
 			g_hash_table_insert (style_hash, oldProp, newValue);
@@ -324,7 +325,7 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
 			if (newValue != NULL) {
 				newValue = new Value (*newValue);
-				newValue->Weaken ();
+				newValue->Weaken (newSetter->GetDeployment ());
 			}
 
 			g_hash_table_insert (style_hash, newProp, newValue);
@@ -963,9 +964,9 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 			   Type::Find (deployment, value->GetKind())->GetName());
 #endif
 
-	if (obj->addManagedRef && value->HoldManagedRef () && !obj->GetDeployment ()->IsShuttingDown ()) {
+	if (obj->addManagedRef && value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
 		obj->addManagedRef (obj, value, property);
-		value->Weaken ();
+		value->Weaken (deployment);
 	}
 
 	g_hash_table_insert (auto_values, property, value);

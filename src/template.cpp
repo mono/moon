@@ -62,7 +62,7 @@ FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *par
 	this->parse_template_data = new Value (*parse_template_data);
 	if (holdManagedRef && addManagedRef && !GetDeployment ()->IsShuttingDown ()) {
 		addManagedRef (this, this->parse_template_data, XamlContextWeakRef);
-		this->parse_template_data->Weaken ();
+		this->parse_template_data->Weaken (GetDeployment ());
 	} else {
 		// If we can't add a managed ref to the xaml context we may end up with a circular ref
 		// and so we should destroy this at shutdown rather than leaking it.

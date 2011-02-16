@@ -1770,17 +1770,17 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 		// clear out the current value from the managed side if there's a ref to it
 		if (current_value) {
-			if (clearManagedRef && current_value->HoldManagedRef () && !deployment->IsShuttingDown ()) {
-				current_value->Strengthen ();
+			if (clearManagedRef && current_value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
+				current_value->Strengthen (deployment);
 				clearManagedRef (this, current_value, property);
 			}
 		}
 
 		// replace it with the new value
 		if (new_value) {
-			if (addManagedRef && new_value->HoldManagedRef () && !GetDeployment ()->IsShuttingDown ()) {
+			if (addManagedRef && new_value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
 				addManagedRef (this, new_value, property);
-				new_value->Weaken ();
+				new_value->Weaken (deployment);
 			}
 
 			providers.localvalue->SetValue (property, new_value);
