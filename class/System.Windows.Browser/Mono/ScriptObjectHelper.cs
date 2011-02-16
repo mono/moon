@@ -137,44 +137,6 @@ namespace Mono {
 
 		}
 
-		static T CoerceValue<T> (Value value)
-		{
-			object o = null;
-
-			if (value.IsNull) {
-				return default(T);
-			}
-
-			switch (value.k) {
-				case Kind.BOOL:
-					o = value.u.i32 != 0;
-					break;
-				case Kind.DOUBLE:
-					o = value.u.d;
-					break;
-				case Kind.FLOAT:
-					o = value.u.f;
-					break;
-				case Kind.UINT64:
-					o = value.u.ui64;
-					break;
-				case Kind.INT64:
-					o = value.u.i64;
-					break;
-				case Kind.UINT32:
-					o = value.u.ui32;
-					break;
-				case Kind.INT32:
-				case Kind.CHAR:
-					o = value.u.ui32;
-					break;
-			}
-
-			if (o == null || !TryChangeType (o, typeof(T), null, out o))
-				return default(T);
-			return (T)o;
-		}
-
 		public static object FromValue (Value v)
 		{
 			// When the target type is a number or equivalent, SL converts ints
@@ -219,16 +181,16 @@ namespace Mono {
 					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "nodeType")) {
 						Value val;
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
-						int r = CoerceValue<int> (val);
+						double r = (double)ScriptObjectHelper.FromValue (val);
 						NativeMethods.value_free_value (ref val);
 						if (isChrome)
 							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (int)v.u.p);
 
-						if (r == (int)HtmlElement.NodeType.Document)
+						if (r == (double)HtmlElement.NodeType.Document)
 							return new HtmlDocument (v.u.p);
-						else if (r == (int)HtmlElement.NodeType.Element ||
-								 r == (int)HtmlElement.NodeType.Comment ||
-								 r == (int)HtmlElement.NodeType.Text)
+						else if (r == (double)HtmlElement.NodeType.Element ||
+								 r == (double)HtmlElement.NodeType.Comment ||
+								 r == (double)HtmlElement.NodeType.Text)
 							return new HtmlElement (v.u.p);
 
 					}
