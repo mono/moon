@@ -51,7 +51,7 @@ namespace System.Windows.Data
 
 		public void UpdateSource ()
 		{
-			UpdateSourceObject ();
+			UpdateSourceObject (true);
 		}
 	}
 }

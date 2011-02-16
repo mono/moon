@@ -526,7 +526,7 @@ namespace System.Windows.Data {
 		internal void TryUpdateSourceObject (object value)
 		{
 			if (!Updating && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default) {
-				UpdateSourceObject (value);
+				UpdateSourceObject (value, false);
 			}
 		}
 
@@ -545,10 +545,15 @@ namespace System.Windows.Data {
 
 		internal void UpdateSourceObject ()
 		{
-			UpdateSourceObject (Target.GetValue (Property));
+			UpdateSourceObject (false);
 		}
 
-		internal void UpdateSourceObject (object value)
+		internal void UpdateSourceObject (bool force)
+		{
+			UpdateSourceObject (Target.GetValue (Property), force);
+		}
+
+		internal void UpdateSourceObject (object value, bool force)
 		{
 			// We can only update two way bindings.
 			if (Binding.Mode != BindingMode.TwoWay)
@@ -560,9 +565,11 @@ namespace System.Windows.Data {
 			var node = PropertyPathWalker.FinalNode;
 
 			try {
-				// TextBox.Text only updates a two way binding if it is *not* focused.
-				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
+				// If the user calls BindingExpresion.UpdateSource (), we must update regardless of focus state.
+				// Otherwise we only update if the textbox is unfocused.
+				if (!force && TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target) {
 					return;
+				}
 				
 				if (PropertyPathWalker.IsPathBroken) {
 					return;

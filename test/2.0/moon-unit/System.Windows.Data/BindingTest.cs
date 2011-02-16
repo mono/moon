@@ -2017,6 +2017,7 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 					
 		[TestMethod]
+		[MoonlightBug ("We fail this because we try to update the source even though TextBox.Text hasn't actually changed")]
 		public void TestTwoWayBinding5 ()
 		{
 			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
