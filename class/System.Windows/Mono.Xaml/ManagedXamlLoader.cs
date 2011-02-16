@@ -387,7 +387,6 @@ namespace Mono.Xaml
 				value.k = mt.native_handle;
 				return true;
 			} else {
-
 				pi = parent.GetType ().GetProperty (name.Substring (dot + 1), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
 				if (pi == null) {

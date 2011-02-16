@@ -288,6 +288,9 @@ namespace Mono {
 			if (type == typeof (UInt64))
 				return Convert.ToUInt64 (value, CultureInfo.InvariantCulture);
 
+			if (type.IsEnum && Enum.IsDefined (type, value))
+				return Enum.ToObject (type, value);
+			
 			return value;
 		}
 
@@ -338,7 +341,7 @@ namespace Mono {
 			
 			if (tc == null)
 				tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
-
+			
 			return tc.ConvertFrom (val);
 		}
 
