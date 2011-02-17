@@ -173,7 +173,7 @@ namespace System.Windows.Controls.Primitives {
 		
 		void OnCurrentItemChanged (object sender, EventArgs args)
 		{
-			if (SynchronizeWithCurrentItem) {
+			if (!Selection.Updating && SynchronizeWithCurrentItem) {
 				var icv = (ICollectionView) ItemsSource;
 				if (!Helper.Equals (icv.CurrentItem, SelectedItem)) {
 					Selection.SelectOnly (icv.CurrentItem);
@@ -329,13 +329,6 @@ namespace System.Windows.Controls.Primitives {
 				}
 			}
 
-			if (SynchronizeWithCurrentItem) {
-				var icv = (ICollectionView) ItemsSource;
-				if (!Helper.AreEqual (SelectedItem, icv.CurrentItem)) {
-					icv.MoveCurrentTo (SelectedItem);
-				}
-			}
-			
 			SelectionChangedEventHandler h = SelectionChanged;
 			if (h != null)
 				h (this, new SelectionChangedEventArgs (oldVals, newVals));

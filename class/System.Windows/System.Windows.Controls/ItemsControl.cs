@@ -150,10 +150,10 @@ namespace System.Windows.Controls {
 					CollectionListener = new WeakCollectionChangedListener (((INotifyCollectionChanged)newSource), this);
 				}
 				
-				Items.ClearImpl ();
 				Items.SetIsReadOnly (true);
 				itemsIsDataBound = true;
-				
+				Items.ClearImpl ();
+
 				foreach (var v in newSource)
 					Items.AddImpl (v);
 				

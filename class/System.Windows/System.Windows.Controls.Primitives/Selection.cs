@@ -36,6 +36,7 @@ using System.Linq;
 using System.Windows.Input;
 
 using Mono;
+using System.ComponentModel;
 
 namespace System.Windows.Controls.Primitives
 {
@@ -326,6 +327,11 @@ namespace System.Windows.Controls.Primitives
 		
 		void ReplaceSelection (object item)
 		{
+			if (!UpdateCollectionView (item)) {
+				UpdateSelectorProperties (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
+				return;
+			}
+
 			var addedItems = Empty;
 			var oldItems = SelectedItems.Cast <object> ().Where (o => o != item).ToArray ();
 
@@ -364,6 +370,19 @@ namespace System.Windows.Controls.Primitives
 
 			if (Owner.SelectedValue != value)
 				Owner.SelectedValue = value;
+
+			UpdateCollectionView (item);
+		}
+
+		bool UpdateCollectionView (object item)
+		{
+			if (Owner.ItemsSource is ICollectionView) {
+				var icv = (ICollectionView) Owner.ItemsSource;
+				icv.MoveCurrentTo (item);
+				Console.WriteLine ("Moving to: {0}. Am now: {1}", item, icv.CurrentItem);
+				return Helper.AreEqual (item, icv.CurrentItem);
+			}
+			return true;
 		}
 	}
 }

@@ -334,23 +334,17 @@ namespace System.Windows.Data {
 			if (raiseEvents) {
 				CurrentChangingEventArgs e = new CurrentChangingEventArgs (cancellable);
 				RaiseCurrentChanging (e);
-				if (e.Cancel) {
-					// If we're cancelling the change, ensure that any selector tracking the CurrentItem
-					// is forcibly re-updated. This will ensure that if the user modifies the selection
-					// by setting Selector.CurrentItem and the ICollectionView cancels the change, the selector
-					// will show the correct item
-					if (raiseEvents)
-						RaiseCurrentChanged (EventArgs.Empty);
-					return false;
-				}
+				if (e.Cancel)
+					return true;
 			}
 
 			IsCurrentAfterLast = position == ActiveList.Count || ActiveList.Count == 0;
 			IsCurrentBeforeFirst = position == -1 || ActiveList.Count == 0;
 			UpdateCurrentPositionAndItem (position, newItem);
 
-			if (raiseEvents)
+			if (raiseEvents) {
 				RaiseCurrentChanged (EventArgs.Empty);
+			}
 
 			return IsValidSelection;
 		}
