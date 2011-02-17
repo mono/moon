@@ -1242,6 +1242,34 @@ MoonWindowingSystemGtk::RunMainLoop (MoonWindow *window, bool quit_on_window_clo
 	gdk_threads_leave ();
 }
 
+static GdkScreen*
+GetGdkScreen (MoonWindow *moon_window)
+{
+	if (moon_window) {
+		GdkWindow *window = GDK_WINDOW (moon_window->GetPlatformWindow ());
+		if (window) {
+			GdkScreen *screen = gdk_drawable_get_screen (window);
+			if (screen)
+				return screen;
+		}
+	}
+
+	return gdk_screen_get_default ();
+}
+
+guint
+MoonWindowingSystemGtk::GetScreenHeight (MoonWindow *moon_window)
+{
+	GdkScreen *screen = GetGdkScreen (moon_window);
+	return gdk_screen_get_height (screen);
+}
+
+guint
+MoonWindowingSystemGtk::GetScreenWidth (MoonWindow *moon_window)
+{
+	GdkScreen *screen = GetGdkScreen (moon_window);
+	return gdk_screen_get_width (screen);
+}
 
 MoonInstallerServiceGtk::MoonInstallerServiceGtk ()
 {

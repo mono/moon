@@ -50,6 +50,10 @@ public:
 	void UnregisterWindow (MoonWindow *window);
 
 	virtual void ShowCodecsUnavailableMessage ();
+
+	virtual guint GetScreenHeight (MoonWindow *moon_window);
+
+	virtual guint GetScreenWidth (MoonWindow *moon_window);
 private:
 	Color *system_colors[NumSystemColors];
 
