@@ -443,7 +443,7 @@ namespace Mono.Xaml {
 				b.UpdateSourceTrigger = (UpdateSourceTrigger) Enum.Parse (typeof (UpdateSourceTrigger), str_value, true);
 				break;
 			default:
-				Console.Error.WriteLine ("Unhandled Binding Property:  '{0}'  value:  {1}", prop, value != null ? value.ToString () : str_value);
+				throw new Exception (string.Format ("Property {0} is not valid for this Expression", prop));
 				break;
 			}
 		}
