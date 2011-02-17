@@ -1898,7 +1898,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 			}
 		} else {
-			g_warning ("Unknown element: %s.", el);
+			g_warning ("Unknown property element: %s.", el);
 			parser_error (p, el, NULL, 2007, "Unknown element: %s.", el);
 			return;
 		}
@@ -4304,10 +4304,7 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL)) {
-		return false;
-	}
-	return true;
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL);
 }
 
 void
@@ -4338,7 +4335,15 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 		return NULL;
 
 	Value *v = new Value ();
-	if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, true, v)) {
+	Value *pv = NULL;
+	
+	if (element_type == XamlElementInstance::PROPERTY) {
+		if (parent != NULL)
+			pv = parent->GetAsValue ();
+	} else
+		pv = GetAsValue ();
+	
+	if (p->loader->LookupObject (p, p->GetTopElementPtr (), pv, p->current_namespace->GetUri (), el, false, true, v)) {
 		char *type_name = g_strndup (el, dot - el);
 		
 		XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v, true);
@@ -4528,8 +4533,17 @@ XamlElementInstanceNative::CreateItem ()
 bool
 XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
-	if (property->info->RequiresManagedSet () || value->info->RequiresManagedSet ())
-		return p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL);
+	if (property->info->RequiresManagedSet () || value->info->RequiresManagedSet ()) {
+		Value *pv = NULL;
+		
+		if (element_type == XamlElementInstance::PROPERTY) {
+			if (parent != NULL)
+				pv = parent->GetAsValue ();
+		} else
+			pv = GetAsValue ();
+		
+	        return p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, pv, this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL);
+	}
 
 	return dependency_object_set_property (p, this, property, value, true);
 }
@@ -4696,7 +4710,16 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 {
 	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value, false))
 		return true;
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), value);
+	
+	Value *pv = NULL;
+	
+	if (element_type == XamlElementInstance::PROPERTY) {
+		if (parent != NULL)
+			pv = parent->GetAsValue ();
+	} else
+		pv = GetAsValue ();
+	
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, pv, this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), value);
 }
 
 bool
@@ -4748,8 +4771,8 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 		if (!p->cdata_content) 
 			return false;
 		Value v = Value (value);
-		bool res = p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, &v, NULL);
-		return res;
+
+		return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, &v, NULL);
 	}
 
 	return false;
@@ -5003,8 +5026,16 @@ set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, Xam
 {
 	if (!p->loader)
 		return false;
-
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), item->info->xmlns, item->GetAsValue (), item, item->GetParentPointer (), prop->info->xmlns, prop->element_name, value->GetAsValue (), value);
+	
+	Value *pv = NULL;
+	
+	if (item->element_type == XamlElementInstance::PROPERTY) {
+		if (item->parent != NULL)
+			pv = item->parent->GetAsValue ();
+	} else
+		pv = item->GetAsValue ();
+	
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), item->info->xmlns, pv, item, item->GetParentPointer (), prop->info->xmlns, prop->element_name, value->GetAsValue (), value);
 }
 
 static bool
@@ -5310,7 +5341,15 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				}
 
 //				printf ("setting managed property: %s::%s to %s=%s\n", dep->GetType ()->GetName (), prop->GetName (), attr [i], attr [i + 1]);
-				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, attr [i], v, NULL)) {
+				Value *pv = NULL;
+				
+				if (item->element_type == XamlElementInstance::PROPERTY) {
+					if (item->parent != NULL)
+						pv = item->parent->GetAsValue ();
+				} else
+					pv = item->GetAsValue ();
+				
+				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, pv, item, item->GetParentPointer (), NULL, attr [i], v, NULL)) {
 					delete v;
 					g_free (attr_value);
 					continue;
