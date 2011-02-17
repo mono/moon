@@ -452,6 +452,7 @@ namespace Mono.Xaml {
 		{
 			bool inString = false;
 			int end = 0;
+			char stringTerminator = '\0';
 			remaining = remaining.TrimStart ();
 			if (remaining.Length == 0) {
 				next = Char.MaxValue;
@@ -462,8 +463,20 @@ namespace Mono.Xaml {
 			piece.Length = 0;
 			// If we're inside a quoted string we append all chars to our piece until we hit the ending quote.
 			while (end < remaining.Length && (inString || (remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '='))) {
-				if (remaining [end] == '\'')
-					inString = !inString;
+				if (inString) {
+					if (remaining [end] == stringTerminator) {
+						inString = false;
+						end ++;
+						break;
+					}
+				} else {
+					if (remaining [end] == '\'' || remaining [end] == '"') {
+						inString = true;
+						stringTerminator = remaining [end];
+						end ++;
+						continue;
+					}
+				}
 
 				// If this is an escape char, consume it and append the next char to our piece.
 				if (remaining [end] == '\\') {
@@ -474,6 +487,9 @@ namespace Mono.Xaml {
 				piece.Append (remaining [end]);
 				end++;
 			}
+
+			if (inString && end == remaining.Length)
+				throw new Exception ("Unterminated quoted string");
 
 			if (end == remaining.Length && !remaining.EndsWith ("}"))
 				throw new Exception  ("Binding did not end with '}'");
