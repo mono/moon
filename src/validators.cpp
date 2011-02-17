@@ -27,6 +27,7 @@
 #include "designmode.h"
 #include "runtime.h"
 #include "security.h"
+#include "notificationwindow.h"
 
 namespace Moonlight {
 
@@ -530,9 +531,22 @@ IsElevatedPermission (Deployment *deployment)
 	return (ss && (ss->GetElevatedPermissions () == ElevatedPermissionsRequired));
 }
 
+static bool
+IsWindow (DependencyObject* instance, MoonError *error)
+{
+	if (!instance->Is (Type::WINDOW)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Target object must be a Window");
+		return false;
+	}
+	return true;
+}
+
 bool
 Validators::WindowTopLeftValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
+	if (!IsWindow (instance, error))
+		return false;
+
 	Deployment *d = instance->GetDeployment ();
 
 	// must be running out of browser
@@ -576,20 +590,46 @@ Validators::WindowElevatedValidator (DependencyObject* instance, DependencyPrope
 bool
 Validators::WindowHeightValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
+	if (!IsWindow (instance, error))
+		return false;
+
 	if (!WindowElevatedValidator (instance, property, value, error))
 		return false;
 
-	// FIXME PAL : ArgumentOutOfRangeException is throw if setting outside screen height
+	MoonWindowingSystem *ws = Runtime::GetWindowingSystem ();
+	Window *window = (Window*) instance;
+	guint screen_height = ws->GetScreenHeight (window->GetMoonWindow ());
+
+	double height = value ? value->AsDouble () : 0;
+	if (height > screen_height - window->GetValue (Window::TopProperty)->AsDouble ()) {
+		char *msg = g_strdup_printf ("Invalid Window Height (%g)", height);
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001, msg);
+		return false;
+	}
 	return true;
 }
 
 bool
 Validators::WindowWidthValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
+	if (!IsWindow (instance, error))
+		return false;
+
 	if (!WindowElevatedValidator (instance, property, value, error))
 		return false;
 
-	// FIXME PAL : ArgumentOutOfRangeException is throw if setting outside screen width
+	MoonWindowingSystem *ws = Runtime::GetWindowingSystem ();
+	Window *window = (Window*) instance;
+	guint screen_width = ws->GetScreenWidth (window->GetMoonWindow ());
+
+	double width = value ? value->AsDouble () : 0;
+
+	if (width > screen_width - window->GetValue (Window::LeftProperty)->AsDouble ()) {
+		char *msg = g_strdup_printf ("Invalid Window Width (%g)", width);
+		MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1001, msg);
+		g_free (msg);
+		return false;
+	}
 	return true;
 }
 

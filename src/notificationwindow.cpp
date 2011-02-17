@@ -61,6 +61,12 @@ Window::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
+MoonWindow*
+Window::GetMoonWindow ()
+{
+	return moon_window;
+}
+
 void
 Window::SetMoonWindow (MoonWindow *moon_window)
 {
