@@ -13938,7 +13938,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_TextBlock ()
         {
             TextBlock widget = new TextBlock ();
@@ -16925,7 +16924,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_TextBox ()
         {
             TextBox widget = new TextBox ();
