@@ -350,7 +350,7 @@ TextSelection::SetText (const char *text)
 	}
 
 	g_free (this->text);
-	this->text = g_strdup (text);
+	this->text = NULL;
 }
 
 char*
