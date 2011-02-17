@@ -334,8 +334,15 @@ namespace System.Windows.Data {
 			if (raiseEvents) {
 				CurrentChangingEventArgs e = new CurrentChangingEventArgs (cancellable);
 				RaiseCurrentChanging (e);
-				if (e.Cancel)
-					return true;
+				if (e.Cancel) {
+					// If we're cancelling the change, ensure that any selector tracking the CurrentItem
+					// is forcibly re-updated. This will ensure that if the user modifies the selection
+					// by setting Selector.CurrentItem and the ICollectionView cancels the change, the selector
+					// will show the correct item
+					if (raiseEvents)
+						RaiseCurrentChanged (EventArgs.Empty);
+					return false;
+				}
 			}
 
 			IsCurrentAfterLast = position == ActiveList.Count || ActiveList.Count == 0;
