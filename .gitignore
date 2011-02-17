@@ -47,3 +47,4 @@ xdb.*
 /src/value.h
 /src/factory.h
 /src/type-generated.cpp
+/config.cache
