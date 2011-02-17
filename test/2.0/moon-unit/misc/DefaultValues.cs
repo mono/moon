@@ -17634,7 +17634,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_PasswordBox ()
         {
             PasswordBox widget = new PasswordBox ();

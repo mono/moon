@@ -769,7 +769,6 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug ("we don't throw the exception")]
 		public void EventHandlerInBaseClass_sl4 ()
 		{
 			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());

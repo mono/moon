@@ -36,7 +36,6 @@ namespace MoonTest.System {
 	public class ExceptionTest {
 
 		[TestMethod]
-		[MoonlightBug ("for easier debugging ML let the filename out, but not the path")]
 		public void Exception_FileName_Leak ()
 		{
 			try {

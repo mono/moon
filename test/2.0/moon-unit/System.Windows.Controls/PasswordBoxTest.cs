@@ -114,7 +114,6 @@ namespace Mono.Moonlight.UnitTesting
 
         [TestMethod]
         [Asynchronous]
-        [MoonlightBug ("We don't recompute when a lower precedence value changes")]
         public void SelectionForeground_SetStyle_RemoveStyle()
         {
             var brush = new SolidColorBrush(Colors.Red);

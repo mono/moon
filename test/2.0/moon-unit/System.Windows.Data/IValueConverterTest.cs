@@ -197,7 +197,6 @@ namespace MoonTest.System.Windows.Data
 		}
 				
 		[TestMethod]
-		[MoonlightBug ("Fails because the Visibility enum basetype is not byte")]
 		public void InvalidValueConverter3 ()
 		{
 			BoundData data = new BoundData { Visibility = Visibility.Collapsed };
