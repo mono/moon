@@ -116,14 +116,14 @@ namespace Mono {
 						if (type == GridUnitType.Star)
 							str_val = str_val.Substring (0, str_val.Length - 1);
 						if (str_val.Length > 0)
-							length = double.Parse (str_val);
+							length = double.Parse (str_val, Helper.DefaultCulture);
 
 						return new GridLength (length, type);
 					}
 				}
 
 				if (destinationType == typeof (int))
-					return int.Parse (str_val, NumberStyles.Any, null);
+					return int.Parse (str_val, NumberStyles.Any, Helper.DefaultCulture);
 
 				if (destinationType == typeof (double) && str_val == "Auto")
 					return Double.NaN;
