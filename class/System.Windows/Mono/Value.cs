@@ -490,6 +490,10 @@ namespace Mono {
 					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
 					value.u.i32 = (int) v;
 				}
+				else if (v is byte || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(byte))) {
+					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
+					value.u.i32 = (byte) v;
+				}
 				else if (v is bool) {
 					value.k = Kind.BOOL;
 					value.u.i32 = ((bool) v) ? 1 : 0;

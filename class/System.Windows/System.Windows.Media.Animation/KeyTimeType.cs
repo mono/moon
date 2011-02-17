@@ -25,7 +25,7 @@
 
 namespace System.Windows.Media.Animation {
 
-	public enum KeyTimeType {
+	public enum KeyTimeType : byte {
 		Uniform = 0,
 		TimeSpan = 2
 	}
