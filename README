@@ -24,7 +24,7 @@ Requirements
             git clone git://github.com/mono/mono.git mono
             cd mono && git reset --hard 8fa5360e && cd ..
             git clone git://github.com/mono/mono-basic.git mono-basic
-            cd mono-basic && git reset --hard 0670f48 && cd ..
+            cd mono-basic && git reset --hard 2e6038e && cd ..
 
 	To build pixel shader support, you need to get a specific
 	revision of the mesa repository.
@@ -89,6 +89,10 @@ Compiling Mono for Moonlight
 	following options:
 
 		--with-moonlight=yes
+	
+	And you need to configure mono-basic like this:
+	
+		--with-moonlight-yes --moonlight-sdk-path=<mono checkout>/mcs/class/lib/moonlight_raw
 
 	To build moon in this mode, configure it with the following options:
 

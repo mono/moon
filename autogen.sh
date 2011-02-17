@@ -162,6 +162,7 @@ build_mono=1
 mono_flags="--with-sgen=no"
 mono_path=../mono
 mcs_path=../mono/mcs
+mono_basic_path=../mono-basic
 configure_gallium=1
 build_gallium=1
 gallium_path=../mesa
@@ -177,6 +178,8 @@ for arg; do
       mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
     --with-mono-path* )
       mono_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --woth-mono-basic-path* )
+      mono_basic_path=$(echo $arg|sed -e 's,.*=,,') ;;
     --with-manual-gallium=yes | --with-manual-gallium )
       build_gallium=0
       configure_gallium=0 ;;
@@ -195,6 +198,11 @@ if test ! -d $mono_path; then
 fi
 
 if [ $configure_mono -eq 1 ] ; then
+  if test -d $mono_basic_path; then
+    echo Running $mono_basic_path/configure ...
+    (cd $mono_basic_path/ ; ./configure "$@" --moonlight-sdk-location=$mcs_path/class/lib/moonlight_raw --with-moonlight=yes)
+    echo Done running $mono_basic_path/configure ...
+  fi
   if test -d $mono_path; then
     echo Running $mono_path/autogen.sh ...
     # we build --with-sgen=no to not build both boehm and sgen (and we build with boehm instead of sgen because sgen has a problem nobody has investigated much into yet)

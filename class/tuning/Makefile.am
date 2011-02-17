@@ -100,7 +100,7 @@ $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll: $(wildcard $(MCS_PATH)/tools/tuner
 
 if HAVE_MONO_BASIC
 $(MONO_BASIC_DLLFILES): 
-	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune MCS_PATH=$(MCS_PATH) CECIL_LOCATION=$(MCS_PATH)/class/lib/basic
+	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune
 endif
 
 working.stamp: $(INPUT_FILES)
