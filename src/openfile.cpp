@@ -44,6 +44,8 @@ isolated_storage_increase_quota_to (const char *primary_text, const char* second
 	if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
 		return false;
 
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+
 	GtkWidget *widget = gtk_message_dialog_new_with_markup (NULL,
 						GTK_DIALOG_MODAL,
 						GTK_MESSAGE_QUESTION,
@@ -54,6 +56,7 @@ isolated_storage_increase_quota_to (const char *primary_text, const char* second
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (widget), secondary_text);
 
 	gboolean result = (gtk_dialog_run (GTK_DIALOG (widget)) == GTK_RESPONSE_YES);
+	surface->SetCurrentDeployment ();
 	gtk_widget_destroy (widget);
 	return result;
 }

@@ -757,7 +757,7 @@ MoonWindowingSystemGtk::ShowMessageBox (MoonMessageBoxType message_type, const c
 
 	GtkButtonsType bt = GTK_BUTTONS_OK;
 	GtkMessageType mt = GTK_MESSAGE_OTHER;
-
+	Deployment *deployment = Deployment::GetCurrent ();
 	// NOTE: this dialog is displayed even WITHOUT any user action
 	//if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
 	//	return MESSAGE_BOX_RESULT_NONE;
@@ -797,6 +797,7 @@ MoonWindowingSystemGtk::ShowMessageBox (MoonMessageBoxType message_type, const c
 	GtkDialog *dialog = GTK_DIALOG (widget);
 	gtk_dialog_set_default_response (dialog, GTK_RESPONSE_OK);
 	gint result = gtk_dialog_run (dialog);
+	Deployment::SetCurrent (deployment);
 	gtk_widget_destroy (widget);
 
 	switch (result) {
@@ -869,6 +870,7 @@ MoonWindowingSystemGtk::ShowOpenFileDialog (const char *title, bool multsel, con
 	set_filters (chooser, filter, idx);
 	gtk_file_chooser_set_select_multiple (chooser, multsel ? TRUE : FALSE);
 
+	Deployment *deployment = Deployment::GetCurrent ();
 	gchar **ret = NULL;
 	if (gtk_dialog_run (GTK_DIALOG (widget)) == GTK_RESPONSE_ACCEPT){
 		GSList *k, *l = gtk_file_chooser_get_filenames (chooser);
@@ -883,6 +885,7 @@ MoonWindowingSystemGtk::ShowOpenFileDialog (const char *title, bool multsel, con
 		g_slist_free (l);
 	}
 
+	Deployment::SetCurrent (deployment);
 	gtk_widget_destroy (widget);
 
 	return ret;
@@ -900,12 +903,13 @@ MoonWindowingSystemGtk::ShowSaveFileDialog (const char *title, const char *filte
 	set_filters (chooser, filter, idx);
 	gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
 
+	Deployment *deployment = Deployment::GetCurrent ();
 	char* ret = NULL;
 	if (gtk_dialog_run (GTK_DIALOG (widget)) == GTK_RESPONSE_ACCEPT)
 		ret = gtk_file_chooser_get_filename (chooser);
 
+	Deployment::SetCurrent (deployment);
 	gtk_widget_destroy (widget);
-
 	return ret;
 }
 
@@ -917,6 +921,7 @@ MoonWindowingSystemGtk::ShowConsentDialog (const char *question, const char *det
 	const char *question_full = g_strdup_printf ("<big><b>%s</b></big>", question);
 	const char *website_full = g_strdup_printf ("Website: <b>%s</b>", website);
 
+	Deployment *deployment = Deployment::GetCurrent ();
 	GtkWidget *dialog = gtk_dialog_new_with_buttons ("Moonlight", NULL, (GtkDialogFlags)
 							 (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR),
 							 GTK_STOCK_YES, GTK_RESPONSE_YES,
@@ -973,11 +978,10 @@ MoonWindowingSystemGtk::ShowConsentDialog (const char *question, const char *det
 	gtk_widget_show_all (hbox);
 
 	bool rv = gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES;
-
+	Deployment::SetCurrent (deployment);
 	*remember = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (remember_toggle));
 	
 	gtk_widget_destroy (dialog);
-
 	return rv;
 }
 
@@ -1270,7 +1274,7 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	char *argv[3];
 	int pid;
 	int dialog_result;
-	
+	Deployment *current = Deployment::GetCurrent ();
 	argv[0] = NULL;
 	argv[1] = NULL;
 	argv[2] = NULL;
@@ -1289,6 +1293,8 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	LOG_OOB ("MoonInstallerServiceGtk::Install (): Showing oob dialog.\n");
 
 	dialog_result = gtk_dialog_run (dialog);
+	Deployment::SetCurrent (current);
+
 	if (dialog_result == GTK_RESPONSE_OK) {
 		LOG_OOB ("MoonInstallerServiceGtk::Install (): Installing...\n");
 		if ((installed = install_dialog_install ((InstallDialog *) dialog))) {
