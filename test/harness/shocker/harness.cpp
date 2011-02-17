@@ -563,7 +563,7 @@ int WindowHelper_EnsureOOBWindowIsActive (guint32 active /* 32bit bool */)
 
 int WindowHelper_SetWindowPosition (guint32 left, guint32 top)
 {
-	Shocker_FailTestFast ("WindowHelper_SetWindowPosition (): Not implemented");
+	printf ("[%i shocker] WindowHelper_SetWindowPosition (%d, %d) [NOT IMPLEMENTED]\n", getpid (), left, top);
 	return 0;
 }
 
@@ -574,9 +574,10 @@ void WindowHelper_GetPrimaryScreenSize (guint32 *width, guint32 *height)
 	Display *display = XOpenDisplay (NULL);
 	Window root = XDefaultRootWindow (display);
 
-	LOG_HARNESS ("[%i shocker] WindowHelper_GetPrimaryScreenSize ()\n", getpid ());
-
 	XGetGeometry (display, root, &root, &x, &y, width, height, &bwidth, &depth);
+
+	LOG_HARNESS ("[%i shocker] WindowHelper_GetPrimaryScreenSize () -> w: %d, h: %d\n", getpid (), *width, *height);
+
 	XCloseDisplay (display);
 }
 
