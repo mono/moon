@@ -392,6 +392,7 @@ namespace System.Windows.Data {
 					cachedValue = Binding.FallbackValue;
 				} else {
 					cachedValue = dp.GetDefaultValue (Target);
+					return cachedValue;
 				}
 			}
 			else {
