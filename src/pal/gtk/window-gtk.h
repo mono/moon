@@ -29,6 +29,10 @@
 struct pipe_screen;
 #endif
 
+#ifdef USE_GLX
+typedef void (* PFNGLXPROC) ();
+#endif
+
 namespace Moonlight {
 
 class GLXSurface;
@@ -116,6 +120,7 @@ private:
 #ifdef USE_GLX
 	GLXSurface *glxtarget;
 	GLXContext *glxctx;
+	PFNGLXPROC glxcopysubbuffer;
 #endif
 
 	int left;

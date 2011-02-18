@@ -50,6 +50,7 @@
 #ifdef USE_GLX
 #define __MOON_GLX__
 #include "context-glx.h"
+typedef void (* PFNGLXCOPYSUBBUFFERPROC) (Display *dpy, GLXDrawable drawable, int x, int y, int width, int height);
 #endif
 
 // change this to "1" if you want fullscreen redraws to allocate a new
@@ -99,6 +100,7 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 #ifdef USE_GLX
 	glxtarget = NULL;
 	glxctx = NULL;
+	glxcopysubbuffer = NULL;
 #endif
 
 }
@@ -560,10 +562,20 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		glxtarget = new GLXSurface (dpy, win);
 		context = new GLXContext (glxtarget);
 
-		if (context->Initialize ())
+		if (context->Initialize ()) {
+			const char *extensions = (const char *)
+				glXGetClientString (dpy, GLX_EXTENSIONS);
+
+			if (strstr (extensions, "GLX_MESA_copy_sub_buffer"))
+				glxcopysubbuffer = glXGetProcAddressARB
+					((const GLubyte*)
+					 "glXCopySubBufferMESA");
+
 			glxctx = context;
-		else
+		}
+		else {
 			delete context;
+		}
 	}
 
 	if (glxtarget && glxctx) {
@@ -573,6 +585,7 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 			       event->area.width,
 			       event->area.height);
 		Region *region = new Region (r);
+		int    y = height - (event->area.y + event->area.height);
 
 		glxtarget->Reshape (width, height);
 
@@ -585,9 +598,18 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
 			glXSwapBuffers (dpy, win);
 		}
-		else {
-			int y = height - (event->area.y + event->area.height);
+		else if (glxcopysubbuffer) {
+			PFNGLXCOPYSUBBUFFERPROC glXCopySubBufferMESA =
+				(PFNGLXCOPYSUBBUFFERPROC) glxcopysubbuffer;
 
+			glXCopySubBufferMESA (dpy,
+					      win,
+					      event->area.x,
+					      y,
+					      event->area.width,
+					      event->area.height);
+		}
+		else {
 			glxctx->MakeCurrent ();
 
 			glDrawBuffer (GL_FRONT);
