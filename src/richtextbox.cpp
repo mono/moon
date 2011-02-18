@@ -789,7 +789,7 @@ RichTextBox::CursorLineEnd (const TextPointer& cursor, bool include)
 	if (!(line = view->GetLineFromY (y, &index)))
 		return cursor;
 
-	return line->start;
+	return line->end;
 }
 
 bool
