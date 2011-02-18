@@ -434,3 +434,8 @@ xaml-to-header.exe: xaml-to-header.cs
 
 png-to-header.exe: png-to-header.cs
 	gmcs png-to-header.cs
+
+if CODECS_SUPPORTED
+all-local:
+	${MAKE} -C $(CODECS_PATH)/libmoon
+endif
