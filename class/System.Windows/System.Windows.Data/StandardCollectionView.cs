@@ -151,6 +151,8 @@ namespace System.Windows.Data {
 			}
 
 			IsEmpty = ActiveList.Count == 0;
+			IsCurrentAfterLast = CurrentPosition == ActiveList.Count || ActiveList.Count == 0;
+			IsCurrentBeforeFirst = CurrentPosition == -1 || ActiveList.Count == 0;
 		}
 		protected override void RaiseCollectionChanged (NotifyCollectionChangedEventArgs e)
 		{
@@ -403,6 +405,8 @@ namespace System.Windows.Data {
 				}
 	
 				IsEmpty = ActiveList.Count == 0;
+				IsCurrentAfterLast = CurrentPosition == ActiveList.Count || ActiveList.Count == 0;
+				IsCurrentBeforeFirst = CurrentPosition == -1 || ActiveList.Count == 0;
 				int index = IndexOf (CurrentItem);
 				if (index < 0 && CurrentPosition != -1 && !IsEmpty)
 					index = 0;
