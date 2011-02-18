@@ -62,6 +62,7 @@ public:
 
 	/* @GeneratePInvoke */
 	void SetMoonWindow (MoonWindow *window);
+	/* @GeneratePInvoke */
 	MoonWindow *GetMoonWindow ();
 
 	/* @GeneratePInvoke */

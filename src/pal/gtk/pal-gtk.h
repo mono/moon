@@ -51,9 +51,9 @@ public:
 
 	virtual void ShowCodecsUnavailableMessage ();
 
-	virtual guint GetScreenHeight (MoonWindow *moon_window);
+	virtual guint32 GetScreenHeight (MoonWindow *moon_window);
 
-	virtual guint GetScreenWidth (MoonWindow *moon_window);
+	virtual guint32 GetScreenWidth (MoonWindow *moon_window);
 private:
 	Color *system_colors[NumSystemColors];
 

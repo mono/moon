@@ -301,9 +301,11 @@ public:
 
 	virtual void ShowCodecsUnavailableMessage () = 0;
 
-	virtual guint GetScreenHeight (MoonWindow *moon_window) = 0;
+	/* @GeneratePInvoke */
+	virtual guint32 GetScreenHeight (MoonWindow *moon_window) = 0;
 
-	virtual guint GetScreenWidth (MoonWindow *moon_window) = 0;
+	/* @GeneratePInvoke */
+	virtual guint32 GetScreenWidth (MoonWindow *moon_window) = 0;
 
 private:
 	MoonWindowlessCtor windowless_ctor;

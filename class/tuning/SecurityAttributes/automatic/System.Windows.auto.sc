@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 590 methods needs to be decorated.
+# 593 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -932,6 +932,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::window_get_moon_window(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_initialize_from_bitmap_source(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1074,6 +1077,12 @@
 
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::http_request_write_event_args_get_count(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.UInt32 Mono.NativeMethods::moon_windowing_system_get_screen_height(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.UInt32 Mono.NativeMethods::moon_windowing_system_get_screen_width(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::text_pointer_get_location(System.IntPtr)

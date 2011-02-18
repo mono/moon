@@ -711,9 +711,10 @@ namespace System.Windows {
 						w.Top = ws.Top;
 						break;
 					case WindowStartupLocation.CenterScreen:
-						// FIXME PAL : export screen width and height
-						w.Left = ((1280 - w.Width) / 2);
-						w.Top = ((800 - w.Height) / 2);
+						IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
+						IntPtr moon_window = NativeMethods.window_get_moon_window (window_handle);
+						w.Left = ((NativeMethods.moon_windowing_system_get_screen_width (windowing_system, moon_window) - w.Width) / 2);
+						w.Top = ((NativeMethods.moon_windowing_system_get_screen_height (windowing_system, moon_window) - w.Height) / 2);
 						break;
 					default:
 						// let the OS decide where to show the window

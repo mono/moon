@@ -1257,14 +1257,14 @@ GetGdkScreen (MoonWindow *moon_window)
 	return gdk_screen_get_default ();
 }
 
-guint
+guint32
 MoonWindowingSystemGtk::GetScreenHeight (MoonWindow *moon_window)
 {
 	GdkScreen *screen = GetGdkScreen (moon_window);
 	return gdk_screen_get_height (screen);
 }
 
-guint
+guint32
 MoonWindowingSystemGtk::GetScreenWidth (MoonWindow *moon_window)
 {
 	GdkScreen *screen = GetGdkScreen (moon_window);
