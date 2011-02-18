@@ -87,7 +87,11 @@ namespace System.Windows {
 		}
 
 		public bool IsEmpty {
-			get; protected set;
+			get { return isempty.Value; }
+			set {
+				if (IsEmpty != value)
+					isempty.Value = value;
+			}
 		}
 
 		protected Func<PropertyChangedEventHandler> PropertyChangedFunc {
