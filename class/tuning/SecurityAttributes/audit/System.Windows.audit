@@ -1368,16 +1368,19 @@ System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDi
 System.Object Mono.NativeDependencyObjectHelper::GetAnimationBaseValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 	20101108	spouliot - e928aa62 - pinvoke into dependency_object_get_animation_base_value using (could be null) 'wrapper' NativeHandle property and (non-null) 'dp' Native property. Value.ToObject [SecurityCritical] is called on the result
 
-!SSC-AD64F5D25BFA6408F25966E95F5A4488
+!SSC-D9A181F4F6E8157CB23C9FA28C04F2BC
 System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
+	20110217	spouliot - 3f9ca65 - dependency_object_get_value [SecurityCritical] API was simplified (less arguments)
 	r143068		spouliot - validate 'dp' (non-null). call Deployment.get_Types [SecurityCritical] and call dependency_object_get_value [SecurityCritical] using parameter derived values
 
 !SSC-9494C19885B64107E5452088F6EA90BF
 System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 	r143068		spouliot - call dependency_object_read_local_value [SecurityCritical] using native handles from parameters
 
-!SSC-6ABD7AA47518CA7DAFCE934FB883C156
+!SSC-4953B4ECCA6828C12A4BE3143379240E
 System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
+	20110218	spouliot - 1e22a49 - add missing return on the cacheValue
+	20110217	spouliot - 9ceb150 - when patrh is broken try TargetNullValue before FallbackValue
 	20110112	spouliot - 50247f7 - merge 'DataSource == null' with 'PropertyPathWalker.IsPathBroken' conditions and does not rethrow in the 'catch-all'
 	20101210	spouliot - rethrow the original exception after setting 'cachedValue'
 	r157035		spouliot - supply a boolean to PropertyPathWalker ctor whether the PropertyType is IEnumerable or ICollectionView (or not)
@@ -1395,6 +1398,10 @@ System.Object System.Windows.DependencyProperty::GetDefaultValue(Mono.Kind)
 System.Object System.Windows.DependencyProperty::GetDefaultValue(System.Object)
 	20110125	spouliot - 1f89602 - no source change (now calling a virtual GetDefaultValue instead of non-virtual)
 	r154053		spouliot - retrieve the Kind using Types [SecurityCritical] TypeToNativeKind and call GetDefaultValue(Mono.Kind) overload
+
+!SSC-7336D744B26295C89A3F92080F006241
+System.Object System.Windows.Documents.TextSelection::GetPropertyValue(System.Windows.DependencyProperty)
+	20110217	spouliot - 0a02f47e - pinvoke into text_selection_get_property_value using 'native' field and 'formattingProperty.Native' then call Value.ToObject [SecurityCritical] on the return value / FIXME: missing validations
 
 !SSC-0C0AD76AF4E0162621302F5D7564D0B4
 System.Object System.Windows.Input.FocusManager::GetFocusedElement()
@@ -1915,8 +1922,9 @@ System.Void System.Windows.Data.BindingExpressionBase::OnNativeMentorDataContext
 	20100831	spouliot - 25f4e0b5 - add a second try catch around the creation of the MoonError instance 'error' so exceptions cannot be leaked to native code
 	r160124		spouliot - add a try/catch around the call to MentorDataContextChanged so exceptions cannot be leaked to native code
 
-!SSC-4D2D3AB7692D59013261B5CDC78175CD
-System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
+!SSC-78E38D3C67BB329453EF972741C18498
+System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object,System.Boolean)
+	20110217	spouliot - 914396f - an extra boolean parameter was added to allow 'force'ing an update
 	20110208	spouliot - c20d792 - use 'node.ValyeType' instead of 'node.PropertyInfo.PropertyType' for two-ways binding with a type converter
 	20110125	spouliot - no source change / likely compiler related
 	20101004	spouliot - 6b240b35 - call (new) GetConverterFrom and use it, if non null, on (non-null) 'value' using 'null' and GetConverterCulture result
@@ -1925,7 +1933,7 @@ System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System
 	r154628		spouliot - change exception handling (use InnerException) if it's a TargetInvocationException and call [Transparent] MaybeEmitError with the exception
 	r150645		spouliot - use node.ValueType in ConvertBack and node.SetValue (instead of SetPropertyValue)
 	r149398		spouliot - logic moved from SetValue
-	r143068		spouliot - internal, call MoonlightTypeConverter [SecurityCritical] ConvertObject using 'PropertyInfo' property, value (parameter) and the type of 'Target' property
+	r143068		spouliot - internal, call MoonlightTypeConverter [SecurityCritical] ConvertObject using 'PropertyInfo' property, value (parameter) and the type of 'Target'
 
 !SSC-A4B08D0924D080683906F44A10C5AB42
 System.Void System.Windows.Data.CollectionViewNode::OnSourceChanged(System.Object,System.Object)
@@ -1996,8 +2004,9 @@ System.Void System.Windows.Deployment::.cctor()
 	20110104	spouliot - 349d274 - removal of static List<Action> 'shutdown_actions' and related code
 	20101210	spouliot - daf281a - a static EnsureManagedPeerCallback named 'ensure_managed_peer' is created over ApplicationLauncher.EnsureManagedPeer [SecurityCritical]
 
-!SSC-9190C1C4937D29A8AA7D414042B1514C
+!SSC-82F2B36C3DCD823E0E71F950C8651E6A
 System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
+	20110218	spouliot - no source change - compiler
 	20110208	spouliot - no source change - compiler
 	20110105	spouliot - no source change - compiler
 	r142142		spouliot - pinvoke into surface_emit_error (autogenerated) using 'Surface.Native', 8 (EXECUTION_ENGINE_EXCEPTION), and the unvalidated parameter
@@ -2014,6 +2023,10 @@ System.Void System.Windows.Documents.FontSource::.ctor(System.IO.Stream)
 !SSC-65FA402BD81745A0A9CC85653CBBE777
 System.Void System.Windows.Documents.TextPointer::.ctor(System.IntPtr)
 	20101108	spouliot - a27f75f - pinvoke into text_pointer_get_is_at_insertion_position, text_pointer_get_logical_direction and text_pointer_get_parent using 'raw' parameter to set the respective properties
+
+!SSC-918302677D70AC1A92BF76B045E0FC7B
+System.Void System.Windows.Documents.TextSelection::ApplyPropertyValue(System.Windows.DependencyProperty,System.Object)
+	20110217	spouliot - 0a02f47e - calls Value.FromObject on 'value' parameter then pinvoke into text_selection_apply_property_value using 'native' field, 'formattingProperty.Native' and a reference to the ValueformattingProperty.Native / FIXME missing validations (needs tests)
 
 !SSC-DE0D6336EE436E2187C8B14DBB342EF2
 System.Void System.Windows.Documents.TextSelection::Insert(System.Windows.Documents.TextElement)

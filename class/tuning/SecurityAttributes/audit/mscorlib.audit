@@ -35,8 +35,9 @@ System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System
 System.Boolean System.Double::Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Boolean,System.Double&,System.Exception&)
 	r142142		spouliot - call, from an unsafe block, ParseImpl (icall named mono_double_ParseImpl)
 
-!SSC-DDA7A1263DC189F9FF5E67FF4D6694A2
+!SSC-3EC5BAC5015839FD5C4AEAA787AD06F7
 System.Boolean System.Enum::HasFlag(System.Enum)
+	20110209	spouliot - 8d2b210 - stop calling Convert.ToUInt64 to avoid problems with negative values
 	r153663		spouliot - (new SL4/FX4) call get_value (icall) to compare (as long) with the parameter
 
 !SSC-49DE777171D97109042D803D3A4C9BE8

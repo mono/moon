@@ -50,8 +50,9 @@ System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
 	20101013	spouliot - 936c28a - only call queue.Dequeue if queue.Count > 0
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on non-null 'sac' which represents the queued delegate returned by Socket/SocketAsyncResult::GetDelegate [SecurityCritical]
 
-!SSC-62A93403D66E74B8FA19697E35B0CC97
+!SSC-056907E31ADB86183CA8E2309741AB83
 System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
+	20110217	spouliot - 3dbfe75 - parameter names updated to match FX/SL4
 	r142142		spouliot - calls Socket_internal (icall)
 
 !SSC-61B91162D5ADD8FCBEFD74D940D430CF

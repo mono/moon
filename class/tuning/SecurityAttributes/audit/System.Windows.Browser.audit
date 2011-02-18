@@ -112,11 +112,19 @@ System.Void System.Windows.Browser.ScriptObject::SetDefaultHandle()
 System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
 	r142142		spouliot - added validations, pinvoke into html_object_get_property
 
+!SSC-13A14EB30D0624FC0014028B0EEC5D22
+System.Windows.Browser.BrowserInformation System.Windows.Browser.HtmlPage::get_BrowserInformation()
+	20110210	spouliot - fa6f28a - calls UnsafeWindow [SecurityCritical] in order to work when EnableHtmlAccess is false
+
 !SSC-F73EDF5A3745D06CA4A90AAB12C31926
 System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
 	20110125	spouliot - no source change / compiler?
 	20110112	spouliot - no source change / compiler?
 	r142142		spouliot - pinvoke into plugin_instance_get_browser_host
+
+!SSC-8525E641E229BD3AB5E9A90B6B9906D2
+System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::get_Window()
+	20110210	spouliot - fa6f28a - calls UnsafeWindow [SecurityCritical] in order to work when EnableHtmlAccess is false
 
 !SSC-AE9FE1D2F71DAEC404CF5177B5251525
 System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::PopupWindow(System.Uri,System.String,System.Windows.Browser.HtmlPopupWindowOptions)
