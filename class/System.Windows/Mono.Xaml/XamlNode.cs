@@ -384,20 +384,23 @@ namespace Mono.Xaml {
 					if (!reader.Read ())
 						return null;
 			} else {
-				while (reader.NodeType != XmlNodeType.Element &&
-					   reader.NodeType != XmlNodeType.EndElement &&
-					   reader.NodeType != XmlNodeType.Text)
-					if (!reader.Read ())
-						return null;
+				do {
+					while (reader.NodeType != XmlNodeType.Element &&
+						   reader.NodeType != XmlNodeType.EndElement &&
+						   reader.NodeType != XmlNodeType.Text) {
+						if (!reader.Read ())
+							return null;
+					}
+					if (reader.NodeType == XmlNodeType.Element &&
+						parent.top.IgnorablePrefixes.Contains (reader.Prefix))
+						reader.Skip ();
+					else
+						break;
+				} while (true);
 			}
 
 			if (reader.NodeType == XmlNodeType.EndElement)
 				return null;
-
-			if (parent != null && parent.top.IgnorablePrefixes.Contains (reader.Prefix)) {
-				reader.Skip ();
-				return null;
-			}
 
 			if (node == null)
 				node = new XamlNode ();
