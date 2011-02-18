@@ -1,4 +1,4 @@
-<Project name="System.Windows" fileversion="2.0" DefaultNamespace="System.Windows" language="C#" targetFramework="2.0" ctype="DotNetProject">
+<Project name="System.Windows" fileversion="2.0" DefaultNamespace="System.Windows" language="C#" targetFramework=".NETFramework,Version=v2.0" ctype="DotNetProject">
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
     <BuildFilesVar Name="system_windows_sources" />
     <DeployFilesVar />
@@ -807,6 +807,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows/WeakRefs.g.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/NameScope.cs" />
     <File subtype="Code" buildaction="Compile" name="MS.Internal/JoltHelper.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlNode.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
