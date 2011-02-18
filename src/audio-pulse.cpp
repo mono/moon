@@ -1073,8 +1073,11 @@ PulseRecorder::InitializePA ()
 			recording_spec.format = PA_SAMPLE_U8;
 		} else if (desired_format->bitsPerSample == 16) {
 			recording_spec.format = PA_SAMPLE_S16LE;
+#if 0
+		// this requires pulseaudio 0.9.15, which sled 11 doesn't have, so we can't build there if this is enabled */
 		} else if (desired_format->bitsPerSample == 24) {
 			recording_spec.format = PA_SAMPLE_S24LE;
+#endif
 		} else if (desired_format->bitsPerSample == 32) {
 			recording_spec.format = PA_SAMPLE_S32LE;
 		} else {
