@@ -469,6 +469,7 @@ namespace Mono.Xaml {
 
 						ai.IsNsXaml = !ai.IsMapping && ai.NamespaceURI == XamlUri;
 						ai.IsNsIgnorable = !ai.IsMapping && (ai.NamespaceURI == IgnorableUri || ai.Prefix == "mc");
+						ai.IsNsIgnorable |= node.IgnorablePrefixes.Contains (ai.Prefix);
 						ai.IsNsClr = !ai.IsMapping && ai.NamespaceURI.StartsWith ("clr-namespace");
 						if (ai.IsNsXaml && ai.LocalName == "Class")
 							node.Class = ai.Value;
