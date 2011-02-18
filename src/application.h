@@ -12,7 +12,6 @@
 
 #include <glib.h>
 
-#include "pal.h"
 #include "utils.h"
 #include "enums.h"
 #include "control.h"

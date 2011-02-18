@@ -18,6 +18,7 @@
 #include "dependencyobject.h"
 #include "rect.h"
 #include "context.h"
+#include "pal.h"
 
 #define MAX_SAMPLERS  16
 #define MAX_CONSTANTS 32

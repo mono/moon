@@ -13,7 +13,6 @@
 #include "pal-linux-capture.h"
 #include "pal-linux-audio-capture.h"
 #include "deployment.h"
-#include "runtime.h"
 #include "consent.h"
 #include "runtime.h"
 

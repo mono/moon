@@ -14,7 +14,6 @@
 #ifndef __BITMAPIMAGE_H__
 #define __BITMAPIMAGE_H__
 
-#include "pal.h"
 #include "utils.h"
 #include "dependencyobject.h"
 #include "downloader.h"

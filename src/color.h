@@ -14,8 +14,6 @@
 #include <glib.h>
 #include <math.h>
 
-#include "pal.h"
-
 namespace Moonlight {
 
 /* @IncludeInKinds */

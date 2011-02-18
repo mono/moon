@@ -19,7 +19,6 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "pal.h"
 #include "provider.h"
 #include "weakrefmanager.h"
 #include "dependencyproperty.h"

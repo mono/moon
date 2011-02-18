@@ -13,8 +13,6 @@
 
 #include <cairo.h>
 
-#include "pal.h"
-
 #include "list.h"
 #include "rect.h"
 #include "color.h"

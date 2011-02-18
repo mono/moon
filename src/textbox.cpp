@@ -30,6 +30,7 @@
 #include "utils.h"
 #include "uri.h"
 #include "factory.h"
+#include "contentpresenter.h"
 
 #include "window.h"
 

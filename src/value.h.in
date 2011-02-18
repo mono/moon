@@ -15,7 +15,6 @@
 
 #include <glib.h>
 
-#include "pal.h"
 #include "type.h"
 #include "enums.h"
 

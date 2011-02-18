@@ -35,6 +35,7 @@
 #include "bitmapimage.h"
 #include "ptr.h"
 #include "factory.h"
+#include "deployment.h"
 
 namespace Moonlight {
 
