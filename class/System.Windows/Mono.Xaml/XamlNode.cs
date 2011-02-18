@@ -395,6 +395,7 @@ namespace Mono.Xaml {
 				return null;
 
 			if (parent != null && parent.top.IgnorablePrefixes.Contains (reader.Prefix)) {
+				reader.Skip ();
 				return null;
 			}
 
