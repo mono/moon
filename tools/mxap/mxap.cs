@@ -40,12 +40,18 @@ namespace Moonlight {
 		private string cd;
 		private string warn_as_error_arg;
 		private bool in_place = true;
+		private string prefix = null;
 		
 		const string RuntimeVersion2 = "2.0.31005.0";
 		const string RuntimeVersion3 = "3.0.40818.0";
 		const string RuntimeVersion4 = "4.0.50826.0";
 
 		private string RuntimeVersion = RuntimeVersion4;
+
+		public string Prefix {
+			get { return prefix; }
+			set { prefix = value; }
+		}
 
 		public string CSSources {
 			get { return cs_sources; }
@@ -504,11 +510,9 @@ namespace Moonlight {
 				compiler_args.AppendFormat (" {0}", warn_as_error_arg);
 
 			if (desktop)
-				return RunProcess ("gmcs", compiler_args.ToString());
+				return RunProcess ("mcs", compiler_args.ToString());
 			else
-				return Run21Tool ("smcs",
-						   "class/lib/2.1/smcs.exe",
-						   compiler_args.ToString());
+				return RunProcess ("smcs", "\"-lib:" + prefix + "/lib/moonlight/plugin/\" " + compiler_args.ToString ());
 		}
 
 		public bool CreateXap ()
@@ -557,44 +561,11 @@ namespace Moonlight {
 					xaml2html_args.ToString ());
 		}
 
-		private bool Run21Tool (string filename, string builddir_exe, string args)
-		{
-			string old_mono_path = Environment.GetEnvironmentVariable ("MONO_PATH");
-			if (TopBuildDir != null) {
-				string new_mono_path = Path.Combine (
-							     Path.Combine (
-								   Path.Combine (TopBuildDir, "class"),
-								   "lib"),
-							     "2.1");
-				if (!string.IsNullOrEmpty (old_mono_path))
-					new_mono_path = string.Format ("{0}:{1}", new_mono_path, old_mono_path);
-				Environment.SetEnvironmentVariable ("MONO_PATH", new_mono_path);
-			}
-
-			bool rv = RunTool (filename, builddir_exe, args);
-
-			if (TopBuildDir != null)
-				Environment.SetEnvironmentVariable ("MONO_PATH", old_mono_path);
-
-			return rv;
-		}
-	
-
 		private bool RunTool (string filename, string builddir_exe, string args)
 		{
 			if (top_builddir != null) {
-				bool need_smcs_hack = false;
-				string moonlight_mono = null;
-				if (filename == "smcs") {
-					need_smcs_hack = true;
-					moonlight_mono = Environment.GetEnvironmentVariable ("MOONLIGHT_MONO");
-				}
-				if (string.IsNullOrEmpty (moonlight_mono))
-					filename = "mono";
-				else
-					filename = moonlight_mono;
-				args = String.Format ("{3}{0}/{1} {2}", top_builddir, builddir_exe, args,
-						      need_smcs_hack ? "--runtime=moonlight --security=temporary-smcs-hack " : "");
+				filename = "mono";
+				args = String.Format ("{0}/{1} {2}", top_builddir, builddir_exe, args);
 			}
 
 			return RunProcess (filename, args);
@@ -826,6 +797,7 @@ namespace Moonlight {
 				{ "out=|output-dir=", v => mxap.OutputDir = v },
 				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) },
 				{ "runtime-version=|rv=", String.Format ("Select the Silverlight Runtime Version (2 = {0}, 3 = {1} 4 = {2}, or use the full version string)", RuntimeVersion2, RuntimeVersion3, RuntimeVersion4), v => mxap.SetRuntimeVersion (v) },
+				{ "prefix=", "Prefix to use to set libpath", v => mxap.Prefix = v },
 				{ "warnaserror", "Treats all warnings as errors", v => mxap.WarnAsErrorArg = v != null ? "-warnaserror+" : null }
 			};
 
@@ -849,11 +821,6 @@ namespace Moonlight {
 
 			if (extra.Count > 0)
 				mxap.Cd = Path.GetFullPath (extra [0]);
-
-			if (mxap.TopBuildDir == null && mxap.ExternalAssemblies.Count > 0) {
-				Console.Error.WriteLine ("--reference requires --builddirhack");
-				return 1;
-			}
 
 			if (mxap.OutputDir == null)
 				mxap.OutputDir = mxap.Cd;

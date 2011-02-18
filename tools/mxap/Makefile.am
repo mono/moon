@@ -19,11 +19,11 @@ mxap_exe_CS = 		\
 mxap.exe: $(mxap_exe_CS) 
 	gmcs -debug+ -out:$@ $(mxap_exe_CS) -r:System -r:System.Xml
 
-mxap: $(srcdir)/../launcher.in Makefile
-	$(do_subst) < $(srcdir)/../launcher.in > mxap
+mxap: mxap.in Makefile
+	$(do_subst) < mxap.in > mxap
 	chmod +x mxap
 
-do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],mxap.exe,g'
+do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],mxap.exe,g' -e 's,[@]PREFIX[@],$(prefix),g'
 
 run:
 	mono --debug mxap.exe
