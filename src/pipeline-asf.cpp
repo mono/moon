@@ -1586,6 +1586,7 @@ MmsSource::MmsSource (Media *media, const Uri *uri)
 	waiting_state = MmsInitialization;
 	requested_pts = G_MAXUINT64;
 	temporary_downloaders = NULL;
+	is_disposing = false;
 	open_demuxer_state = 0;
 
 	p_packet_count = 0;
@@ -1622,6 +1623,7 @@ MmsSource::Dispose ()
 	demuxer = this->demuxer;
 	this->demuxer = NULL;
 	delete_tmp_downloaders = this->temporary_downloaders != NULL || this->request != NULL;
+	is_disposing = true;
 	Unlock ();
 
 	if (current) {
@@ -1652,6 +1654,7 @@ void
 MmsSource::DeleteTemporaryDownloaders (EventObject *obj)
 {
 	List *temporary_downloaders;
+	MmsRequestNode *node;
 	HttpRequest *request;
 
 	MmsSource *src = (MmsSource *) obj;
@@ -1662,8 +1665,15 @@ MmsSource::DeleteTemporaryDownloaders (EventObject *obj)
 	src->request = NULL;
 	src->Unlock ();
 
-	delete temporary_downloaders;
-	temporary_downloaders = NULL;
+	if (temporary_downloaders != NULL) {
+		node = (MmsRequestNode *) temporary_downloaders->First ();
+		while (node != NULL) {
+			node->request->RemoveAllHandlers (obj);
+			node->request->Abort ();
+		}
+		delete temporary_downloaders;
+		temporary_downloaders = NULL;
+	}
 	if (request) {
 		request->RemoveAllHandlers (obj);
 		request->Abort ();
@@ -1841,9 +1851,13 @@ void
 MmsSource::SendSelectStreamRequest ()
 {
 	HttpRequest *request;
+	bool is_disposing = false;
 
 	LOG_MMS ("MmsSource::SendSelectStreamRequest ()\n");
 	VERIFY_MAIN_THREAD;
+
+	if (IsDisposed ())
+		return;
 
 	CreateDownloaders ("POST", &request);
 
@@ -1852,13 +1866,19 @@ MmsSource::SendSelectStreamRequest ()
 
 	request->RemoveAllHandlers (this); /* We don't want any data from this mms downloader */
 	Lock ();
-	if (temporary_downloaders == NULL)
-		temporary_downloaders = new List ();
-	temporary_downloaders->Append (new MmsRequestNode (request));
+	if (this->is_disposing) {
+		is_disposing = true;
+	} else {
+		if (temporary_downloaders == NULL)
+			temporary_downloaders = new List ();
+		temporary_downloaders->Append (new MmsRequestNode (request));
+	}
 	Unlock ();
 
-	SetStreamSelectionHeaders (request);
-	request->Send ();
+	if (!is_disposing) {
+		SetStreamSelectionHeaders (request);
+		request->Send ();
+	}
 
 	request->unref ();
 }
@@ -1871,9 +1891,13 @@ MmsSource::SendLogRequest (MediaLog *log)
 	char *content = NULL;
 	char *content_length = NULL;
 	char *player_id = NULL;
+	bool is_disposing = false;
 
 	LOG_MMS ("MmsSource::SendLogRequest ()\n");
 	VERIFY_MAIN_THREAD;
+
+	if (IsDisposed ())
+		return;
 
 	/* We need to force HTTP/1.0, since curl otherwise confuse the server by sending
 	 * just the headers with an additional Expect: 100 header, expecting the server
@@ -1886,10 +1910,16 @@ MmsSource::SendLogRequest (MediaLog *log)
 	}
 
 	Lock ();
-	if (temporary_downloaders == NULL)
-		temporary_downloaders = new List ();
-	temporary_downloaders->Append (new MmsRequestNode (request));
+	if (this->is_disposing) {
+		is_disposing = true;
+	} else {
+		if (temporary_downloaders == NULL)
+			temporary_downloaders = new List ();
+		temporary_downloaders->Append (new MmsRequestNode (request));
+	}
 	Unlock ();
+	if (is_disposing)
+		goto cleanup;
 
 	// POST /SSPLDrtOnDemandTest HTTP/1.0
 	// Host: moonlightmedia
@@ -1920,6 +1950,7 @@ MmsSource::SendLogRequest (MediaLog *log)
 
 	LOG_MMS ("MmsSource::SendLogRequest () sent log:\n%s\n", content);
 
+cleanup:
 	g_free (content_length);
 	g_free (content);
 	g_free (player_id);

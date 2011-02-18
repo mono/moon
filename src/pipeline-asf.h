@@ -187,6 +187,7 @@ private:
 	guint64 requested_pts; /* must be thread-safe */
 	MmsWaitingState waiting_state; /* write in ctor, rw in main thread: thread-safe, no locks required */
 	List *temporary_downloaders; /* must be thread-safe, unrefs are done on the media thread */
+	bool is_disposing; /* must be thread-safe */
 	/*
 	 * 0: Nothing done
 	 * 1: MmsSource::OpenedHandler called
