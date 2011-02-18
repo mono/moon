@@ -1974,8 +1974,10 @@ bool
 Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, MoonMouseEvent *event)
 {
 	bool handled = false;
+	/*
 	bool mouse_down = (event_id == UIElement::MouseLeftButtonDownEvent ||
 			   event_id == UIElement::MouseRightButtonDownEvent);
+	*/
 
 	// we can end up here if mozilla pops up the JS timeout
 	// dialog.  The problem is that JS might have registered a
