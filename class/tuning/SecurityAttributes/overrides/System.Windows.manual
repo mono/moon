@@ -206,7 +206,7 @@
 +SC-M: System.Void System.Windows.Style::ConvertSetterValue(System.Windows.Setter)
 +SC-M: System.Void System.Windows.Style::ConvertSetterValues()
 
-+SC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext,System.String)
++SC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext)
 
 +SC-M: System.Void Mono.IListenPropertyChanged::OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 +SC-M: System.Void System.Windows.TemplateBindingExpression::Mono.IListenPropertyChanged.OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
