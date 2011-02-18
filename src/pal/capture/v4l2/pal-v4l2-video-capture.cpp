@@ -22,177 +22,153 @@
 #include <linux/videodev2.h>
 
 #include "pal/capture/v4l2/pal-v4l2-video-capture.h"
+#include "capture.h"
+#include "factory.h"
+#include "debug.h"
 
 using namespace Moonlight;
 
-MoonVideoCaptureServiceV4L2::MoonVideoCaptureServiceV4L2 ()
+void
+MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (VideoCaptureDeviceCollection *col)
 {
-	default_device = NULL;
-	devices = NULL;
-}
-
-MoonVideoCaptureServiceV4L2::~MoonVideoCaptureServiceV4L2 ()
-{
-	if (devices) {
-		for (guint i = 0; i < devices->len; i ++)
-			delete ((MoonVideoCaptureDeviceV4L2*)devices->pdata[i]);
-		g_ptr_array_free (devices, FALSE);
-	}
-}
-
-MoonVideoCaptureDevice*
-MoonVideoCaptureServiceV4L2::GetDefaultCaptureDevice ()
-{
-	int unused;
-
-	// make sure we probe all the devices so that the default is
-	// populated.
-	GetAvailableCaptureDevices (&unused);
-
-	return default_device;
-}
-
-MoonVideoCaptureDevice**
-MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (int *num_devices)
-{
-	if (devices) {
-		*num_devices = devices->len;
-		return (MoonVideoCaptureDevice**)devices->pdata;
-	}
-
-	devices = g_ptr_array_new ();
-
-	*num_devices = 0;
-
-	GDir *dir = g_dir_open ("/dev", 0, NULL);
-	if (!dir) { 
-		// should hopefully never happen.  what is this, !linux?
-		*num_devices = devices->len;
-		return (MoonVideoCaptureDevice**)devices->pdata;
-	}
-
+	GError *err = NULL;
+	GDir *dir;
+	bool found_default = false;
 	const char *entry_name;
 	char default_device_name [PATH_MAX];
+	char name [PATH_MAX];
+	int fd;
+	MoonVideoCaptureDeviceV4L2 *device;
+	VideoCaptureDevice *vcd;
+	char *friendly_name;
+	v4l2_capability cap;
+	v4l2_input input;
 
-	default_device_name[0] = 0;
+	LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices ()\n");
 
-	while ((entry_name = g_dir_read_name (dir))) {
-		if (!strncmp (entry_name, "video", 5)) {
-			char name [PATH_MAX];
-			if (g_snprintf (name, PATH_MAX, "/dev/%s", entry_name) > PATH_MAX)
-				continue;
-
-			// found a video device, make sure it works.
-			int fd = open (name, O_RDWR | O_NONBLOCK);
-			if (fd == -1) {
-				switch (errno) {
-					// from the v4l2 spec:
-
-				case EACCES: // The caller has no permission to access the device.
-				case EBUSY: // The driver does not support multiple opens and the device is already in use.
-				case ENXIO: // No device corresponding to this device special file exists.
-				case ENOMEM: // Not enough kernel memory was available to complete the request.
-				case EMFILE: // The process already has the maximum number of files open.
-				case ENFILE: // The limit on the total number of files open on the system has been reached.
-
-					// FIXME do we need to do something here for all these error conditions?
-					continue;
-				}
-			}
-
-			MoonVideoCaptureDeviceV4L2 *device = new MoonVideoCaptureDeviceV4L2 (this, fd);
-
-			g_ptr_array_add (devices, device);
-
-			if (!strcmp (entry_name, "video")) {
-				struct stat st;
-
-				if (-1 == g_lstat (name, &st))
-					continue;
-				
-				if (S_ISLNK (st.st_mode)) {
-					if (-1 == readlink (name, default_device_name, PATH_MAX))
-						continue;
-				}
-				else {
-					// if it's /dev/video treat it like the
-					// default device if probing it works
-					default_device = device;
-				}
-			}
-			else if (!strcmp (entry_name,
-					  default_device_name)) {
-				// we found the destination of the /dev/video symlink, make this our default device
-				default_device = device;
-			}
-			else if (!strcmp (entry_name, "video0") &&
-				 !default_device_name[0] &&
-				 !default_device) {
-				// if it's /dev/video0 we also treat
-				// it like the default device, but
-				// only if there wasn't a viable
-				// /dev/video.
-				default_device = device;
-			}
-		}
+	dir = g_dir_open ("/dev", 0, &err);
+	if (!dir) { 
+		// should hopefully never happen.  what is this, !linux?
+		LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (): Could not open /dev: %s\n", err->message);
+		g_error_free (err);
+		return;
 	}
 
-	*num_devices = devices->len;
-	return (MoonVideoCaptureDevice**)devices->pdata;
+	default_device_name [0] = 0;
+
+	while ((entry_name = g_dir_read_name (dir))) {
+		if (strncmp (entry_name, "video", 5))
+			continue;
+
+		if (g_snprintf (name, PATH_MAX, "/dev/%s", entry_name) > PATH_MAX)
+			continue;
+
+		// found a video device, make sure it works.
+		fd = open (name, O_RDWR | O_NONBLOCK);
+		if (fd == -1) {
+			LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (): Could not open %s: %s\n", name, strerror (errno));
+			continue;
+		}
+
+		// find the friendly name
+		memset (&cap, 0, sizeof (cap));
+		friendly_name = NULL;
+		if (-1 == ioctl (fd, VIDIOC_QUERYCAP, &cap)) {
+			memset (&input, 0, sizeof (input));
+			if (-1 == ioctl (fd, VIDIOC_G_INPUT, &input.index)) {
+				LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (): VIDIOC_G_INPUT failed: %s, setting friendly name to: %s\n", strerror (errno), name);
+				friendly_name = g_strdup (name);
+			} else if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
+				LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (): VIDIOC_ENUM_INPUT failed: %s, setting friendly name to: %s\n", strerror (errno), name);
+				friendly_name = g_strdup (name);
+			} else {
+				friendly_name = g_strdup ((char*) input.name);
+			}
+		} else {
+			friendly_name = g_strdup_printf ("%s (%s)", cap.card, cap.driver);
+		}
+
+		device = new MoonVideoCaptureDeviceV4L2 (fd, friendly_name);
+		vcd = MoonUnmanagedFactory::CreateVideoCaptureDevice ();
+
+		vcd->SetPalDevice (device);
+		device->SetDevice (vcd);
+		col->Add (vcd);
+		vcd->unref ();
+		g_free (friendly_name);
+		friendly_name = NULL;
+
+		if (!strcmp (entry_name, "video")) {
+			struct stat st;
+
+			if (-1 == g_lstat (name, &st))
+				continue;
+			
+			if (S_ISLNK (st.st_mode)) {
+				if (-1 == readlink (name, default_device_name, PATH_MAX))
+					continue;
+			}
+			else {
+				// if it's /dev/video treat it like the
+				// default device if probing it works
+				vcd->SetIsDefaultDevice (true);
+				found_default = true;
+			}
+		}
+		else if (!strcmp (entry_name, default_device_name)) {
+			// we found the destination of the /dev/video symlink, make this our default device
+			vcd->SetIsDefaultDevice (true);
+			found_default = true;
+		}
+		else if (!strcmp (entry_name, "video0") && !default_device_name [0] && !found_default) {
+			// if it's /dev/video0 we also treat
+			// it like the default device, but
+			// only if there wasn't a viable
+			// /dev/video.
+			vcd->SetIsDefaultDevice (true);
+			found_default = true;
+		}
+
+		LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (): found device: %s = %s\n", name, device->GetFriendlyName ());
+	}
+
+	LOG_CAPTURE ("MoonVideoCaptureServiceV4L2::GetAvailableCaptureDevices (): found %i devices\n", col->GetCount ());
+
+	g_dir_close (dir);
 }
 
-bool
-MoonVideoCaptureServiceV4L2::IsDefaultDevice (MoonVideoCaptureDeviceV4L2* device)
+MoonVideoCaptureDeviceV4L2::MoonVideoCaptureDeviceV4L2 (int fd, const char *friendly_name)
 {
-	return device == default_device;
-}
-
-MoonVideoCaptureDeviceV4L2::MoonVideoCaptureDeviceV4L2 (MoonVideoCaptureServiceV4L2* service, int fd)
-{
-	this->service = service;
 	this->fd = fd;
-	this->desired_format = NULL;
-	this->friendly_name = NULL;
-	this->capturing_format = NULL;
-	this->need_to_notify_format = true;
-	this->idle_id = -1;
+	this->friendly_name = g_strdup (friendly_name);
 	this->formats = NULL;
-	this->first_pts = G_MAXINT64;
+	this->format_count = 0;
+	this->first_pts = G_MAXUINT64;
+	this->buffers = NULL;
+	this->capturing = false;
+	this->capture_pipe [0] = this->capture_pipe [1] = -1;
+	memset (&capturing_format, 0, sizeof (capturing_format));
 }
 
 MoonVideoCaptureDeviceV4L2::~MoonVideoCaptureDeviceV4L2 ()
 {
-	int j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (-1 == ioctl (fd, VIDIOC_STREAMOFF, &j)) {
-		perror ("VIDIOC_STREAMOFF");
+	StopCapturing ();
+
+	if (capture_pipe [0] != -1) {
+		close (capture_pipe [0]);
+		capture_pipe [0] = -1;
 	}
+	if (capture_pipe [1] != -1) {
+		close (capture_pipe [1]);
+		capture_pipe [1] = -1;
+	}
+
 	close (fd);
-	delete desired_format;
 	g_free (friendly_name);
-	delete capturing_format;
-	if (idle_id != -1)
-		g_source_remove (idle_id);
 	if (formats) {
-		for (guint i = 0; i < formats->len; i ++)
-			delete ((MoonVideoFormat*)formats->pdata[i]);
-		g_ptr_array_free (formats, FALSE);
-	}
-}
-
-MoonVideoFormat*
-MoonVideoCaptureDeviceV4L2::GetDesiredFormat ()
-{
-	return desired_format;
-}
-
-void
-MoonVideoCaptureDeviceV4L2::SetDesiredFormat (MoonVideoFormat *format)
-{
-	delete desired_format;
-	desired_format = NULL;
-	if (format) {
-		// XXX we need to validate the format
-		desired_format = format->Clone ();
+		for (guint i = 0; i < format_count; i ++)
+			delete formats [i];
+		g_free (formats);
 	}
 }
 
@@ -205,13 +181,13 @@ video_format_comparer (gconstpointer vf1, gconstpointer vf2)
 	MoonVideoFormatV4L2* format2 = (*(MoonVideoFormatV4L2**)vf2);
 
 #define FORMAT(fmt) G_STMT_START {					\
-		if (format1->GetV4L2PixelFormat() == (fmt)) { \
-			if (format1->GetV4L2PixelFormat () == format2->GetV4L2PixelFormat ()) \
-				return format1->GetWidth() * format1->GetHeight() - format2->GetWidth() * format2->GetHeight(); \
+		if (format1->v4l2PixelFormat == (fmt)) { \
+			if (format1->v4l2PixelFormat == format2->v4l2PixelFormat) \
+				return format1->width * format1->height - format2->width * format2->height; \
 			else						\
 				return -1;				\
 		}							\
-		else if (format2->GetV4L2PixelFormat() == (fmt))	\
+		else if (format2->v4l2PixelFormat == (fmt))	\
 			return 1;					\
 	} G_STMT_END
 
@@ -219,38 +195,77 @@ video_format_comparer (gconstpointer vf1, gconstpointer vf2)
 	FORMAT (V4L2_PIX_FMT_YUYV);
 	// with YV12 a close second
 	FORMAT (V4L2_PIX_FMT_YVU420);
+	// we can do jpeg too now
+	FORMAT (V4L2_PIX_FMT_JPEG);
 
 	// for now we don't care enough about the rest
 	return 0;
 }
 
-MoonVideoFormat**
-MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
+void
+MoonVideoCaptureDeviceV4L2::GetSupportedFormats (VideoFormatCollection *col)
 {
-	if (formats) {
-		*count = formats->len;
-		return (MoonVideoFormat**)formats->pdata;
+	RetrieveFormats ();
+
+	for (unsigned int i = 0; i < format_count; i++) {
+		VideoFormat vf;
+		MoonVideoFormatV4L2 *fmt = formats [i];
+		vf.framesPerSecond = fmt->framesPerSecond;
+		vf.height = fmt->height;
+		vf.width = fmt->width;
+		vf.stride = fmt->stride;
+		vf.pixelFormat = MoonPixelFormatRGBA32;
+		col->Add (Value (vf));
 	}
+}
 
-	formats = g_ptr_array_new ();
+void
+MoonVideoCaptureDeviceV4L2::RetrieveFormats ()
+{
+	GPtrArray *array;
+	MoonVideoFormatV4L2 *format;
 
-	struct v4l2_fmtdesc fmt;
-	struct v4l2_frmsizeenum frame_size;
-	struct v4l2_frmivalenum frame_interval;
+	v4l2_fmtdesc fmt;
+	v4l2_frmsizeenum frame_size;
+	v4l2_frmivalenum frame_interval;
+
+	if (formats)
+		return;
+
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat ()\n");
+
+	array = g_ptr_array_new ();
 
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
 	for (fmt.index = 0; ; fmt.index ++) {
 		if (-1 == ioctl (fd, VIDIOC_ENUM_FMT, &fmt)) {
-			if (errno != EINVAL)
-				perror ("VIDIOC_ENUM_FMT");
+			if (errno != EINVAL) {
+				LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () VIDIOC_ENUM_FMT failed: %s\n", strerror (errno));
+			}
 			break;
 		}
 
-		// we skip compressed formats since we don't want to
-		// be decoding, e.g. mjpg
-		if (fmt.flags & V4L2_FMT_FLAG_COMPRESSED)
-			continue;
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () format: %s compressed: %i format: %c%c%c%c\n",
+			fmt.description, fmt.flags & V4L2_FMT_FLAG_COMPRESSED,
+			(char) (fmt.pixelformat & 0xFF),
+			(char) ((fmt.pixelformat >> 8) & 0xFF),
+			(char) ((fmt.pixelformat >> 16) & 0xFF),
+			(char) ((fmt.pixelformat >> 24) & 0xFF));
+
+		switch (fmt.pixelformat) {
+		case V4L2_PIX_FMT_YUYV:
+		case V4L2_PIX_FMT_YVU420:
+		case V4L2_PIX_FMT_JPEG:
+			break;
+		default:
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () The format: %c%c%c%c is not supported. Recording is allowed, but will likely produce garbage output.\n",
+				(char) (fmt.pixelformat & 0xFF),
+				(char) ((fmt.pixelformat >> 8) & 0xFF),
+				(char) ((fmt.pixelformat >> 16) & 0xFF),
+				(char) ((fmt.pixelformat >> 24) & 0xFF));
+			break;
+		}
 
 		frame_size.pixel_format = fmt.pixelformat;
 
@@ -261,10 +276,22 @@ MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
 			guint32 frame_rate;
 
 			if (-1 == ioctl (fd, VIDIOC_ENUM_FRAMESIZES, &frame_size)) {
-				if (errno != EINVAL)
-					perror ("VIDIOC_ENUM_FRAMESIZES");
+				if (errno != EINVAL) {
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () VIDIOC_ENUM_FRAMESIZES failed: %s\n", strerror (errno));
+				}
 				break;
 			}
+
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () format: %s compressed: %i format: %c%c%c%c frame size type: %s width: %i height: %i\n",
+				fmt.description, fmt.flags & V4L2_FMT_FLAG_COMPRESSED,
+				(char) (fmt.pixelformat & 0xFF),
+				(char) ((fmt.pixelformat >> 8) & 0xFF),
+				(char) ((fmt.pixelformat >> 16) & 0xFF),
+				(char) ((fmt.pixelformat >> 24) & 0xFF),
+				frame_size.type == V4L2_FRMSIZE_TYPE_DISCRETE ? "discrete" :
+				(frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ? "stepwise" :
+				(frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS ? "continuous" : "?")),
+				frame_size.discrete.width, frame_size.discrete.height);
 
 			// for now we treat stepwise sizes as their
 			// maximum size, since there's no way to
@@ -289,35 +316,41 @@ MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
 			bool discrete_frameintervals = true;
 			for (frame_interval.index = 0; ; frame_interval.index ++) {
 				if (-1 == ioctl (fd, VIDIOC_ENUM_FRAMEINTERVALS, &frame_interval)) {
-					if (errno != EINVAL)
-						perror ("VIDIOC_ENUM_FRAMEINTERVALS");
-					break;
-				}
-
-				if (frame_interval.type == V4L2_FRMIVAL_TYPE_STEPWISE) {
-					frame_rate = frame_interval.stepwise.max.denominator / frame_interval.stepwise.max.numerator;
+					if (errno != EINVAL) {
+						LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () VIDIOC_ENUM_FRAMEINTERVALS failed: %s\n", strerror (errno));
+						break;
+					}
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () no frame intervals, setting frame rate to 24\n");
+					frame_rate = 24; /* I like this number */
 					discrete_frameintervals = false;
-				}
-				else {
-					frame_rate = frame_interval.discrete.denominator / frame_interval.discrete.numerator;;
+				} else {
+					if (frame_interval.type == V4L2_FRMIVAL_TYPE_STEPWISE) {
+						frame_rate = frame_interval.stepwise.max.denominator / frame_interval.stepwise.max.numerator;
+						discrete_frameintervals = false;
+					}
+					else {
+						frame_rate = frame_interval.discrete.denominator / frame_interval.discrete.numerator;;
+					}
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () format: %s compressed: %i format: %c%c%c%c frame interval type: %s frame rate: %i\n",
+						fmt.description, fmt.flags & V4L2_FMT_FLAG_COMPRESSED,
+						(char) (fmt.pixelformat & 0xFF),
+						(char) ((fmt.pixelformat >> 8) & 0xFF),
+						(char) ((fmt.pixelformat >> 16) & 0xFF),
+						(char) ((fmt.pixelformat >> 24) & 0xFF),
+						frame_interval.type == V4L2_FRMIVAL_TYPE_DISCRETE ? "discrete" :
+						(frame_interval.type == V4L2_FRMIVAL_TYPE_STEPWISE ? "stepwise" :
+						(frame_interval.type == V4L2_FRMIVAL_TYPE_CONTINUOUS ? "continuous" : "?")),
+						frame_rate);
 				}
 
-				g_ptr_array_insert_sorted (formats,
-							   video_format_comparer,
-							   new MoonVideoFormatV4L2 (MoonPixelFormatRGBA32,
-										    frame_rate,
-										    frame_width * 4,
-										    frame_width,
-										    frame_height,
-										    fmt.pixelformat,
-										    0 /* no way to get this here */));
-
-				printf ("Format: %c%c%c%c ",
-					(char)(fmt.pixelformat & 0xff),
-					(char)((fmt.pixelformat >> 8) & 0xff),
-					(char)((fmt.pixelformat >> 16) & 0xff),
-					(char)((fmt.pixelformat >> 24) & 0xff));
-				printf ("  frame size: %d x %d, frame rate = %d\n", frame_width, frame_height, frame_rate);
+				format = new MoonVideoFormatV4L2 ();
+				format->framesPerSecond = frame_rate;
+				format->stride = frame_width * 4;
+				format->width = frame_width;
+				format->height = frame_height;
+				format->v4l2PixelFormat = fmt.pixelformat;
+				g_ptr_array_insert_sorted (array, video_format_comparer, format);
+				format = NULL;
 
 				if (!discrete_frameintervals)
 					break;
@@ -338,47 +371,17 @@ MoonVideoCaptureDeviceV4L2::GetSupportedFormats (int* count)
 		}
 	}
 
-	*count = formats->len;
-	return (MoonVideoFormat**)formats->pdata;
+	format_count = array->len;
+	formats = (MoonVideoFormatV4L2 **) array->pdata;
+	g_ptr_array_free (array, false);
+
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::RetrieveFormat () retrieved %i formats\n", format_count);
 }
 
 const char*
 MoonVideoCaptureDeviceV4L2::GetFriendlyName()
 {
-	if (!friendly_name) {
-		struct v4l2_capability cap;
-
-		memset (&cap, 0, sizeof (cap));
-
-		if (-1 == ioctl (fd, VIDIOC_QUERYCAP, &cap)) {
-			struct v4l2_input input;
-
-			memset (&input, 0, sizeof (input));
-
-			if (-1 == ioctl (fd, VIDIOC_G_INPUT, &input.index)) {
-				perror ("VIDIOC_G_INPUT");
-				return NULL;
-			}
-
-			if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
-				perror ("VIDIOC_ENUM_INPUT");
-				return NULL;
-			}
-
-			friendly_name = g_strdup ((char*)input.name);
-		}
-		else {
-			friendly_name = g_strdup_printf ("%s (%s)", cap.card, cap.driver);
-		}
-	}
-
 	return friendly_name;
-}
-
-bool
-MoonVideoCaptureDeviceV4L2::GetIsDefaultDevice()
-{
-	return service->IsDefaultDevice (this);
 }
 
 static inline void YUV444ToBGRA(guint8 Y, guint8 U, guint8 V, guint8 *dst)
@@ -389,216 +392,286 @@ static inline void YUV444ToBGRA(guint8 Y, guint8 U, guint8 V, guint8 *dst)
 	dst[3] = 0xFF;
 }
 
-void
-MoonVideoCaptureDeviceV4L2::ReadNextFrame (guint8 **buffer, guint32 *buflen, gint64 *pts)
+void *
+MoonVideoCaptureDeviceV4L2::CaptureLoopCallback (gpointer context)
 {
-	if (need_to_notify_format && capturing_format) {
-		format_changed (capturing_format, callback_data);
-		need_to_notify_format = false;
-	}
+	((MoonVideoCaptureDeviceV4L2 *) context)->CaptureLoop ();
+	return NULL;
+}
 
-	struct v4l2_buffer v4l2buf;
+void
+MoonVideoCaptureDeviceV4L2::CaptureLoop ()
+{
+	guint8 *buffer;
+	guint8 *op;
+	guint32 *ip;
+	guint32 buflen;
+	guint64 pts;
+	guint64 new_pts;
+	v4l2_buffer v4l2buf = { 0 };
+	v4l2_requestbuffers reqbuf = { 0 };
+	pollfd fds [2];
+	int result;
 
-	// block here until the hardware is actually ready to start feeding us frames
-	struct pollfd fds[1];
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop ()\n");
 
-	fds[0].fd = fd;
-	fds[0].events = POLLIN | POLLERR;
-	fds[0].revents = 0;
+	// we poll for the capture fd and the pipe at the same time
+	fds [0].fd = fd;
+	fds [0].events = POLLIN | POLLERR;
+	fds [1].fd = capture_pipe [0];
+	fds [1].events = POLLIN;
 
-	// printf ("POLL>>>>>>>>>>>>>>>>>\n");
-	if (-1 == poll(fds, 1, 2000)) {
-		perror ("poll");
-		return;
-	}
-	// printf ("POLL<<<<<<<<<<<<<<<<<\n");
+	while (true) {
+		if (!capturing)
+			break;
 
-	if (fds[0].revents == POLLERR) {
-		printf ("boooo\n");
-		return;
-	}
+		// block here until the hardware is actually ready to start feeding us frames
+		do {
+			if (!capturing)
+				break;
 
-	memset (&v4l2buf, 0, sizeof (v4l2buf));
+			fds [0].revents = 0;
+			fds [1].revents = 0;
 
-	v4l2buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	v4l2buf.memory = V4L2_MEMORY_MMAP;
-
-
-	if (-1 == ioctl (fd, VIDIOC_DQBUF, &v4l2buf)) {
-		if (errno != EAGAIN) {
-			perror ("VIDIOC_DQBUF");
-			return;
-		}
-	}
-
-	// printf ("******************\n");
-	// printf ("got a frame, length = %d, bytesused = %d\n", v4l2buf.length, v4l2buf.bytesused);
-
-#if COPY_BUFFER
-	*buffer = (guint8*)g_malloc (buffers[v4l2buf.index].length);
-
-	memcpy (*buffer, buffers[v4l2buf.index].start, buffers[v4l2buf.index].length);
-
-	*buflen = buffers[v4l2buf.index].length;
-#else
-	guint8 *output_buffer = (guint8*)g_malloc (buffers[v4l2buf.index].length * 2);
-	guint8 *op = output_buffer;
-	guint32 *ip = (guint32*)buffers[v4l2buf.index].start;
-
-	guint32 pixelformat = capturing_format->GetV4L2PixelFormat ();
-
-	if (pixelformat == V4L2_PIX_FMT_YUYV) {
-		while ((size_t) ((char*)ip - (char*)buffers[v4l2buf.index].start) < buffers[v4l2buf.index].length) {
-			guint8 y, u, y2, v;
-
-			y  = ((*ip & 0x000000ff));
-			y2 = ((*ip & 0x00ff0000)>>16);
-			u =  ((*ip & 0x0000ff00)>>8);
-			v =  ((*ip & 0xff000000)>>24);
-
-			YUV444ToBGRA (y, u, v, op); op += 4;
-			YUV444ToBGRA (y2, u, v, op); op += 4;
-			
-			ip++;
-		}
-	} else if (pixelformat == (V4L2_PIX_FMT_YUV420) || pixelformat == (V4L2_PIX_FMT_YVU420)) {
-		int width = capturing_format->GetWidth ();
-		int height = capturing_format->GetHeight ();		
-		bool u_first = (pixelformat == V4L2_PIX_FMT_YUV420);
-		guint8 *yp = (guint8 *)buffers[v4l2buf.index].start;
-		guint8 *up = (guint8 *)buffers[v4l2buf.index].start + width * height + (u_first ? 0 : width * height / 4);
-		guint8 *vp = (guint8 *)buffers[v4l2buf.index].start + width * height + (u_first ? width * height / 4 : 0);
-		int i = 0, j = 0;
-
-		while (i * j < width * height) { 
-			guint8 y  =  yp[j * width + i];
-			guint8 u =  up[j/2 * width/2 + i/2];
-			guint8 v  =  vp[j/2 * width/2 + i/2];
-			
-			YUV444ToBGRA (y, u, v, op); op += 4;
-			
-			ip++;
-			i++;
-
-			if (i >= width) {
-				i = 0;
-				j++;
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () polling...\n");
+			result = poll (fds, 2, 2000); // Have a timeout of 2 seconds, just in case something goes wrong.
+			if (result == 0) { // Timed out
+				// Nothing to do here
+			} else if (result < 0) { // Some error poll exit condition
+				// Doesn't matter what happened (happens quite often due to interrupts)
+			} else { // Something woke up the poll
+				if (fds [1].revents & POLLIN) {
+					// We were asked to wake up
+					// Read whatever was written into the pipe so that the pipe doesn't fill up.
+					read (capture_pipe [0], &buffer, sizeof (int));
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () woken up by ourselves\n");
+				} else if (fds [0].revents & POLLIN) {
+					// We've got a frame!
+					break;
+				} else if (fds [0].revents & POLLERR) {
+					// Ugh. Not sure what this may require
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () poll error on the capture fd\n");
+				} else {
+					// Now what?
+				}
 			}
+		} while (true);
+
+		if (!capturing)
+			break;
+
+		v4l2buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		v4l2buf.memory = V4L2_MEMORY_MMAP;
+	
+		if (-1 == ioctl (fd, VIDIOC_DQBUF, &v4l2buf)) {
+			if (errno == EAGAIN) {
+				// Non-blocking I/O has been selected using O_NONBLOCK and no buffer was in the outgoing queue.
+				// No frame ready yet
+				continue;
+			}
+
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () VIDIOC_DQBUF failed: %s\n", strerror (errno));
+			continue;
 		}
+
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () got a frame, length: %d bytes used: %d\n", v4l2buf.length, v4l2buf.bytesused);
+	
+		buflen = capturing_format.height * capturing_format.stride;
+		buffer = (guint8 *) g_malloc (buflen);
+		op = buffer;
+		ip = (guint32 *) buffers [v4l2buf.index].start;
+
+		switch (capturing_format.v4l2PixelFormat) {
+		case V4L2_PIX_FMT_YUYV: {
+			while ((size_t) ((char *) ip - (char *) buffers [v4l2buf.index].start) < buffers [v4l2buf.index].length) {
+				guint8 y, u, y2, v;
+	
+				y  = ((*ip & 0x000000ff));
+				y2 = ((*ip & 0x00ff0000)>>16);
+				u =  ((*ip & 0x0000ff00)>>8);
+				v =  ((*ip & 0xff000000)>>24);
+	
+				YUV444ToBGRA (y, u, v, op); op += 4;
+				YUV444ToBGRA (y2, u, v, op); op += 4;
+				
+				ip++;
+			}
+			break;
+		}
+		case V4L2_PIX_FMT_YUV420:
+		case V4L2_PIX_FMT_YVU420: {
+			int width = capturing_format.width;
+			int height = capturing_format.height;
+			bool u_first = (capturing_format.v4l2PixelFormat == V4L2_PIX_FMT_YUV420);
+			guint8 *yp = (guint8 *) buffers [v4l2buf.index].start;
+			guint8 *up = (guint8 *) buffers [v4l2buf.index].start + width * height + (u_first ? 0 : width * height / 4);
+			guint8 *vp = (guint8 *) buffers [v4l2buf.index].start + width * height + (u_first ? width * height / 4 : 0);
+			int i = 0, j = 0;
+	
+			while (i * j < width * height) { 
+				guint8 y  =  yp[j * width + i];
+				guint8 u =  up[j/2 * width/2 + i/2];
+				guint8 v  =  vp[j/2 * width/2 + i/2];
+				
+				YUV444ToBGRA (y, u, v, op); op += 4;
+				
+				ip++;
+				i++;
+	
+				if (i >= width) {
+					i = 0;
+					j++;
+				}
+			}
+			break;
+		}
+		case V4L2_PIX_FMT_JPEG: {
+			Runtime::GetWindowingSystem ()->ConvertJPEGToBGRA (
+				buffers [v4l2buf.index].start,
+				buffers [v4l2buf.index].length,
+				buffer,
+				capturing_format.stride,
+				capturing_format.height);
+			break;
+		}
+		default: {
+			// Make the default be to just copy the input video to the output
+			// This will show something at least, even though it's just garbage
+			memcpy (buffer, buffers [v4l2buf.index].start, MIN (buffers [v4l2buf.index].length, buflen));
+			break;
+		}
+		}
+	
+		new_pts = v4l2buf.timestamp.tv_usec * 10ULL + v4l2buf.timestamp.tv_sec * 10000000ULL;
+		if (first_pts == G_MAXUINT64)
+			first_pts = new_pts;
+		pts = new_pts - first_pts;
+
+		int index = v4l2buf.index;
+		memset (&v4l2buf, 0, sizeof (v4l2buf));
+	
+		v4l2buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		v4l2buf.memory = V4L2_MEMORY_MMAP;
+		v4l2buf.index = index;
+	
+		// we've copied the data, give the buffer back to the device
+		if (-1 == ioctl (fd, VIDIOC_QBUF, &v4l2buf)) {
+			/* How can this fail? and how should it be dealt with? */
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StopCapturing () VIDIOC_QBUF failed: %s\n", strerror (errno));
+			/* Do nothing, we just continue trying to read frames */
+		}
+
+		GetDevice ()->GetCaptureSource ()->ReportSample (pts, 10000000LL / capturing_format.framesPerSecond, buffer, buflen);
 	}
-	*buffer = output_buffer;
-	*buflen = buffers[v4l2buf.index].length * 2;
-#endif
 
-	gint64 new_pts = v4l2buf.timestamp.tv_usec * 10ULL + v4l2buf.timestamp.tv_sec * 10000000ULL;
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () Loop ended, stopping capture\n");
 
-	if (first_pts == G_MAXINT64)
-		first_pts = new_pts;
-	*pts = new_pts - first_pts;
-	//      *pts = MilliSeconds_ToPts (v4l2buf.timestamp.tv_usec / 1000 + v4l2buf.timestamp.tv_sec * 1000);
+	int j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	if (-1 == ioctl (fd, VIDIOC_STREAMOFF, &j)) {
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StopCapturing () VIDIOC_STREAMOFF failed: %s\n", strerror (errno));
+	}
 
-	int index = v4l2buf.index;
-	memset (&v4l2buf, 0, sizeof (v4l2buf));
-
-	v4l2buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	v4l2buf.memory = V4L2_MEMORY_MMAP;
-	v4l2buf.index = index;
-
-       // we've copied the data, give the buffer back to the device
-	if (-1 == ioctl (fd, VIDIOC_QBUF, &v4l2buf)) {
-		perror ("VIDIOC_QBUF");
+	// release the video buffers
+	if (-1 == ioctl (fd, VIDIOC_REQBUFS, &reqbuf)) {
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): failed to start capture (%s)\n", strerror (errno));
 		return;
 	}
-}
 
-void
-MoonVideoCaptureDeviceV4L2::SetCallbacks (MoonReportSampleFunc report_sample,
-					  MoonFormatChangedFunc format_changed,
-					  gpointer data)
-{
-	this->report_sample = report_sample;
-	this->format_changed = format_changed;
-	this->callback_data = data;
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::CaptureLoop () Done\n");
 }
-
 
 void
 MoonVideoCaptureDeviceV4L2::StartCapturing ()
 {
-	printf ("MoonVideoCaptureDeviceV4L2::StartCapturing ()\n");
+	VideoFormat *desired_format;
+	bool found_desired_format = false;
+	v4l2_format fmt;
+	v4l2_requestbuffers reqbuf = { 0 };
+	v4l2_buffer buffer;
 
-	delete capturing_format;
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing ()\n");
+	VERIFY_MAIN_THREAD;
 
-	if (desired_format)
-		capturing_format = (MoonVideoFormatV4L2*)desired_format;
-	else
-		capturing_format = ((MoonVideoFormatV4L2*)formats->pdata[0]);
+	if (capturing) {
+		/* we're already capturing */
+		return;
+	}
 
-	struct v4l2_format fmt;
+	if (formats == NULL) {
+		/* Huh? */
+		return;
+	}
+
+	desired_format = GetDevice ()->GetDesiredFormat ();
+
+	if (desired_format) {
+		for (guint32 i = 0; i < format_count; i++) {
+			if (formats [i]->width == desired_format->width &&
+				formats [i]->height == desired_format->height &&
+				formats [i]->stride == desired_format->stride &&
+				formats [i]->framesPerSecond == desired_format->framesPerSecond) {
+				capturing_format = *formats [i];
+				found_desired_format = true;
+				break;
+			}
+		}
+	}
+
+	if (!found_desired_format)
+		capturing_format = *formats [0];
+
 	memset (&fmt, 0, sizeof (fmt));
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	fmt.fmt.pix.pixelformat = ((MoonVideoFormatV4L2*)capturing_format)->GetV4L2PixelFormat ();
-	fmt.fmt.pix.width = capturing_format->GetWidth();
-	fmt.fmt.pix.height = capturing_format->GetHeight();
+	fmt.fmt.pix.pixelformat = capturing_format.v4l2PixelFormat;
+	fmt.fmt.pix.width = capturing_format.width;
+	fmt.fmt.pix.height = capturing_format.height;
 	fmt.fmt.pix.bytesperline = 0; // the driver will fill this in
 
 	if (-1 == ioctl (fd, VIDIOC_S_FMT, &fmt)) {
-		perror ("VIDIOC_S_FMT");
-		capturing_format = NULL;
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_S_FMT failed: %s\n", strerror (errno));
 		return;
 	}
 
 	if (-1 == ioctl (fd, VIDIOC_G_FMT, &fmt)) {
-		perror ("VIDIOC_S_FMT");
-		capturing_format = NULL;
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_S_FMT failed: %s\n", strerror (errno));
 		return;
 	}
 
-	capturing_format = new MoonVideoFormatV4L2 (MoonPixelFormatRGBA32,   /* the pixel format we report to moonlight */
-						    0                        /* fps for moonlight FIXME from where? */,
-						    fmt.fmt.pix.width * 4    /* stride */,
-						    fmt.fmt.pix.width        /* width */,
-						    fmt.fmt.pix.height       /* height */,
+	capturing_format.stride = fmt.fmt.pix.width * 4;
+	capturing_format.width = fmt.fmt.pix.width;
+	capturing_format.height = fmt.fmt.pix.height;
+	capturing_format.v4l2PixelFormat = fmt.fmt.pix.pixelformat;
 
-						    fmt.fmt.pix.pixelformat,  /* the pixel format v4l2 gave us */
-						    fmt.fmt.pix.bytesperline /* the stride of the unconverted data */
-						    );
-
-	printf ("capturing with format %c%c%c%c, %d x %d, %d stride\n",
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing () capturing with format %c%c%c%c, %d x %d, %d stride %f fps\n",
 		(char)(fmt.fmt.pix.pixelformat & 0xff),
 		(char)((fmt.fmt.pix.pixelformat >> 8) & 0xff),
 		(char)((fmt.fmt.pix.pixelformat >> 16) & 0xff),
 		(char)((fmt.fmt.pix.pixelformat >> 24) & 0xff),
-		fmt.fmt.pix.width,
-		fmt.fmt.pix.height,
-		fmt.fmt.pix.bytesperline);
-		
-	struct v4l2_requestbuffers reqbuf;
+		capturing_format.width,
+		capturing_format.height,
+		fmt.fmt.pix.bytesperline,
+		capturing_format.framesPerSecond);
 
-	memset (&reqbuf, 0, sizeof (reqbuf));
 	reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	reqbuf.memory = V4L2_MEMORY_MMAP;
 	reqbuf.count = VIDEO_MAX_FRAME;
 
 	if (-1 == ioctl (fd, VIDIOC_REQBUFS, &reqbuf)) {
-		if (errno == EAGAIN)
-			printf ("Video capturing or mmap-streaming is not supported\n");
-
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): failed to start capture (%s)\n", strerror (errno));
 		return;
 	}
 
+	buffer_count = reqbuf.count;
 	buffers = g_new0 (Buffer, reqbuf.count);
 
 	for (unsigned int i = 0; i < reqbuf.count; i++) {
-		struct v4l2_buffer buffer;
-
 		memset (&buffer, 0, sizeof (buffer));
 		buffer.type = reqbuf.type;
 		buffer.memory = V4L2_MEMORY_MMAP;
 		buffer.index = i;
 
 		if (-1 == ioctl (fd, VIDIOC_QUERYBUF, &buffer)) {
-			perror ("VIDIOC_QUERYBUF");
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_QUERYBUF failed: %s\n", strerror (errno));
 			return;
 		}
 
@@ -624,12 +697,12 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 		if (MAP_FAILED == buffers[i].start) {
 			/* If you do not exit here you should unmap() and free()
 			   the buffers mapped so far. */
-			perror ("mmap");
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): mmap failed: %s\n", strerror (errno));
 			return;
 		}
 
 		if (-1 == ioctl (fd, VIDIOC_QBUF, &buffer)) {
-			perror ("VIDIOC_QBUF");
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_QBUF failed: %s\n", strerror (errno));
 			return;
 		}
 	}
@@ -637,42 +710,61 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 	int j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
 	if (-1 == ioctl (fd, VIDIOC_STREAMON, &j)) {
-		perror ("VIDIOC_STREAMON");
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_STREAMON failed: %s\n", strerror (errno));
 		return;
 	}
 
-	idle_id = g_idle_add (ReadNextFrame, this);
-}
+	VideoFormat vfmt (MoonPixelFormatRGBA32, capturing_format.framesPerSecond, capturing_format.stride, capturing_format.width, capturing_format.height);
+	GetDevice ()->GetCaptureSource ()->VideoFormatChanged (&vfmt);
 
-gboolean
-MoonVideoCaptureDeviceV4L2::ReadNextFrame (gpointer context)
-{
-	MoonVideoCaptureDeviceV4L2 *device = (MoonVideoCaptureDeviceV4L2*)context;
-	guint8 *buffer;
-	guint32 buflen;
-	gint64 pts;
+	if (pipe (capture_pipe) != 0) {
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): Unable to create pipe (%s).\n", strerror (errno));
+		return;
+	}
 
-	device->ReadNextFrame (&buffer, &buflen, &pts);
+	first_pts = G_MAXUINT64;
 
-	device->report_sample (pts, 0 /* FIXME */, buffer, buflen, device->callback_data);
+	capturing = true;
+	if (pthread_create (&capture_thread, NULL, CaptureLoopCallback, this) != 0) {
+		capturing = false;
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): failed to create capture thread: %s\n", strerror (errno));
+		return;
+	}
 
-	g_free (buffer);
-
-	return TRUE;
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): capture started successfully\n");
 }
 
 void
 MoonVideoCaptureDeviceV4L2::StopCapturing ()
 {
-	printf ("MoonVideoCaptureDeviceV4L2::StopCapturing ()\n");
+	int result;
 
-	int j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (-1 == ioctl (fd, VIDIOC_STREAMOFF, &j)) {
-		perror ("VIDIOC_STREAMOFF");
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StopCapturing ()\n");
+	VERIFY_MAIN_THREAD;
+
+	if (capturing) {
+		capturing = false;
+
+		// Wake up the capture thread in case it's polling
+		do {
+			result = write (capture_pipe [1], "c", 1);
+		} while (result == 0);
+
+		// Wait for the capture thread to end
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StopCapturing () waiting for capture thread to end...\n");
+		pthread_join (capture_thread, NULL);
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StopCapturing () capture thread ended.\n");
+
+		close (capture_pipe [0]);
+		close (capture_pipe [1]);
+		capture_pipe [0] = -1;
+		capture_pipe [1] = -1;
 	}
 
-	g_free (buffers);
-	if (idle_id != -1)
-		g_source_remove (idle_id);
-	idle_id = -1;
+	if (buffers != NULL) {
+		for (int i = 0; i < buffer_count; i++)
+			munmap (buffers [i].start, buffers [i].length);
+		g_free (buffers);
+		buffers = NULL;
+	}
 }

@@ -99,6 +99,7 @@ G_END_DECLS
 #define LOG_EFFECT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) printf (__VA_ARGS__);
 #define LOG_OOB(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_OOB)) printf (__VA_ARGS__);
 #define LOG_CUSTOM(x,...)		if (G_UNLIKELY (debug_flags & (x))) printf (__VA_ARGS__);
+#define LOG_CAPTURE(...)        if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_CAPTURE)) printf (__VA_ARGS__);
 
 #else
 
@@ -143,6 +144,7 @@ G_END_DECLS
 #define LOG_EFFECT(...)
 #define LOG_OOB(...)
 #define LOG_CUSTOM(...)
+#define LOG_CAPTURE(...)
 
 #endif /* LOGGING */
 

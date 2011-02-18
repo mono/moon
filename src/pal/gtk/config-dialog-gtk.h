@@ -16,6 +16,7 @@
 
 #include "window-gtk.h"
 #include "moonlightconfiguration.h"
+#include "capture.h"
 
 namespace Moonlight {
 
@@ -84,6 +85,41 @@ public:
 private:
 	static void install_media_pack (PlaybackConfigDialogPage *page);
 
+};
+
+class WebCamMicConfigDialogPage : public ConfigDialogPage {
+public:
+	WebCamMicConfigDialogPage ();
+	virtual ~WebCamMicConfigDialogPage ();
+
+	virtual GtkWidget* GetContentWidget ();
+
+private:
+	Deployment *deployment;
+	AudioCaptureDeviceCollection *audio;
+	VideoCaptureDeviceCollection *video;
+
+	GtkWidget *webcam;
+	GtkWidget *microphone;
+	GtkWidget *cam_combo;
+	GtkWidget *mic_combo;
+	CaptureSource *webcam_source;
+	CaptureSource *microphone_source;
+	VideoFormat video_format;
+	AudioFormat audio_format;
+
+	static void tear_down (GtkWidget *w, WebCamMicConfigDialogPage *page);
+	static void initialize (GtkWidget *w, WebCamMicConfigDialogPage *page);
+	static void select_device (GtkWidget *box, WebCamMicConfigDialogPage *page);
+	void Initialize ();
+	void TearDown ();
+	void SelectAudioDevice (int index);
+	void SelectVideoDevice (int index);
+	void SelectDevice (const char *type, const char *device);
+
+	EVENTHANDLER (WebCamMicConfigDialogPage, SampleReady, CaptureSource, SampleReadyEventArgs);
+	EVENTHANDLER (WebCamMicConfigDialogPage, FormatChanged, CaptureSource, CaptureFormatChangedEventArgs);
+	EVENTHANDLER (WebCamMicConfigDialogPage, ShuttingDown, Deployment, EventArgs);
 };
 
 class StorageConfigDialogPage : public ConfigDialogPage {

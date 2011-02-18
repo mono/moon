@@ -388,7 +388,7 @@ class VideoBrush : public TileBrush {
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 	static void video_format_changed (EventObject *, EventArgs *, gpointer closure);
 
-	void VideoFormatChanged (VideoFormatChangedEventArgs *args);
+	void VideoFormatChanged (CaptureFormatChangedEventArgs *args);
 	
 	void SetupBrushFromMediaElement (cairo_t *cr, const Rect &area);
 	void SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area);

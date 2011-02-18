@@ -30,10 +30,10 @@ using System;
 
 namespace System.Windows.Media {
 	public abstract class AudioSink {
+		private CaptureSource source;
+
 		public AudioSink ()
 		{
-			Console.WriteLine ("System.Windows.Media.AudioSink.ctor: NIEX");
-			throw new NotImplementedException ();
 		}
 
 		protected abstract void OnCaptureStarted ();
@@ -43,13 +43,43 @@ namespace System.Windows.Media {
 	
 		public CaptureSource CaptureSource {
 			get {
-				Console.WriteLine ("System.Windows.Media.AudioSink.get_CaptureSource: NIEX");
-				throw new NotImplementedException ();
+				return source;
 			}
 			set {
-				Console.WriteLine ("System.Windows.Media.AudioSink.set_CaptureSource: NIEX");
-				throw new NotImplementedException ();
+				if (source != null) {
+					source.SampleReady -= sample_ready;
+					source.FormatChanged -= format_changed;
+					source.CaptureStarted -= capture_started;
+					source.CaptureStopped -= capture_stopped;
+				}
+				source = value;
+				if (source != null) {
+					source.SampleReady += sample_ready;
+					source.FormatChanged += format_changed;
+					source.CaptureStarted += capture_started;
+					source.CaptureStopped += capture_stopped;
+				}
 			}
+		}
+
+		void sample_ready (object sender, SampleReadyEventArgs args)
+		{
+			OnSamples (args.SampleTime, args.FrameDuration, args.SampleData);
+		}
+
+		void capture_started (object sender, EventArgs args)
+		{
+			OnCaptureStarted ();
+		}
+
+		void capture_stopped (object sender, EventArgs args)
+		{
+			OnCaptureStopped ();
+		}
+
+		void format_changed (object sender, CaptureFormatChangedEventArgs args)
+		{
+			OnFormatChange (args.NewAudioFormat);
 		}
 
 		~AudioSink ()

@@ -427,6 +427,24 @@ public:
 	virtual Type::Kind GetElementType () { return Type::TEXTELEMENT; }
 };
 
+/* @Namespace=System.Windows.Media */
+class VideoCaptureDeviceCollection : public DependencyObjectCollection {
+public:
+	virtual Type::Kind GetElementType () { return Type::VIDEOCAPTUREDEVICE; }
+
+	/* @GeneratePInvoke,ManagedAccess=Internal */
+	VideoCaptureDeviceCollection ();
+};
+
+/* @Namespace=System.Windows.Media */
+class AudioCaptureDeviceCollection : public DependencyObjectCollection {
+public:
+	virtual Type::Kind GetElementType () { return Type::AUDIOCAPTUREDEVICE; }
+
+	/* @GeneratePInvoke,ManagedAccess=Internal */
+	AudioCaptureDeviceCollection ();
+};
+
 /* @Namespace=System.Windows.Documents */
 class BlockCollection : public TextElementCollection {
 protected:

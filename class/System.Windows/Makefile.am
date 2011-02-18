@@ -622,6 +622,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/CacheMode.cs				\
 	$(srcdir)/System.Windows.Media/CaptureDevice.cs				\
 	$(srcdir)/System.Windows.Media/CaptureDeviceConfiguration.cs		\
+	$(srcdir)/System.Windows.Media/CaptureFormatChangedEventArgs.cs		\
 	$(srcdir)/System.Windows.Media/CaptureImageCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows.Media/CaptureSource.cs				\
 	$(srcdir)/System.Windows.Media/CaptureState.cs				\
@@ -720,7 +721,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/VideoCaptureDevice.cs			\
 	$(srcdir)/System.Windows.Media/VideoCaptureDeviceCollection.cs		\
 	$(srcdir)/System.Windows.Media/VideoFormat.cs				\
-	$(srcdir)/System.Windows.Media/VideoFormatChangedEventArgs.cs		\
 	$(srcdir)/System.Windows.Media/VideoFormatCollection.cs			\
 	$(srcdir)/System.Windows.Media/VideoOutputConnector.cs			\
 	$(srcdir)/System.Windows.Media/VideoOutputConnectorType.cs		\

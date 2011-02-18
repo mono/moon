@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 593 methods needs to be decorated.
+# 591 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -24,6 +24,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_is_running_out_of_browser(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::capture_device_configuration_request_system_access()
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::check_and_download_update_completed_event_args_get_update_available(System.IntPtr)
@@ -105,9 +108,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::media_frame_allocate_buffer(System.IntPtr,System.UInt32,System.UInt32)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::moon_capture_service_request_system_access(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_clipboard_contains_text(System.IntPtr)
@@ -467,6 +467,18 @@
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_get_bitmap_data(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::capture_device_configuration_get_default_audio_capture_device()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::capture_device_configuration_get_default_video_capture_device()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::capture_format_changed_event_args_get_new_audio_format(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::capture_format_changed_event_args_get_new_video_format(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::capture_image_completed_event_args_get_source(System.IntPtr)
 
 # p/invoke declaration
@@ -647,25 +659,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::message_received_event_args_get_sender_domain_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_audio_capture_service_get_available_capture_devices(System.IntPtr,System.Int32&)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_audio_capture_service_get_default_capture_device(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_capture_service_get_audio_capture_service(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_capture_service_get_video_capture_service(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_clipboard_get_text_(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_available_capture_devices(System.IntPtr,System.Int32&)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_video_capture_service_get_default_capture_device(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_cocoa_get_native_widget(System.IntPtr)
@@ -774,9 +768,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::routed_event_args_get_source(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::runtime_get_capture_service()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::runtime_get_network_service()
@@ -924,9 +915,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::uri_new(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::video_format_changed_event_args_get_new_format(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,System.UInt32)
@@ -1113,6 +1101,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::bitmap_source_set_bitmap_data(System.IntPtr,System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::capture_device_configuration_get_available_audio_capture_devices(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::capture_device_configuration_get_available_video_capture_devices(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::capture_device_set_pal_device(System.IntPtr,System.IntPtr)

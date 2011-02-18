@@ -397,6 +397,9 @@
     <File subtype="Code" buildaction="Compile" name="pal/cocoa/window-cocoa.m" />
     <File subtype="Code" buildaction="Nothing" name="pal/cocoa/windowless-cocoa.h" />
     <File subtype="Code" buildaction="Compile" name="pal/cocoa/windowless-cocoa.m" />
+    <File subtype="Code" buildaction="Compile" name="factory.cpp" />
+    <File subtype="Code" buildaction="Compile" name="pal/capture/pal-linux-audio-capture.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-audio-capture.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

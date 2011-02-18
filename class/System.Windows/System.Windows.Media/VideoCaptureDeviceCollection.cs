@@ -27,13 +27,7 @@
 // 
 
 namespace System.Windows.Media {
-	public sealed class VideoCaptureDeviceCollection : PresentationFrameworkCollection<VideoCaptureDevice> {
-		internal VideoCaptureDeviceCollection ()
-			: base (IntPtr.Zero, false)
-		{
-			Console.WriteLine ("System.Windows.Media.VideoCaptureDeviceCollection.ctor: NIEX");
-			throw new NotImplementedException ();
-		}
+	public sealed partial class VideoCaptureDeviceCollection : PresentationFrameworkCollection<VideoCaptureDevice> {
 	}
 }
 

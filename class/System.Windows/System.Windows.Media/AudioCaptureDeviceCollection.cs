@@ -27,13 +27,7 @@
 // 
 
 namespace System.Windows.Media {
-	public sealed class AudioCaptureDeviceCollection : PresentationFrameworkCollection<AudioCaptureDevice> {
-		internal AudioCaptureDeviceCollection ()
-			: base (IntPtr.Zero, false)
-		{
-			Console.WriteLine ("System.Windows.Media.AudioCaptureDeviceCollection.ctor: NIEX");
-			throw new NotImplementedException ();
-		}
+	public sealed partial class AudioCaptureDeviceCollection : PresentationFrameworkCollection<AudioCaptureDevice> {
 	}
 }
 

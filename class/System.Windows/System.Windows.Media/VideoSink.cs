@@ -76,9 +76,9 @@ namespace System.Windows.Media {
 			OnCaptureStopped ();
 		}
 
-		void format_changed (object sender, VideoFormatChangedEventArgs args)
+		void format_changed (object sender, CaptureFormatChangedEventArgs args)
 		{
-			OnFormatChange (args.NewFormat);
+			OnFormatChange (args.NewVideoFormat);
 		}
 
 		~VideoSink ()

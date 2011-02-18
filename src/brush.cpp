@@ -985,7 +985,7 @@ VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
 	// FIXME: this should be folded back into SetupBrush and we
 	// should check for mediaelement/capturesource there.
 
-	//printf ("VideoBrush::SetupBrushFromCaptureSource\n");
+	LOG_CAPTURE ("VideoBrush::SetupBrushFromCaptureSource\n");
 	Stretch stretch = GetStretch ();
 	if (!is_stretch_valid (stretch)) {
 		// bad enum value for stretch, nothing should be drawn
@@ -1009,12 +1009,12 @@ VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
 	
-	guint8 *sampleData;
+	void *sampleData;
 	int sampleDataLength;
 
 	capture->GetSample (NULL, NULL, &sampleData, &sampleDataLength);
 
-	surface = cairo_image_surface_create_for_data (sampleData,
+	surface = cairo_image_surface_create_for_data ((unsigned char *) sampleData,
 						       CAIRO_FORMAT_ARGB32,
 						       video_format->width,
 						       video_format->height,
@@ -1238,18 +1238,18 @@ VideoBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 }
 
 void
-VideoBrush::VideoFormatChanged (VideoFormatChangedEventArgs *args)
+VideoBrush::VideoFormatChanged (CaptureFormatChangedEventArgs *args)
 {
 	printf ("VideoBrush::VideoFormatChanged\n");
 	delete video_format;
-	video_format = new VideoFormat (*args->GetNewFormat());
+	video_format = new VideoFormat (*args->GetNewVideoFormat());
 }
 
 void
 VideoBrush::video_format_changed (EventObject *, EventArgs *args, gpointer closure)
 {
 	VideoBrush *b = (VideoBrush*)closure;
-	VideoFormatChangedEventArgs *vargs = (VideoFormatChangedEventArgs*)args;
+	CaptureFormatChangedEventArgs *vargs = (CaptureFormatChangedEventArgs*)args;
 
 	b->VideoFormatChanged (vargs);
 }

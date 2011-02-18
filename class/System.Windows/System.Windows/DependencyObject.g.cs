@@ -608,6 +608,11 @@ namespace System.Windows.Media {
 		internal AudioCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class AudioCaptureDeviceCollection {
+		internal AudioCaptureDeviceCollection () : base (SafeNativeMethods.audio_capture_device_collection_new (), true) {}
+		internal AudioCaptureDeviceCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class AudioFormatCollection {
 		public AudioFormatCollection () : base (SafeNativeMethods.audio_format_collection_new (), true) {}
 		internal AudioFormatCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -634,7 +639,6 @@ namespace System.Windows.Media {
 	}
 
 	partial class CaptureDevice {
-		internal CaptureDevice () : base (SafeNativeMethods.capture_device_new (), true) {}
 		internal CaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
@@ -899,6 +903,11 @@ namespace System.Windows.Media {
 	partial class VideoCaptureDevice {
 		internal VideoCaptureDevice () : base (SafeNativeMethods.video_capture_device_new (), true) {}
 		internal VideoCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class VideoCaptureDeviceCollection {
+		internal VideoCaptureDeviceCollection () : base (SafeNativeMethods.video_capture_device_collection_new (), true) {}
+		internal VideoCaptureDeviceCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class VideoFormatCollection {

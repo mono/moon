@@ -266,11 +266,11 @@ namespace Mono {
 						     handler (o, args); } );
 		}
 
-		public static UnmanagedEventHandler CreateVideoFormatChangedEventArgsEventHandlerDispatcher (EventHandler <VideoFormatChangedEventArgs> handler)
+		public static UnmanagedEventHandler CreateCaptureFormatChangedEventArgsEventHandlerDispatcher (EventHandler <CaptureFormatChangedEventArgs> handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
-						     VideoFormatChangedEventArgs args = new VideoFormatChangedEventArgs (calldata);
+						     CaptureFormatChangedEventArgs args = new CaptureFormatChangedEventArgs (calldata);
 						     handler (o, args); } );
 		}
 

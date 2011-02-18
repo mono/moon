@@ -23,6 +23,7 @@
 #include "debug.h"
 #include "mediaplayer.h"
 #include "deployment.h"
+#include "capture.h"
 
 namespace Moonlight {
 
@@ -1125,6 +1126,37 @@ AudioPlayer::Shutdown ()
 		player->unref ();
 }
 
+guint32
+AudioPlayer::CreateRecorders (AudioRecorder **recorders, guint32 size)
+{
+	AudioPlayer *inst;
+	gint32 result = 0;
+	
+	LOG_AUDIO ("AudioPlayer::CreateRecorder ()\n");
+	
+	if (moonlight_flags & RUNTIME_INIT_DISABLE_AUDIO) {
+		LOG_AUDIO ("AudioPlayer: audio is disabled.\n");
+		return 0;
+	}
+	
+	pthread_mutex_lock (&instance_mutex);
+	if (instance == NULL) {
+		/* here we get a (global) ref which is unreffed in Shutdown () */
+		instance = CreatePlayer ();
+	}
+	inst = instance;
+	if (inst)
+		inst->ref (); /* this is the ref we unref below */
+	pthread_mutex_unlock (&instance_mutex);
+	
+	if (inst != NULL) {
+		result = inst->CreateRecordersInternal (recorders, size);
+		inst->unref ();
+	}
+	
+	return result;
+}
+
 AudioPlayer *
 AudioPlayer::CreatePlayer ()
 {
@@ -1236,6 +1268,30 @@ AudioPlayer::ShutdownImpl ()
 	}
 
 	FinishShutdownInternal ();
+}
+
+/*
+ * AudioRecorder
+ */
+
+AudioRecorder::AudioRecorder (Type::Kind object_type)
+	: EventObject (object_type)
+{
+	device = NULL;
+}
+
+void
+AudioRecorder::SetDevice (AudioCaptureDevice *value)
+{
+	VERIFY_MAIN_THREAD;
+	device = value;
+}
+
+AudioCaptureDevice *
+AudioRecorder::GetDevice ()
+{
+	VERIFY_MAIN_THREAD;
+	return device;
 }
 
 };

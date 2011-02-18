@@ -113,7 +113,7 @@ enum RuntimeDebugFlag {
 	RUNTIME_DEBUG_MEDIAPLAYER       = 1 << 6,
 	RUNTIME_DEBUG_PIPELINE          = 1 << 7,
 	RUNTIME_DEBUG_PIPELINE_ERROR    = 1 << 8,
-	RUNTIME_DEBUG_FRAMEREADERLOOP   = 1 << 9,
+	RUNTIME_DEBUG_CAPTURE           = 1 << 9,
 	RUNTIME_DEBUG_FFMPEG            = 1 << 10,
 	RUNTIME_DEBUG_SEEK              = 1 << 11,
 	RUNTIME_DEBUG_CODECS            = 1 << 12,
@@ -567,7 +567,6 @@ public:
 	static MoonWindowingSystem *GetWindowingSystem ();
 	static MoonInstallerService *GetInstallerService ();
 	static MoonMessagingService *GetMessagingService ();
-	/* @GeneratePInvoke */
 	static MoonCaptureService *GetCaptureService ();
 	/* @GeneratePInvoke */
 	static MoonNetworkService *GetNetworkService ();

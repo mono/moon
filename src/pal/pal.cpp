@@ -891,4 +891,17 @@ MoonInstallerService::Uninstall (Deployment *deployment)
 	return true;
 }
 
+/*
+ * MoonCaptureDevice
+ */
+
+MoonCaptureDevice::MoonCaptureDevice ()
+{
+	device = NULL;
+}
+
+MoonCaptureDevice::~MoonCaptureDevice ()
+{
+}
+
 };

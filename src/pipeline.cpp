@@ -2501,7 +2501,7 @@ MediaThreadPool::AddWork (MediaClosure *closure)
 			
 			count++; // start up another thread.
 			
-			LOG_FRAMEREADERLOOP ("MediaThreadPool::AddWork (): spawning a new thread (we'll now have %i thread(s))\n", count);
+			LOG_PIPELINE ("MediaThreadPool::AddWork (): spawning a new thread (we'll now have %i thread(s))\n", count);
 			
 			for (int i = prev_count; i < count && result == 0; i++) {
 				valid [i] = false;
@@ -2521,7 +2521,7 @@ MediaThreadPool::AddWork (MediaClosure *closure)
 			}
 		}
 
-		LOG_FRAMEREADERLOOP ("MediaThreadLoop::AddWork () got %s %p for media %p (%i) on deployment %p, there are %d nodes left.\n", 
+		LOG_PIPELINE ("MediaThreadLoop::AddWork () got %s %p for media %p (%i) on deployment %p, there are %d nodes left.\n",
 			closure->GetDescription (), closure, closure->GetMedia (), GET_OBJ_ID (closure->GetMedia ()), closure->GetDeployment (), queue ? queue->Length () : -1);
 		
 		pthread_cond_signal (&condition);
@@ -2805,11 +2805,11 @@ MediaThreadPool::WorkerLoop (void *data)
 		
 		media->SetCurrentDeployment (true);
 
-		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
 		
 		node->closure->Call ();
 		
-		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: processed node %p\n", (int) pthread_self (), node);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %u: processed node %p\n", (int) pthread_self (), node);
 		
 		delete node;
 

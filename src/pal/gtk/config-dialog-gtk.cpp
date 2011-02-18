@@ -14,6 +14,7 @@
 #include "config.h"
 
 #include <glib.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "config-dialog-gtk.h"
 
@@ -24,6 +25,8 @@
 #include "debug-ui-gtk.h"
 #include "consent.h"
 #include "icon128.h"
+#include "capture.h"
+#include "factory.h"
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 
@@ -49,6 +52,7 @@ MoonConfigDialogGtk::MoonConfigDialogGtk (MoonWindowGtk *window, Surface *surfac
 
 	AddNotebookPage ("About", new AboutConfigDialogPage ());
 	AddNotebookPage ("Playback", new PlaybackConfigDialogPage ());
+	AddNotebookPage ("Webcam / Mic", new WebCamMicConfigDialogPage ());
 	AddNotebookPage ("Storage", new StorageConfigDialogPage ());
 	AddNotebookPage ("Permissions", new PermissionsConfigDialogPage ());
 #if 0
@@ -322,6 +326,335 @@ PlaybackConfigDialogPage::GetContentWidget ()
 	return vbox;
 }
 
+////// WebCam / Mic page
+WebCamMicConfigDialogPage::WebCamMicConfigDialogPage ()
+{
+	audio = NULL;
+	video = NULL;
+	webcam_source = NULL;
+	microphone_source = NULL;
+	deployment = Deployment::GetCurrent ();
+}
+
+WebCamMicConfigDialogPage::~WebCamMicConfigDialogPage ()
+{
+	TearDown ();
+}
+
+GtkWidget *
+WebCamMicConfigDialogPage::GetContentWidget ()
+{
+	GtkWidget *hbox;
+	GtkWidget *cam_box;
+	GtkWidget *cam_label;
+	GtkWidget *mic_box;
+	GtkWidget *mic_label;
+	GtkWidget *align;
+	GtkWidget *mic_align;
+
+	hbox = gtk_hbox_new (TRUE, 2);
+	cam_box = gtk_vbox_new (FALSE, 2);
+	mic_box = gtk_vbox_new (FALSE, 2);
+
+	align = gtk_alignment_new (0.5, 0, 1, 1);
+	cam_label = gtk_label_new ("Video Source");
+	cam_combo = gtk_combo_box_new_text ();
+	webcam = gtk_image_new ();
+
+	gtk_container_add (GTK_CONTAINER (align), cam_label);
+	gtk_box_pack_start (GTK_BOX (cam_box), align, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (cam_box), cam_combo, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (cam_box), webcam, FALSE, FALSE, 0);
+
+	align = gtk_alignment_new (0.5, 0, 1, 1);
+	mic_label = gtk_label_new ("Audio Source");
+	mic_combo = gtk_combo_box_new_text ();
+	mic_align = gtk_alignment_new (0.5, 0.5, 0, 1);
+	microphone = gtk_progress_bar_new ();
+
+	gtk_container_add (GTK_CONTAINER (align), mic_label);
+	gtk_box_pack_start (GTK_BOX (mic_box), align, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (mic_box), mic_combo, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (mic_align), microphone);
+	gtk_box_pack_start (GTK_BOX (mic_box), mic_align, FALSE, FALSE, 0);
+
+	gtk_box_pack_start (GTK_BOX (hbox), cam_box, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), mic_box, FALSE, FALSE, 0);
+
+	gtk_progress_bar_set_orientation (GTK_PROGRESS_BAR (microphone), GTK_PROGRESS_BOTTOM_TO_TOP);
+
+	g_signal_connect (mic_combo, "changed", G_CALLBACK (select_device), this);
+	g_signal_connect (cam_combo, "changed", G_CALLBACK (select_device), this);
+	g_signal_connect (hbox, "realize", G_CALLBACK (initialize), this);
+	g_signal_connect (hbox, "unrealize", G_CALLBACK (tear_down), this);
+
+	return hbox;
+}
+
+void
+WebCamMicConfigDialogPage::initialize (GtkWidget *box, WebCamMicConfigDialogPage *page)
+{
+	page->Initialize ();
+}
+
+void
+WebCamMicConfigDialogPage::tear_down (GtkWidget *box, WebCamMicConfigDialogPage *page)
+{
+	page->TearDown ();
+}
+
+void
+WebCamMicConfigDialogPage::ShuttingDownHandler (Deployment *sender, EventArgs *obj)
+{
+	TearDown ();
+}
+
+void
+WebCamMicConfigDialogPage::Initialize ()
+{
+	AudioCaptureDevice *acd;
+	VideoCaptureDevice *vcd;
+	int active_index;
+
+	if (video != NULL)
+		return;
+
+	Deployment::SetCurrent (deployment);
+
+	/* audio */
+	audio = new AudioCaptureDeviceCollection ();
+	CaptureDeviceConfiguration::GetAvailableAudioCaptureDevices (audio);
+
+	active_index = -1;
+	for (int i = 0; i < audio->GetCount (); i++) {
+		acd = audio->GetValueAt (i)->AsAudioCaptureDevice ();
+		gtk_combo_box_append_text (GTK_COMBO_BOX (mic_combo), acd->GetFriendlyName ());
+		if (acd->GetIsDefaultDevice () && active_index == -1)
+			active_index = i;
+	}
+	if (active_index == -1)
+		active_index = 0;
+	gtk_combo_box_set_active (GTK_COMBO_BOX (mic_combo), active_index);
+
+	/* video */
+	video = new VideoCaptureDeviceCollection ();
+	CaptureDeviceConfiguration::GetAvailableVideoCaptureDevices (video);
+
+	active_index = -1;
+	for (int i = 0; i < video->GetCount (); i++) {
+		vcd = video->GetValueAt (i)->AsVideoCaptureDevice ();
+		gtk_combo_box_append_text (GTK_COMBO_BOX (cam_combo), vcd->GetFriendlyName ());
+		if (vcd->GetIsDefaultDevice () && active_index == -1)
+			active_index = i;
+	}
+	if (active_index == -1)
+		active_index = 0;
+	gtk_combo_box_set_active (GTK_COMBO_BOX (cam_combo), active_index);
+
+	deployment->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
+}
+
+void
+WebCamMicConfigDialogPage::TearDown ()
+{
+	Deployment::SetCurrent (deployment);
+
+	if (webcam_source) {
+		webcam_source->RemoveAllHandlers (this);
+		webcam_source->Stop ();
+		webcam_source->unref ();
+		webcam_source = NULL;
+	}
+	if (microphone_source) {
+		microphone_source->RemoveAllHandlers (this);
+		microphone_source->Stop ();
+		microphone_source->unref ();
+		microphone_source = NULL;
+	}
+	if (audio) {
+		audio->unref ();
+		audio = NULL;
+	}
+	if (video) {
+		video->unref ();
+		video = NULL;
+	}
+	deployment->RemoveAllHandlers (this);
+}
+
+void
+WebCamMicConfigDialogPage::select_device (GtkWidget *box, WebCamMicConfigDialogPage *page)
+{
+	int index = gtk_combo_box_get_active (GTK_COMBO_BOX (box));
+
+	if (box == page->mic_combo) {
+		page->SelectAudioDevice (index);
+	} else if (box == page->cam_combo) {
+		page->SelectVideoDevice (index);
+	}
+}
+
+void
+WebCamMicConfigDialogPage::SelectDevice (const char *type, const char *device)
+{
+	Deployment::SetCurrent (deployment);
+
+	MoonlightConfiguration config;
+	if (device == NULL || device [0] == 0) {
+		config.RemoveKey ("Capture", type);
+	} else {
+		config.SetStringValue ("Capture", type, device);
+	}
+	config.Save ();
+}
+
+void
+WebCamMicConfigDialogPage::SelectAudioDevice (int index)
+{
+	AudioCaptureDevice *device = NULL;
+
+	Deployment::SetCurrent (deployment);
+
+	if (index >= 0 && index < audio->GetCount ()) {
+		device = audio->GetValueAt (index)->AsAudioCaptureDevice ();
+		SelectDevice ("Audio", device->GetFriendlyName ());
+	}
+
+	if (microphone_source) {
+		microphone_source->RemoveAllHandlers (this);
+		microphone_source->Stop ();
+		microphone_source->unref ();
+		microphone_source = NULL;
+	}
+
+	if (device) {
+		device->SetAudioFrameSize (100); /* we want a data event every 100 ms */
+		microphone_source = new CaptureSource ();
+		microphone_source->AddHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
+		microphone_source->AddHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);
+		microphone_source->SetAudioCaptureDevice (device);
+		microphone_source->Start ();
+	}
+}
+
+void
+WebCamMicConfigDialogPage::SelectVideoDevice (int index)
+{
+	VideoCaptureDevice *device = NULL;
+
+	Deployment::SetCurrent (deployment);
+
+	if (index >= 0 && index < video->GetCount ()) {
+		device = video->GetValueAt (index)->AsVideoCaptureDevice ();
+		SelectDevice ("Video", device->GetFriendlyName ());
+	}
+
+	if (webcam_source) {
+		webcam_source->RemoveAllHandlers (this);
+		webcam_source->Stop ();
+		webcam_source->unref ();
+		webcam_source = NULL;
+	}
+	if (device) {
+		webcam_source = new CaptureSource ();
+		webcam_source->AddHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
+		webcam_source->AddHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);
+		webcam_source->SetVideoCaptureDevice (device);
+		webcam_source->Start ();
+	}
+}
+
+void
+WebCamMicConfigDialogPage::SampleReadyHandler (CaptureSource *sender, SampleReadyEventArgs *args)
+{
+	GdkPixbuf *pixbuf;
+	guint32 *data;
+
+	if (sender == webcam_source) {
+		data = (guint32 *) g_memdup (args->GetSampleData (), args->GetSampleDataLength ());
+
+		/* BGRA -> RGBA */
+		for (int i = 0; i < args->GetSampleDataLength () / 4; i++)
+			data [i] = (data [i] & 0xFF00FF00) | ((data [i] & 0xFF) << 16) | ((data [i] & 0xFF0000) >> 16);
+	
+		pixbuf = gdk_pixbuf_new_from_data (
+			(const guchar *) data,
+			GDK_COLORSPACE_RGB,
+			TRUE /* alpha */,
+			8 /* bits per pixel */,
+			video_format.width,
+			video_format.height,
+			video_format.stride,
+			(GdkPixbufDestroyNotify) g_free,
+			NULL);
+		gtk_image_set_from_pixbuf (GTK_IMAGE (webcam), pixbuf);
+		g_object_unref (pixbuf);
+	} else if (sender == microphone_source) {
+		guint32 max = 0;
+		double volume;
+		guint32 range;
+
+		switch (audio_format.bitsPerSample) {
+		case 8: {
+			guint8* ptr = (guint8 *) args->GetSampleData ();
+			for (int i = 0; i < args->GetSampleDataLength (); i++) {
+				max = MAX (max, *ptr);
+				ptr++;
+			}
+			range = 1 << 8;
+			break;
+		}
+		case 16: {
+			gint16* ptr = (gint16 *) args->GetSampleData ();
+			for (int i = 0; i < args->GetSampleDataLength () / 2; i++) {
+				max = MAX (max, abs (*ptr));
+				ptr++;
+			}
+			range = 1 << 15; // signed, so one bit less
+			break;
+		}
+		case 24: {
+			guint8* ptr = (guint8 *) args->GetSampleData ();
+			gint32 value;
+			for (int i = 0; i < args->GetSampleDataLength () / 3; i++) {
+				value = 0;
+				((guint8 *) &value) [1] = (((guint8 *) ptr) [0]);
+				((guint8 *) &value) [2] = (((guint8 *) ptr) [1]);
+				((guint8 *) &value) [3] = (((guint8 *) ptr) [2]);
+				max = MAX (max, abs (value));
+				ptr += 3;
+			}
+			range = 1 << 23; // signed, so one bit less
+			break;
+		}
+		case 32: {
+			gint32* ptr = (gint32 *) args->GetSampleData ();
+			for (int i = 0; i < args->GetSampleDataLength () / 4; i++) {
+				max = MAX (max, abs (*ptr++));
+			}
+			range = 1 << 31; // signed, so one bit less
+			break;
+		}
+		default:
+			max = 0;
+			break;
+		}
+		volume = (double) max / (double) (range);
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (microphone), volume);
+	}
+}
+
+void
+WebCamMicConfigDialogPage::FormatChangedHandler (CaptureSource *sender, CaptureFormatChangedEventArgs *args)
+{
+	Deployment::SetCurrent (deployment);
+
+	if (sender == webcam_source) {
+		video_format = *args->GetNewVideoFormat ();
+	} else if (sender == microphone_source) {
+		audio_format = *args->GetNewAudioFormat ();
+	}
+}
 
 ////// Storage page
 enum StorageColumn {

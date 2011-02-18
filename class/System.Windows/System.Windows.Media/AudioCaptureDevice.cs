@@ -32,12 +32,6 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class AudioCaptureDevice : CaptureDevice {
-		internal AudioCaptureDevice (IntPtr pal_device)
-			: this ()
-		{
-			NativeMethods.capture_device_set_pal_device (native, pal_device);
-		}
-
 		public ReadOnlyCollection<AudioFormat> SupportedFormats {
 			get {
 				return new ReadOnlyCollection<AudioFormat>((AudioFormatCollection)GetValue (SupportedFormatsProperty));

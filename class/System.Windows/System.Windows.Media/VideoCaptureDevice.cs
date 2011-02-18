@@ -32,12 +32,6 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class VideoCaptureDevice : CaptureDevice {
-		internal VideoCaptureDevice (IntPtr pal_device)
-			: this ()
-		{
-			NativeMethods.capture_device_set_pal_device (native, pal_device);
-		}
-
 		public ReadOnlyCollection<VideoFormat> SupportedFormats {
 			get {
 				return new ReadOnlyCollection<VideoFormat>((VideoFormatCollection)GetValue (SupportedFormatsProperty));

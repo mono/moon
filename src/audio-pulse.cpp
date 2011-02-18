@@ -19,6 +19,7 @@
 #include "clock.h"
 #include "debug.h"
 #include "timesource.h"
+#include "capture.h"
 
 namespace Moonlight {
 
@@ -26,8 +27,10 @@ namespace Moonlight {
 typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
 typedef void                  (dyn_pa_stream_set_state_callback)     (pa_stream *s, pa_stream_notify_cb_t cb, void *userdata);
 typedef void                  (dyn_pa_stream_set_write_callback)     (pa_stream *p, pa_stream_request_cb_t cb, void *userdata);
+typedef void                  (dyn_pa_stream_set_read_callback)      (pa_stream *p, pa_stream_request_cb_t cb, void *userdata);
 typedef void                  (dyn_pa_stream_set_underflow_callback) (pa_stream *p, pa_stream_notify_cb_t cb, void *userdata);
 typedef int                   (dyn_pa_stream_connect_playback)       (pa_stream *s, const char *dev, const pa_buffer_attr *attr, pa_stream_flags_t flags, pa_cvolume *volume, pa_stream *sync_stream);
+typedef int                   (dyn_pa_stream_connect_record)         (pa_stream *s, const char *dev, const pa_buffer_attr *attr, pa_stream_flags_t flags);
 typedef int                   (dyn_pa_stream_disconnect)             (pa_stream *s);
 typedef void                  (dyn_pa_stream_unref)                  (pa_stream *s);
 typedef pa_stream_state_t     (dyn_pa_stream_get_state)              (pa_stream *p);
@@ -37,6 +40,10 @@ typedef pa_operation*         (dyn_pa_stream_cork)                   (pa_stream 
 typedef pa_operation*         (dyn_pa_stream_trigger)                (pa_stream *s, pa_stream_success_cb_t cb, void *userdata);
 typedef pa_operation*         (dyn_pa_stream_flush)                  (pa_stream *s, pa_stream_success_cb_t cb, void *userdata);
 typedef int                   (dyn_pa_stream_get_latency)            (pa_stream *s, pa_usec_t *r_usec, int *negative);
+typedef int                   (dyn_pa_stream_peek)                   (pa_stream *s, const void **data, size_t *nbytes);
+typedef int                   (dyn_pa_stream_drop)                   (pa_stream *s);
+// sample.h
+typedef size_t                (dyn_pa_sample_size)                    (const pa_sample_spec *spec);
 // context.h
 typedef pa_context *          (dyn_pa_context_new)                   (pa_mainloop_api *mainloop, const char *name);
 typedef int                   (dyn_pa_context_errno)                 (pa_context *c);
@@ -45,6 +52,7 @@ typedef void                  (dyn_pa_context_set_state_callback)    (pa_context
 typedef int                   (dyn_pa_context_connect)               (pa_context *c, const char *server, pa_context_flags_t flags, const pa_spawn_api *api);
 typedef void                  (dyn_pa_context_disconnect)            (pa_context *c);
 typedef void                  (dyn_pa_context_unref)                 (pa_context *c);
+typedef pa_operation*         (dyn_pa_context_get_source_info_list)  (pa_context *c, pa_source_info_cb_t cb, void *userdata);
 // thread-mainloop.h
 typedef pa_threaded_mainloop* (dyn_pa_threaded_mainloop_new)         (void);
 typedef int                   (dyn_pa_threaded_mainloop_start)       (pa_threaded_mainloop *m);
@@ -71,8 +79,10 @@ typedef const char *          (dyn_pa_get_library_version)           ();
 dyn_pa_stream_new *                    d_pa_stream_new = NULL;
 dyn_pa_stream_set_state_callback *     d_pa_stream_set_state_callback = NULL;
 dyn_pa_stream_set_write_callback *     d_pa_stream_set_write_callback = NULL;
+dyn_pa_stream_set_read_callback *      d_pa_stream_set_read_callback = NULL;
 dyn_pa_stream_set_underflow_callback * d_pa_stream_set_underflow_callback = NULL;
 dyn_pa_stream_connect_playback *       d_pa_stream_connect_playback = NULL;
+dyn_pa_stream_connect_record *         d_pa_stream_connect_record = NULL;
 dyn_pa_stream_disconnect *             d_pa_stream_disconnect = NULL;
 dyn_pa_stream_unref *                  d_pa_stream_unref = NULL;
 dyn_pa_stream_get_state *              d_pa_stream_get_state = NULL;
@@ -82,6 +92,9 @@ dyn_pa_stream_cork *                   d_pa_stream_cork = NULL;
 dyn_pa_stream_trigger *                d_pa_stream_trigger = NULL;
 dyn_pa_stream_flush *                  d_pa_stream_flush = NULL;
 dyn_pa_stream_get_latency *            d_pa_stream_get_latency = NULL;
+dyn_pa_stream_peek *                   d_pa_stream_peek = NULL;
+dyn_pa_stream_drop *                   d_pa_stream_drop = NULL;
+dyn_pa_sample_size *                   d_pa_sample_size = NULL;
 dyn_pa_context_new *                   d_pa_context_new = NULL;
 dyn_pa_context_errno *                 d_pa_context_errno = NULL;
 dyn_pa_context_get_state *             d_pa_context_get_state = NULL;
@@ -89,6 +102,7 @@ dyn_pa_context_set_state_callback *    d_pa_context_set_state_callback = NULL;
 dyn_pa_context_connect *               d_pa_context_connect = NULL;
 dyn_pa_context_disconnect *            d_pa_context_disconnect = NULL;
 dyn_pa_context_unref *                 d_pa_context_unref = NULL;
+dyn_pa_context_get_source_info_list *  d_pa_context_get_source_info_list = NULL;
 dyn_pa_threaded_mainloop_new *         d_pa_threaded_mainloop_new = NULL;
 dyn_pa_threaded_mainloop_start *       d_pa_threaded_mainloop_start = NULL;
 dyn_pa_threaded_mainloop_get_api *     d_pa_threaded_mainloop_get_api = NULL;
@@ -110,8 +124,10 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
 #define pa_stream_new                    d_pa_stream_new
 #define pa_stream_set_state_callback     d_pa_stream_set_state_callback
 #define pa_stream_set_write_callback     d_pa_stream_set_write_callback
+#define pa_stream_set_read_callback      d_pa_stream_set_read_callback
 #define pa_stream_set_underflow_callback d_pa_stream_set_underflow_callback
 #define pa_stream_connect_playback       d_pa_stream_connect_playback
+#define pa_stream_connect_record         d_pa_stream_connect_record
 #define pa_stream_disconnect             d_pa_stream_disconnect
 #define pa_stream_unref                  d_pa_stream_unref
 #define pa_stream_get_state              d_pa_stream_get_state
@@ -121,6 +137,9 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
 #define pa_stream_trigger                d_pa_stream_trigger
 #define pa_stream_flush                  d_pa_stream_flush
 #define pa_stream_get_latency            d_pa_stream_get_latency
+#define pa_stream_peek                   d_pa_stream_peek
+#define pa_stream_drop                   d_pa_stream_drop
+#define pa_sample_size                   d_pa_sample_size
 #define pa_context_new                   d_pa_context_new
 #define pa_context_errno                 d_pa_context_errno
 #define pa_context_get_state             d_pa_context_get_state
@@ -128,6 +147,7 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
 #define pa_context_connect               d_pa_context_connect
 #define pa_context_disconnect            d_pa_context_disconnect
 #define pa_context_unref                 d_pa_context_unref
+#define pa_context_get_source_info_list  d_pa_context_get_source_info_list
 #define pa_threaded_mainloop_new		 d_pa_threaded_mainloop_new
 #define pa_threaded_mainloop_start		 d_pa_threaded_mainloop_start
 #define pa_threaded_mainloop_get_api	 d_pa_threaded_mainloop_get_api
@@ -572,14 +592,19 @@ PulsePlayer::PulsePlayer ()
 	loop = NULL;
 	context = NULL;
 	connected = ConnectionUnknown;
+	fetching_recording_devices = false;
 	pthread_mutex_init (&mutex, NULL);
 	pthread_cond_init (&cond, NULL);
+	pthread_mutex_init (&recording_mutex, NULL);
+	pthread_cond_init (&recording_cond, NULL);
 }
 
 PulsePlayer::~PulsePlayer ()
 {
 	pthread_mutex_destroy (&mutex);
 	pthread_cond_destroy (&cond);
+	pthread_mutex_destroy (&recording_mutex);
+	pthread_cond_destroy (&recording_cond);
 }
  
 void
@@ -646,8 +671,10 @@ PulsePlayer::IsInstalled ()
 		result &= NULL != (d_pa_stream_new = (dyn_pa_stream_new *) dlsym (libpulse, "pa_stream_new"));
 		result &= NULL != (d_pa_stream_set_state_callback = (dyn_pa_stream_set_state_callback *) dlsym (libpulse, "pa_stream_set_state_callback"));
 		result &= NULL != (d_pa_stream_set_write_callback = (dyn_pa_stream_set_write_callback *) dlsym (libpulse, "pa_stream_set_write_callback"));
+		result &= NULL != (d_pa_stream_set_read_callback = (dyn_pa_stream_set_read_callback *) dlsym (libpulse, "pa_stream_set_read_callback"));
 		result &= NULL != (d_pa_stream_set_underflow_callback = (dyn_pa_stream_set_underflow_callback *) dlsym (libpulse, "pa_stream_set_underflow_callback"));
 		result &= NULL != (d_pa_stream_connect_playback = (dyn_pa_stream_connect_playback *) dlsym (libpulse, "pa_stream_connect_playback"));
+		result &= NULL != (d_pa_stream_connect_record = (dyn_pa_stream_connect_record *) dlsym (libpulse, "pa_stream_connect_record"));
 		result &= NULL != (d_pa_stream_disconnect = (dyn_pa_stream_disconnect *) dlsym (libpulse, "pa_stream_disconnect"));
 		result &= NULL != (d_pa_stream_unref = (dyn_pa_stream_unref *) dlsym (libpulse, "pa_stream_unref"));
 		result &= NULL != (d_pa_stream_get_state = (dyn_pa_stream_get_state *) dlsym (libpulse, "pa_stream_get_state"));
@@ -657,6 +684,10 @@ PulsePlayer::IsInstalled ()
 		result &= NULL != (d_pa_stream_trigger = (dyn_pa_stream_trigger *) dlsym (libpulse, "pa_stream_trigger"));
 		result &= NULL != (d_pa_stream_flush = (dyn_pa_stream_flush *) dlsym (libpulse, "pa_stream_flush"));
 		result &= NULL != (d_pa_stream_get_latency = (dyn_pa_stream_get_latency *) dlsym (libpulse, "pa_stream_get_latency"));
+		result &= NULL != (d_pa_stream_peek = (dyn_pa_stream_peek *) dlsym (libpulse, "pa_stream_peek"));
+		result &= NULL != (d_pa_stream_drop = (dyn_pa_stream_drop *) dlsym (libpulse, "pa_stream_drop"));
+
+		result &= NULL != (d_pa_sample_size = (dyn_pa_sample_size *) dlsym (libpulse, "pa_sample_size"));
 
 		result &= NULL != (d_pa_context_new = (dyn_pa_context_new *) dlsym (libpulse, "pa_context_new"));
 		result &= NULL != (d_pa_context_errno = (dyn_pa_context_errno *) dlsym (libpulse, "pa_context_errno"));
@@ -665,6 +696,7 @@ PulsePlayer::IsInstalled ()
 		result &= NULL != (d_pa_context_connect = (dyn_pa_context_connect *) dlsym (libpulse, "pa_context_connect"));
 		result &= NULL != (d_pa_context_disconnect = (dyn_pa_context_disconnect *) dlsym (libpulse, "pa_context_disconnect"));
 		result &= NULL != (d_pa_context_unref = (dyn_pa_context_unref *) dlsym (libpulse, "pa_context_unref"));
+		result &= NULL != (d_pa_context_get_source_info_list = (dyn_pa_context_get_source_info_list *) dlsym (libpulse, "pa_context_get_source_info_list"));
 
 		result &= NULL != (d_pa_threaded_mainloop_new = (dyn_pa_threaded_mainloop_new *) dlsym (libpulse, "pa_threaded_mainloop_new"));
 		result &= NULL != (d_pa_threaded_mainloop_start = (dyn_pa_threaded_mainloop_start *) dlsym (libpulse, "pa_threaded_mainloop_start"));
@@ -799,6 +831,65 @@ PulsePlayer::RemoveInternal (AudioSource *source)
 	((PulseSource *) source)->Close ();
 }
 
+void
+PulsePlayer::OnSourceInfoCallback (pa_context *context, const pa_source_info *i, int eol, void *userdata)
+{
+	((PulsePlayer *) userdata)->OnSourceInfo (i, eol);
+}
+
+void
+PulsePlayer::OnSourceInfo (const pa_source_info *i, int eol)
+{
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnSourceInfo (): name: %s eol: %i\n", i ? i->name : NULL, eol);
+	if (i != NULL) {
+		recording_devices.Append (new PulseRecorder::SourceNode (i));
+	}
+	if (eol) {
+		fetching_recording_devices = false;
+		pthread_mutex_lock (&recording_mutex);
+		pthread_cond_signal (&recording_cond);
+		pthread_mutex_unlock (&recording_mutex);
+	}
+}
+
+guint32
+PulsePlayer::CreateRecordersInternal (AudioRecorder **recorders, guint32 size)
+{
+	PulseRecorder::SourceNode *node;
+	guint32 counter = 0;
+
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulsePlayer::CreateRecorder ()\n");
+
+	pthread_mutex_lock (&recording_mutex);
+	while (fetching_recording_devices) {
+		/* we're already doing this in another thread */
+		pthread_cond_wait (&recording_cond, &recording_mutex);
+	}
+	fetching_recording_devices = true;
+	pa_operation_unref (pa_context_get_source_info_list (GetPAContext (), OnSourceInfoCallback, this));
+	while (fetching_recording_devices) {
+		/* Wait until all sources have been listed */
+		pthread_cond_wait (&recording_cond, &recording_mutex);
+	}
+	// first add non-monitor recording sources, so that index 0 has a default device
+	node = (PulseRecorder::SourceNode *) recording_devices.First ();
+	while (node != NULL && counter < size) {
+		if (!node->is_monitor)
+			recorders [counter++] = new PulseRecorder (this, node);
+		node = (PulseRecorder::SourceNode *) node->next;
+	}
+	// now add monitoring sources
+	node = (PulseRecorder::SourceNode *) recording_devices.First ();
+	while (node != NULL && counter < size) {
+		if (node->is_monitor)
+			recorders [counter++] = new PulseRecorder (this, node);
+		node = (PulseRecorder::SourceNode *) node->next;
+	}
+	recording_devices.Clear (true);
+	pthread_mutex_unlock (&recording_mutex);
+
+	return counter;
+}
 
 bool
 PulsePlayer::Initialize ()
@@ -898,6 +989,338 @@ PulsePlayer::FinishShutdownInternal ()
 		pa_threaded_mainloop_stop (loop);
 		pa_threaded_mainloop_free (loop);
 		loop = NULL;
+	}
+}
+
+/*
+ * PulseRecorder
+ */
+
+PulseRecorder::PulseRecorder (PulsePlayer *player, SourceNode *info)
+	: AudioRecorder (Type::PULSERECORDER)
+{
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::PulseRecorder (%s, %s, channels: %i, format: %i, rate: %i)\n",
+		info->name, info->description, info->sample_spec.channels, info->sample_spec.format, info->sample_spec.rate);
+	pulse_stream = NULL;
+	this->player = player;
+	initialized = false;
+	is_ready = false;
+	name = g_strdup (info->name);
+	description = g_strdup (info->description);
+	default_spec = info->sample_spec;
+	recording_format = NULL;
+	pthread_mutex_init (&ready_mutex, NULL);
+	pthread_cond_init (&ready_cond, NULL);
+	position = 0;
+	capture_source = NULL;
+}
+
+void
+PulseRecorder::Dispose ()
+{
+	player->LockLoop ();
+	if (pulse_stream) {
+		pa_stream_set_state_callback (pulse_stream, NULL, NULL);
+		pa_stream_set_read_callback (pulse_stream, NULL, NULL);
+		pa_stream_disconnect (pulse_stream);
+		pa_stream_unref (pulse_stream);
+		pulse_stream = NULL;
+	}
+	player->UnlockLoop ();
+	AudioRecorder::Dispose ();
+}
+
+PulseRecorder::~PulseRecorder ()
+{
+	g_free (name);
+	delete recording_format;
+	pthread_mutex_destroy (&ready_mutex);
+	pthread_cond_destroy (&ready_cond);
+}
+
+bool
+PulseRecorder::InitializePA ()
+{
+	int err;
+	pa_channel_map channel_map;
+	pa_buffer_attr buffer_attr = { 0 };
+	bool result = false;
+	AudioFormat *desired_format;
+	gint32 audio_frame_size;
+	
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::InitializePA () name: %s\n", name);
+		
+	if (initialized)
+		return true;
+	
+	if (player->GetPAState () != PA_CONTEXT_READY) {
+		LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::InitializePA (), PA isn't in the ready state.\n");
+		return false;
+	}
+
+	desired_format = GetDevice ()->GetDesiredFormat ();
+	audio_frame_size = GetDevice ()->GetAudioFrameSize ();
+	audio_frame_size = MIN (2000, MAX (10, audio_frame_size));
+
+	player->LockLoop ();
+
+	recording_spec = default_spec;
+
+	if (desired_format) {
+		recording_spec.rate = desired_format->samplesPerSecond;
+		recording_spec.channels = desired_format->channels;
+		if (desired_format->bitsPerSample == 8) {
+			recording_spec.format = PA_SAMPLE_U8;
+		} else if (desired_format->bitsPerSample == 16) {
+			recording_spec.format = PA_SAMPLE_S16LE;
+		} else if (desired_format->bitsPerSample == 24) {
+			recording_spec.format = PA_SAMPLE_S24LE;
+		} else if (desired_format->bitsPerSample == 32) {
+			recording_spec.format = PA_SAMPLE_S32LE;
+		} else {
+			// default will have to be good enough
+		}
+	}
+
+	if (recording_spec.channels == 1) {
+		pa_channel_map_init_mono (&channel_map);
+	} else if (recording_spec.channels == 2) {
+		pa_channel_map_init_stereo (&channel_map);
+	} else if (recording_spec.channels == 6 || recording_spec.channels == 8) {
+		channel_map.channels = recording_spec.channels;
+		for (unsigned int c = 0; c < PA_CHANNELS_MAX; c++)
+			channel_map.map [c] = PA_CHANNEL_POSITION_INVALID;
+		
+		// this map needs testing with a 5.1/7.1 system.
+		channel_map.map [0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+		channel_map.map [1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+		channel_map.map [2] = PA_CHANNEL_POSITION_FRONT_CENTER;
+		channel_map.map [3] = PA_CHANNEL_POSITION_LFE;
+		channel_map.map [4] = PA_CHANNEL_POSITION_REAR_LEFT;
+		channel_map.map [5] = PA_CHANNEL_POSITION_REAR_RIGHT;
+		if (recording_spec.channels == 8) {
+			channel_map.map [6] = PA_CHANNEL_POSITION_SIDE_LEFT;
+			channel_map.map [7] = PA_CHANNEL_POSITION_SIDE_RIGHT;
+		}
+	} else {
+		if (pa_channel_map_init_auto (&channel_map, recording_spec.channels, PA_CHANNEL_MAP_DEFAULT) == NULL) {
+			LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::InitializePA (): Invalid number of channels: %i\n", recording_spec.channels);
+			goto cleanup;
+		}
+	}
+
+	pulse_stream = pa_stream_new (player->GetPAContext (), "Audio stream", &recording_spec, &channel_map);
+	if (pulse_stream == NULL) {
+		LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::InitializePA (): Stream creation failed: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+		goto cleanup;
+	}
+
+	pa_stream_set_state_callback (pulse_stream, OnStateChanged, this);
+	pa_stream_set_read_callback (pulse_stream, OnRead, this);
+
+	buffer_attr.maxlength = (uint32_t) -1;
+	buffer_attr.fragsize = pa_sample_size (&recording_spec) * recording_spec.channels * recording_spec.rate * audio_frame_size / 1000;
+
+	err = pa_stream_connect_record (pulse_stream, name, &buffer_attr, (pa_stream_flags_t) (PA_STREAM_START_CORKED));
+	if (err < 0) {
+		LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::InitializePA (): failed to connect stream: %s.\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+		goto cleanup;
+	}
+	
+	result = true;
+	initialized = true;
+
+	recording_format = new AudioFormat (SampleSpecToAudioFormat (&recording_spec));
+	GetDevice ()->GetCaptureSource ()->AudioFormatChanged (recording_format);
+
+cleanup:
+	player->UnlockLoop ();
+
+	if (result) {
+		pthread_mutex_lock (&ready_mutex);
+		while (!is_ready) {
+			pthread_cond_wait (&ready_cond, &ready_mutex);
+		}
+		pthread_mutex_unlock (&ready_mutex);
+	}
+
+	return result;
+}
+
+AudioFormat
+PulseRecorder::SampleSpecToAudioFormat (const pa_sample_spec *spec)
+{
+	return AudioFormat (MoonWaveFormatTypePCM, 8 * pa_sample_size (spec), spec->channels, spec->rate);
+}
+
+void
+PulseRecorder::GetSupportedFormats (AudioFormatCollection *col)
+{
+	// the strange ordering is trying to mimic the order SL reports supported formats for me
+	unsigned int freqs [] = { 44100, 32000, 22050, 11025, 8000, 48000, 96000 };
+	unsigned int channels [] = { 2, 1 };
+
+	col->Add (Value (SampleSpecToAudioFormat (&default_spec)));
+
+	for (int bps = pa_sample_size (&default_spec) * 8; bps > 0; bps -= 8) {
+		for (unsigned int f = 0; f < sizeof (freqs) / sizeof (freqs [0]); f++) {
+			for (unsigned int c = 0; c < sizeof (channels) / sizeof (channels [0]); c++) {
+				if (freqs [f] == default_spec.rate && channels [c] == default_spec.channels && (unsigned int) bps == pa_sample_size (&default_spec) * 8)
+					continue; // don't add the default format here too
+				col->Add (Value (AudioFormat (MoonWaveFormatTypePCM, bps, channels [c], freqs [f])));
+			}
+		}
+	}
+}
+
+void
+PulseRecorder::Record ()
+{
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::Record ()\n");
+	VERIFY_MAIN_THREAD;
+
+	if (!InitializePA ())
+		return;
+
+	position = 0;
+
+	capture_mutex.Lock ();
+	if (capture_source == NULL) {
+		capture_source = GetDevice ()->GetCaptureSource ();
+		capture_source->ref ();
+	}
+	capture_mutex.Unlock ();
+
+	player->LockLoop ();
+	if (pulse_stream) {
+		pa_operation_unref (pa_stream_cork (pulse_stream, 0, NULL, NULL));
+	}
+	player->UnlockLoop ();
+}
+
+void
+PulseRecorder::Stop ()
+{
+	CaptureSource *old_source = NULL;
+
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::Stop ()\n");
+	VERIFY_MAIN_THREAD;
+
+	player->LockLoop ();
+	if (pulse_stream) {
+		pa_operation_unref (pa_stream_cork (pulse_stream, 1, NULL, NULL));
+	}
+	player->UnlockLoop ();
+
+	capture_mutex.Lock ();
+	old_source = capture_source;
+	capture_source = NULL;
+	capture_mutex.Unlock ();
+	if (old_source)
+		old_source->unref ();
+}
+
+pa_stream_state_t
+PulseRecorder::GetPAState (pa_stream *pulse_stream)
+{
+	pa_stream_state_t result;
+
+	player->LockLoop ();
+
+	if (pulse_stream == NULL)
+		pulse_stream = this->pulse_stream;
+	if (pulse_stream != NULL) {
+		result = pa_stream_get_state (pulse_stream);
+	} else {
+		result = PA_STREAM_FAILED;
+	}
+	player->UnlockLoop ();
+
+	return result;
+}
+
+
+void
+PulseRecorder::OnStateChanged (pa_stream *pulse_stream, void *userdata)
+{
+	((PulseRecorder *) userdata)->OnStateChanged (pulse_stream);
+}
+
+void
+PulseRecorder::OnStateChanged (pa_stream *pulse_stream)
+{
+	pa_stream_state_t state;
+	
+	if (pulse_stream != this->pulse_stream && this->pulse_stream != NULL) {
+		LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnStateChanged (%p): Invalid stream.\n", pulse_stream);
+		return;
+	}
+	
+	state = GetPAState (pulse_stream);
+
+	SetCurrentDeployment (false);
+
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnStateChanged (): %s (%i)\n", get_pa_stream_state_name (state), state);
+	
+	switch (state) {
+	case PA_STREAM_READY:
+		pthread_mutex_lock (&ready_mutex);
+		is_ready = true;
+		pthread_cond_signal (&ready_cond);
+		pthread_mutex_unlock (&ready_mutex);
+		break;
+	case PA_STREAM_CREATING:
+	case PA_STREAM_TERMINATED:
+		break;
+	case PA_STREAM_FAILED:
+	default:
+		LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnStateChanged (): Stream error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
+		break;
+	}
+}
+
+void
+PulseRecorder::OnRead (pa_stream *s, size_t length, void *userdata)
+{
+	((PulseRecorder *) userdata)->OnRead (length);
+}
+
+void
+PulseRecorder::OnRead (size_t length)
+{
+	guint64 pts;
+	size_t nbytes = 0;
+	const void *data;
+	CaptureSource *source;
+
+	if (pulse_stream == NULL) {
+		// We've been destroyed
+		return;
+	}
+
+	SetCurrentDeployment (false);
+
+	pa_stream_peek (pulse_stream, &data, &nbytes);
+
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnRead (%" G_GINT64_FORMAT "): Read %" G_GUINT64_FORMAT " bytes\n", (gint64) length, (gint64) nbytes);
+
+	if (data != NULL && nbytes > 0) {
+		pts = nbytes * 10000000ULL / recording_spec.channels / pa_sample_size (&recording_spec);
+
+		capture_mutex.Lock ();
+		source = capture_source;
+		if (source)
+			source->ref ();
+		capture_mutex.Unlock ();
+		if (source) {
+			source->ReportSample (position, pts, g_memdup (data, nbytes), nbytes);
+			source->unref ();
+		}
+
+		position += pts;
+		pa_stream_drop (pulse_stream);
+	} else {
+		/* no data ?*/
 	}
 }
 

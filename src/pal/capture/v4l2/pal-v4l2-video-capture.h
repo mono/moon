@@ -17,73 +17,34 @@ namespace Moonlight {
 
 class MoonVideoCaptureServiceV4L2;
 
-class MoonVideoFormatV4L2 : public MoonVideoFormat {
+struct MoonVideoFormatV4L2 {
 public:
-	MoonVideoFormatV4L2 (MoonPixelFormat moonFormat,
-			     int framesPerSecond,
-			     int stride,
-			     int width,
-			     int height,
-			     guint32 v4l2PixelFormat,
-			     guint32 v4l2Stride)
-		:
-		MoonVideoFormat (moonFormat,
-				 framesPerSecond,
-				 stride,
-				 width,
-				 height),
-		v4l2PixelFormat (v4l2PixelFormat),
-		v4l2Stride (v4l2Stride)
-	{
-	}
-
-	virtual ~MoonVideoFormatV4L2 () { }
-
-	virtual MoonVideoFormat* Clone () { return new MoonVideoFormatV4L2 (GetPixelFormat (),
-									    GetFramesPerSecond (),
-									    GetStride (),
-									    GetWidth (),
-									    GetHeight (),
-									    v4l2PixelFormat,
-									    v4l2Stride); }
-									    
-
-	guint32 GetV4L2PixelFormat () { return v4l2PixelFormat; }
-	guint32 GetV4L2Stride () { return v4l2Stride; }
-
-private:
 	guint32 v4l2PixelFormat;
-	guint32 v4l2Stride;
-			     
+	float framesPerSecond;
+	int height;
+	int width;
+	int stride;
 };
 
 class MoonVideoCaptureDeviceV4L2 : public MoonVideoCaptureDevice {
 public:
-	MoonVideoCaptureDeviceV4L2 (MoonVideoCaptureServiceV4L2* service, int fd);
+	MoonVideoCaptureDeviceV4L2 (int fd, const char *friendly_name);
 	virtual ~MoonVideoCaptureDeviceV4L2 ();
 
-	virtual MoonVideoFormat* GetDesiredFormat ();
-	virtual void SetDesiredFormat (MoonVideoFormat *format);
-	virtual MoonVideoFormat** GetSupportedFormats (int* count);
+	virtual void GetSupportedFormats (VideoFormatCollection *col);
 
 	virtual const char* GetFriendlyName();
-	virtual bool GetIsDefaultDevice();
 
-	virtual void SetCallbacks (MoonReportSampleFunc report_sample,
-				   MoonFormatChangedFunc format_changed,
-				   gpointer data);
 	virtual void StartCapturing ();
 	virtual void StopCapturing ();
 
 private:
-	void ReadNextFrame (guint8 **buffer, guint32 *buflen, gint64 *pts);
-	static gboolean ReadNextFrame (gpointer context);
+	static void * CaptureLoopCallback (gpointer context);
+	void CaptureLoop ();
+	void RetrieveFormats ();
 
 	int fd;
-	MoonVideoFormat *desired_format;
-	MoonVideoFormatV4L2 *capturing_format;
-	bool need_to_notify_format;
-	MoonVideoCaptureServiceV4L2* service;
+	MoonVideoFormatV4L2 capturing_format;
 	char *friendly_name;
 
 	typedef struct {
@@ -91,32 +52,25 @@ private:
 		size_t length;
 	} Buffer;
 
+	int buffer_count;
 	Buffer *buffers;
 
-	gint64 first_pts;
+	guint64 first_pts;
 
-	MoonReportSampleFunc report_sample;
-	MoonFormatChangedFunc format_changed;
-	gpointer callback_data;
+	guint32 format_count;
+	MoonVideoFormatV4L2 **formats;
 
-	GPtrArray *formats;
-
-	gint idle_id;
+	int capture_pipe [2]; // this is the pipe we use to wake up the capture thread
+	bool capturing; // write on main thread only
+	pthread_t capture_thread;
 };
 
 class MoonVideoCaptureServiceV4L2 : public MoonVideoCaptureService {
 public:
-	MoonVideoCaptureServiceV4L2 ();
-	virtual ~MoonVideoCaptureServiceV4L2 ();
+	MoonVideoCaptureServiceV4L2 () {}
+	virtual ~MoonVideoCaptureServiceV4L2 () {}
 
-	virtual MoonVideoCaptureDevice* GetDefaultCaptureDevice ();
-	virtual MoonVideoCaptureDevice** GetAvailableCaptureDevices (int *num_devices);
-
-	bool IsDefaultDevice (MoonVideoCaptureDeviceV4L2 *device);
-
-private:
-	GPtrArray *devices;
-	MoonVideoCaptureDeviceV4L2* default_device;
+	virtual void GetAvailableCaptureDevices (VideoCaptureDeviceCollection *col);
 };
 
 };

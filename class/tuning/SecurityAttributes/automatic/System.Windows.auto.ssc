@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 634 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -14,6 +14,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::assembly_part_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::assembly_part_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::audio_capture_device_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::audio_capture_device_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::audio_format_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::back_ease_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::begin_storyboard_new()
@@ -30,7 +31,6 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::brush_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::cache_mode_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::canvas_new()
-+SSC-M: System.IntPtr Mono.SafeNativeMethods::capture_device_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::capture_source_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::circle_ease_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::collection_changed_event_args_new()
@@ -236,6 +236,7 @@
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::user_control_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::video_brush_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::video_capture_device_new()
++SSC-M: System.IntPtr Mono.SafeNativeMethods::video_capture_device_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::video_format_collection_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::visual_brush_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::web_browser_new()
@@ -539,12 +540,12 @@
 +SSC-M: System.Windows.Documents.TextPointer System.Windows.Documents.TextSelection::get_Start()
 +SSC-M: System.Object System.Windows.Markup.XamlReader::Load(System.String)
 +SSC-M: System.Void System.Windows.Media.Media3D.Matrix3D::.ctor(System.IntPtr)
-+SSC-M: System.Void System.Windows.Media.AudioCaptureDevice::.ctor(System.IntPtr)
 +SSC-M: System.Collections.ObjectModel.ReadOnlyCollection`1<System.Windows.Media.AudioCaptureDevice> System.Windows.Media.CaptureDeviceConfiguration::GetAvailableAudioCaptureDevices()
 +SSC-M: System.Collections.ObjectModel.ReadOnlyCollection`1<System.Windows.Media.VideoCaptureDevice> System.Windows.Media.CaptureDeviceConfiguration::GetAvailableVideoCaptureDevices()
 +SSC-M: System.Windows.Media.AudioCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultAudioCaptureDevice()
 +SSC-M: System.Windows.Media.VideoCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultVideoCaptureDevice()
 +SSC-M: System.Boolean System.Windows.Media.CaptureDeviceConfiguration::RequestDeviceAccess()
++SSC-M: System.Void System.Windows.Media.CaptureFormatChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::.ctor(System.IntPtr,System.Exception,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Windows.Media.Imaging.WriteableBitmap System.Windows.Media.CaptureImageCompletedEventArgs::get_Result()
@@ -581,8 +582,6 @@
 +SSC-M: System.Windows.Media.Matrix System.Windows.Media.TransformGroup::get_Value()
 +SSC-M: System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Controls.MediaElement)
 +SSC-M: System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Media.CaptureSource)
-+SSC-M: System.Void System.Windows.Media.VideoCaptureDevice::.ctor(System.IntPtr)
-+SSC-M: System.Void System.Windows.Media.VideoFormatChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Windows.DependencyObject System.Windows.Media.VisualTreeHelper::GetParent(System.Windows.DependencyObject)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Point,System.Windows.UIElement)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Rect,System.Windows.UIElement)

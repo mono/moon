@@ -33,89 +33,55 @@ using Mono;
 
 namespace System.Windows.Media {
 	public static class CaptureDeviceConfiguration {
-
-		private static IntPtr GetAudioCaptureService ()
-		{
-			IntPtr capture_service = NativeMethods.runtime_get_capture_service ();
-			if (capture_service == IntPtr.Zero)
-				return IntPtr.Zero;
-			return NativeMethods.moon_capture_service_get_audio_capture_service (capture_service);
-		}
-
-		private static IntPtr GetVideoCaptureService ()
-		{
-			IntPtr capture_service = NativeMethods.runtime_get_capture_service ();
-			if (capture_service == IntPtr.Zero)
-				return IntPtr.Zero;
-			return NativeMethods.moon_capture_service_get_video_capture_service (capture_service);
-		}
+		static bool last_device_access_response = false;
 
 		public static ReadOnlyCollection<AudioCaptureDevice> GetAvailableAudioCaptureDevices ()
 		{
-			IntPtr audio_service = GetAudioCaptureService ();
-			Collection<AudioCaptureDevice> col = new Collection<AudioCaptureDevice> ();
-			if (audio_service != IntPtr.Zero) {
-				int num_devices;
-				IntPtr devices = NativeMethods.moon_audio_capture_service_get_available_capture_devices (audio_service, out num_devices);
-				for (int i = 0; i < num_devices; i ++)
-					col.Add (new AudioCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
-			}
-
+			AudioCaptureDeviceCollection col = new AudioCaptureDeviceCollection ();
+			NativeMethods.capture_device_configuration_get_available_audio_capture_devices (col.native);
 			return new ReadOnlyCollection<AudioCaptureDevice> (col);
 		}
 
 		public static ReadOnlyCollection<VideoCaptureDevice> GetAvailableVideoCaptureDevices ()
 		{
-			IntPtr video_service = GetVideoCaptureService ();
-			Collection<VideoCaptureDevice> col = new Collection<VideoCaptureDevice> ();
-			if (video_service != IntPtr.Zero) {
-				int num_devices;
-				IntPtr devices = NativeMethods.moon_video_capture_service_get_available_capture_devices (video_service, out num_devices);
-
-				for (int i = 0; i < num_devices; i ++)
-					col.Add (new VideoCaptureDevice (Marshal.ReadIntPtr (devices, i * IntPtr.Size)));
-			}
-
+			VideoCaptureDeviceCollection col = new VideoCaptureDeviceCollection ();
+			NativeMethods.capture_device_configuration_get_available_video_capture_devices (col.native);
 			return new ReadOnlyCollection<VideoCaptureDevice> (col);
 		}
 
 		public static AudioCaptureDevice GetDefaultAudioCaptureDevice ()
 		{
-			IntPtr audio_service = GetAudioCaptureService ();
+			AudioCaptureDevice device;
 
-			if (audio_service == IntPtr.Zero)
-				return null;
-
-			IntPtr audio_device = NativeMethods.moon_audio_capture_service_get_default_capture_device (audio_service);
+			IntPtr audio_device = NativeMethods.capture_device_configuration_get_default_audio_capture_device ();
 			if (audio_device == IntPtr.Zero)
 				return null;
 
-			return new AudioCaptureDevice (audio_device);
+			device = (AudioCaptureDevice) NativeDependencyObjectHelper.FromIntPtr (audio_device);
+
+			NativeMethods.event_object_unref (audio_device);
+
+			return device;
 		}
 
 		public static VideoCaptureDevice GetDefaultVideoCaptureDevice ()
 		{
-			IntPtr video_service = GetVideoCaptureService ();
+			VideoCaptureDevice device;
 
-			if (video_service == IntPtr.Zero)
-				return null;
-
-			IntPtr video_device = NativeMethods.moon_video_capture_service_get_default_capture_device (video_service);
+			IntPtr video_device = NativeMethods.capture_device_configuration_get_default_video_capture_device ();
 			if (video_device == IntPtr.Zero)
 				return null;
 
-			return new VideoCaptureDevice (video_device);
-		}
+			device = (VideoCaptureDevice) NativeDependencyObjectHelper.FromIntPtr (video_device);
 
-		static bool last_device_access_response = false;
+			NativeMethods.event_object_unref (video_device);
+
+			return device;
+		}
 
 		public static bool RequestDeviceAccess ()
 		{
-			IntPtr capture_service = NativeMethods.runtime_get_capture_service ();
-			if (capture_service == IntPtr.Zero)
-				last_device_access_response = false;
-			else
-				last_device_access_response = NativeMethods.moon_capture_service_request_system_access (capture_service);
+			last_device_access_response = NativeMethods.capture_device_configuration_request_system_access ();
 			return last_device_access_response;
 		}
 

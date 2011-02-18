@@ -1088,6 +1088,24 @@ ResourceDictionaryCollection::AddedToCollection (Value *value, MoonError *error)
 }
 
 //
+// AudioCaptureDeviceCollection
+//
+
+AudioCaptureDeviceCollection::AudioCaptureDeviceCollection ()
+	: DependencyObjectCollection (Type::AUDIOCAPTUREDEVICE_COLLECTION)
+{
+}
+
+//
+// VideoCaptureDeviceCollection
+//
+
+VideoCaptureDeviceCollection::VideoCaptureDeviceCollection ()
+	: DependencyObjectCollection (Type::VIDEOCAPTUREDEVICE_COLLECTION)
+{
+}
+
+//
 // CollectionIterator
 //
 

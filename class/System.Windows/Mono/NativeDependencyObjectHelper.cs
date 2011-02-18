@@ -327,6 +327,9 @@ namespace Mono {
 			case Kind.APPLICATION: return new Application (raw, false);
 			case Kind.ASSEMBLYPART: return new AssemblyPart (raw, false);
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw, false);
+			case Kind.AUDIOCAPTUREDEVICE: return new AudioCaptureDevice (raw, false);
+			case Kind.AUDIOCAPTUREDEVICE_COLLECTION : return new AudioCaptureDeviceCollection (raw, false);
+			case Kind.AUDIOFORMAT_COLLECTION: return new AudioFormatCollection (raw, false);
 			case Kind.BACKEASE: return new BackEase (raw, false);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw, false);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw, false);
@@ -491,6 +494,8 @@ namespace Mono {
 			case Kind.UNDERLINE: return new Underline (raw, false);
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
+			case Kind.VIDEOCAPTUREDEVICE: return new VideoCaptureDevice (raw, false);
+			case Kind.VIDEOCAPTUREDEVICE_COLLECTION : return new VideoCaptureDeviceCollection (raw, false);
 			case Kind.VIDEOFORMAT_COLLECTION: return new VideoFormatCollection (raw, false);
 			case Kind.WEBBROWSER: return new WebBrowser (raw, false);
 			case Kind.WINDOW: return new Window (raw, false);

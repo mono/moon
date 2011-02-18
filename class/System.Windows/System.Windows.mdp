@@ -778,7 +778,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/SampleReadyEventArgs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/TextHintingMode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/TextOptions.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoFormatChangedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/CaptureFormatChangedEventArgs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VideoFormatCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/IWeakListener.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/WeakCollectionChangedListener.cs" />

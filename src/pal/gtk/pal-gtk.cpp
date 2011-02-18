@@ -1271,6 +1271,69 @@ MoonWindowingSystemGtk::GetScreenWidth (MoonWindow *moon_window)
 	return gdk_screen_get_width (screen);
 }
 
+bool
+MoonWindowingSystemGtk::ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height)
+{
+	bool result = false;
+	GError *err = NULL;
+	GdkPixbufLoader *loader;
+	GdkPixbuf *pixbuf;
+	guint32 gdk_stride;
+	guint32 gdk_height;
+	guint32 gdk_width;
+	guint8 *gdk_pixels;
+	guint8 *in;
+	guint8 *out;
+
+	if ((loader = gdk_pixbuf_loader_new_with_type ("jpeg", &err)) == NULL) {
+		goto cleanup;
+	}
+
+	if (!gdk_pixbuf_loader_write (loader, (const guchar *) jpeg, jpeg_size, &err)) {
+		goto cleanup;
+	}
+
+	if (!gdk_pixbuf_loader_close (loader, &err)) {
+		goto cleanup;
+	}
+
+	if ((pixbuf = gdk_pixbuf_loader_get_pixbuf (loader)) == NULL) {
+		fprintf (stderr, "Moonlight: Could not convert JPEG to BGRA: pixbufloader didn't create a pixbuf.\n");
+		goto cleanup;
+	}
+
+	gdk_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	gdk_stride = gdk_pixbuf_get_rowstride (pixbuf);
+	gdk_height = gdk_pixbuf_get_height (pixbuf);
+	gdk_width = gdk_pixbuf_get_width (pixbuf);
+
+	for (guint32 y = 0; y < MIN (gdk_height, buffer_height); y++) {
+		out = buffer + buffer_stride * y;
+		in = gdk_pixels + gdk_stride * y;
+		for (guint32 x = 0; x < MIN (gdk_width, buffer_stride); x++) {
+			out [0] = in [2];
+			out [1] = in [1];
+			out [2] = in [0];
+			out [3] = 0xFF;;
+			out += 4;
+			in += 3;
+		}
+	}
+
+	result = true;
+
+cleanup:
+	if (err) {
+		fprintf (stderr, "Moonlight: could not convert jpeg to bgra: %s\n", err->message);
+		g_error_free (err);
+	}
+
+	if (loader)
+		g_object_unref (loader);
+
+	return result;
+}
+
 MoonInstallerServiceGtk::MoonInstallerServiceGtk ()
 {
 	base_install_dir = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", NULL);

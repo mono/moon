@@ -59,6 +59,15 @@ class EventObject;
 class EventArgs;
 class PluginInstance;
 class Uri;
+struct AudioFormat;
+struct VideoFormat;
+class AudioFormatCollection;
+class VideoFormatCollection;
+class CaptureDevice;
+class AudioCaptureDevice;
+class VideoCaptureDevice;
+class AudioCaptureDeviceCollection;
+class VideoCaptureDeviceCollection;
 
 class MoonEvent;
 class MoonWindow;
@@ -93,18 +102,12 @@ enum MoonWindowType {
 
 // useful abstractions for porting moonlight to other platforms.
 
-
-class MoonVideoFormat;
-
 // returns true if the timeout/idle should be removed
 typedef bool (*MoonSourceFunc) (gpointer data);
 
 typedef bool (*MoonCallback) (gpointer sender, gpointer data);
 
 typedef void (*MoonClipboardGetTextCallback) (MoonClipboard *clipboard, const char *text, gpointer data);
-
-typedef void (*MoonReportSampleFunc) (gint64 sampleTime, gint64 frameDuration, guint8 *sampleData, int sampleDataLength, gpointer data);
-typedef void (*MoonFormatChangedFunc) (MoonVideoFormat *format, gpointer data);
 
 class MoonEvent {
 public:
@@ -307,6 +310,9 @@ public:
 	/* @GeneratePInvoke */
 	virtual guint32 GetScreenWidth (MoonWindow *moon_window) = 0;
 
+	// buffer must have a size of at least buffer_stride * buffer_height
+	virtual bool ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height) = 0;
+
 private:
 	MoonWindowlessCtor windowless_ctor;
 };
@@ -413,118 +419,43 @@ public:
 	virtual MoonMessageSender* CreateMessagingSender (const char *listenerName, const char *listenerDomain, const char *domain, MoonError *error) = 0;
 };
 
-
-//
-// XXX media capture api below not finished
-//
-struct MoonVideoFormat {
-public:
-	MoonVideoFormat (MoonPixelFormat format,
-			 int framesPerSecond,
-			 int stride,
-			 int width,
-			 int height) :
-		format (format),
-		framesPerSecond (framesPerSecond),
-		stride (stride),
-		width (width),
-		height (height)
-	{ }
-
-	MoonVideoFormat (const MoonVideoFormat &f)
-		: format (f.format),
-		  framesPerSecond (f.framesPerSecond),
-		  stride (f.stride),
-		  width (f.width),
-		  height (f.height)
-	{
-	}
-
-	virtual ~MoonVideoFormat () { }
-
-	MoonPixelFormat GetPixelFormat () { return format; }
-	int GetFramesPerSecond () { return framesPerSecond; }
-	int GetStride () { return stride; }
-	int GetHeight () { return height; }
-	int GetWidth () { return width; }
-
-	virtual MoonVideoFormat* Clone () = 0;
-
-private:
-	MoonPixelFormat format;
-	int framesPerSecond;
-	int stride;
-	int width;
-	int height;
-};
-
-class MoonAudioFormat {
-public:
-	MoonAudioFormat (int bitsPerSample,
-			 int channels,
-			 int samplesPerSecond,
-			 MoonWaveFormatType waveFormat) :
-		bitsPerSample (bitsPerSample),
-		channels (channels),
-		samplesPerSecond (samplesPerSecond),
-		waveFormat (waveFormat)
-	{ }
-
-	MoonAudioFormat (const MoonAudioFormat& f)
-		: bitsPerSample (f.bitsPerSample),
-		  channels (f.channels),
-		  samplesPerSecond (f.samplesPerSecond),
-		  waveFormat (f.waveFormat)
-		
-	{
-	}
-
-	int GetBitsPerSample () { return bitsPerSample; }
-	int GetChannels () { return channels; }
-	int GetSamplesPerSecond () { return samplesPerSecond; }
-	MoonWaveFormatType GetWaveFormat () { return waveFormat; }
-
-private:
-	int bitsPerSample;
-	int channels;
-	int samplesPerSecond;
-	MoonWaveFormatType waveFormat;
-};
-
 class MoonCaptureDevice {
+	CaptureDevice *device;
+
+protected:
+	CaptureDevice *GetDevice () { return device; }
+
 public:
-	MoonCaptureDevice () {};
-	virtual ~MoonCaptureDevice () {};
+	MoonCaptureDevice ();
+	virtual ~MoonCaptureDevice ();
 
 	virtual const char* GetFriendlyName () = 0;
-	virtual bool GetIsDefaultDevice () = 0;
+	void SetDevice (CaptureDevice *value) { device = value; }
 };
 
 class MoonVideoCaptureDevice : public MoonCaptureDevice {
+protected:
+	VideoCaptureDevice *GetDevice () { return (VideoCaptureDevice *) MoonCaptureDevice::GetDevice (); }
+
 public:
 	MoonVideoCaptureDevice () {};
 	virtual ~MoonVideoCaptureDevice () {};
 
-	virtual MoonVideoFormat* GetDesiredFormat () = 0;
-	virtual void SetDesiredFormat (MoonVideoFormat *format) = 0;
-	virtual MoonVideoFormat** GetSupportedFormats (int* count) = 0;
+	virtual void GetSupportedFormats (VideoFormatCollection *col) = 0;
 
-	virtual void SetCallbacks (MoonReportSampleFunc report_sample,
-				   MoonFormatChangedFunc format_changed,
-				   gpointer data) = 0;
 	virtual void StartCapturing () = 0;
 	virtual void StopCapturing () = 0;
 };
 
 class MoonAudioCaptureDevice : public MoonCaptureDevice {
+protected:
+	AudioCaptureDevice *GetDevice () { return (AudioCaptureDevice *) MoonCaptureDevice::GetDevice (); }
+
 public:
 	MoonAudioCaptureDevice () {};
 	virtual ~MoonAudioCaptureDevice () {};
 
-	virtual int GetAudioFrameSize () = 0;
-	virtual MoonAudioFormat* GetDesiredFormat () = 0;
-	virtual void SetDesiredFormat (MoonAudioFormat *format) = 0;
-	virtual MoonAudioFormat** GetSupportedFormats (int* count) = 0;
+	virtual void GetSupportedFormats (AudioFormatCollection *col) = 0;
 
 	virtual void StartCapturing () = 0;
 	virtual void StopCapturing () = 0;
@@ -535,10 +466,7 @@ public:
 	MoonVideoCaptureService () {};
 	virtual ~MoonVideoCaptureService () {}
 
-	/* @GeneratePInvoke */
-	virtual MoonVideoCaptureDevice* GetDefaultCaptureDevice () = 0;
-	/* @GeneratePInvoke */
-	virtual MoonVideoCaptureDevice** GetAvailableCaptureDevices (int *num_devices) = 0;
+	virtual void GetAvailableCaptureDevices (VideoCaptureDeviceCollection *col) = 0;
 };
 
 class MoonAudioCaptureService {
@@ -546,10 +474,7 @@ public:
 	MoonAudioCaptureService () {};
 	virtual ~MoonAudioCaptureService () {}
 
-	/* @GeneratePInvoke */
-	virtual MoonAudioCaptureDevice* GetDefaultCaptureDevice () = 0;
-	/* @GeneratePInvoke */
-	virtual MoonAudioCaptureDevice** GetAvailableCaptureDevices (int *num_devices) = 0;
+	virtual void GetAvailableCaptureDevices (AudioCaptureDeviceCollection *col) = 0;
 };
 
 class MoonCaptureService {
@@ -557,9 +482,7 @@ public:
 	MoonCaptureService () {};
 	virtual ~MoonCaptureService () {};
 
-	/* @GeneratePInvoke */
 	virtual MoonVideoCaptureService *GetVideoCaptureService() = 0;
-	/* @GeneratePInvoke */
 	virtual MoonAudioCaptureService *GetAudioCaptureService() = 0;
 
 	// return true if the platform requires its own user
@@ -568,7 +491,6 @@ public:
 
 	// it's alright to block waiting on a response here, return
 	// true if the user has allowed access.
-	/* @GeneratePInvoke */
 	virtual bool RequestSystemAccess () = 0;
 };
 

@@ -20,8 +20,8 @@ public:
 	MoonCaptureServiceLinux ();
 	virtual ~MoonCaptureServiceLinux ();
 
-	MoonVideoCaptureService *GetVideoCaptureService();
-	MoonAudioCaptureService *GetAudioCaptureService();
+	virtual MoonVideoCaptureService *GetVideoCaptureService();
+	virtual MoonAudioCaptureService *GetAudioCaptureService();
 
 	// return true if the platform requires its own user
 	// interaction to enable access to video/audio capture devices

@@ -23,6 +23,7 @@ class MediaFrame;
 class AudioSource;
 class AudioSources;
 class AudioPlayer;
+class AudioRecorder;
 
 };
 
@@ -245,6 +246,24 @@ class AudioSources {
 #endif
 };
 
+class AudioRecorder : public EventObject {
+	AudioCaptureDevice *device; // main thread only
+
+protected:
+	/* @SkipFactories */
+	AudioRecorder (Type::Kind object_type);
+	AudioCaptureDevice *GetDevice (); // main thread only
+	virtual ~AudioRecorder () {}
+
+public:
+	virtual void Record () = 0;
+	virtual void Stop () = 0;
+	virtual void GetSupportedFormats (AudioFormatCollection *col) = 0;
+	virtual const char *GetFriendlyName () = 0;
+
+	void SetDevice (AudioCaptureDevice *device);
+};
+
 class AudioPlayer {
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
@@ -293,6 +312,8 @@ class AudioPlayer {
 	virtual void FinishShutdownInternal () = 0;
 	// Must return a new AudioSource specific for each backend.
 	virtual AudioSource *CreateNode (MediaPlayer *mplayer, AudioStream *stream) = 0;
+	// Creates audio recorders, one per device we can record from
+	virtual guint32 CreateRecordersInternal (AudioRecorder **recorders, guint32 size) { return 0; }
 	
  public:
 	// Creates a audio source from the MediaPlayer and AudioStream.
@@ -305,6 +326,9 @@ class AudioPlayer {
 	static void Remove (AudioSource *source);
 	// Shuts down the audio engine
 	static void Shutdown ();
+	// Creates audio recorders, one per device we can record from
+	// the number of recorders will be returned
+	static guint32 CreateRecorders (AudioRecorder **recorders, guint32 size);
 };
 
 };

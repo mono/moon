@@ -90,6 +90,7 @@ libmoon_include_headers = 	\
 	pal/pal.h		\
 	pal/window.h		\
 	pal/capture/pal-linux-capture.h	\
+	pal/capture/pal-linux-audio-capture.h		\
 	pal/capture/v4l2/pal-v4l2-video-capture.h	\
 	pal/gtk/clipboard-gtk.h	\
 	pal/gtk/config-dialog-gtk.h\
@@ -314,6 +315,7 @@ libmoon_la_SOURCES += \
 libmoon_la_SOURCES += \
 	pal/capture/pal-linux-capture.cpp	\
 	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
+	pal/capture/pal-linux-audio-capture.cpp 	\
 	pal/messaging/glib/pal-glib-msg.cpp	\
 	pal/network/dbus/pal-dbus-network.cpp	\
 	pal/network/pal-linux-network.cpp
