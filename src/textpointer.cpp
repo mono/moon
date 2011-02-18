@@ -568,16 +568,20 @@ TextPointer::GetIsAtInsertionPosition () const
 TextPointer
 TextPointer::GetPositionInsideRun (int offset) const
 {
+	DependencyObject *parent = GetParent ();
+	if (parent == NULL)
+		return *this;
+
 	if (offset > 0) {
-		if (GetParent()->Is(Type::RUN)) {
+		if (parent->Is(Type::RUN)) {
 			int location = ResolveLocation ();
-			const char *text = ((Run*)GetParent())->GetText();
+			const char *text = ((Run*)parent)->GetText();
 			if ((guint)location < strlen (text))
 				return GetPositionAtOffset_np (1, LogicalDirectionForward);
 		}
 
 		// we're at the end of the run (or not in a run at all).  we need to walk the document until we hit another run.
-		DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Forward);
+		DocumentWalker walker (IDocumentNode::CastToIDocumentNode (parent), DocumentWalker::Forward);
 		walker.Step ();
 
 		while (true) {
@@ -599,14 +603,14 @@ TextPointer::GetPositionInsideRun (int offset) const
 		}
 	}
 	else {
-		if (GetParent()->Is(Type::RUN)) {
+		if (parent->Is(Type::RUN)) {
 			int location = ResolveLocation ();
 			if (location > 0)
 				return GetPositionAtOffset_np (-1, LogicalDirectionForward);
 		}
 
 		// we're at the start of the run (or not in a run at all).  we need to walk the document until we hit another run.
-		DocumentWalker walker (IDocumentNode::CastToIDocumentNode (GetParent()), DocumentWalker::Backward);
+		DocumentWalker walker (IDocumentNode::CastToIDocumentNode (parent), DocumentWalker::Backward);
 		walker.Step ();
 
 		while (true) {

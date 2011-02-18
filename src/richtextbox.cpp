@@ -257,8 +257,13 @@ RichTextBoxActionBackspace::Undo ()
 
 	switch (backspace_type) {
 	case RichTextBoxActionBackspace::ENTIRELY_IN_RUN:
-		((Run*)pointer->GetParent())->SetText (old_run_text);
-		selection->Select (pointer, pointer);
+		if (pointer->GetParent ()) {
+			((Run*)pointer->GetParent())->SetText (old_run_text);
+			selection->Select (pointer, pointer);
+		} 
+		else {			
+			printf ("NIEX: RichTextBoxActionBackspace::Undo with textpointer in a NULL parent");
+		}
 		break;
 	case RichTextBoxActionBackspace::SIBLING_RUNS:
 		break;
