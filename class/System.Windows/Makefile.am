@@ -112,6 +112,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono.Xaml/XamlContext.cs					\
 	$(srcdir)/Mono.Xaml/XamlLoaderCallbacks.cs				\
 	$(srcdir)/Mono.Xaml/XamlLoaderFactory.cs				\
+	$(srcdir)/Mono.Xaml/XamlNode.cs						\
 	$(srcdir)/Mono.Xaml/XamlParser.cs					\
 	$(srcdir)/Mono.Xaml/XamlPropertySetter.cs				\
 	$(srcdir)/Mono.Xaml/XamlElement.cs					\

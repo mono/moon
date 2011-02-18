@@ -62,10 +62,9 @@ namespace Mono.Xaml {
 		
 		private XamlElement top_element;
 		private XamlElement current_element;
-		private XmlReader reader;
-
-		// Don't call Read on the next pass through our loop
-		private bool skip_read;
+		private XamlNode reader;
+		private IXamlNode currentNode;
+		bool bufferingTemplate;
 
 		public XamlParser () : this (new XamlContext ())
 		{
@@ -80,6 +79,10 @@ namespace Mono.Xaml {
 		public XamlContext Context {
 			get;
 			private set;
+		}
+
+		public XamlNode Current {
+			get { return reader; }
 		}
 
 		public XamlElement CurrentElement {
@@ -130,82 +133,59 @@ namespace Mono.Xaml {
 			set;
 		}
 
-		public object ParseString (string str)
-		{
-			object res = null;
+		void XamlNode_OnElementStart (XamlNode node) {
+			reader = node;
+			currentNode = (IXamlNode) node;
 
+			switch (node.NodeType) {
+				case XmlNodeType.Element:
+					ParseElement ();
+					break;
+				case XmlNodeType.Text:
+					ParseText ();
+					break;
+				case XmlNodeType.Whitespace:
+					ParseWhitespace ();
+					break;
+				case XmlNodeType.SignificantWhitespace:
+					ParseSignificantWhitespace ();
+					break;
+			}
+		}
+
+		void XamlNode_OnElementEnd (XamlNode node)
+		{
+			reader = node;
+			ParseEndElement ();
+		}
+
+		void XamlNode_OnAttribute (XamlNode node, XamlAttribute ai)
+		{
+			if (!(CurrentElement is XamlObjectElement))
+				return;
+			currentNode = ai;
+			ParseAttribute (CurrentElement as XamlObjectElement, ai);
+			currentNode = node;
+		}
+
+		public object Parse (XamlNode node)
+		{
 			try {
-				res = ParseReader (new StringReader (str));
+
+				node.Parse (XamlNode_OnElementStart, XamlNode_OnElementEnd, XamlNode_OnAttribute);
+
 			} catch (XamlParseException pe) {
 				Console.WriteLine ("Exception while parsing string ({0}:{1})", pe.LineNumber, pe.LinePosition);
 				Console.WriteLine (pe);
 				Console.WriteLine ("string:");
-				Console.WriteLine (str);
-
+				Console.WriteLine (node.OuterXml);
 				throw pe;
 			} catch (Exception e) {
 				
 				Console.WriteLine ("Exception while parsing string:");
 				Console.WriteLine (e);
 				Console.WriteLine ("string:");
-				Console.WriteLine (str);
-
-				throw ParseException ("Caught exception: {0}", e.Message);
-			}
-			return res;
-		}
-
-		public object ParseFile (string file)
-		{
-			object res = null;
-
-			using (FileStream s = File.OpenRead (file)) {
-				res = ParseReader (new StreamReader (s));
-			}
-
-			return res;
-		}
-
-		public object ParseReader (TextReader stream)
-		{
-			try {
-				reader = XmlReader.Create (stream);
-				while (skip_read || reader.Read ()) {
-					skip_read = false;
-
-					switch (reader.NodeType) {
-					case XmlNodeType.Element:
-						if (IsIgnorable ()) {
-							reader.Skip ();
-							continue;
-						}
-						ParseElement ();
-						break;
-					case XmlNodeType.EndElement:
-						ParseEndElement ();
-						break;
-					case XmlNodeType.Text:
-						ParseText ();
-						break;
-					case XmlNodeType.Whitespace:
-						ParseWhitespace ();
-						break;
-					case XmlNodeType.SignificantWhitespace:
-						ParseSignificantWhitespace ();
-						break;
-					}
-				}
-			} catch (Exception e) {
-				int line = -1;
-				int col = -1;
-				IXmlLineInfo linfo = reader as IXmlLineInfo;
-				if (linfo != null) {
-					line = linfo.LineNumber;
-					col = linfo.LinePosition;
-				}
-				Console.Error.WriteLine ("Exception while parsing reader ({0}:{1}):", line, col);
-				Console.Error.WriteLine (e);
-
+				Console.WriteLine (node.OuterXml);
 				throw ParseException ("Caught exception: {0}", e.Message);
 			}
 
@@ -217,6 +197,49 @@ namespace Mono.Xaml {
 			}
 
 			return obj.Object;
+		}
+
+		public object ParseString (string str)
+		{
+			try {
+				XamlNode.Parse (str, XamlNode_OnElementStart, XamlNode_OnElementEnd, XamlNode_OnAttribute);
+			} catch (XamlParseException pe) {
+				Console.WriteLine ("Exception while parsing string ({0}:{1})", pe.LineNumber, pe.LinePosition);
+				Console.WriteLine (pe);
+				Console.WriteLine ("string:");
+				Console.WriteLine (str);
+				throw pe;
+			} catch (Exception e) {
+				IXmlLineInfo linfo = reader as IXmlLineInfo;
+				int line = linfo.LineNumber;
+				int col = linfo.LinePosition;
+				Console.Error.WriteLine ("Exception while parsing string ({0}:{1}):", line, col);
+				Console.Error.WriteLine (e);
+				Console.WriteLine ("string:");
+				Console.WriteLine (str);
+				throw ParseException ("Caught exception: {0}", e.Message);
+			}
+
+			XamlObjectElement obj = top_element as XamlObjectElement;
+			if (obj == null) {
+				// We actually return the type of the property here
+				// or the object that it wraps
+				return null;
+			}
+
+			return obj.Object;
+		}
+
+		public object ParseFile (string file)
+		{
+			string xml = File.ReadAllText (file);
+			return ParseString (xml);
+		}
+
+		public object ParseReader (TextReader stream)
+		{
+			string xml = stream.ReadToEnd ();
+			return ParseString (xml);
 		}
 
 		public static Value CreateFromString (string xaml, bool create_namescope, bool validate_templates, IntPtr owner)
@@ -384,20 +407,16 @@ namespace Mono.Xaml {
 
 		private void ParseElement ()
 		{
-			if (IsIgnorable ()) {
-				return;
-			}
-
-			ParseXmlnsMappings ();
-			IgnoreIgnorableXmlns ();
-
 			if (IsPropertyElement ()) {
 				ParsePropertyElement ();
 				return;
 			}
 
 			if (IsStaticResourceElement ()) {
-				ParseStaticResourceElement ();
+				if (!reader.Continue)
+					reader.Continue = true;
+				else
+					ParseStaticResourceElement ();
 				return;
 			}
 
@@ -407,26 +426,26 @@ namespace Mono.Xaml {
 		
 		private void ParseObjectElement ()
 		{
-			if (IsIgnorable())
-				return;
+			if (reader.ManagedType == null)
+				reader.ManagedType = ResolveType ();
 
-			Type t = ResolveType ();
-			if (t == null)
+			if (reader.ManagedType == null)
 				throw ParseException ("Unable to find the type {0}.", reader.LocalName);
 
-			object o = InstantiateType (t);
+			object o = InstantiateType (reader.ManagedType);
 
 			if (o == null)
 				throw ParseException ("Could not create object for element {0}.", reader.LocalName);
 
-			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, t, o);
+			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, reader.ManagedType, o);
 
 			if (IsBufferedTemplateElement (element)) {
+				reader.Ignore = true;
 				ParseTemplateElement (element);
 				return;
 			}
 
-			if (typeof (System.Windows.FrameworkElement).IsAssignableFrom (t)) {
+			if (typeof (System.Windows.FrameworkElement).IsAssignableFrom (reader.ManagedType)) {
 				element.EndElement += delegate (object sender, EventArgs e) {
 					FrameworkElement fwe = element.Object as FrameworkElement;
 					fwe.ApplyDefaultStyle ();
@@ -436,18 +455,14 @@ namespace Mono.Xaml {
 			SetResourceBase (element);
 			SetElementTemplateScopes (element);
 			OnElementBegin (element);
-
-			ParseElementAttributes (element);
-
-			// This is a self closing element ie <Rectangle />
-			if (reader.IsEmptyElement)
-				OnElementEnd ();
 		}
 
 		private void ParsePropertyElement ()
 		{
-			Type t = ResolveType ();
-			if (t == null)
+			if (reader.ManagedType == null)
+				reader.ManagedType = ResolveType ();
+
+			if (reader.ManagedType == null)
 				throw ParseException ("Unable to find the property {0}.", reader.LocalName);
 
 			XamlPropertySetter setter = null;
@@ -464,33 +479,18 @@ namespace Mono.Xaml {
 
 			XamlPropertyElement element = new XamlPropertyElement (this, reader.LocalName, setter);
 			OnElementBegin (element);
-
-			// This is a self closing element ie <Deployment.Icons />
-			if (reader.IsEmptyElement)
-				OnElementEnd ();
 		}
 
 		private void ParseTemplateElement (XamlObjectElement element)
 		{
 			OnElementBegin (element);
 
-			ParseElementAttributes (element);
-
-			string template_xml = reader.ReadOuterXml ();
-			
 
 			FrameworkTemplate template = (FrameworkTemplate) element.Object;
 
 			unsafe {
-				template.SetXamlBuffer (ParseTemplate, CreateXamlContext (template), template_xml);
+				template.SetXamlBuffer (ParseTemplate, CreateXamlContext (template));
 			}
-
-			//
-			// ReadInnerXml will read our closing </ControlTemplate> tag also, so we manually close things
-			//
-			OnElementEnd ();
-
-			skip_read = true;
 		}
 
 		private static unsafe IntPtr ParseTemplate (Value *context_ptr, IntPtr resource_base, IntPtr surface, IntPtr binding_source, string xaml, ref MoonError error)
@@ -520,7 +520,7 @@ namespace Mono.Xaml {
 			
 			INativeEventObjectWrapper dob = null;
 			try {
-				FrameworkTemplate template = parser.ParseString (xaml) as FrameworkTemplate;
+				FrameworkTemplate template = parser.Parse (context.Node) as FrameworkTemplate;
 				
 				if (template != null) {
 					dob = template.Content as INativeEventObjectWrapper;
@@ -552,6 +552,9 @@ namespace Mono.Xaml {
 
 		private bool IsBufferedTemplateElement (XamlObjectElement element)
 		{
+			if (element == null)
+				return false;
+
 			if (!typeof (FrameworkTemplate).IsAssignableFrom (element.Type))
 				return false;
 
@@ -700,105 +703,37 @@ namespace Mono.Xaml {
 			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, obj.GetType (), obj);
 
 			OnElementBegin (element);
-
-			if (reader.IsEmptyElement)
-				OnElementEnd ();
 		}
 
-		private void ParseElementAttributes (XamlObjectElement element)
+		private void ParseAttribute (XamlObjectElement element, XamlAttribute ai)
 		{
-			if (!reader.HasAttributes)
-				return;
 
-			try {
-				int ac = reader.AttributeCount;
-				for (int i = 0; i < ac; i++) {
-					reader.MoveToAttribute (i);
-					ParseAttribute (element);
-				}
-			} finally {
-				// We do this in a finally so error reporting doesn't get all jacked up
-				reader.MoveToElement();
-			}
-		}
-
-		private void ParseAttribute (XamlObjectElement element)
-		{
-			if (IsMcAttribute ()) {
-				ParseMcAttribute (element);
-				return;
-			}
-			if (IsXmlnsMapping ()) {
-				// These guys are handled when the element is first created
+			if (ai.IsNsXaml) {
+				ParseXAttribute (element, ai);
 				return;
 			}
 
-			if (IsXAttribute ()) {
-				ParseXAttribute (element);
+			if (ai.IsXmlDirective) {
+				ParseXmlDirective (element, ai);
 				return;
 			}
 
-			if (IsXmlDirective ()) {
-				ParseXmlDirective (element);
-				return;
-			}
-
-			if (IsIgnorable ()) {
-				return;
-			}
-
-			XamlPropertySetter prop = element.LookupProperty (reader);
+			XamlPropertySetter prop = element.LookupProperty (ai);
 			if (prop == null)
-				throw ParseException ("The property {0} was not found on element {1}.", reader.LocalName, element.Name);
+				throw ParseException ("The property {0} was not found on element {1}.", ai.LocalName, element.Name);
 
-			object value = ParseAttributeValue (element, prop);
+			object value = ParseAttributeValue (element, prop, ai);
 			prop.SetValue (element, value);
 		}
 
-		private void ParseMcAttribute (XamlElement element)
+		private void ParseXAttribute (XamlObjectElement element, XamlAttribute ai)
 		{
-			if (reader.LocalName == "Ignorable")
-				// we've already ignored namespaces in IgnoreIgnorableXmlns
-				return;
-
-			throw ParseException ("Undeclared prefix");
-		}
-
-		private void ParseXmlnsMappings ()
-		{
-			try {
-				int ac = reader.AttributeCount;
-				for (int i = 0; i < ac; i++) {
-					reader.MoveToAttribute (i);
-
-					if (!IsXmlnsMapping ())
-						continue;
-					ParseXmlnsMapping ();
-				}
-			} finally {
-				// We do this in a finally so error reporting doesn't get all jacked up
-				reader.MoveToElement();
-			}
-		}
-
-		private void ParseXmlnsMapping ()
-		{
-			if (reader.Prefix == String.Empty) {
-				Context.DefaultXmlns = reader.Value;
-				return;
-			}
-
-			Context.Xmlns [reader.LocalName] = reader.Value;
-		}
-
-		private void ParseXAttribute (XamlObjectElement element)
-		{
-			switch (reader.LocalName) {
+			switch (ai.LocalName) {
 			case "Key":
-				RegisterKeyItem (element, element.Parent, reader.Value);
+				RegisterKeyItem (element, element.Parent, ai.Value);
 				return;
 			case "Name":
-				RegisterNamedItem (element, reader.Value);
+				RegisterNamedItem (element, ai.Value);
 				return;
 			case "Class":
 				// The class attribute is handled when we initialize the element
@@ -813,71 +748,50 @@ namespace Mono.Xaml {
                                // This attribute is just ignored, but allowed.
                                return;
 			default:
-				throw ParseException ("Unknown x: attribute ({0}).", reader.LocalName);
+				throw ParseException ("Unknown x: attribute ({0}).", ai.LocalName);
 			}
 		}
 
-		private void ParseXmlDirective (XamlElement element)
+		private void ParseXmlDirective (XamlElement element, XamlAttribute ai)
 		{
-			if (reader.LocalName == "space") {
+			if (ai.LocalName == "space") {
 				// Do nothing XmlReader covers this for us
 			}
 		}
 
-		private object ParseAttributeValue (XamlObjectElement element, XamlPropertySetter property)
+		private object ParseAttributeValue (XamlObjectElement element, XamlPropertySetter property, XamlAttribute ai)
 		{
 			object value = null;
 
-			if (IsMarkupExpression (reader.Value))
-				value = ParseAttributeMarkup (element, property);
+			if (IsMarkupExpression (ai.Value))
+				value = ParseAttributeMarkup (element, property, ai);
 			else {
 				try {
-					value = property.ConvertTextValue (reader.Value);
+					value = property.ConvertTextValue (ai.Value);
 				} catch (Exception ex) {
-					throw ParseException ("Could not convert attribute value '{0}' on element {1}.", reader.Value, element.Name, ex);
+					throw ParseException ("Could not convert attribute value '{0}' on element {1}.", ai.Value, element.Name, ex);
 				}
 			}
 			return value;
 		}
 
-		private object ParseAttributeMarkup (XamlObjectElement element, XamlPropertySetter property)
+		private object ParseAttributeMarkup (XamlObjectElement element, XamlPropertySetter property, XamlAttribute ai)
 		{
 			MarkupExpressionParser parser = new SL4MarkupExpressionParser (element.Object, property.Name, this, element);
 
-			string expression = reader.Value;
+			string expression = ai.Value;
 			object o = null;
 
 			try {
 				o = parser.ParseExpression (ref expression);
 			} catch (Exception e) {
-				throw ParseException ("Could not convert attribute value '{0}' on element {1}.", reader.Value, element.Name, e);
+				throw ParseException ("Could not convert attribute value '{0}' on element {1}.", ai.Value, element.Name, e);
 			}
 
 			if (o == null && !MarkupExpressionParser.IsExplicitNull (expression))
-				throw ParseException ("Unable to convert attribute value: '{0}'.", reader.Value);
+				throw ParseException ("Unable to convert attribute value: '{0}'.", ai.Value);
 
 			return property.ConvertValue (property.Type, o);
-		}
-
-		// Markup compatibility attribute
-		private bool IsMcAttribute ()
-		{
-			return reader.Prefix == "mc";
-		}
-
-		private bool IsXmlnsMapping ()
-		{
-			return reader.Prefix == "xmlns" || reader.Name == "xmlns";
-		}
-
-		private bool IsXAttribute ()
-		{
-			return reader.Prefix == "x";
-		}
-
-		private bool IsXmlDirective ()
-		{
-			return reader.Prefix == "xml";
 		}
 
 		private bool IsMarkupExpression (string str)
@@ -888,11 +802,6 @@ namespace Mono.Xaml {
 		private bool IsValidXmlSpaceValue (string val)
 		{
 			return val == "preserve" || val == "default";
-		}
-
-		private bool IsIgnorable ()
-		{
-			return Context.IgnorableXmlns.Contains (reader.Prefix);
 		}
 
 		private void OnElementBegin (XamlElement element)
@@ -1086,13 +995,13 @@ namespace Mono.Xaml {
 		public Type ResolveType (string str)
 		{
 			int colon = str.IndexOf (':');
-			string xmlns = Context.DefaultXmlns;
+			string xmlns = reader.DefaultXmlns;
 			string name = str;
 
 			if (colon > 0) {
 				string local = str.Substring (0, colon);
 				name = str.Substring (++colon, str.Length - colon);
-				if (!Context.Xmlns.TryGetValue (local, out xmlns))
+				if (!reader.Namespaces.TryGetValue (local, out xmlns))
 					throw ParseException ("Could not find namespace for type {0} ({1}, {2}).", str, name, local);
 			}
 
@@ -1110,7 +1019,7 @@ namespace Mono.Xaml {
 					return t;
 				}
 			}
-			return ResolveType (reader.NamespaceURI, reader.LocalName);
+			return ResolveType (currentNode.NamespaceURI, currentNode.LocalName);
 		}
 
 		public Type ResolveType (string xmlns, string full_name)
@@ -1134,7 +1043,7 @@ namespace Mono.Xaml {
 			}
 
 			if (String.IsNullOrEmpty (xmlns))
-				xmlns = Context.DefaultXmlns;
+				xmlns = reader.DefaultXmlns;
 
 			ns = ResolveClrNamespace (xmlns);
 			asm_name = ResolveAssemblyName (xmlns);
@@ -1189,26 +1098,9 @@ namespace Mono.Xaml {
 
 		private string ResolveUserClass ()
 		{
-			string xns = reader ["xmlns:x"];
-
-			if (xns == null)
+			if (currentNode is XamlAttribute)
 				return null;
-
-			return reader ["Class", xns];
-		}
-
-		private void IgnoreIgnorableXmlns ()
-		{
-			string mcns = reader ["xmlns:mc"];
-
-			if (mcns == null)
-				return;
-
-			string ignore = reader["Ignorable", mcns];
-			if (ignore != null) {
-				foreach (string s in ignore.Split (' '))
-					Context.IgnorableXmlns.Add (s);
-			}
+			return reader.Class;
 		}
 
 		private Assembly DefaultAssembly ()
@@ -1600,7 +1492,7 @@ namespace Mono.Xaml {
 
 		private XamlContext CreateXamlContext (FrameworkTemplate template)
 		{
-			return new XamlContext (Context, TopElement, CreateResourcesList (), template);
+			return new XamlContext (Context, TopElement, CreateResourcesList (), template, reader);
 		}
 
 		private List<DependencyObject> CreateResourcesList ()

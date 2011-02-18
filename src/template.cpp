@@ -57,7 +57,8 @@ void
 FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *xaml_buffer, bool holdManagedRef)
 {
 	this->holdManagedRef = holdManagedRef;
-	this->xaml_buffer = g_strdup (xaml_buffer);
+	if (!holdManagedRef)
+		this->xaml_buffer = g_strdup (xaml_buffer);
 	this->parse_template = parse_template;
 	this->parse_template_data = new Value (*parse_template_data);
 	if (holdManagedRef && addManagedRef && !GetDeployment ()->IsShuttingDown ()) {
@@ -73,7 +74,7 @@ FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *par
 DependencyObject*
 FrameworkTemplate::GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error)
 {
-	if (xaml_buffer) {
+	if (holdManagedRef || xaml_buffer) {
 		DependencyObject *result = parse_template (parse_template_data, GetResourceBase (), GetDeployment ()->GetSurface (), templateBindingSource, xaml_buffer, error);
 
 		if (result)

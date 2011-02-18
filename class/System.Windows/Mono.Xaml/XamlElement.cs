@@ -104,7 +104,7 @@ namespace Mono.Xaml {
 		public event EventHandler EndElement;
 
 		public abstract void AddChild (XamlElement child);
-		public abstract XamlPropertySetter LookupProperty (XmlReader reader);
+		public abstract XamlPropertySetter LookupProperty (IXamlNode reader);
 	}
 
 	internal class XamlPropertyElement : XamlElement {
@@ -139,7 +139,7 @@ namespace Mono.Xaml {
 			Setter.SetValue (element, element.Object);
 		}
 
-		public override XamlPropertySetter LookupProperty (XmlReader reader)
+		public override XamlPropertySetter LookupProperty (IXamlNode reader)
 		{
 			throw Parser.ParseException ("Property element {0} found inside property element {1}.", reader.LocalName, Name);
 		}
@@ -294,7 +294,7 @@ namespace Mono.Xaml {
 			return null;
 		}
 
-		public override XamlPropertySetter LookupProperty (XmlReader reader)
+		public override XamlPropertySetter LookupProperty (IXamlNode reader)
 		{
 			if (IsNameProperty (reader))
 				return new XamlNamePropertySetter (this, (DependencyObject) Object);
@@ -308,12 +308,12 @@ namespace Mono.Xaml {
 			return prop;
 		}
 
-		private bool IsNameProperty (XmlReader reader)
+		private bool IsNameProperty (IXamlNode reader)
 		{
 			return (reader.LocalName == "Name" && Type.IsSubclassOf (typeof (DependencyObject)));
 		}
 
-		private bool IsAttachedProperty (XmlReader reader)
+		private bool IsAttachedProperty (IXamlNode reader)
 		{
 			int dot = reader.LocalName.IndexOf ('.');
 
@@ -329,7 +329,7 @@ namespace Mono.Xaml {
 			return true;
 		}
 
-		private XamlPropertySetter LookupReflectionProperty (XmlReader reader)
+		private XamlPropertySetter LookupReflectionProperty (IXamlNode reader)
 		{
 			XamlPropertySetter prop = XamlReflectionPropertyForName (Type, reader.LocalName);
 			if (prop != null)
@@ -414,7 +414,7 @@ namespace Mono.Xaml {
 			return XamlAttachedPropertySetter.Create (this, accessors);
 		}
 
-		private XamlPropertySetter LookupAttachedProperty (XmlReader reader)
+		private XamlPropertySetter LookupAttachedProperty (IXamlNode reader)
 		{
 			Accessors accessors;
 			var key = new CachedAccessorKey (reader.LocalName, Parser.ResolveType ());

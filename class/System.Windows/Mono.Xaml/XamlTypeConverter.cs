@@ -37,7 +37,6 @@ using System.Windows.Media;
 using System.Windows.Markup;
 using System.Collections.Generic;
 
-
 namespace Mono.Xaml {
 
 	internal sealed class XamlTypeConverter : MoonlightTypeConverter {
@@ -162,7 +161,7 @@ namespace Mono.Xaml {
 
 			string type_name = value.Substring (0, dot);
 			string event_name = value.Substring (dot + 1, value.Length - dot - 1);
-			Type type = converter.parser.LoadType (null, converter.parser.Context.DefaultXmlns, type_name);
+			Type type = converter.parser.LoadType (null, converter.parser.Current.DefaultXmlns, type_name);
 
 			RoutedEvent res = null;
 			Type eventids = typeof (EventIds);
@@ -291,7 +290,7 @@ namespace Mono.Xaml {
 
 					string ns = null;
 
-					if (!converter.parser.Context.Xmlns.TryGetValue (prefix, out ns)) {
+					if (!converter.parser.Current.Namespaces.TryGetValue (prefix, out ns)) {
 						Console.WriteLine ("could not find xmlns value:  {0}", prefix);
 						return null;
 					}

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 636 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
@@ -451,6 +451,7 @@
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::InvokeArrangeOverride(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 +SSC-M: System.Void System.Windows.FrameworkElement::.cctor()
 +SSC-M: System.Windows.DependencyObject System.Windows.FrameworkTemplate::GetVisualTree(System.Windows.DependencyObject)
++SSC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext)
 +SSC-M: System.Windows.MessageBoxResult System.Windows.MessageBox::Show(System.String,System.String,System.Windows.MessageBoxButton)
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalCollectionChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalCollectionChangedEventArgs::GetNewItem(System.Type)

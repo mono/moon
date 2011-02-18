@@ -115,25 +115,22 @@ namespace Mono.Xaml {
 		{
 			Resources = new List<DependencyObject> ();
 
-			DefaultXmlns = String.Empty;
-			IgnorableXmlns = new List<string> ();
-			Xmlns = new Dictionary<string,string> ();
 			XmlnsCachedTypes = new Dictionary<XmlNsKey, Type>();
 		}
 
-		internal XamlContext (XamlContext parent, object top_element, List<DependencyObject> resources, FrameworkTemplate template)
+		internal XamlContext (XamlContext parent, object top_element,
+							List<DependencyObject> resources,
+							FrameworkTemplate template, XamlNode node)
 		{
 			Parent = parent;
 			TopElement = top_element;
 			Resources = resources;
 			Template = template;
+			Node = node;
 
 			//
 			// Its just not worth the lookup time to try accessing these on the parents, so copy them over.
 			//
-			DefaultXmlns = parent.DefaultXmlns;
-			IgnorableXmlns = new List<string> (parent.IgnorableXmlns);
-			Xmlns = new Dictionary<string,string> (parent.Xmlns);
 			XmlnsCachedTypes = new Dictionary<XmlNsKey, Type>();
 		}
 
@@ -172,17 +169,7 @@ namespace Mono.Xaml {
 			set;
 		}
 
-		public string DefaultXmlns {
-			get;
-			set;
-		}
-
-		public List<string> IgnorableXmlns {
-			get;
-			private set;
-		}
-
-		public Dictionary<string,string> Xmlns {
+		public XamlNode Node {
 			get;
 			private set;
 		}
