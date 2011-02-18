@@ -460,20 +460,25 @@ namespace Mono.Xaml {
 
 			if (reader.HasAttributes) {
 				if (node.Attributes.Count > 0 && evattr != null) {
-					foreach (XamlAttribute ai in node.Attributes.Values.Where (x => !x.IsNsIgnorable && !x.IsMapping))
+					foreach (XamlAttribute ai in node.Attributes.Values.Where (x => !x.IsMapping && !x.IsNsIgnorable && !x.IsNsClr))
 						evattr (node, ai);
 				} else {
 					reader.MoveToFirstAttribute ();
 
 					int count = 0;
 					do {
+						if (node.IgnorablePrefixes.Contains (reader.Prefix))
+							continue;
+
 						XamlAttribute ai = new XamlAttribute (reader) {
 							Index = count++,
 						};
 
+						// an x: or equivalent attribute
 						ai.IsNsXaml = !ai.IsMapping && ai.NamespaceURI == XamlUri;
+						// an mc: or equivalent attribute (this attribute defines the list of ignorable prefixes)
 						ai.IsNsIgnorable = !ai.IsMapping && (ai.NamespaceURI == IgnorableUri || ai.Prefix == "mc");
-						ai.IsNsIgnorable |= node.IgnorablePrefixes.Contains (ai.Prefix);
+						// an xmlns:my='clr-namespace...' attribute
 						ai.IsNsClr = !ai.IsMapping && ai.NamespaceURI.StartsWith ("clr-namespace");
 						if (ai.IsNsXaml && ai.LocalName == "Class")
 							node.Class = ai.Value;

@@ -81,5 +81,23 @@ namespace MoonTest.System.Windows {
 				}
 			);
 		}
+
+		[TestMethod]
+		public void IgnorableAtts ()
+		{
+			StackPanel c = (StackPanel) XamlReader.Load (@"
+				<StackPanel
+					xmlns=""http://schemas.microsoft.com/client/2007""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+					xmlns:d=""ignorableUri""
+					xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006""
+					mc:Ignorable=""d""
+				>
+					<Grid d:Whatever=""1"" x:Name=""first"" d:Name=""Another"">
+					</Grid>
+				</StackPanel>
+			");
+			Assert.IsNotNull (c, "#1");
+		}
 	}
 }
