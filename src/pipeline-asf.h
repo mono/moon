@@ -263,6 +263,7 @@ protected:
 	virtual void ReadAsyncInternal (MediaReadClosure *closure);
 
 public:
+	/* @SkipFactories */
 	MmsSource (Media *media, const Uri *uri);
 
 	virtual MediaResult Initialize (); // media thread only
@@ -484,7 +485,9 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream);
 
 public:
+	/* @SkipFactories */
 	ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer);
+	/* @SkipFactories */
 	ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer, MmsPlaylistEntry *playlist_entry);
 	virtual void Dispose ();
 
@@ -571,6 +574,7 @@ protected:
 	virtual void OpenDecoderAsyncInternal ();
 	
 public:
+	/* @SkipFactories */
 	ASFMarkerDecoder (Media *media, IMediaStream *stream) ;
 	
 	virtual const char *GetName () { return "ASFMarkerDecoder"; }
@@ -1101,6 +1105,7 @@ protected:
 	virtual ~ASFPacket ();
 
 public:
+	/* @SkipFactories */
 	ASFPacket (ASFDemuxer *demuxer, MemoryBuffer *source, gint64 offset);
 
 	guint32 GetPayloadCount (); // Returns the number of payloads in this packet.

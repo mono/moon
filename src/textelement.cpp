@@ -28,6 +28,8 @@
 #include "uri.h"
 #include "factory.h"
 #include "enums.h"
+#include "richtextbox.h"
+#include "textblock.h"
 
 namespace Moonlight {
 

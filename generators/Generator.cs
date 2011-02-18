@@ -2444,10 +2444,12 @@ class Generator {
 
 		List<MethodInfo> methods;
 		StringBuilder header = new StringBuilder ();
+		StringBuilder impl = new StringBuilder ();
 		List <string> headers = new List<string> ();
 		Dictionary<MethodInfo, bool> ensures = new Dictionary<MethodInfo, bool> ();
 
-		Helper.WriteWarningGenerated (header);;
+		Helper.WriteWarningGenerated (header);
+		Helper.WriteWarningGenerated (impl);
 
 		header.AppendLine ("/* @SkipFile */");
 		header.AppendLine ("#ifndef __MOONLIGHT_FACTORY_H__");
@@ -2456,6 +2458,11 @@ class Generator {
 		header.AppendLine ("#include <glib.h>");
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
+		header.AppendLine ("#include \"value.h\"");
+
+		impl.AppendLine ();
+		impl.AppendLine ("#include <config.h>");
+		impl.AppendLine ("#include \"factory.h\"");
 
 		methods = new List<MethodInfo> ();
 		foreach (MemberInfo member in info.AllCtors) {
@@ -2516,24 +2523,25 @@ class Generator {
 		}
 		headers.Sort ();
 		foreach (string h in headers) {
-			header.Append ("#include \"");
-			header.Append (h);
-			header.AppendLine ("\"");
+			impl.Append ("#include \"");
+			impl.Append (h);
+			impl.AppendLine ("\"");
 		}
 
 		header.AppendLine ("namespace Moonlight {");
+		impl.AppendLine ("namespace Moonlight {");
 
 		header.AppendLine ();
-		header.AppendLine ("class MoonUnmanagedFactory {");
+		header.AppendLine ("class MOON_API MoonUnmanagedFactory {");
 		header.AppendLine ("public:");
 		header.AppendLine ();
+		impl.AppendLine ();
 
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;
 
-			WriteFactoryHeaderMethod (method.CMethod, method, header, info, ensures [method]);
-
-			header.AppendLine ();
+			WriteFactoryHeaderMethod (method.CMethod, method, header, impl, info, ensures [method], "MoonUnmanagedFactory");
+			impl.AppendLine ();
 		}
 
 		header.AppendLine ("};");
@@ -2545,8 +2553,8 @@ class Generator {
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;
 
-			WriteFactoryHeaderMethod (method.CMethod, method, header, info, false);
-			header.AppendLine ();
+			WriteFactoryHeaderMethod (method.CMethod, method, header, impl, info, false, "MoonManagedFactory");
+			impl.AppendLine ();
 		}
 
 		header.AppendLine ("};");
@@ -2554,8 +2562,10 @@ class Generator {
 		header.AppendLine ("};");
 		header.AppendLine ();
 		header.AppendLine ("#endif");
+		impl.AppendLine ("};");
 
 		Helper.WriteAllText (Path.Combine (dir, "factory.h"), header.ToString ());
+		Helper.WriteAllText (Path.Combine (dir, "factory.cpp"), impl.ToString ());
 	}
 
 	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
@@ -2682,20 +2692,29 @@ class Generator {
 		text.AppendLine ("}");
 	}
 
-	static void WriteFactoryHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info, bool ensure)
+	static void WriteFactoryHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, StringBuilder impl, GlobalInfo info, bool ensure, string classname)
 	{
 		text.Append ("\t static ");
 		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		text.AppendFormat ("Create{0}", cmethod.Parent.Name);
 		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
-		text.Append (" { ");
-		text.AppendFormat ("{0}* o = new {0}", cmethod.Parent.Name);
-		cmethod.Parameters.Write (text, SignatureType.NativeC, true);
-		text.Append ("; ");
+		text.AppendLine (";");
+
+		cmethod.ReturnType.Write (impl, SignatureType.NativeC, info);
+		impl.AppendLine ();
+		impl.Append (classname);
+		impl.Append ("::Create");
+		impl.Append (cmethod.Parent.Name);
+		cmethod.Parameters.Write (impl, SignatureType.NativeC, false);
+		impl.AppendLine ();
+		impl.AppendLine ("{");
+		impl.AppendFormat ("\t{0}* o = new {0}", cmethod.Parent.Name);
+		cmethod.Parameters.Write (impl, SignatureType.NativeC, true);
+		impl.AppendLine (";");
 		if (ensure)
-			text.Append ("o->EnsureManagedPeer (); ");
-		text.Append ("return o;");
-		text.AppendLine (" }");
+			impl.AppendLine ("\to->EnsureManagedPeer ();");
+		impl.AppendLine ("\treturn o;");
+		impl.AppendLine ("}");
 	}
 
 	// special case for FontSource which is a struct in unmanaged and a class in managed

@@ -387,6 +387,7 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream);
 
 public:
+	/* @SkipFactories */
 	Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer);
 	virtual void Dispose ();
 	virtual void UpdateSelected (IMediaStream *stream);

@@ -24,6 +24,8 @@
 #include "window.h"
 #include "panel.h"
 #include "factory.h"
+#include "contentpresenter.h"
+#include "transform.h"
 
 namespace Moonlight {
 

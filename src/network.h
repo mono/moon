@@ -252,6 +252,7 @@ protected:
 	virtual ~HttpResponse () {}
 
 public:
+	/* @SkipFactories */
 	HttpResponse (HttpRequest *request);
 	virtual void Dispose ();
 

@@ -35,6 +35,7 @@
 
 #include "geometry.h"
 #include "managedtypeinfo.h"
+#include "contentpresenter.h"
 
 namespace Moonlight {
 

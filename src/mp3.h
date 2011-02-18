@@ -121,6 +121,7 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream) {}; // An mp3 file has only 1 stream, so this doesn't make any sense
 
 public:
+	/* @SkipFactories */
 	Mp3Demuxer (Media *media, IMediaSource *source);
 	virtual void Dispose ();
 	virtual const char *GetName () { return "Mp3Demuxer"; }	

@@ -170,6 +170,7 @@ protected:
 	
 public:
 	/* @GenerateCBinding */
+	/* @SkipFactories */
 	MediaClosure (Media *media, MediaCallback *callback, EventObject *context, const char *description);
 	virtual void Dispose ();
 	
@@ -199,6 +200,7 @@ private:
 	bool cancelled;
 
 public:
+	/* @SkipFactories */
 	MediaReadClosure (Media *media, MediaCallback *callback, EventObject *context, gint64 offset, guint32 count);
 	virtual void Dispose ();
 
@@ -218,6 +220,7 @@ public:
  */
 class MediaDisposeObjectClosure : public MediaClosure {
 public:
+	/* @SkipFactories */
 	MediaDisposeObjectClosure (Media *media, MediaCallback *callback, EventObject *context);
 	virtual void Dispose ();
 };
@@ -233,6 +236,7 @@ protected:
 	virtual ~MediaReportSeekCompletedClosure ();
 		
 public:
+	/* @SkipFactories */
 	MediaReportSeekCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, guint64 pts);
 	virtual void Dispose ();
 	
@@ -251,6 +255,7 @@ protected:
 	virtual ~MediaGetFrameClosure ();
 		
 public:
+	/* @SkipFactories */
 	MediaGetFrameClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, IMediaStream *stream);
 	virtual void Dispose ();
 	
@@ -269,6 +274,7 @@ protected:
 	virtual ~MediaReportFrameCompletedClosure () {}
 
 public:
+	/* @SkipFactories */
 	MediaReportFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, MediaFrame *frame);
 	virtual void Dispose ();
 	
@@ -287,6 +293,7 @@ protected:
 	virtual ~MediaReportDecodeFrameCompletedClosure () {}
 
 public:
+	/* @SkipFactories */
 	MediaReportDecodeFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame);
 	virtual void Dispose ();
 	
@@ -305,6 +312,7 @@ protected:
 	virtual ~MediaMarkerFoundClosure () {}
 	
 public:
+	/* @SkipFactories */
 	MediaMarkerFoundClosure (Media *media, MediaCallback *callback, MediaElement *context);
 	virtual void Dispose ();
 	
@@ -323,6 +331,7 @@ protected:
 	virtual ~MediaSeekClosure () {}
 	
 public:
+	/* @SkipFactories */
 	MediaSeekClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, guint64 pts);
 	
 	IMediaDemuxer *GetDemuxer () { return (IMediaDemuxer *) GetContext (); }
@@ -507,7 +516,8 @@ public:
 		virtual ~StreamNode ();
 		MediaFrame *GetFrame () { return frame; }
 	};
-	
+
+	/* @SkipFactories */
 	IMediaStream (Type::Kind kind, Media *media);
 	virtual void Dispose ();
 
@@ -671,6 +681,7 @@ protected:
 	virtual ~Media ();
 
 public:
+	/* @SkipFactories */
 	Media (PlaylistEntry *entry);
 	
 	virtual void Dispose ();
@@ -839,8 +850,10 @@ protected:
 	virtual ~MediaFrame ();
 	
 public:
+	/* @SkipFactories */
 	MediaFrame (IMediaStream *stream);
 	/* @GeneratePInvoke */
+	/* @SkipFactories */
 	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 	void Dispose ();
 	
@@ -964,7 +977,8 @@ public:
 		
 		MediaMarker *marker;
 	};
-	
+
+	/* @SkipFactories */
 	MediaMarker (const char *type, const char *text, guint64 pts);
 	
 	const char *Type () { return type; }
@@ -1281,6 +1295,7 @@ protected:
 	virtual void ReadAsyncInternal (MediaReadClosure *closure);
 
 public:
+	/* @SkipFactories */
 	ManagedStreamSource (Media *media, ManagedStreamCallbacks *stream);
 	
 	virtual MediaResult Initialize () { return MEDIA_SUCCESS; }
@@ -1303,6 +1318,7 @@ protected:
 	virtual gint64 GetSizeInternal ();
 
 public:
+	/* @SkipFactories */
 	FileSource (Media *media, const char *filename);
 
 	virtual void Dispose ();
@@ -1375,6 +1391,7 @@ protected:
 	virtual gint64 GetSizeInternal () { return size; }
 
 public:
+	/* @SkipFactories */
 	ProgressiveSource (Media *media, const Uri *resource_base, const Uri *uri);
 	virtual void Dispose ();
 
@@ -1403,6 +1420,7 @@ protected:
 	virtual ~MemoryBuffer ();
 
 public:
+	/* @SkipFactories */
 	MemoryBuffer (Media *media, void *memory, gint32 size, bool owner);
 
 	void *GetCurrentPtr () { return pos + (guint8 *) memory; }
@@ -1497,6 +1515,7 @@ protected:
 	virtual ~VideoStream ();
 
 public:
+	/* @SkipFactories */
 	VideoStream (Media *media);
 	virtual void Dispose ();
 
@@ -1540,7 +1559,7 @@ protected:
 	virtual ~AudioStream () {}
 
 public:
-
+	/* @SkipFactories */
 	AudioStream (Media *media);
 	
 	/* @GeneratePInvoke */
@@ -1665,6 +1684,7 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescription);
 	
 public:
+	/* @SkipFactories */
 	ExternalDemuxer (Media *media, void *instance, CloseDemuxerCallback close_demuxer, 
 		GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, 
 		SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
@@ -1726,6 +1746,7 @@ protected:
 	virtual void InputEnded ();
 public:
 	/* @GenerateCBinding */
+	/* @SkipFactories */
 	ExternalDecoder (Media *media, IMediaStream *stream, void *instance, const char *name,
 		ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async,
 		ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async,
@@ -1800,6 +1821,7 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream) {}
 	
 public:
+	/* @SkipFactories */
 	ASXDemuxer (Media *media, IMediaSource *source, MemoryBuffer *buffer);
 	virtual void Dispose ();
 	

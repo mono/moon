@@ -33,6 +33,7 @@
 #include "effect.h"
 #include "projection.h"
 #include "factory.h"
+#include "bitmapcache.h"
 
 namespace Moonlight {
 

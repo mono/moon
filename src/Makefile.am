@@ -208,6 +208,7 @@ libmoon_la_SOURCES = 		\
 	enums.cpp		\
 	error.cpp		\
 	eventargs.cpp		\
+	factory.cpp			\
 	fontmanager.cpp		\
 	fonts.cpp		\
 	frameworkelement.cpp	\

@@ -23,6 +23,7 @@
 #include "media.h"
 #include "animation.h"
 #include "ptr.h"
+#include "deployment.h"
 
 namespace Moonlight {
 

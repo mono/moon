@@ -85,6 +85,7 @@ class XamlContext : public EventObject {
  public:
 	XamlContextInternal *internal;
 
+	/* @SkipFactories */
 	XamlContext (XamlContextInternal *internal, XamlContext *parent);
 
 	void SetTemplateBindingSource (DependencyObject *source);
