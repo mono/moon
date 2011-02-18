@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define LOGGING
+
 using Mono;
 
 using System;
@@ -46,7 +48,6 @@ using System.Windows.Media;
 using System.Windows.Markup;
 using System.Windows.Controls;
 using System.Windows.Documents;
-
 
 namespace Mono.Xaml {
 
@@ -132,21 +133,40 @@ namespace Mono.Xaml {
 			set;
 		}
 
+#if LOGGING
+		static void Log (string str, params object[] args)
+		{
+			Console.WriteLine (str, args);
+		}
+#endif
+
 		void XamlNode_OnElementStart (XamlNode node) {
 			reader = node;
 			currentNode = (IXamlNode) node;
 
 			switch (node.NodeType) {
 				case XmlNodeType.Element:
+#if LOGGING
+					Log ("Next node: {0}", reader.Name);
+#endif
 					ParseElement ();
 					break;
 				case XmlNodeType.Text:
+#if LOGGING
+					Log ("Next node: {0}", reader.Name);
+#endif
 					ParseText ();
 					break;
 				case XmlNodeType.Whitespace:
+#if LOGGING
+					Log ("Next node: {0}", reader.Name);
+#endif
 					ParseWhitespace ();
 					break;
 				case XmlNodeType.SignificantWhitespace:
+#if LOGGING
+					Log ("Next node: {0}", reader.Name);
+#endif
 					ParseSignificantWhitespace ();
 					break;
 			}
@@ -182,7 +202,6 @@ namespace Mono.Xaml {
 				Console.WriteLine (node.OuterXml);
 				throw pe;
 			} catch (Exception e) {
-				
 				Console.WriteLine ("Exception while parsing string:");
 				Console.WriteLine (e);
 				Console.WriteLine ("string:");
@@ -418,6 +437,9 @@ namespace Mono.Xaml {
 
 		private void ParseElement ()
 		{
+#if LOGGING
+			Log ("ParseElement {0}", reader.Name);
+#endif
 			if (IsPropertyElement ()) {
 				ParsePropertyElement ();
 				return;
@@ -434,6 +456,9 @@ namespace Mono.Xaml {
 		
 		private void ParseObjectElement ()
 		{
+#if LOGGING
+			Log ("\tParseObjectElement {0}", reader.Name);
+#endif
 			ValidateMixedContentForObject ();
 
 			if (reader.ManagedType == null)
@@ -447,6 +472,9 @@ namespace Mono.Xaml {
 			if (o == null)
 				throw ParseException ("Could not create object for element {0}.", reader.LocalName);
 
+#if LOGGING
+			Log ("\t\tCreating new object {0}", o);
+#endif
 			XamlObjectElement element = new XamlObjectElement (this, reader.LocalName, reader.ManagedType, o);
 
 			if (IsBufferedTemplateElement (element)) {
@@ -469,6 +497,10 @@ namespace Mono.Xaml {
 
 		private void ParsePropertyElement ()
 		{
+#if LOGGING
+			Log ("\tParsePropertyElement {0} {1}", reader.Name, CurrentElement.Name);
+#endif
+
 			if (reader.ManagedType == null)
 				reader.ManagedType = ResolveType ();
 
@@ -493,8 +525,14 @@ namespace Mono.Xaml {
 
 		private void ParseTemplateElement (XamlObjectElement element)
 		{
+#if LOGGING
+			Log ("\tParseTemplateElement {0}", reader.Name);
+#endif
 			OnElementBegin (element);
 
+#if LOGGING
+			Log ("111111 ParseTemplateElement {0}", element.Object);
+#endif
 
 			FrameworkTemplate template = (FrameworkTemplate) element.Object;
 
@@ -521,6 +559,11 @@ namespace Mono.Xaml {
 					return IntPtr.Zero;
 				}
 			}
+
+#if LOGGING
+			Log ("222222 ParseTemplateElement {0}", source);
+			Log ("{0}", xaml);
+#endif
 
 			context.IsExpandingTemplate = true;
 			context.TemplateOwner = source as DependencyObject;
@@ -594,11 +637,17 @@ namespace Mono.Xaml {
 
 		private void ParseEndElement ()
 		{
+#if LOGGING
+			Log ("\tParseEndElement");
+#endif
 			OnElementEnd ();
 		}
 
 		private void ParseText ()
 		{
+#if LOGGING
+			Log ("\tParseText");
+#endif
 			string value = HandleWhiteSpace (reader.Value);
 
 			XamlObjectElement obj = CurrentElement as XamlObjectElement;
@@ -705,6 +754,9 @@ namespace Mono.Xaml {
 
 		private void ParseStaticResourceElement ()
 		{
+#if LOGGING
+			Log ("\tParseStaticResourceElement {0}", reader.Name);
+#endif
 			string key = reader.GetAttribute ("ResourceKey");
 			if (key == null)
 				throw ParseException ("No ResourceKey found on StaticResource element.");
@@ -717,6 +769,9 @@ namespace Mono.Xaml {
 
 		private void ParseAttribute (XamlObjectElement element, XamlAttribute ai)
 		{
+#if LOGGING
+			Log ("\t\t\tParseAttribute {0}", ai.Name);
+#endif
 
 			if (ai.IsNsXaml) {
 				ParseXAttribute (element, ai);
@@ -733,6 +788,9 @@ namespace Mono.Xaml {
 				throw ParseException ("The property {0} was not found on element {1}.", ai.LocalName, element.Name);
 
 			object value = ParseAttributeValue (element, prop, ai);
+#if LOGGING
+			Log ("\t\t\t\tSetting Property {0} {1} {2} {3}", prop, element.Object, ai, value);
+#endif
 			prop.SetValue (element, value);
 		}
 
@@ -816,6 +874,9 @@ namespace Mono.Xaml {
 
 		private void OnElementBegin (XamlElement element)
 		{
+#if LOGGING
+			Log ("\t\tOnElementBegin {0}", element.Name);
+#endif
 			InitializeElement (element);
 			element.RaiseElementBegin ();
 
@@ -834,9 +895,9 @@ namespace Mono.Xaml {
 
 		private void OnElementEnd ()
 		{
-			// if (reader.LocalName != CurrentElement.Name)
-			//	throw new XamlParseException ("oh shit bitch, we are ending the wrong element!");
-
+#if LOGGING
+			Log ("\t\tOnElementEnd {0}", CurrentElement.Name);
+#endif
 			CurrentElement.RaiseElementEnd ();
 			EndInitializeElement (CurrentElement);
 
@@ -849,6 +910,12 @@ namespace Mono.Xaml {
 
 		private void PushCurrentElement (XamlElement element)
 		{
+#if LOGGING
+			Log ("\t\tPushCurrentElement old:{0} new:{1}",
+					CurrentElement != null ? CurrentElement.Name : "none",
+					element != null ? element.Name : "none");
+#endif
+
 			if (element == null) {
 				current_element = null;
 				return;
@@ -867,6 +934,12 @@ namespace Mono.Xaml {
 
 		private void PopCurrentElement ()
 		{
+#if LOGGING
+			Log ("\t\tPopCurrentElement old:{0} new:{1}",
+					current_element != null ? current_element.Name : "none",
+					current_element.Parent != null ? current_element.Parent.Name : "none");
+#endif
+
 			current_element = current_element.Parent;
 		}
 
@@ -887,6 +960,9 @@ namespace Mono.Xaml {
 	
 		private void ParentElement (XamlElement element, XamlElement parent)
 		{
+#if LOGGING
+			Log ("AddChild: {0} {1}", parent.Name, element.Name);
+#endif
 			parent.AddChild (element);
 		}
 
@@ -933,6 +1009,9 @@ namespace Mono.Xaml {
 
 		private void SetResourceBase (XamlObjectElement element)
 		{
+#if LOGGING
+			Log ("\t\tSetResourceBase {0}", element.Name);
+#endif
 			if (ResourceBase == null)
 				return;
 
@@ -945,6 +1024,9 @@ namespace Mono.Xaml {
 
 		private void SetElementTemplateScopes (XamlObjectElement element)
 		{
+#if LOGGING
+			Log ("\t\tSetElementTemplateScopes {0}", element.Name);
+#endif
 			// This whole thing is basically copied from xaml.cpp AddCreatedItem
 			object is_template = null;
 
@@ -1042,6 +1124,9 @@ namespace Mono.Xaml {
 
 		public Type ResolveType (string xmlns, string full_name)
 		{
+#if LOGGING
+			Log ("\t\tResolveType xmlns:{0} full_name:{1}", xmlns, full_name);
+#endif
 			Type t;
 			var dictKey = new XmlNsKey (xmlns, full_name);
 			if (Context.XmlnsCachedTypes.TryGetValue (dictKey, out t))
@@ -1583,7 +1668,6 @@ namespace Mono.Xaml {
 
 			return dp;
 		}
-
 
 		void ValidateMixedContentForObject ()
 		{
