@@ -176,7 +176,7 @@ namespace System.Windows.Data {
 				if (actualOldIndex < CurrentPosition) {
 					MoveCurrentTo (CurrentPosition - 1);
 				} else if (actualOldIndex == CurrentPosition) {
-					if (CurrentAddItem == CurrentItem)
+					if (CurrentAddItem == CurrentItem || CurrentPosition >= ActiveList.Count)
 						MoveCurrentTo (CurrentPosition - 1);
 					else
 						MoveCurrentTo (CurrentPosition);
@@ -334,7 +334,7 @@ namespace System.Windows.Data {
 			bool raiseEvents = force || CurrentItem != newItem;
 
 			if (raiseEvents) {
-				CurrentChangingEventArgs e = new CurrentChangingEventArgs (cancellable);
+				CurrentChangingEventArgs e = new CurrentChangingEventArgs (cancellable && ActiveList.Contains (CurrentItem));
 				RaiseCurrentChanging (e);
 				if (e.Cancel)
 					return true;
