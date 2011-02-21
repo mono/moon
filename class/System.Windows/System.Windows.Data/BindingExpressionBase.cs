@@ -120,10 +120,6 @@ namespace System.Windows.Data {
 						source = Target;
 					} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
 						source = Target.TemplateOwner;
-					} else {
-						var mentor = Target.Mentor;
-						if (mentor != null)
-							source = mentor.DataContext;
 					}
 				} else {
 					// If we've bound to a FrameworkElements own DataContext property or the ContentProperty, we need
@@ -357,12 +353,11 @@ namespace System.Windows.Data {
 			return GetConverter (destType, String.Empty, destType);
 		}
 
-		TypeConverter GetConverterTo ()
+		TypeConverter GetConverterTo (Type sourceType)
 		{
 			if (PropertyPathWalker.IsPathBroken)
 				return null;
 
-			var sourceType = PropertyPathWalker.FinalNode.ValueType;
 			var destType = Property.PropertyType;
 			if (destType.IsAssignableFrom (sourceType))
 				return null;
@@ -386,14 +381,7 @@ namespace System.Windows.Data {
 
 			cached = true;
 			if (DataSource == null || PropertyPathWalker.IsPathBroken) {
-				if (Binding.TargetNullValue != null) {
-					cachedValue = Binding.TargetNullValue;
-				} else if (Binding.FallbackValue != null) {
-					cachedValue = Binding.FallbackValue;
-				} else {
-					cachedValue = dp.GetDefaultValue (Target);
-					return cachedValue;
-				}
+				cachedValue = null;
 			}
 			else {
 				cachedValue = PropertyPathWalker.Value;
@@ -409,18 +397,21 @@ namespace System.Windows.Data {
 
 		object ConvertToType (DependencyProperty dp, object value)
 		{
-			if (Binding.Converter != null) {
-				value = Binding.Converter.Convert (value,
-			                           Property.PropertyType,
-			                           Binding.ConverterParameter,
-			                           GetConverterCulture ());
-			}
-
 			try {
-				if (value == null) {
-					value = Binding.TargetNullValue;
-				} else if (value == DependencyProperty.UnsetValue) {
+				if (!PropertyPathWalker.IsPathBroken && Binding.Converter != null) {
+					value = Binding.Converter.Convert (
+						value,
+						Property.PropertyType,
+						Binding.ConverterParameter,
+						GetConverterCulture ()
+					);
+				}
+
+				if (value == DependencyProperty.UnsetValue || PropertyPathWalker.IsPathBroken) {
 					value = Binding.FallbackValue;
+				}
+				else if (value == null) {
+					value = Binding.TargetNullValue;
 				} else {
 					string format = Binding.StringFormat;
 					if (!string.IsNullOrEmpty (format)) {
@@ -431,7 +422,7 @@ namespace System.Windows.Data {
 				}
 
 				if (value != null) {
-					var converter = GetConverterTo ();
+					var converter = GetConverterTo (value.GetType ());
 					if (converter == null) {
 						if (DataSource == null || PropertyPathWalker.IsPathBroken) {
 							value = MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);

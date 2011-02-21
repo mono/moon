@@ -16,6 +16,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class ManualConverter : IValueConverter {
+
+		public Func<object, Type, object, CultureInfo, object> ConvertFunc {
+			get; set;
+		}
+
+		public Func<object, Type, object, CultureInfo, object> ConvertBackFunc {
+			get; set;
+		}
+
+		public object Convert (object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			Console.WriteLine ("Convert To");
+			return ConvertFunc (value, targetType, parameter, culture);
+		}
+
+		public object ConvertBack (object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			Console.WriteLine ("Convert Back");
+			return ConvertBackFunc (value, targetType, parameter, culture);
+		}
+	}
+
 	public class InvalidConverter : IValueConverter
 	{
 		public object Value { get; set; }
@@ -133,7 +156,55 @@ namespace MoonTest.System.Windows.Data
 			data.Color = Colors.Purple;
 			Assert.AreEqual(Colors.Blue, rect.Fill.GetValue(SolidColorBrush.ColorProperty), "#4");
 		}
-		
+
+		[TestMethod]
+		public void TargetNullValueDoesTypeConvert_DataContext_NoPath ()
+		{
+			bool invoked = false;
+			var converter = new ManualConverter {
+				ConvertFunc = delegate { invoked = true; return 10.0; },
+				ConvertBackFunc = delegate { invoked = true; return 10.0; },
+			};
+
+			var binding = new Binding { TargetNullValue = "100.00", FallbackValue = "50.00", Converter = converter };
+			var rect = new Rectangle ();
+			rect.SetBinding (Rectangle.WidthProperty, binding);
+			Assert.IsTrue (invoked, "#1");
+			Assert.AreEqual (10, rect.Width, "#2");
+		}
+
+		[TestMethod]
+		public void TargetNullValueDoesTypeConvert_DataContext_Path ()
+		{
+			bool invoked = false;
+			var converter = new ManualConverter {
+				ConvertFunc = delegate { invoked = true; return 10.0; },
+				ConvertBackFunc = delegate { invoked = true; return 10.0; },
+			};
+
+			var binding = new Binding ("Test") { TargetNullValue = "100.00", FallbackValue = "50.00", Converter = converter };
+			var rect = new Rectangle ();
+			rect.SetBinding (Rectangle.WidthProperty, binding);
+			Assert.IsFalse (invoked, "#1");
+			Assert.AreEqual (50, rect.Width, "#2");
+		}
+
+		[TestMethod]
+		public void FallbackValueDoesNotTypeConvert ()
+		{
+			bool invoked = false;
+			var converter = new ManualConverter {
+				ConvertFunc = delegate { invoked = true; return 10.0; },
+				ConvertBackFunc = delegate { invoked = true; return 10.0; },
+			};
+
+			var binding = new Binding ("SomeProperty") { FallbackValue = "100.00", Converter = converter, Source = new object () };
+			var rect = new Rectangle ();
+			rect.SetBinding (Rectangle.WidthProperty, binding);
+			Assert.IsFalse (invoked, "#1");
+			Assert.AreEqual (100, rect.Width, "#2");
+		}
+
 		[TestMethod]
 		public void InvalidValueConverter ()
 		{

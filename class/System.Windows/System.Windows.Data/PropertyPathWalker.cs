@@ -37,6 +37,10 @@ namespace System.Windows.Data
 	class PropertyPathWalker {
 		static readonly PropertyInfo[] CollectionViewProperties = typeof (ICollectionView).GetProperties ();
 
+		public object Source {
+			get; private set;
+		}
+
 		public event EventHandler ValueChanged;
 
 		public IPropertyPathNode FinalNode {
@@ -50,6 +54,9 @@ namespace System.Windows.Data
 
 		public bool IsPathBroken {
 			get {
+				if (string.IsNullOrEmpty (Path))
+					return false;
+
 				var node = Node;
 				while (node != null) {
 					if (node.IsBroken)
@@ -61,6 +68,10 @@ namespace System.Windows.Data
 		}
 
 		IPropertyPathNode Node {
+			get; set;
+		}
+
+		string Path {
 			get; set;
 		}
 
@@ -81,6 +92,7 @@ namespace System.Windows.Data
 			string typeName;
 			PropertyNodeType type;
 			CollectionViewNode lastCVNode = null;
+			Path = path;
 
 			if (string.IsNullOrEmpty (path)) {
 				// If the property path is null or empty, we still need to add a CollectionViewNode
@@ -131,6 +143,7 @@ namespace System.Windows.Data
 
 		public void Update (object source)
 		{
+			Source = source;
 			Node.SetSource (source);
 		}
 	}
