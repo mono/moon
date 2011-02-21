@@ -254,13 +254,7 @@ namespace Mono {
 		{
 			return typeof (IConvertible).IsAssignableFrom (type);
 		}
-		
-		static bool IsEnumBaseType (Type type)
-		{
-			return type == typeof (byte) || type == typeof (sbyte) || type == typeof (short) || type == typeof (ushort) ||
-				type == typeof (int) || type == typeof (uint) || type == typeof (long) || type == typeof (ulong);
-		}
-		
+
 		public static object ValueFromConvertible (Type type, IConvertible value)
 		{
 			if (type == typeof (string))
@@ -294,7 +288,7 @@ namespace Mono {
 			if (type == typeof (UInt64))
 				return Convert.ToUInt64 (value, CultureInfo.InvariantCulture);
 
-			if (type.IsEnum && IsEnumBaseType (value.GetType ()))
+			if (type.IsEnum && Enum.IsDefined (type, value))
 				return Enum.ToObject (type, value);
 			
 			return value;
