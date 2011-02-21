@@ -413,8 +413,8 @@ namespace Mono.Xaml {
 			}
 
 			if (IsStaticResourceElement ()) {
-				if (!reader.Continue)
-					reader.Continue = true;
+				if (!reader.Repeat)
+					reader.Repeat = true;
 				else
 					ParseStaticResourceElement ();
 				return;

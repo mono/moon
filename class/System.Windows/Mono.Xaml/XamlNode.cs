@@ -522,7 +522,7 @@ namespace Mono.Xaml {
 				}
 			}
 			
-			if (node.Continue && evstart != null && 
+			if (node.Repeat && evstart != null &&
 				(node.NodeType == XmlNodeType.Element || node.NodeType == XmlNodeType.Text))
 				evstart (node);
 
@@ -577,7 +577,7 @@ namespace Mono.Xaml {
 		string outerXml;
 
 		public bool Ignore;
-		public bool Continue;
+		public bool Repeat;
 		public bool Parsed;
 		public bool Initialized;
 		public bool IsEmptyElement;
