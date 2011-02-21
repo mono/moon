@@ -343,8 +343,8 @@ namespace Mono.Xaml {
 		public void Parse (NodeEvent evstart, NodeEvent evend, AttributeEvent evattr)
 		{
 //			Console.WriteLine ("Looping: Ignored? {0} Parsed? {1} {2}", this.Ignore, this.Parsed, outerXml);
-		
-			if (!Parsed) {
+
+			if (!Initialized) {
 				XmlReader reader = XmlReader.Create (new StringReader (outerXml));
 				Parse (reader, parent, this, evstart, evend, evattr);
 				Parsed = !Ignore;
@@ -360,8 +360,22 @@ namespace Mono.Xaml {
 			}
 
 			if (NodeType == XmlNodeType.Element && !IsEmptyElement && !Ignore) {
-				foreach (XamlNode child in Children) {
-					child.Parse (evstart, evend, evattr);
+				if (!Parsed) {
+					XmlReader reader = XmlReader.Create (new StringReader (outerXml));
+					reader.Read ();
+					XamlNode child = null;
+					do {
+						child = Parse (reader, this, null, evstart, evend, evattr, child != null ? child.Ignore : false);
+						if (child != null) {
+							child.Parsed = !child.Ignore;
+							Children.Add (child);
+						}
+					} while (child != null);
+					Parsed = true;
+				} else {
+					foreach (XamlNode child in Children) {
+						child.Parse (evstart, evend, evattr);
+					}
 				}
 			}
 
