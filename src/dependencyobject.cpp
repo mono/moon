@@ -308,8 +308,6 @@ EventObject::SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
 				      ManagedRefCallback clear_strong_ref,
 				      MentorChangedCallback mentor_changed)
 {
-	hadManagedPeer = true;
-
 	this->addManagedRef = add_strong_ref;
 	this->clearManagedRef = clear_strong_ref;
 	this->mentorChanged = mentor_changed;
@@ -580,6 +578,8 @@ EventObject::SetManagedHandle (GCHandle managed_handle)
 	// managed handle when the managed peer is created and once to
 	// clear the handle when the managed peer has died. Ensure that
 	// we free the weak gchandle when the managed peer dies.
+
+	hadManagedPeer = true;
 #if SANITY
 	g_assert (this->managed_handle.IsAllocated () != managed_handle.IsAllocated ()); // #if SANITY
 #endif
