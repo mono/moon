@@ -1385,6 +1385,12 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		request->UrlNotify (url, reason);
 }
 
+static void
+progress_textblock_unref (gpointer tb)
+{
+	((EventObject *) tb)->unref ();
+}
+
 bool
 PluginInstance::LoadSplash ()
 {
@@ -1489,7 +1495,7 @@ PluginInstance::LoadSplash ()
 		if (progress_textblock != NULL && progress_changed_token == -1) {
 			progress_textblock->ref ();
 			progress_changed_token = GetSurface ()->AddHandler (Surface::SourceDownloadProgressChangedEvent,
-				PluginInstance::progress_changed_handler, progress_textblock, EventObject::unref_eventhandler_data);
+				PluginInstance::progress_changed_handler, progress_textblock, progress_textblock_unref);
 		}
 
 		UpdateSource ();

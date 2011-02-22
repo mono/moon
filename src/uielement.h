@@ -452,8 +452,7 @@ public:
 	/* @GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
-	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
-	virtual int AddManagedHandler (int event_id, UnmanagedEventHandlerInvoker handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	virtual void RemoveHandler (int event_id, int token);
 

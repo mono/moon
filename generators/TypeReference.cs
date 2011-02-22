@@ -276,8 +276,8 @@ class TypeReference {
 			case "SwitchMediaStreamAsyncCallback":
 				managed_type = "System.Windows.Media.MediaStreamSource." + Value.Replace ("Callback", "Delegate");
 				break;
-			case "DestroyUnmanagedEvent":
-				managed_type = "DestroyUnmanagedEvent";
+			case "GDestroyNotify":
+				managed_type = "GDestroyNotify";
 				break;
 			case "char*":
 				managed_type = "string";
@@ -291,9 +291,6 @@ class TypeReference {
 				break;
 			case "EventHandler":
 				managed_type = "UnmanagedEventHandler";
-				break;
-			case "UnmanagedEventHandlerInvoker":
-				managed_type = "UnmanagedEventHandlerInvoker";
 				break;
 			case "Size":
 				managed_type = "Size";

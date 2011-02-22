@@ -174,11 +174,6 @@ namespace System.Windows.Messaging {
 
 		private EventHandlerList event_list;
 
-
-		EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return EventList; }
-		}
-		
 		private EventHandlerList EventList {
 			get {
 				if (event_list == null)

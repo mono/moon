@@ -31,7 +31,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Windows;
 
 namespace Mono {
 
@@ -63,9 +62,10 @@ namespace Mono {
 		}
 	}
 
-	struct EventHandlerData {
+	sealed class EventHandlerData {
 		public Delegate ManagedDelegate;
 		public UnmanagedEventHandler NativeHandler;
+		public GDestroyNotify DtorAction;
 	}
 
 	sealed class EventHandlerList : Dictionary<EventHandlerDataKey, EventHandlerData> {
@@ -74,7 +74,12 @@ namespace Mono {
 		{
 		}
 
-		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, DestroyUnmanagedEvent dtor_action)
+		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
+		{
+			AddHandler (eventId, token, managedDelegate, nativeHandler);
+		}
+
+		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, GDestroyNotify dtor_action)
 		{
 			Add (new EventHandlerDataKey {
 					EventId = eventId,
@@ -82,6 +87,7 @@ namespace Mono {
 			}, new EventHandlerData {
 					ManagedDelegate = managedDelegate,
 					NativeHandler = nativeHandler,
+					DtorAction = dtor_action
 			});
 		}
 
@@ -110,40 +116,15 @@ namespace Mono {
 			if (managedHandler == null)
 				return;
 
-			int token = Events.AddHandler (obj, eventId, InvokeEventFromUnmanagedCallback, DestroyUnmanagedEventCallback, handledEventsToo);
-			AddHandler (eventId, token, managedHandler, nativeHandler, DestroyUnmanagedEventCallback);
-		}
+			int token = -1;
 
-		static void DestroyUnmanagedEventCallback (IntPtr dep_ob, int event_id, int token)
-		{
-			try {
-				var ob = (INativeEventObjectWrapper) NativeDependencyObjectHelper.FromIntPtr (dep_ob);
-				if (ob != null)
-					ob.EventList.RemoveHandler (event_id, token);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Unhandled exception in EventHandlerList.DestroyUnmanagedEventCallback");
-				} catch {
+			GDestroyNotify dtor_action = (data) => {
+				RemoveHandler (eventId, token);
+			};
 
-				}
-			}
-		}
-
-		static void InvokeEventFromUnmanagedCallback (IntPtr dep_ob, int event_id, int token, IntPtr calldata, IntPtr closure)
-		{
-			try {
-				EventHandlerData data;
-				var ob = (DependencyObject) NativeDependencyObjectHelper.Lookup (dep_ob);
-				if (ob.EventList.TryGetValue (new EventHandlerDataKey { EventId = event_id, Token = token }, out data)) {
-					data.NativeHandler (dep_ob, calldata, closure);
-				}
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Unhandled exception in: EventHandlerList.InvokeEventFromUnmanagedCallback");
-				} catch {
-
-				}
-			}
+			token = Events.AddHandler (obj, eventId, nativeHandler, dtor_action, handledEventsToo);
+			
+			AddHandler (eventId, token, managedHandler, nativeHandler, dtor_action);
 		}
 
 		public void UnregisterEvent (INativeEventObjectWrapper obj, int eventId, Delegate managedHandler)
@@ -155,7 +136,7 @@ namespace Mono {
 		{
 			foreach (var keypair in this) {
 				if (keypair.Key.EventId == eventId && keypair.Value.ManagedDelegate == managedHandler) {
-					Events.RemoveHandler (obj, eventId, keypair.Key.Token);
+					Events.RemoveHandler (obj, eventId, keypair.Value.NativeHandler);
 					return;
 				}
 			}

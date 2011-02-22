@@ -38,10 +38,6 @@ namespace System.Windows.Media {
 
 		DependencyObjectHandle handle;
 
-		Mono.EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return null; }
-		}
-
 		internal CaptureImageCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
 			: base (exc, false, null)
 		{

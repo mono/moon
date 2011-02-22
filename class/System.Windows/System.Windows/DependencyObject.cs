@@ -46,10 +46,6 @@ namespace System.Windows {
 		EventHandlerList event_list;
 		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers;
 
-		EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return EventList; }
-		}
-
 		internal EventHandlerList EventList {
 			get {
 				if (event_list == null)

@@ -32,9 +32,7 @@ using System.Windows.Markup;
 
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
-		static readonly UnmanagedEventHandlerInvoker content_changed = (sender, event_id, token, calldata, closure) =>
-			Events.SafeDispatcher (content_changed_callback) (sender, calldata, closure);
-
+		static readonly UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
 		internal static readonly ControlTemplate FallbackTemplate = CreateFallbackTemplate ();
 
 		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)

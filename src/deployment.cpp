@@ -1628,7 +1628,7 @@ public:
 };
 
 void
-Deployment::delete_loaded_closure (EventObject *eo, int event_id, int token, gpointer closure)
+Deployment::delete_loaded_closure (gpointer closure)
 {
 	LoadedClosure *c = (LoadedClosure *) closure;
 	c->obj->unref ();

@@ -36,10 +36,6 @@ namespace System.Windows.Messaging {
 	{
 		DependencyObjectHandle handle;
 
-		EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return null; }
-		}
-
 		internal MessageReceivedEventArgs (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;

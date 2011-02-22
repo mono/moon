@@ -683,7 +683,7 @@ Surface::Attach (UIElement *element)
 	toplevel = element;
 
 	this->ref ();
-	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, EventObject::unref_eventhandler_data);
+	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify) EventObject::unref_static);
 
 	AttachLayer (toplevel);
 	ticked_after_attach = false;
@@ -723,9 +723,9 @@ Surface::toplevel_loaded (EventObject *sender, EventArgs *args, gpointer closure
 void
 Surface::ToplevelLoaded (UIElement *element)
 {
-	element->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
-
 	if (element == toplevel) {
+		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
+
 		// FIXME: If the element is supposed to be focused, FocusElement (element)
 		// should be used. I think this is unnecessary anyway.
 		//if (active_window && active_window->HasFocus())

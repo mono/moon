@@ -45,7 +45,7 @@ namespace Mono
 		
 		private EventHandlerList event_list;
 
-		public EventHandlerList EventList {
+		internal EventHandlerList EventList {
 			get {
 				if (event_list == null)
 					event_list = new EventHandlerList (this);

@@ -51,25 +51,16 @@ namespace System.Net.Browser {
 		BrowserHttpWebResponse response;
 		HttpWebAsyncResult async_result;
 		
-		UnmanagedEventHandlerInvoker started;
-		UnmanagedEventHandlerInvoker available;
-		UnmanagedEventHandlerInvoker finished;
+		UnmanagedEventHandler started;
+		UnmanagedEventHandler available;
+		UnmanagedEventHandler finished;
 
  		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
 			: base (wreq, uri)
  		{
-			started = (sender, event_id, token, calldata, closure) => {
-				var x = Events.SafeDispatcher (OnAsyncResponseStarted);
-				x (sender, calldata, closure);
-			};
-			available = (sender, event_id, token, calldata, closure) => {
-				var x = Events.SafeDispatcher (OnAsyncDataAvailable);
-				x (sender, calldata, closure);
-			};
-			finished = (sender, event_id, token, calldata, closure) => {
-				var x = Events.SafeDispatcher (OnAsyncResponseStopped);
-				x (sender, calldata, closure);
-			};
+			started = Events.SafeDispatcher (OnAsyncResponseStarted);
+			available = Events.SafeDispatcher (OnAsyncDataAvailable);
+			finished = Events.SafeDispatcher (OnAsyncResponseStopped);
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
 			if (wreq != null) {
