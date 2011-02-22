@@ -183,6 +183,28 @@ namespace Mono {
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
 				return new SolidColorBrush ((Color)value);
 			}
+
+			// FontStretch/Style/Weight and enums are stored as uint32 in 2.0
+			if (Deployment.Current.RuntimeVersion[0] == '2' && value is UInt32) {
+				if (destinationType == typeof (FontStyle))
+					return new FontStyle ((FontStyleKind)value);
+				
+				if (destinationType == typeof (FontStretch))
+					return new FontStretch ((FontStretchKind)value);
+				
+				if (destinationType == typeof (FontWeight))
+					return new FontWeight ((FontWeightKind)value);
+				
+				if (destinationType.IsEnum) {
+					try {
+						object v = Enum.ToObject (destinationType, value);
+						
+						if (Enum.IsDefined (destinationType, v))
+							return v;
+					} catch (Exception) {
+					}
+				}
+			}
 			
 			if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
 				return ValueFromConvertible (destinationType, (IConvertible) value);
@@ -216,18 +238,6 @@ namespace Mono {
 
 			if (destinationType.IsAssignableFrom (value.GetType ()))
 				return value;
-
-			if (Deployment.Current.RuntimeVersion[0] == '2' && value is UInt32) {
-				if (destinationType == typeof (FontStyle)) {
-					return new FontStyle ((FontStyleKind)value);
-				}
-				else if (destinationType == typeof (FontStretch)) {
-					return new FontStretch ((FontStretchKind)value);
-				}
-				else if (destinationType == typeof (FontWeight)) {
-					return new FontWeight ((FontWeightKind)value);
-				}
-			}
 			
 			// The base implementation doesn't do anything but
 			// throw, so throw here instead so we have more
@@ -287,9 +297,6 @@ namespace Mono {
 				return Convert.ToUInt32 (value, CultureInfo.InvariantCulture);
 			if (type == typeof (UInt64))
 				return Convert.ToUInt64 (value, CultureInfo.InvariantCulture);
-
-			if (type.IsEnum && Enum.IsDefined (type, value))
-				return Enum.ToObject (type, value);
 			
 			return value;
 		}
