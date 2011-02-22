@@ -248,7 +248,7 @@ class MoonlightObject;
 typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *value);
 
 class EventListenerProxy : public EventObject {
-	static void on_handler_removed (gpointer closure);
+	static void on_handler_removed (EventObject *eo, int event_id, int token, gpointer closure);
 
 	EventObject *target_object;
 	MoonlightObject *owner;

@@ -54,7 +54,9 @@ namespace System.Windows.Controls
 	/// an other relevant properties like FontSize, VeriticalAlignment, etc.). 
 	/// </remarks> 
 	public partial class ContentPresenter : FrameworkElement {
-		static readonly UnmanagedEventHandler clear_root = Events.SafeDispatcher (ClearRoot);
+		static readonly UnmanagedEventHandlerInvoker clear_root = (sender, event_id, token, calldata, closure) =>
+			Events.SafeDispatcher (ClearRoot) (sender, calldata, closure);
+
 		internal UIElement _contentRoot;
 		UIElement _fallbackRoot;
 		

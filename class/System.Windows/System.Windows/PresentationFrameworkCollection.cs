@@ -82,13 +82,14 @@ namespace System.Windows {
 
 		List<T> managedList;
 
-		static UnmanagedEventHandler collection_changed = Events.SafeDispatcher (
+		static UnmanagedEventHandlerInvoker collection_changed = (_sender, _eventid, _token, _calldata, _closure) =>
+			Events.SafeDispatcher (
 			 (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				 var args = NativeDependencyObjectHelper.Lookup (calldata) as InternalCollectionChangedEventArgs;
 				 if (args == null)
 					 args = new InternalCollectionChangedEventArgs (calldata);
 				 ((PresentationFrameworkCollection<T>) NativeDependencyObjectHelper.FromIntPtr (closure)).InternalCollectionChanged (args);
-			 });
+			 }) (_sender, _calldata, _closure);
 
 		void InternalCollectionChanged (InternalCollectionChangedEventArgs args)
 		{

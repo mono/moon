@@ -47,9 +47,12 @@ class MoonError;
 /* @CBindingRequisite */
 typedef void (* TickCallHandler) (EventObject *object);
 /* @CBindingRequisite */
+typedef void (* UnmanagedEventHandlerInvoker) (EventObject *sender, int event_id, int token, EventArgs *args, gpointer closure);
+/* @CBindingRequisite */
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (int token, EventHandler cb_handler, gpointer cb_data, gpointer data);
-
+/* @CBindingRequisite */
+typedef void (* DestroyUnmanagedEvent) (EventObject *object, int event_id, int token, void *data);
 typedef void (* HandlerMethod) (EventObject *object, int token, gpointer data);
 
 /* @CBindingRequisite */
@@ -122,7 +125,8 @@ public:
 	/* @GeneratePInvoke */
 	void unref ();
 	static void unref_static (EventObject *obj); /* suitable for glib callbacks, hashtable free methods, etc */
-	
+	static void unref_eventhandler_data (EventObject *obj, int event_id, int token, void *data); /* suitable for dtors for eventhandlers */
+
 	/* @GeneratePInvoke */
 	int GetRefCount () { return refcount; }
 	int GetId () { return flags & IdMask; }
@@ -150,12 +154,12 @@ public:
 		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	
-	int AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
-	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+	int AddHandler (const char *event_name, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
  	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
 	/* @GeneratePInvoke */
-	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	/* @GeneratePInvoke */
  	void RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data);
 
@@ -164,12 +168,15 @@ public:
 	void DoEmitCurrentContext (int event_id, EventArgs *calldata);
 
 	/* @GeneratePInvoke */
-	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+	virtual int AddManagedHandler (int event_id, UnmanagedEventHandlerInvoker handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
+
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	/* @GeneratePInvoke */
-	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
-	/* @GeneratePInvoke */
+	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
+	/* @GeneratePInvoke */
 	virtual void RemoveHandler (int event_id, int token);
+	void RemoveAllHandlers ();
 	void RemoveAllHandlers (gpointer data);
 	// A NULL predicate means all handlers match
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);

@@ -567,12 +567,12 @@ EventListenerProxy::RemoveHandler ()
 	}
 	else {
 		ref (); // on_handler_removed unrefs.
-		on_handler_removed (this);
+		on_handler_removed (target_object, event_id, token, this);
 	}
 }
 
 void
-EventListenerProxy::on_handler_removed (gpointer closure)
+EventListenerProxy::on_handler_removed (EventObject *eo, int event_id, int token, gpointer closure)
 {
 	// by the time we get here, the target_object has disclaimed
 	// all knowledge of this proxy.
