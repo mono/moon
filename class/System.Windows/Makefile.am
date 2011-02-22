@@ -96,6 +96,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/StreamCallbacks.cs					\
 	$(srcdir)/Mono/StreamWrapper.cs						\
 	$(srcdir)/Mono/Surface.cs						\
+	$(srcdir)/Mono/TimeManager.cs					\
 	$(srcdir)/Mono/ToggleRef.cs						\
 	$(srcdir)/Mono/Types.cs							\
 	$(srcdir)/Mono/Types.g.cs						\

@@ -374,7 +374,7 @@ Surface::Surface (MoonWindow *window)
 	
 	background_color = new Color (1, 1, 1, 0);
 
-	time_manager = new TimeManager ();
+	time_manager = MoonUnmanagedFactory::CreateTimeManager ();
 	time_manager->Start ();
 	ticked_after_attach = false;
 
@@ -640,7 +640,7 @@ Surface::Attach (UIElement *element)
 		 * to the time manager's tick call code, we might crash since the time manager will get destroyed here.
 		 * So unref delayed to unroll the stack before destroying the time manager */
 		time_manager->unref_delayed ();
-		time_manager = new TimeManager ();
+		time_manager = MoonUnmanagedFactory::CreateTimeManager ();
 		time_manager_mutex.Unlock ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);

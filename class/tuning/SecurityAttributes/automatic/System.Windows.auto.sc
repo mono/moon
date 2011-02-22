@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 591 methods needs to be decorated.
+# 592 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1078,7 +1078,7 @@
 # p/invoke declaration
 +SC-M: System.UInt64 Mono.NativeMethods::http_request_write_event_args_get_offset(System.IntPtr)
 
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)'.
+# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.TimeManager::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
 # p/invoke declaration
@@ -1665,6 +1665,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void Mono.TimeManager::set_NativeHandle(System.IntPtr)
 
 # overrides 'System.Void Mono.Xaml.XamlLoader::HydrateInternal(System.Object,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)'.
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::HydrateInternal(System.Object,System.IO.Stream,System.Boolean,System.Boolean,System.Boolean)

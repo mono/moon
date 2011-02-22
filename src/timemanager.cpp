@@ -81,6 +81,7 @@ protected:
 TimeManager::TimeManager ()
 {
 	SetObjectType (Type::TIMEMANAGER);
+	EnsureManagedPeer ();
 
 	if (moonlight_flags & RUNTIME_INIT_MANUAL_TIMESOURCE)
 		source = new ManualTimeSource();

@@ -218,6 +218,9 @@
 +SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
++SC-M: System.Void Mono.TimeManager::set_NativeHandle(System.IntPtr)
++SC-M: System.Void Mono.TimeManager::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
 # LocalMessaging methods
 +SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)

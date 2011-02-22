@@ -22,10 +22,9 @@ namespace Moonlight {
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
-/* @Namespace=None,ManagedEvents=Manual */
+/* @Namespace=Mono,ManagedEvents=Manual */
 class TimeManager : public EventObject {
 public:
-	TimeManager ();
 
 	void Start ();
 	void Stop ();
@@ -72,6 +71,10 @@ public:
 	
 protected:
 	virtual ~TimeManager ();
+	TimeManager ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 
