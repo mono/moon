@@ -209,10 +209,20 @@ namespace Mono.Xaml {
 				Console.WriteLine ("string:");
 				Console.WriteLine (str);
 				throw pe;
+			} catch (XmlException xe) {
+				Console.WriteLine ("Exception while parsing string ({0}:{1})", xe.LineNumber, xe.LinePosition);
+				Console.WriteLine (xe);
+				Console.WriteLine ("string:");
+				Console.WriteLine (str);
+				throw ParseException ("Caught exception: {0}", xe.Message);
 			} catch (Exception e) {
+				int line = -1;
+				int col = -1;
 				IXmlLineInfo linfo = reader as IXmlLineInfo;
-				int line = linfo.LineNumber;
-				int col = linfo.LinePosition;
+				if (linfo != null) {
+					line = linfo.LineNumber;
+					col = linfo.LinePosition;
+				}
 				Console.Error.WriteLine ("Exception while parsing string ({0}:{1}):", line, col);
 				Console.Error.WriteLine (e);
 				Console.WriteLine ("string:");
