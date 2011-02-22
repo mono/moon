@@ -39,10 +39,9 @@ using System.Windows.Controls.Primitives;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
-				static UnmanagedEventHandlerInvoker template_applied = (_sender, _event_id, _token, _calldata, _closure) =>
-			Events.SafeDispatcher (
+				static UnmanagedEventHandler template_applied = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ()) (_sender, _calldata, _closure);
+			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ());
 
 		static FrameworkElement ()
 		{

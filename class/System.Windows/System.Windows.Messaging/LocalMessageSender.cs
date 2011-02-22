@@ -125,14 +125,6 @@ namespace System.Windows.Messaging {
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.LOCALMESSAGESENDER;
@@ -141,11 +133,6 @@ namespace System.Windows.Messaging {
 #endregion
 
 		private EventHandlerList event_list;
-
-		EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return EventList; }
-		}
-		
 		private EventHandlerList EventList {
 			get {
 				if (event_list == null)

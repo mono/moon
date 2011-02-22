@@ -34,10 +34,6 @@ namespace System.Windows {
 		object source;
 		Dictionary<IntPtr,object> strongRefs;
 
-		EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return null; }
-		}
-
 		internal IntPtr NativeHandle {
 			get { return handle.Handle; }
 			set {
@@ -107,14 +103,6 @@ namespace System.Windows {
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-		
 		internal RoutedEventArgs (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;

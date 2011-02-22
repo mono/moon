@@ -56,9 +56,6 @@ namespace Mono {
 		public static ManagedRefCallback add_strong_ref = new ManagedRefCallback (AddStrongRef);
 		public static ManagedRefCallback clear_strong_ref = new ManagedRefCallback (ClearStrongRef);
 
-		public static AttachCallback attached = new AttachCallback (Attached);
-		public static AttachCallback detached = new AttachCallback (Detached);
-
 		public static MentorChangedCallback mentor_changed = new MentorChangedCallback (MentorChanged);
 
 #if DEBUG_REF
@@ -107,38 +104,6 @@ namespace Mono {
 			}
 		}
 
-		static void Attached (IntPtr ptr)
-		{
-			try {
-				INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
-				if (wrapper == null)
-					return;
-	
-				wrapper.OnAttached ();
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.Attached: {0}", ex);
-				} catch {
-				}
-			}
-		}
-
-		static void Detached (IntPtr ptr)
-		{
-			try {
-				INativeEventObjectWrapper wrapper = NativeDependencyObjectHelper.Lookup (ptr);
-				if (wrapper == null)
-					return;
-	
-				wrapper.OnDetached ();
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.Detached: {0}", ex);
-				} catch {
-				}
-			}
-		}
-
 		static void MentorChanged (IntPtr ptr, IntPtr mentor_ptr)
 		{
 			try {
@@ -161,9 +126,7 @@ namespace Mono {
 			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
 									       container == null ? null : NativeDependencyObjectHelper.add_strong_ref,
 									       container == null ? null : NativeDependencyObjectHelper.clear_strong_ref,
-									       NativeDependencyObjectHelper.mentor_changed,
-									       NativeDependencyObjectHelper.attached,
-									       NativeDependencyObjectHelper.detached);
+									       NativeDependencyObjectHelper.mentor_changed);
 		}
 
 #region "helpers for the INativeDependencyObjectWrapper interface"

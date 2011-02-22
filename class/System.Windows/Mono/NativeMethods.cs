@@ -64,7 +64,6 @@ namespace Mono {
 
 	internal delegate void MentorChangedCallback (IntPtr doptr, IntPtr mentor_ptr);
 	internal delegate void EnsureManagedPeerCallback (IntPtr doptr, Kind kind);
-	internal delegate void AttachCallback (IntPtr doptr);
 	internal delegate void ManagedRefCallback (IntPtr referer, IntPtr referent, IntPtr id);
 	internal delegate Size MeasureOverrideCallback (IntPtr fwe_ptr, Size availableSize, ref MoonError error);
 	internal delegate Size ArrangeOverrideCallback (IntPtr fwe_ptr, Size finalSize, ref MoonError error);
@@ -85,10 +84,9 @@ namespace Mono {
 	internal delegate void SetCustomXamlAttributeCallback (IntPtr target, string name, string value);
 	internal delegate void XamlHookupEventCallback (IntPtr target, string name, string value);
 	internal delegate void UnmanagedEventHandler (IntPtr sender, IntPtr calldata, IntPtr closure);
-	internal delegate void UnmanagedEventHandlerInvoker (IntPtr sender, int event_id, int token, IntPtr calldata, IntPtr closure);
 
 	internal delegate void PlainEvent (IntPtr target);
-	internal delegate void DestroyUnmanagedEvent (IntPtr target, int event_id, int token);
+	internal delegate void GDestroyNotify (IntPtr target);
 
 	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
 	internal delegate void UnmanagedPropertyChangeHandler (IntPtr dependency_object, IntPtr propertyChangedArgs, ref MoonError error, IntPtr closure);

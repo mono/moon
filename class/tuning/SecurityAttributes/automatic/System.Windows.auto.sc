@@ -380,13 +380,16 @@
 +SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::event_object_add_managed_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandlerInvoker,System.IntPtr,Mono.DestroyUnmanagedEvent,System.Boolean,System.Boolean)
++SC-M: System.Int32 Mono.NativeMethods::event_object_add_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.GDestroyNotify,System.Boolean,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::event_object_add_xaml_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.DestroyUnmanagedEvent,System.Boolean,System.Boolean)
++SC-M: System.Int32 Mono.NativeMethods::event_object_add_xaml_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.GDestroyNotify,System.Boolean,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::event_object_get_ref_count(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::external_demuxer_add_stream(System.IntPtr,System.IntPtr)
@@ -1193,7 +1196,7 @@
 +SC-M: System.Void Mono.NativeMethods::easing_function_base_set_easing_function(System.IntPtr,Mono.EasingFunctionCallback)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_add_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.DestroyUnmanagedEvent,System.Boolean,System.Boolean)
++SC-M: System.Void Mono.NativeMethods::event_object_add_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,Mono.GDestroyNotify,System.Boolean,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_do_emit_current_context(System.IntPtr,System.Int32,System.IntPtr)
@@ -1202,16 +1205,13 @@
 +SC-M: System.Void Mono.NativeMethods::event_object_ref(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,System.Int32)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_managed_handle(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_set_managed_peer_callbacks(System.IntPtr,Mono.ManagedRefCallback,Mono.ManagedRefCallback,Mono.MentorChangedCallback,Mono.AttachCallback,Mono.AttachCallback)
++SC-M: System.Void Mono.NativeMethods::event_object_set_managed_peer_callbacks(System.IntPtr,Mono.ManagedRefCallback,Mono.ManagedRefCallback,Mono.MentorChangedCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_object_type(System.IntPtr,Mono.Kind)

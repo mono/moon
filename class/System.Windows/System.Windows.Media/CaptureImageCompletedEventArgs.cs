@@ -38,10 +38,6 @@ namespace System.Windows.Media {
 
 		DependencyObjectHandle handle;
 
-		Mono.EventHandlerList INativeEventObjectWrapper.EventList {
-			get { return null; }
-		}
-
 		internal CaptureImageCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
 			: base (exc, false, null)
 		{
@@ -89,16 +85,6 @@ namespace System.Windows.Media {
 
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
 		{
-		}
-
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-			throw new Exception ();
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-			throw new Exception ();
 		}
 
 		Kind INativeEventObjectWrapper.GetKind ()
