@@ -128,14 +128,6 @@ namespace Mono
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-		
 		internal void Free ()
 		{
 			if (free_mapping) {

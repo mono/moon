@@ -995,14 +995,6 @@ namespace System.Windows {
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Deployment.Current.Types.TypeToKind (GetType ());

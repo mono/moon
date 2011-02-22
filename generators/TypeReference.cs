@@ -259,9 +259,6 @@ class TypeReference {
 			case "ManagedRefCallback":
 				managed_type = "Mono.ManagedRefCallback";
 				break;
-			case "AttachCallback":
-				managed_type = "Mono.AttachCallback";
-				break;
 			case "EnsureManagedPeerCallback":
 				managed_type = "Mono.EnsureManagedPeerCallback";
 				break;

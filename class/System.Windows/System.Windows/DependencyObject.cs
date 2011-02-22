@@ -204,16 +204,6 @@ namespace System.Windows {
 
 		internal event EventHandler MentorChanged;
 
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-
-		}
-
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-
-		}
-
 		public object GetValue (DependencyProperty dp)
 		{
 			return NativeDependencyObjectHelper.GetValue (this, dp);

@@ -58,8 +58,6 @@ typedef void (* HandlerMethod) (EventObject *object, int token, gpointer data);
 /* @CBindingRequisite */
 typedef void (* ManagedRefCallback) (EventObject *referer, Value *referent, const void *id);
 /* @CBindingRequisite */
-typedef void (* AttachCallback) (EventObject *object);
-/* @CBindingRequisite */
 typedef void (* MentorChangedCallback) (EventObject *object, EventObject *mentor);
 
 class EventLists;
@@ -200,9 +198,7 @@ public:
 	/* @GeneratePInvoke */
 	void SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
 				      ManagedRefCallback clear_strong_ref,
-				      MentorChangedCallback mentor_changed,
-				      AttachCallback attached,
-				      AttachCallback detached);
+				      MentorChangedCallback mentor_changed);
 
 	virtual void EnsureManagedPeer ();
 
@@ -253,8 +249,6 @@ public:
 	ManagedRefCallback addManagedRef;
 	ManagedRefCallback clearManagedRef;
 	MentorChangedCallback mentorChanged;
-	AttachCallback attached;
-	AttachCallback detached;
 
 	bool hadManagedPeer;
 

@@ -107,14 +107,6 @@ namespace System.Windows {
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-		
 		internal RoutedEventArgs (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;

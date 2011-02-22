@@ -215,8 +215,6 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	addManagedRef = NULL;
 	clearManagedRef = NULL;
 	mentorChanged = NULL;
-	attached = NULL;
-	detached = NULL;
 	hadManagedPeer = false;
 
 #if OBJECT_TRACKING
@@ -291,12 +289,8 @@ EventObject::SetIsAttached (bool value)
 
 	if (value) {
 		flags |= Attached;
-		if (attached && deployment && !deployment->IsShuttingDown())
-			attached (this);
 	} else {
 		flags &= ~Attached;
-		if (detached && deployment && !deployment->IsShuttingDown())
-			detached (this);
 	}
 
 	OnIsAttachedChanged (value);
@@ -315,17 +309,13 @@ EventObject::ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closur
 void
 EventObject::SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
 				      ManagedRefCallback clear_strong_ref,
-				      MentorChangedCallback mentor_changed,
-				      AttachCallback attached,
-				      AttachCallback detached)
+				      MentorChangedCallback mentor_changed)
 {
 	hadManagedPeer = true;
 
 	this->addManagedRef = add_strong_ref;
 	this->clearManagedRef = clear_strong_ref;
 	this->mentorChanged = mentor_changed;
-	this->attached = attached;
-	this->detached = detached;
 }
 
 void

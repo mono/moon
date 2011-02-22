@@ -167,14 +167,6 @@ namespace System.Windows.Messaging {
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
-
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.LOCALMESSAGERECEIVER;

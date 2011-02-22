@@ -97,14 +97,6 @@ namespace System.Windows.Messaging {
 		void INativeEventObjectWrapper.MentorChanged (IntPtr mentor_ptr)
 		{
 		}
-
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-		}
 #endregion
 
 	}

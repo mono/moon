@@ -91,16 +91,6 @@ namespace System.Windows.Media {
 		{
 		}
 
-		void INativeEventObjectWrapper.OnAttached ()
-		{
-			throw new Exception ();
-		}
-
-		void INativeEventObjectWrapper.OnDetached ()
-		{
-			throw new Exception ();
-		}
-
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Deployment.Current.Types.TypeToKind (GetType ());
