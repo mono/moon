@@ -63,21 +63,15 @@ namespace Mono {
 		}
 	}
 
-	sealed class EventHandlerData {
+	struct EventHandlerData {
 		public Delegate ManagedDelegate;
 		public UnmanagedEventHandler NativeHandler;
-		public DestroyUnmanagedEvent DtorAction;
 	}
 
 	sealed class EventHandlerList : Dictionary<EventHandlerDataKey, EventHandlerData> {
 
 		public EventHandlerList (INativeEventObjectWrapper wrapper)
 		{
-		}
-
-		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
-		{
-			AddHandler (eventId, token, managedDelegate, nativeHandler);
 		}
 
 		private void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler, DestroyUnmanagedEvent dtor_action)
@@ -88,7 +82,6 @@ namespace Mono {
 			}, new EventHandlerData {
 					ManagedDelegate = managedDelegate,
 					NativeHandler = nativeHandler,
-					DtorAction = dtor_action
 			});
 		}
 
