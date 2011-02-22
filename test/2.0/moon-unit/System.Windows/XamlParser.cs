@@ -47,6 +47,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion(4)]
 		public void Ignorables ()
 		{
 			StackPanel c = (StackPanel) XamlReader.Load (@"
@@ -83,6 +84,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion(4)]
 		public void IgnorableAtts ()
 		{
 			StackPanel c = (StackPanel) XamlReader.Load (@"
