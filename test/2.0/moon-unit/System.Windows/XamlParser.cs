@@ -101,5 +101,54 @@ namespace MoonTest.System.Windows {
 			");
 			Assert.IsNotNull (c, "#1");
 		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void MixedContent ()
+		{
+			Grid c = (Grid) XamlReader.Load (@"
+				<Grid
+					xmlns=""http://schemas.microsoft.com/client/2007""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+					x:Name=""LayoutRoot"">
+					<TextBlock>
+						<TextBlock.Text>
+							<Binding Path=""Text"" ElementName=""tb"" />
+						</TextBlock.Text>
+					</TextBlock>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+				</Grid>
+			");
+			Assert.IsNotNull (c, "#1");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void MixedContentInvalid ()
+		{
+			Assert.Throws<XamlParseException> (delegate {
+				Grid c = (Grid) XamlReader.Load (@"
+					<Grid
+						xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+						x:Name=""LayoutRoot"">
+						<TextBlock>
+							<TextBlock.Text>
+								<Binding Path=""Text"" ElementName=""tb"" />
+							</TextBlock.Text>
+						</TextBlock>
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition />
+						</Grid.RowDefinitions>
+						<TextBox x:Name=""tb"" Grid.Row=""1"" /><!--this is a second content set, invalid in v4-->
+					</Grid>
+				");
+				Assert.IsNotNull (c, "#1");
+			});
+		}
 	}
 }

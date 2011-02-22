@@ -73,20 +73,17 @@ namespace Mono.Xaml {
 			get;
 		}
 
-		/// NOTE: This means has the opening element ended. ie imagining the . is the current
-		/// parsing marker, all of the following should return true:
-		/// <Element>.</Element>
-		/// <Element />.
-		/// and these would return false:
-		/// <Element . Foo="bar" />
-		/// <Element .>
-		public bool Ended {
+		public bool ContentSet {
+			get;
+			set;
+		}
+
+		public bool PropertiesSet {
 			get;
 			set;
 		}
 
 		public List<XamlElement> Children = new List<XamlElement> ();
-
 		
 		public void RaiseElementBegin ()
 		{

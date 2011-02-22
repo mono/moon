@@ -596,8 +596,6 @@ namespace Mono.Xaml {
 
 		public Type ManagedType;
 
-		public XamlElement XamlElement;
-
 		public delegate void NodeEvent (XamlNode node);
 		public delegate void AttributeEvent (XamlNode node, XamlAttribute ai);
 	}
