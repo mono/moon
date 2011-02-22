@@ -344,6 +344,8 @@ namespace Mono.Xaml {
 		{
 //			Console.WriteLine ("Looping: Ignored? {0} Parsed? {1} {2}", this.Ignore, this.Parsed, outerXml);
 
+			Ignore = false;
+
 			if (!Initialized) {
 				XmlReader reader = XmlReader.Create (new StringReader (outerXml));
 				Parse (reader, parent, this, evstart, evend, evattr);
