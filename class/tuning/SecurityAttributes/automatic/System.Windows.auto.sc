@@ -1211,7 +1211,7 @@
 +SC-M: System.Void Mono.NativeMethods::event_object_set_managed_handle(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_set_managed_peer_callbacks(System.IntPtr,Mono.ManagedRefCallback,Mono.ManagedRefCallback,Mono.MentorChangedCallback,Mono.AttachCallback,Mono.AttachCallback)
++SC-M: System.Void Mono.NativeMethods::event_object_set_managed_peer_callbacks(System.IntPtr,Mono.ManagedRefCallback,Mono.ManagedRefCallback,Mono.MentorChangedCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_object_type(System.IntPtr,Mono.Kind)
