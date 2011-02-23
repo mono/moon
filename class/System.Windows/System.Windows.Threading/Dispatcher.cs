@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows.Threading {
 
-	[CLSCompliant (false)]
+	[CLSCompliant (true)]
 	public sealed class Dispatcher {
 		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
