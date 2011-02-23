@@ -229,8 +229,8 @@ namespace System.Windows.Browser {
 			// used only once, reset event counter
 			last_user_initiated_event = NativeMethods.surface_get_user_initiated_counter (Deployment.Current.Surface.Native);
 
-			// if EnableHtmlAccess is not enabled then null/empty target are converted into "_blank"
-			if (!IsEnabled && String.IsNullOrEmpty (target))
+			// if EnableHtmlAccess is not enabled then "_blank" is used as the target (MSDN docs)
+			if (!IsEnabled)
 				target = "_blank";
 
 			object popup = null;
@@ -242,7 +242,7 @@ namespace System.Windows.Browser {
 
 			// LAMESPEC: confusing but it seems the popup works with (or without) IsEnabled but, unless IsEnabled
 			// is true, the return value will be null (i.e. a popup you can't control).
-			return IsEnabled ? (HtmlWindow) window : null;
+			return IsEnabled ? (HtmlWindow) popup : null;
 		}
 
 		// The HTML bridge can be disable by the plugin 'enableHTMLAccess' parameter (defaults to true)
