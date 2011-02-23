@@ -102,8 +102,18 @@ namespace System.Windows.Controls.Primitives {
 			((Selector) sender).OnItemContainerStyleChanged ((Style) e.OldValue, (Style) e.NewValue);
 		}
 
-		internal ObservableCollection <object> SelectedItems {
+		internal bool SelectedItemsIsInvalid {
 			get; set;
+		}
+
+		ObservableCollection <object> selectedItems;
+		internal ObservableCollection <object> SelectedItems {
+			get{
+				if (SelectedItemsIsInvalid) {
+					Selection.RepopulateSelectedItems ();
+				}
+				return selectedItems;
+			}
 		}
 
 		internal PropertyPathWalker SelectedValueWalker {
@@ -112,7 +122,7 @@ namespace System.Windows.Controls.Primitives {
 
 		internal Selector ()
 		{
-			SelectedItems = new ObservableCollection<object> ();
+			selectedItems = new ObservableCollection<object> ();
 			Selection = new Selection (this);
 		}
 

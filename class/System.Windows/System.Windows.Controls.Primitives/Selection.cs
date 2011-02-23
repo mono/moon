@@ -105,20 +105,24 @@ namespace System.Windows.Controls.Primitives
 						break;
 					}
 
-					UpdateOwnerSelectedItems ();
+					Owner.SelectedItemsIsInvalid = true;
 				} finally {
 					Updating = false;
 				}
 			}
 		}
 
-		void UpdateOwnerSelectedItems ()
+		internal void RepopulateSelectedItems ()
 		{
-			// Now make sure the Selectors version of 'SelectedItems' matches the actual Selection.
-			// This is an incredibly lazy way of doing it and we emit more events than is strictly required.
-			// Fix it later if it breaks tests.
-			Owner.SelectedItems.Clear ();
-			Owner.SelectedItems.AddRange (SelectedItems);
+			if (!Updating) {
+				try {
+					Updating = true;
+					Owner.SelectedItems.Clear ();
+					Owner.SelectedItems.AddRange (SelectedItems);
+				} finally {
+					Updating = false;
+				}
+			}
 		}
 
 		public void ClearSelection ()
@@ -141,7 +145,7 @@ namespace System.Windows.Controls.Primitives
 				SelectedItem = null;
 				UpdateSelectorProperties (null, -1, ignoreSelectedValue ? Owner.SelectedValue : null);
 	
-				UpdateOwnerSelectedItems ();
+				Owner.SelectedItemsIsInvalid = true;
 				Owner.RaiseSelectionChanged (oldSelection, Empty);
 			} finally {
 				Updating = false;
@@ -241,7 +245,7 @@ namespace System.Windows.Controls.Primitives
 				UpdateSelectorProperties (SelectedItem, SelectedItem == null ? -1 : Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
 			}
 
-			UpdateOwnerSelectedItems ();
+			Owner.SelectedItemsIsInvalid = true;
 			Owner.RaiseSelectionChanged (toUnselect, toSelect);
 		}
 
@@ -267,7 +271,7 @@ namespace System.Windows.Controls.Primitives
 					UpdateSelectorProperties (SelectedItem, Owner.Items.IndexOf (SelectedItem), Owner.GetValueFromItem (SelectedItem));
 				}
 
-				UpdateOwnerSelectedItems ();
+				Owner.SelectedItemsIsInvalid = true;
 				Owner.RaiseSelectionChanged (Empty, toSelect);
 			} finally {
 				Updating = false;
@@ -308,7 +312,7 @@ namespace System.Windows.Controls.Primitives
 				UpdateSelectorProperties (item, Owner.Items.IndexOf (item), Owner.GetValueFromItem (item));
 			}
 
-			UpdateOwnerSelectedItems ();
+			Owner.SelectedItemsIsInvalid = true;
 			Owner.RaiseSelectionChanged (Empty, new object [] { item });
 		}
 
@@ -321,7 +325,7 @@ namespace System.Windows.Controls.Primitives
 				UpdateSelectorProperties (newItem, newItem == null ? -1 : Owner.Items.IndexOf (newItem), Owner.GetValueFromItem (item));
 			}
 
-			UpdateOwnerSelectedItems ();
+			Owner.SelectedItemsIsInvalid = true;
 			Owner.RaiseSelectionChanged (new object [] { item }, Empty);
 		}
 		
@@ -353,7 +357,7 @@ namespace System.Windows.Controls.Primitives
 
 			if (addedItems != Empty || oldItems != Empty) {
 				// Refresh the Selector.SelectedItems list
-				UpdateOwnerSelectedItems ();
+				Owner.SelectedItemsIsInvalid = true;
 
 				// Raise our SelectionChanged event
 				Owner.RaiseSelectionChanged (oldItems, addedItems);
