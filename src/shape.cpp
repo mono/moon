@@ -112,10 +112,12 @@ Shape::~Shape ()
 Point
 Shape::GetTransformOrigin ()
 {
-	if (GetStretch () != StretchNone)
-		return FrameworkElement::GetTransformOrigin ();
+	if (GetStretch () == StretchNone
+	    && GetVisualParent ()
+	    && GetVisualParent ()->Is (Type::CANVAS))
+		return Point (0,0);
 
-	return Point (0,0);
+	return FrameworkElement::GetTransformOrigin ();
 }
 
 Transform *
