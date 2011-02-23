@@ -3,6 +3,7 @@
     <em:id>moonlight@novell.com</em:id>
     <em:name>Novell Moonlight</em:name>
     <em:version>@VERSION@</em:version>
+    <em:unpack>true</em:unpack>
     <em:description>The open source implementation of Microsoft Silverlight</em:description>
     <em:iconURL>chrome://moonlight/skin/icon32.png</em:iconURL>
     <em:updateURL>http://go-mono.com/archive/moonlight-plugins/updates/update-@SL_PROFILE@-@INSTALL_ARCH@.rdf</em:updateURL>
