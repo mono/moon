@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007,2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009,2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -51,7 +51,7 @@ namespace System.Windows.Browser
 	
 		public string Prompt (string promptText)
 		{
-			return (string) HtmlPage.Window.Invoke ("prompt", promptText ?? String.Empty);
+			return (string) Invoke ("prompt", promptText ?? String.Empty);
 		}
 		
 		public object Eval (string code)
@@ -73,12 +73,12 @@ namespace System.Windows.Browser
 		
 		public bool Confirm (string confirmText)
 		{
-			return (bool) HtmlPage.Window.Invoke ("confirm", confirmText ?? String.Empty);
+			return (bool) Invoke ("confirm", confirmText ?? String.Empty);
 		}
 		
 		public void Alert (string alertText)
 		{
-			HtmlPage.Window.Invoke ("alert", alertText ?? String.Empty);
+			Invoke ("alert", alertText ?? String.Empty);
 		}
 		
 		public void Navigate (Uri navigateToUri)
@@ -111,9 +111,9 @@ namespace System.Windows.Browser
 			if (SameWindowTargets.Contains (target)) {
 				ScriptObject loc = HtmlPage.Document.GetProperty ("location") as ScriptObject;
 				SetPropertyInternal (loc.Handle, "href", navigateToUri.ToString ());
-				return HtmlPage.Window;
+				return this;
 			} else {
-				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
+				return (HtmlWindow) Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 			}
 		}
 
