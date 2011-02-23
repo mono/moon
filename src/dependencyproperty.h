@@ -29,6 +29,8 @@ typedef Value* AutoCreator  (Type::Kind type, DependencyProperty *property, Depe
 
 /* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
+/* @CBindingRequisite */
+typedef void (* PropertyChangeHandlerInvoker) (int token, DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
 
 //
 // DependencyProperty

@@ -374,6 +374,9 @@
 +SC-M: System.Int32 Mono.NativeMethods::collection_index_of(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::dependency_object_add_managed_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandlerInvoker,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_code(System.IntPtr)
 
 # p/invoke declaration
@@ -1145,13 +1148,10 @@
 +SC-M: System.Void Mono.NativeMethods::control_update_is_enabled_source(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::dependency_object_add_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandler,System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::dependency_object_remove_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandler)
++SC-M: System.Void Mono.NativeMethods::dependency_object_remove_property_change_handler(System.IntPtr,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_name(System.IntPtr,System.String)

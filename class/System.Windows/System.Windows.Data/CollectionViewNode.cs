@@ -67,7 +67,7 @@ namespace System.Windows.Data {
 			source = oldSource as CollectionViewSource;
 			view = oldSource as ICollectionView;
 			if (source != null) {
-				NativeMethods.dependency_object_remove_property_change_handler (source.native, CollectionViewSource.ViewProperty.Native, ViewChangedHandler);
+				source.RemovePropertyChangedHandler (CollectionViewSource.ViewProperty, ViewChangedHandler);
 				DisconnectViewHandlers (source.View);
 			} else if (view != null) {
 				DisconnectViewHandlers (view);
@@ -76,7 +76,7 @@ namespace System.Windows.Data {
 			source = newSource as CollectionViewSource;
 			view = newSource as ICollectionView;
 			if (source != null) {
-				NativeMethods.dependency_object_add_property_change_handler (source.native, CollectionViewSource.ViewProperty.Native, ViewChangedHandler, IntPtr.Zero);
+				source.AddPropertyChangedHandler (CollectionViewSource.ViewProperty, ViewChangedHandler);
 				ConnectViewHandlers (source.View);
 			} else if (view != null) {
 				ConnectViewHandlers (view);

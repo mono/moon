@@ -230,7 +230,7 @@ namespace System.Windows.Data {
 						}
 					}
 				};
-				NativeMethods.dependency_object_add_property_change_handler (Target.native, Property.Native, updateDataSourceCallback, IntPtr.Zero);
+				Target.AddPropertyChangedHandler (Property, updateDataSourceCallback);
 			}
 		}
 
@@ -250,7 +250,7 @@ namespace System.Windows.Data {
 			}
 
 			if (updateDataSourceCallback != null) {
-				NativeMethods.dependency_object_remove_property_change_handler (Target.native, Property.Native, updateDataSourceCallback);
+				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
 				updateDataSourceCallback = null;
 			}
 

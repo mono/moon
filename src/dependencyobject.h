@@ -492,9 +492,11 @@ public:
 	// dependencyobject with a callback and a closure to be
 	// invoked when the given property changes.
 
+	int AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
 	/* @GeneratePInvoke */
-	void AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
+	int AddManagedPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandlerInvoker cb, gpointer closure);
 	/* @GeneratePInvoke */
+	void RemovePropertyChangeHandler (int token);
 	void RemovePropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb);
 
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
@@ -588,6 +590,7 @@ private:
 	bool is_hydrated;
 	bool is_being_parsed;
 	bool registering_names;
+	int property_change_token;
 	
 	Uri *resource_base;
 };

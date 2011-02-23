@@ -235,6 +235,9 @@ class TypeReference {
 			case "PropertyChangeHandler":
 				managed_type = "Mono.UnmanagedPropertyChangeHandler";
 				break;
+			case "PropertyChangeHandlerInvoker":
+				managed_type = "Mono.UnmanagedPropertyChangeHandlerInvoker";
+				break;
 			case "EasingFunction":
 				managed_type = "Mono.EasingFunctionCallback";
 				break;

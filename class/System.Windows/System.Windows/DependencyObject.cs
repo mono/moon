@@ -42,9 +42,10 @@ using System.Windows.Media;
 namespace System.Windows {
 	public abstract partial class DependencyObject : INativeDependencyObjectWrapper, IRefContainer {
 		internal static Thread moonlight_thread;
+		static readonly UnmanagedPropertyChangeHandlerInvoker invoke_property_change_handler_cb = InvokePropertyChangeHandler;
 		DependencyObjectHandle _native;
 		EventHandlerList event_list;
-		List<UnmanagedPropertyChangeHandler> propertyChangedHandlers;
+		List<KeyValuePair <int, UnmanagedPropertyChangeHandler>> propertyChangedHandlers;
 
 		EventHandlerList INativeEventObjectWrapper.EventList {
 			get { return EventList; }
@@ -223,10 +224,31 @@ namespace System.Windows {
 		{
 			// Store the delegate in managed land to prevent it being GC'ed early
 			if (propertyChangedHandlers == null)
-				propertyChangedHandlers = new List<UnmanagedPropertyChangeHandler> ();
+				propertyChangedHandlers = new List<KeyValuePair<int, UnmanagedPropertyChangeHandler>> ();
 
-			propertyChangedHandlers.Add (handler);
-			NativeMethods.dependency_object_add_property_change_handler (native, property.Native, handler, IntPtr.Zero);
+			int token = NativeMethods.dependency_object_add_managed_property_change_handler (native, property.Native, invoke_property_change_handler_cb, IntPtr.Zero);
+			propertyChangedHandlers.Add (new KeyValuePair <int, UnmanagedPropertyChangeHandler> (token, handler));
+		}
+
+		static void InvokePropertyChangeHandler (int token, IntPtr sender, IntPtr args, ref MoonError error, IntPtr closure)
+		{
+			try {
+				var o = (DependencyObject) NativeDependencyObjectHelper.Lookup (sender);
+				if (o != null) {
+					for (int i = 0; i < o.propertyChangedHandlers.Count; i ++) {
+						if (o.propertyChangedHandlers [i].Key == token) {
+							o.propertyChangedHandlers [i].Value (sender, args, ref error, closure);
+							break;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Unhandled exception in DependencyObject.PropertyChangeHandler_cb: {0}", ex);
+				} catch {
+
+				}
+			}
 		}
 
 		internal void RemovePropertyChangedHandler (DependencyProperty property, UnmanagedPropertyChangeHandler handler)
@@ -237,10 +259,12 @@ namespace System.Windows {
 			// When removing a delegate from native, we have to ensure we pass the exact same object reference
 			// to native code, otherwise the native pointer will be different and we'll fail to remove it from
 			// the native list. To enforce this, use the delegate in the List when invoking the native code.
-			int index = propertyChangedHandlers.IndexOf (handler);
-			if (index != -1) {
-				NativeMethods.dependency_object_remove_property_change_handler (native, property.Native, propertyChangedHandlers [index]);
-				propertyChangedHandlers.RemoveAt (index);
+			for (int i = 0; i < propertyChangedHandlers.Count; i++) {
+				if (propertyChangedHandlers [i].Value == handler) {
+					NativeMethods.dependency_object_remove_property_change_handler (native, propertyChangedHandlers [i].Key);
+					propertyChangedHandlers.RemoveAt (i);
+					break;
+				}
 			}
 		}
 

@@ -91,6 +91,7 @@ namespace Mono {
 
 	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
 	internal delegate void UnmanagedPropertyChangeHandler (IntPtr dependency_object, IntPtr propertyChangedArgs, ref MoonError error, IntPtr closure);
+	internal delegate void UnmanagedPropertyChangeHandlerInvoker (int token, IntPtr dependency_object, IntPtr propertyChangedArgs, ref MoonError error, IntPtr closure);
 
 	internal delegate void TickCallHandler (IntPtr handle);
 

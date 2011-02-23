@@ -1431,18 +1431,22 @@ EventObject::unref_delayed ()
 
 class Listener {
 public:
+	Listener (int token) { this->token = token; }
 	virtual bool Matches (PropertyChangedEventArgs *args) = 0;
 	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error) = 0;
 
 	virtual gpointer GetListener () = 0;
 	virtual gpointer GetProperty () = 0;
+	int GetToken () { return token; }
 	virtual ~Listener () {}
+private:
+	int token;
 };
 
 class WildcardListener : public Listener {
 public:
-	WildcardListener (DependencyObject *obj, DependencyProperty *prop)
-		: obj (NULL, 0, false)
+	WildcardListener (int token, DependencyObject *obj, DependencyProperty *prop)
+		: Listener (token), obj (NULL, 0, false)
 	{
 		this->obj = obj;
 		this->prop = prop;
@@ -1474,7 +1478,8 @@ private:
 
 class CallbackListener : public Listener {
 public:
-	CallbackListener (DependencyProperty *prop, PropertyChangeHandler cb, gpointer closure)
+	CallbackListener (int token, DependencyProperty *prop, PropertyChangeHandler cb, gpointer closure)
+		: Listener (token)
 	{
 		this->prop = prop;
 		this->cb = cb;
@@ -1501,10 +1506,27 @@ public:
 		return prop;
 	}
 
-private:
+protected:
 	PropertyChangeHandler cb;
 	DependencyProperty *prop;
 	gpointer closure;
+};
+
+class ManagedCallbackListener : public CallbackListener {
+public:
+	ManagedCallbackListener (int token, DependencyProperty *prop, PropertyChangeHandlerInvoker cb, gpointer closure)
+		: CallbackListener (token, prop, NULL, closure)
+	{
+		this->cb = cb;
+	}
+
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error)
+	{
+		cb (GetToken (), sender, args, error, closure);
+	}
+
+private:
+	PropertyChangeHandlerInvoker cb;
 };
 
 //
@@ -1513,7 +1535,8 @@ private:
 void
 DependencyObject::AddPropertyChangeListener (DependencyObject *listener, DependencyProperty *child_property)
 {
-	listener_list = g_slist_append (listener_list, new WildcardListener (listener, child_property));
+	property_change_token ++;
+	listener_list = g_slist_append (listener_list, new WildcardListener (property_change_token, listener, child_property));
 }
 
 void
@@ -1541,10 +1564,36 @@ DependencyObject::RemovePropertyChangeListener (DependencyObject *listener, Depe
 	RemoveListener (listener, child_property);
 }
 
-void
+int
 DependencyObject::AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure)
 {
-	listener_list = g_slist_append (listener_list, new CallbackListener (property, cb, closure));
+	property_change_token ++;
+	listener_list = g_slist_append (listener_list, new CallbackListener (property_change_token, property, cb, closure));
+	return property_change_token;
+}
+
+int
+DependencyObject::AddManagedPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandlerInvoker cb, gpointer closure)
+{
+	property_change_token ++;
+	listener_list = g_slist_append (listener_list, new ManagedCallbackListener (property_change_token, property, cb, closure));
+	return property_change_token;
+}
+
+void
+DependencyObject::RemovePropertyChangeHandler (int token)
+{
+	GSList *next;
+	for (GSList *l = listener_list; l; l = next) {
+		next = l->next;
+		Listener *listen = (Listener *) l->data;
+		
+		if (listen->GetToken () == token){
+			listener_list = g_slist_delete_link (listener_list, l);
+			delete listen;
+			return;
+		}
+	}
 }
 
 void
@@ -2640,6 +2689,7 @@ DependencyObject::Initialize ()
 	is_hydrated = false;
 	is_frozen = false;
 	is_being_parsed = false;
+	property_change_token = 0;
 	resource_base = NULL;
 	registering_names = false;
 #if PROPERTY_LOOKUP_DIAGNOSTICS
