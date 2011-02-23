@@ -18,22 +18,12 @@ namespace System.Windows.Media
 {
 	public static class CompositionTarget
 	{
-		private static EventHandlerList event_list;
-
-		private static EventHandlerList EventList {
-			get {
-				if (event_list == null)
-					event_list = new EventHandlerList (null);
-				return event_list;
-			}
-		}
-
 		public static event EventHandler Rendering {
 			add {
-				EventList.RegisterEvent (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), EventIds.TimeManager_RenderEvent, value, Events.CreateRenderingEventHandlerDispatcher (value));
+				Deployment.Current.Surface.TimeManager.Render += value;
 			}
 			remove {
-				EventList.UnregisterEvent (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), EventIds.TimeManager_RenderEvent, value);
+				Deployment.Current.Surface.TimeManager.Render -= value;
 			}
 		}
 	}
