@@ -286,6 +286,27 @@ namespace MoonTest.System.Windows.Documents {
 				ts.Xaml = "Moon";
 			}, "non-xaml");
 		}
+
+		[TestMethod]
+		public void GetPropertyValue ()
+		{
+			TextSelection ts = rtb.Selection;
+			Assert.Throws<NullReferenceException> (delegate {
+				ts.GetPropertyValue (null);
+			}, "null");
+		}
+
+		[TestMethod]
+		public void ApplyPropertyValue ()
+		{
+			TextSelection ts = rtb.Selection;
+			Assert.Throws<NullReferenceException> (delegate {
+				ts.ApplyPropertyValue (null, new object ());
+			}, "null,object");
+			Assert.Throws<ArgumentException> (delegate {
+				ts.ApplyPropertyValue (RichTextBox.BorderThicknessProperty, null);
+			}, "DP,null");
+		}
 	}
 }
 

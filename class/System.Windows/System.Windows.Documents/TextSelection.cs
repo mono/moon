@@ -43,6 +43,7 @@ namespace System.Windows.Documents {
 		
 		public object GetPropertyValue (DependencyProperty formattingProperty)
 		{
+			// note: SL4 does a NRE so 'formattingProperty.Native' without a null check is "ok"
 			IntPtr val = NativeMethods.text_selection_get_property_value (native, formattingProperty.Native);
 			if (val == IntPtr.Zero)
 				return DependencyProperty.UnsetValue;
@@ -51,8 +52,12 @@ namespace System.Windows.Documents {
 
 		public void ApplyPropertyValue (DependencyProperty formattingProperty, object value)
 		{
+			if (value == null)
+				throw new ArgumentException ("value");
+
 			using (var val = Value.FromObject (value)) {
 				var v = val;
+				// note: SL4 does a NRE so 'formattingProperty.Native' without a null check is "ok"
 				NativeMethods.text_selection_apply_property_value (native, formattingProperty.Native, ref v);
 			}
 		}
