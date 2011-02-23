@@ -808,6 +808,7 @@
     <File subtype="Code" buildaction="Compile" name="Mono/NameScope.cs" />
     <File subtype="Code" buildaction="Compile" name="MS.Internal/JoltHelper.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlNode.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono/TimeManager.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

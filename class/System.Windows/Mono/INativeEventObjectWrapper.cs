@@ -32,6 +32,7 @@ using System.Collections;
 namespace Mono {
 
 	internal interface INativeEventObjectWrapper {
+		EventHandlerList EventList { get; }
 		IntPtr NativeHandle { get; set; }
 		Kind GetKind ();
 

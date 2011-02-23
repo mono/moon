@@ -157,6 +157,10 @@ namespace System.Windows {
 			ReinitializeStaticData ();
 		}
 
+		Mono.EventHandlerList INativeEventObjectWrapper.EventList {
+			get { return EventList; }
+		}
+
 		internal Mono.EventHandlerList EventList {
 			get {
 				if (event_list == null)

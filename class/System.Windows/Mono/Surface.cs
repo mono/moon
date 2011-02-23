@@ -45,7 +45,7 @@ namespace Mono
 		
 		private EventHandlerList event_list;
 
-		internal EventHandlerList EventList {
+		public EventHandlerList EventList {
 			get {
 				if (event_list == null)
 					event_list = new EventHandlerList (this);
@@ -66,7 +66,11 @@ namespace Mono
 			}
 
 		}
-		
+
+		public TimeManager TimeManager {
+			get { return (TimeManager) NativeDependencyObjectHelper.Lookup (NativeMethods.surface_get_time_manager (native)); }
+		}
+
 		public Surface (IntPtr native, bool dropref)
 		{
 			this.Native = native;

@@ -38,6 +38,10 @@ namespace System.Windows.Messaging {
 	{
 		DependencyObjectHandle handle;
 
+		Mono.EventHandlerList INativeEventObjectWrapper.EventList {
+			get { return null; }
+		}
+
 		internal SendCompletedEventArgs (IntPtr raw, Exception exc, bool dropref)
 			: base (exc,
 				false,
