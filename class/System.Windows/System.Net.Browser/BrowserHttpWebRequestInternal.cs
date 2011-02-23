@@ -58,18 +58,10 @@ namespace System.Net.Browser {
  		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
 			: base (wreq, uri)
  		{
-			started = (sender, event_id, token, calldata, closure) => {
-				var x = Events.SafeDispatcher (OnAsyncResponseStarted);
-				x (sender, calldata, closure);
-			};
-			available = (sender, event_id, token, calldata, closure) => {
-				var x = Events.SafeDispatcher (OnAsyncDataAvailable);
-				x (sender, calldata, closure);
-			};
-			finished = (sender, event_id, token, calldata, closure) => {
-				var x = Events.SafeDispatcher (OnAsyncResponseStopped);
-				x (sender, calldata, closure);
-			};
+			started = StartedSafe;
+			available = AvailableSafe;
+			finished = FinishedSafe;
+
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
 			if (wreq != null) {
@@ -77,6 +69,36 @@ namespace System.Net.Browser {
 				Headers = wreq.Headers;
 			}
 			dispatcher = new Dispatcher ();
+		}
+		
+		void StartedSafe (IntPtr sender, int event_id, int token, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				var x = Events.SafeDispatcher (OnAsyncResponseStarted);
+				x (sender, calldata, closure);
+			} catch {
+			
+			}
+		}
+		
+		void AvailableSafe (IntPtr sender, int event_id, int token, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				var x = Events.SafeDispatcher (OnAsyncDataAvailable);
+				x (sender, calldata, closure);
+			} catch {
+			
+			}
+		}
+		
+		void FinishedSafe (IntPtr sender, int event_id, int token, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				var x = Events.SafeDispatcher (OnAsyncResponseStopped);
+				x (sender, calldata, closure);
+			} catch {
+			
+			}
 		}
 
 		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
