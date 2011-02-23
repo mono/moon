@@ -79,13 +79,14 @@ namespace System.Windows {
 
 		Dictionary<object, object> managedDict;
 
-		static UnmanagedEventHandler resource_dictionary_changed = Events.SafeDispatcher (
+		static UnmanagedEventHandlerInvoker resource_dictionary_changed = (_sender, _event_id, _token, _calldata, _closure) =>
+			Events.SafeDispatcher (
 			 (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				 var args = NativeDependencyObjectHelper.Lookup (calldata) as InternalResourceDictionaryChangedEventArgs;
 				 if (args == null)
 					 args = new InternalResourceDictionaryChangedEventArgs (calldata);
 				 ((ResourceDictionary) NativeDependencyObjectHelper.FromIntPtr (closure)).InternalResourceDictionaryChanged (args);
-			 });
+			 }) (_sender, _calldata, _closure);
 
 		void InternalResourceDictionaryChanged (InternalResourceDictionaryChangedEventArgs args)
 		{

@@ -410,7 +410,7 @@ public:
 
 	static void add_loaded_handler (EventObject *obj, int token, gpointer closure);
 	static void remove_loaded_handler (EventObject *obj, int token, gpointer closure);
-	static void delete_loaded_closure (gpointer closure);
+	static void delete_loaded_closure (EventObject *eo, int event_id, int token, gpointer closure);
 	static bool match_loaded_closure (int token, EventHandler cb_handler, gpointer cb_data, gpointer data);
 	static void proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer closure);
 

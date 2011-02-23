@@ -153,9 +153,10 @@ namespace System.Windows.Controls {
 				  control.PostOnMouseWheel (args);
 			  });
 
-		static UnmanagedEventHandler on_isenabledproperty_changed = Events.SafeDispatcher (
+		static UnmanagedEventHandlerInvoker on_isenabledproperty_changed = (_sender, _event_id, _token, _calldata, _closure) =>
+			Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-				((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeIsEnabledPropertyChanged ());
+				((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeIsEnabledPropertyChanged ()) (_sender, _calldata, _closure);
 
 		static Control ()
 		{
