@@ -32,7 +32,6 @@ namespace System.Windows.Browser
 {
 	public sealed class HtmlDocument : HtmlObject 
 	{
-		HtmlElement document_element;
 		HtmlElement body;
 		HtmlWindow window;
 
