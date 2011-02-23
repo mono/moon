@@ -30,20 +30,25 @@ typedef struct _MonoImage MonoImage;
 typedef struct _MonoMethod MonoMethod;
 typedef struct _MonoObject MonoObject;
 typedef struct _MonoProperty MonoProperty;
+typedef struct _MonoJitInfo MonoJitInfo;
 #endif
+
 
 #if OBJECT_TRACKING
 struct _MonoProfiler {
  public:
 	const char *type_name; // Stacktraces are stored only for elements of this type
 	GPtrArray *gchandles;
+	GHashTable *jitted_methods;
 	GPtrArray *stacktraces;
 	Moonlight::Mutex locker;
 
-	_MonoProfiler ();
+	_MonoProfiler (bool gchandle, bool jit);
 
+	void DumpJittedMethods ();
 	void DumpStrongGCHandles ();
 	void DumpTracesByType ();
+	static void method_jitted (_MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo, int result);
 	static void profiler_shutdown (_MonoProfiler *prof);
 	static void track_gchandle (_MonoProfiler *prof, int op, int type, uintptr_t handle, MonoObject *obj);
 

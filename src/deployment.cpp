@@ -173,13 +173,19 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		profiler = g_getenv ("MOON_PROFILER");
 		if (profiler != NULL) {
 			printf ("Setting profiler to: %s\n", profiler);
-			if (!strcmp ("gchandle", profiler)) {
 #if OBJECT_TRACKING
-				Deployment::profiler = new MonoProfiler ();
-#endif
+			if (!strcmp ("gchandle", profiler)) {
+				Deployment::profiler = new MonoProfiler (true, false);
+			} else if (!strcmp ("jit", profiler)) {
+				Deployment::profiler = new MonoProfiler (false, true);
+			} else if (!strcmp ("jit,gchandle", profiler) || !strcmp ("gchandle,jit", profiler)) {
+				Deployment::profiler = new MonoProfiler (true, true);
 			} else {
 				mono_profiler_load (profiler);
 			}
+#else
+			mono_profiler_load (profiler);
+#endif
 		}
 
 		mono_set_signal_chaining (true);
@@ -1415,6 +1421,8 @@ Deployment::Shutdown ()
 #if OBJECT_TRACKING
 	if (Deployment::profiler)
 		Deployment::profiler->DumpStrongGCHandles ();
+	if (Deployment::profiler)
+		Deployment::profiler->DumpJittedMethods ();
 
 	if (getenv ("MOONLIGHT_OBJECT_TRACK_IMMORTALS") != NULL) {
 		printf ("Deployment shutting down, with %i leaked EventObjects.\n", objects_created - objects_destroyed);
@@ -2267,16 +2275,48 @@ IconCollection::~IconCollection ()
 };
 
 #if OBJECT_TRACKING
-_MonoProfiler::_MonoProfiler ()
+_MonoProfiler::_MonoProfiler (bool gchandle, bool jit)
 {
+	MonoProfileFlags flags = (MonoProfileFlags)0;
 	type_name = g_getenv ("GCHANDLES_FOR_TYPE");
 
 	gchandles = g_ptr_array_new ();
+	jitted_methods = g_hash_table_new (g_str_hash, g_str_equal);
 	stacktraces = g_ptr_array_new_with_free_func (g_free);
 
 	mono_profiler_install (this, profiler_shutdown);
-	mono_profiler_install_gc_roots (track_gchandle, NULL);
-	mono_profiler_set_events (MONO_PROFILE_GC_ROOTS);
+	if (gchandle) {
+		flags = (MonoProfileFlags) (flags | MONO_PROFILE_GC_ROOTS);
+		mono_profiler_install_gc_roots (track_gchandle, NULL);
+	}
+	if (jit) {
+		flags = (MonoProfileFlags) (flags | MONO_PROFILE_JIT_COMPILATION);
+		mono_profiler_install_jit_end (method_jitted);
+	}
+	mono_profiler_set_events (flags);
+}
+
+static void
+dump_jitted_methods (gpointer key, gpointer value, gpointer user_data)
+{
+	// We only care about methods which are jitted multiple times.
+	int jit_count = GPOINTER_TO_INT (value);
+	if (jit_count > 10)
+		printf ("%d\t%s\n", jit_count, (char*)key);
+}
+
+void
+MonoProfiler::DumpJittedMethods ()
+{
+	g_hash_table_foreach (jitted_methods, dump_jitted_methods, NULL);
+}
+
+void
+MonoProfiler::method_jitted (MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo, int result)
+{
+	char *name = mono_method_full_name (method, 1);
+	int count = GPOINTER_TO_INT (g_hash_table_lookup (prof->jitted_methods, name));
+	g_hash_table_insert (prof->jitted_methods, name, GINT_TO_POINTER (count + 1));
 }
 
 void
