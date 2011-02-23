@@ -158,7 +158,13 @@ GeneralTransform::Transform (Point point)
 	MaybeUpdateTransform ();
 	Matrix3D::TransformPoint (p, _m44, p);
 
-	return Point (p[0], p[1]);
+	if (p[3] != 0.0) {
+		double w = 1.0 / p[3];
+
+		return Point (p[0] * w, p[1] * w);
+	}
+
+	return Point (NAN, NAN);
 }
 
 void
