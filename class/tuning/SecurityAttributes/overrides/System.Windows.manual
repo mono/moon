@@ -22,6 +22,9 @@
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::Abort()
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebRequestInternal::EndCallback(System.IAsyncResult)
 +SSC-M: System.Void System.Net.Browser.ClientHttpWebResponse::.cctor()
+# 
++SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::AvailableSafe(System.IntPtr,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::StartedSafe(System.IntPtr,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
 +SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::OnAsyncDataAvailable(System.IntPtr,System.IntPtr,System.IntPtr)
 +SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::OnAsyncResponseStarted(System.IntPtr,System.IntPtr,System.IntPtr)
 
@@ -86,14 +89,14 @@
 +SC-T: System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator
 +SC-T: System.Windows.Controls.ContentControl/ContentControlChangedEventArgs
 
-+SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
-+SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.Boolean)
-+SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,Mono.GDestroyNotify)
-+SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,Mono.GDestroyNotify,System.Boolean)
-+SC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
-+SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandler)
-+SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandler,Mono.GDestroyNotify)
-+SC-M: System.Void Mono.Events::RemoveHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandlerInvoker)
++SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandlerInvoker,System.Boolean)
++SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandlerInvoker,Mono.DestroyUnmanagedEvent,System.Boolean)
++SC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,System.Int32)
++SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandlerInvoker)
++SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandlerInvoker,System.Boolean)
++SC-M: System.Int32 Mono.Events::AddHandler(Mono.INativeEventObjectWrapper,System.Int32,Mono.UnmanagedEventHandlerInvoker,Mono.DestroyUnmanagedEvent,System.Boolean)
++SC-M: System.Void Mono.Events::RemoveHandler(Mono.INativeEventObjectWrapper,System.Int32,System.Int32)
 +SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler,System.Boolean)
 +SC-M: System.Void Mono.Events::RemoveOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
@@ -122,6 +125,9 @@
 +SC-M: System.Void System.Windows.Documents.TextSelection::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
 +SC-M: System.Void Mono.Surface::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
++SC-M: Mono.TimeManager Mono.Surface::get_TimeManager()
++SC-M: System.Void Mono.TimeManager::.ctor(System.IntPtr,System.Boolean)
 
 # mark most of Application internals as [SecurityCritical]
 +SC-M: System.Void System.Windows.Application::.ctor(System.IntPtr)
