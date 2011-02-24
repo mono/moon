@@ -1,4 +1,4 @@
-AC_INIT([moonlight], [3.99.0.1.99])
+AC_INIT([moonlight], [3.99.0.2])
 
 AC_DEFINE([PREVIEW_VERSION], ["2"], "")
 
