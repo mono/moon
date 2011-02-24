@@ -619,6 +619,12 @@ UIElement::ComputeTransform ()
 	Matrix3D::Multiply (absolute_projection, local_projection,
 			    absolute_projection);
 
+	if (this->Is (Type::POPUP)) {
+		UIElement *popup_child = ((Popup *)this)->GetChild ();
+		if (popup_child)
+			popup_child->UpdateTransform ();
+	}
+	
 	if (memcmp (old_projection, local_projection, sizeof (double) * 16)) {
 		if (GetVisualParent ())
 			GetVisualParent ()->Invalidate (GetSubtreeBounds ());
