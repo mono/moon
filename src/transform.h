@@ -75,7 +75,10 @@ protected:
  public:
 	/* @GeneratePInvoke */
 	GeneralTransform *GetInverse ();
-	
+
+	/* @GeneratePInvoke */
+	Matrix3D *GetMatrix3D ();
+
 	/* @GeneratePInvoke */
 	bool TryTransform (Point inPoint, /* @MarshalAs=Point,IsOut */ Point *outPoint);
 

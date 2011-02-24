@@ -28,6 +28,7 @@
 using Mono;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using System;
 
 namespace MS.Internal {
@@ -52,6 +53,19 @@ namespace MS.Internal {
 			return NativeMethods.internal_transform_try_transform (native, inPoint, out outPoint);
 		}
 		
+		internal Matrix3D Matrix {
+			get {
+				Matrix3D matrix;
+				IntPtr rv;
+				
+				rv = NativeMethods.internal_transform_get_matrix3_d (native);
+				matrix = new Matrix3D (rv);
+				NativeMethods.event_object_unref (rv);
+
+				return matrix;
+			}
+		}
+
 		public override GeneralTransform Inverse {
 			get {
 				GeneralTransform inverse;

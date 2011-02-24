@@ -197,6 +197,13 @@ InternalTransform::GetInverse ()
 	return transform;
 }
 
+Matrix3D *
+InternalTransform::GetMatrix3D ()
+{
+	Matrix3D *matrix = new Matrix3D (_m44);
+	return matrix;
+}
+
 bool
 InternalTransform::TryTransform (Point inPoint, Point *outPoint)
 {

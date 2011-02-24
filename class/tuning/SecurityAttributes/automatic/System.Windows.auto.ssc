@@ -1,7 +1,8 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 632 methods
+# 633 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
++SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
 +SSC-M: System.Windows.Media.GeneralTransform MS.Internal.InternalTransform::get_Inverse()
 +SSC-M: System.Void Mono.DependencyObjectHandle::Finalize()
 +SSC-M: System.Void Mono.EventHandlerList::RegisterEvent(System.IntPtr,System.Int32,System.Delegate,Mono.UnmanagedEventHandler,System.Boolean)
