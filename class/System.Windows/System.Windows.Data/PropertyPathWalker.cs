@@ -52,9 +52,13 @@ namespace System.Windows.Data
 			}
 		}
 
+		bool IsDataContextBound {
+			get; set;
+		}
+
 		public bool IsPathBroken {
 			get {
-				if (string.IsNullOrEmpty (Path))
+				if (IsDataContextBound && string.IsNullOrEmpty (Path))
 					return false;
 
 				var node = Node;
@@ -80,13 +84,15 @@ namespace System.Windows.Data
 		}
 
 		public PropertyPathWalker (string path)
-			: this (path, true, false)
+			: this (path, true, false, false)
 		{
 
 		}
 
-		public PropertyPathWalker (string path, bool bindDirectlyToSource, bool bindsToView)
+		public PropertyPathWalker (string path, bool bindDirectlyToSource, bool bindsToView, bool isDataContextBound)
 		{
+			IsDataContextBound = isDataContextBound;
+
 			string index;
 			string propertyName;
 			string typeName;

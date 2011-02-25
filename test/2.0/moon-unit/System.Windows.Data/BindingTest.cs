@@ -79,6 +79,20 @@ namespace MoonTest.System.Windows.Data
 		}
 	}
 
+	public class DPWithDefaultValueDependencyObject : DependencyObject
+	{
+		public static readonly object Value = new object ();
+		public static DependencyProperty DefaultValueProperty =
+			DependencyProperty.Register ("DefaultValue", typeof (object), typeof (DPWithDefaultValueDependencyObject), new PropertyMetadata (Value));
+	}
+
+	public class DPWithDefaultValueFrameworkElement : FrameworkElement
+	{
+		public static readonly object Value = new object ();
+		public static DependencyProperty DefaultValueProperty =
+			DependencyProperty.Register ("DefaultValue", typeof (object), typeof (DPWithDefaultValueFrameworkElement), new PropertyMetadata (Value));
+	}
+
 	public class MentorElement : FrameworkElement
 	{
 		public static readonly DependencyProperty MentorProperty =
@@ -688,6 +702,46 @@ namespace MoonTest.System.Windows.Data
 			});
 
 			Assert.IsTrue(Double.IsNaN (rect.Width), "#1");
+		}
+
+		[TestMethod]
+		public void DPWithDefaultValueFE_Broken_DoNotUseFallback ()
+		{
+			var o = new DPWithDefaultValueFrameworkElement { };
+			BindingOperations.SetBinding (o, DPWithDefaultValueFrameworkElement.DefaultValueProperty, new Binding { FallbackValue = "Foo" });
+			Assert.AreEqual (DPWithDefaultValueFrameworkElement.Value, o.GetValue (DPWithDefaultValueFrameworkElement.DefaultValueProperty), "#1");
+		}
+
+		[TestMethod]
+		public void DPWithDefaultValueFE_UseTargetNull ()
+		{
+			var o = new DPWithDefaultValueFrameworkElement { DataContext = new Rectangle { } };
+			BindingOperations.SetBinding (o, DPWithDefaultValueFrameworkElement.DefaultValueProperty, new Binding ("DataContext") { });
+			Assert.AreEqual (null, o.GetValue (DPWithDefaultValueFrameworkElement.DefaultValueProperty), "#1");
+		}
+
+		[TestMethod]
+		public void DPWithDefaultValueFE_Broken_UseTargetNull ()
+		{
+			var o = new DPWithDefaultValueFrameworkElement { };
+			BindingOperations.SetBinding (o, DPWithDefaultValueFrameworkElement.DefaultValueProperty, new Binding { TargetNullValue = "Foo" });
+			Assert.AreEqual ("Foo", o.GetValue (DPWithDefaultValueFrameworkElement.DefaultValueProperty), "#1");
+		}
+
+		[TestMethod]
+		public void DPWithDefaultValueDO_Broken_DoNotUseFallback ()
+		{
+			var o = new DPWithDefaultValueDependencyObject { };
+			BindingOperations.SetBinding (o, DPWithDefaultValueDependencyObject.DefaultValueProperty, new Binding { FallbackValue = "Foo" });
+			Assert.AreEqual (DPWithDefaultValueDependencyObject.Value, o.GetValue (DPWithDefaultValueDependencyObject.DefaultValueProperty), "#1");
+		}
+
+		[TestMethod]
+		public void DPWithDefaultValueDO_Broken_UseTargetNull ()
+		{
+			var o = new DPWithDefaultValueDependencyObject { };
+			BindingOperations.SetBinding (o, DPWithDefaultValueDependencyObject.DefaultValueProperty, new Binding { TargetNullValue = "Foo" });
+			Assert.AreEqual ("Foo", o.GetValue (DPWithDefaultValueDependencyObject.DefaultValueProperty), "#1");
 		}
 
 		[TestMethod]

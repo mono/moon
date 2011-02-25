@@ -188,7 +188,7 @@ namespace System.Windows.Data {
 			Property = property;
 
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
-			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView);
+			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView, IsDataContextBound);
 			if (Binding.Mode != BindingMode.OneTime)
 				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 		}
@@ -469,10 +469,12 @@ namespace System.Windows.Data {
 				}
 
 				if (value == DependencyProperty.UnsetValue || PropertyPathWalker.IsPathBroken) {
-					value = Binding.FallbackValue;
+					value = Binding.FallbackValue ?? dp.GetDefaultValue (Target);
 				}
 				else if (value == null) {
 					value = Binding.TargetNullValue;
+					if (value == null && IsDataContextBound && string.IsNullOrEmpty (Binding.Path.Path))
+						value = dp.GetDefaultValue (Target);
 				} else {
 					string format = Binding.StringFormat;
 					if (!string.IsNullOrEmpty (format)) {
