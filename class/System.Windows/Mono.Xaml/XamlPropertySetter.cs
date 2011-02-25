@@ -268,7 +268,10 @@ namespace Mono.Xaml {
 			tb.TargetProperty = prop;
 			tb.SourceProperty = source_prop;
 
-			fwe.SetTemplateBinding (prop, tb);
+			// If we TemplateBind two incompatible properties we silently discard
+			// the TemplateBinding object
+			if (prop.PropertyType.IsAssignableFrom (source_prop.PropertyType))
+				fwe.SetTemplateBinding (prop, tb);
 		}
 
 		public abstract void SetValue (XamlObjectElement obj, object value);

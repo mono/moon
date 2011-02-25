@@ -2670,6 +2670,30 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
+		public void TemplateBinding_IncompatibleSourceAndTargetType ()
+		{
+			// TemplateBinding two DPs which are incompatible
+			// results in the binding being silently discarded.
+			var control = (ContentControl) XamlReader.Load (
+@"	
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid Background=""{TemplateBinding Height}"">
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			CreateAsyncTest (control, () => {
+				Grid grid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				Assert.IsUnset(grid, Grid.BackgroundProperty, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void UpdateDataContext ()
 		{
 			string s = "Hello";
