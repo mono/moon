@@ -1725,11 +1725,8 @@ RenderNode::Render (Context *ctx)
 	if (pre_render)
 		pre_render (ctx, uielement, region, use_occlusion_culling);
 
-	if (render_element && ctx->IsMutable ()) {
-		cairo_t *cr = ctx->Push (Context::Cairo ());
-		uielement->Render (cr, region);
-		ctx->Pop ();
-	}
+	if (render_element && ctx->IsMutable ())
+		uielement->Render (ctx, region);
 	
 	if (post_render)
 		post_render (ctx, uielement, region, use_occlusion_culling);

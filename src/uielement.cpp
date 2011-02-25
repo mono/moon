@@ -1571,8 +1571,7 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 			ctx->Push (Context::AbsoluteTransform (cache_xform));
 
 			VisualTreeWalker walker (this, ZForward, false);
-			Render (ctx->Push (Context::Cairo ()), region);
-			ctx->Pop ();
+			Render (ctx, region);
 			while (UIElement *child = walker.Step ())
 				child->DoRender (ctx, region);
 
@@ -1809,6 +1808,14 @@ void
 UIElement::CallPostRender (Context *ctx, UIElement *element, Region *region, bool skip_children)
 {
 	element->PostRender (ctx, region, skip_children);
+}
+
+void
+UIElement::Render (Context *ctx, Region *region)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+	Render (cr, region);
+	ctx->Pop ();
 }
 
 void
