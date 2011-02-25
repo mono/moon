@@ -44,22 +44,6 @@ namespace System.Windows {
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
 			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ()) (_sender, _calldata, _closure);
 
-		static FrameworkElement ()
-		{
-			DataContextProperty.AddPropertyChangeCallback (DataContextChanged);
-		}
-
-		static void DataContextChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
-		{
-			(sender as FrameworkElement).OnDataContextChanged (args.OldValue, args.NewValue);
-		}
-
-		void OnDataContextChanged (object oldValue, object newValue)
-		{
-			InvalidateLocalBindings ();
-			InvalidateSubtreeBindings ();
-		}
-
 		public event EventHandler LayoutUpdated {
 			add {
 				if (layoutUpdatedListeners == null)

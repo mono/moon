@@ -63,6 +63,18 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
+		internal object DataSource {
+			get { return PropertyPathWalker.Source; }
+		}
+
+		bool IsDataContextBound {
+			get {
+				return string.IsNullOrEmpty (Binding.ElementName)
+					&& Binding.Source == null
+					&& Binding.RelativeSource == null;
+			}
+		}
+
 		bool IsMentorBound {
 			get { return Binding.ElementName == null
 				&& Binding.Source == null
@@ -88,71 +100,83 @@ namespace System.Windows.Data {
 		}
 
 		// This is the object we're databound to
-		internal object DataSource {
-			get {
-				object source = null;
-				// There are four possible ways to get the source:
-				// Binding.Source, Binding.ElementName, Binding.RelativeSource and finally the fallback to DataContext.
-				// Only one of the first three will be non-null
-				if (Binding.Source != null) {
-					source = Binding.Source;
-				} else if (Binding.ElementName != null) {
-					// If we 'Target' in a custom DP it's possible
-					// 'Target' won't be able to find the ElementName.
-					// In this case we just use the Mentor and hope.
-					source = Target.FindName (Binding.ElementName);
-					if (source == null && Target.Mentor != null)
-						source = Target.Mentor.FindName (Binding.ElementName);
+		void CalculateDataSource ()
+		{
+			object source = null;
+			// There are four possible ways to get the source:
+			// Binding.Source, Binding.ElementName, Binding.RelativeSource and finally the fallback to DataContext.
+			// Only one of the first three will be non-null
+			if (Binding.Source != null) {
+				source = Binding.Source;
+			} else if (Binding.ElementName != null) {
+				// If we 'Target' in a custom DP it's possible
+				// 'Target' won't be able to find the ElementName.
+				// In this case we just use the Mentor and hope.
+				source = Target.FindName (Binding.ElementName);
+				if (source == null && Target.Mentor != null)
+					source = Target.Mentor.FindName (Binding.ElementName);
 
-					// When doing ElementName bindings we need to know when we've been
-					// added to the live tree in order to invalidate the binding and do
-					// the name lookup again. If we can't find a mentor and Target isn't
-					// a FrameworkElement, we need to wait for the mentor to be attached
-					// and then do the lookup when it's loaded.
-					var feTarget = Target as FrameworkElement ?? Target.Mentor;
-					if (feTarget == null) {
-						Target.MentorChanged += InvalidateAfterMentorChanged;
-					} else {
-						feTarget.Loaded += HandleFeTargetLoaded;
-					}
-				} else if (Binding.RelativeSource != null) {
-					if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
-						source = Target;
-					} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
-						source = Target.TemplateOwner;
-					}
+				// When doing ElementName bindings we need to know when we've been
+				// added to the live tree in order to invalidate the binding and do
+				// the name lookup again. If we can't find a mentor and Target isn't
+				// a FrameworkElement, we need to wait for the mentor to be attached
+				// and then do the lookup when it's loaded.
+				var feTarget = Target as FrameworkElement ?? Target.Mentor;
+				if (feTarget == null) {
+					Target.MentorChanged += InvalidateAfterMentorChanged;
 				} else {
-					// If we've bound to a FrameworkElements own DataContext property or the ContentProperty, we need
-					// to read the datacontext of the parent element.
-					var fe = Target as FrameworkElement;
-					if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
-						fe = (FrameworkElement) fe.Parent;
-
-					// If the FE's parent is null or if the Target is not an FE, we should take the datacontext from the mentor.
-					// Note that we use the mentor here for the first time because we don't want to accidentally select the mentors
-					// parent in the previous block of code.
-					fe = fe ?? Target.Mentor;
-					if (fe != null)
-						source = fe.DataContext;
+					feTarget.Loaded += HandleFeTargetLoaded;
 				}
+			} else if (Binding.RelativeSource != null) {
+				if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
+					source = Target;
+				} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
+					source = Target.TemplateOwner;
+				}
+			} else {
+				// If we've bound to a FrameworkElements own DataContext property or the ContentProperty, we need
+				// to read the datacontext of the parent element.
+				var fe = Target as FrameworkElement;
+				if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
+					fe = (FrameworkElement) fe.Parent;
 
-				if (PropertyPathWalker != null)
-					PropertyPathWalker.Update (source);
-				return source;
+				// If the FE's parent is null or if the Target is not an FE, we should take the datacontext from the mentor.
+				// Note that we use the mentor here for the first time because we don't want to accidentally select the mentors
+				// parent in the previous block of code.
+				fe = fe ?? Target.Mentor;
+				if (fe != null)
+					source = fe.DataContext;
 			}
+
+			if (PropertyPathWalker != null)
+				PropertyPathWalker.Update (source);
 		}
 
 		void InvalidateAfterMentorChanged (object sender, EventArgs e)
 		{
+			// This is only called if we bound to a DependencyObject with an ElementName
+			// based binding and the DO initially had no mentor. We now have a mentor so
+			// we can do our name lookup.
 			Target.MentorChanged -= InvalidateAfterMentorChanged;
+			var o = Target.Mentor.FindName (Binding.ElementName);
+			if (o == null) {
+				Target.Mentor.Loaded += HandleFeTargetLoaded;
+			} else {
+				PropertyPathWalker.Update (o);
+			}
 			Invalidate ();
 			Target.SetValue (Property, this);
 		}
 
 		void HandleFeTargetLoaded (object sender, RoutedEventArgs e)
 		{
+			// This is only called if we have an ElementName based binding
+			// and could not find the object named by 'ElementName'. This means
+			// that the element has been added to the live tree and has been loaded
+			// so the odds are we should be able to find the named element.
 			FrameworkElement fe = (FrameworkElement) sender;
 			fe.Loaded -= HandleFeTargetLoaded;
+			PropertyPathWalker.Update (Target.FindName (Binding.ElementName));
 			Invalidate ();
 			Target.SetValue (Property, this);
 		}
@@ -175,6 +199,8 @@ namespace System.Windows.Data {
 				return;
 
 			base.OnAttached (element);
+			CalculateDataSource ();
+
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus += TextBoxLostFocus;
 
@@ -182,6 +208,13 @@ namespace System.Windows.Data {
 				Target.MentorChanged += MentorChanged;
 				mentor = Target.Mentor;
 				AttachDataContextHandlers (mentor);
+			}
+
+			if (IsDataContextBound) {
+				var fe = Target as FrameworkElement;
+				if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
+					fe = (FrameworkElement) fe.Parent;
+				AttachDataContextHandlers (fe);
 			}
 
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
@@ -224,16 +257,16 @@ namespace System.Windows.Data {
 			PropertyPathWalker.Update (null);
 		}
 
-		void AttachDataContextHandlers (FrameworkElement mentor)
+		void AttachDataContextHandlers (FrameworkElement fe)
 		{
-			if (mentor != null)
-				mentor.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, OnNativeMentorDataContextChangedSafe);
+			if (fe != null)
+				fe.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
 		}
 
-		void DetachDataContextHandlers (FrameworkElement mentor)
+		void DetachDataContextHandlers (FrameworkElement fe)
 		{
-			if (mentor != null)
-				mentor.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, OnNativeMentorDataContextChangedSafe);
+			if (fe != null)
+				fe.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
 		}
 
 		void AttachToNotifyError (INotifyDataErrorInfo element)
@@ -291,7 +324,8 @@ namespace System.Windows.Data {
 				DetachDataContextHandlers (mentor);
 				mentor = Target.Mentor;
 				AttachDataContextHandlers (mentor);
-				MentorDataContextChanged ();
+				if (mentor != null)
+					PropertyPathWalker.Update (mentor.DataContext);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.MentorChanged: {0}", ex);
@@ -301,10 +335,14 @@ namespace System.Windows.Data {
 			}
 		}
 
-		void OnNativeMentorDataContextChangedSafe (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
+		void DataContextChanged (IntPtr dependency_object, IntPtr propertyChangedEventArgs, ref MoonError error, IntPtr closure)
 		{
 			try {
-				MentorDataContextChanged ();
+				var fe = (FrameworkElement) NativeDependencyObjectHelper.Lookup (dependency_object);
+				PropertyPathWalker.Update (fe.DataContext);
+				// OneTime bindings refresh when the datacontext changes. As these bindings do not listen
+				// for the ValueChanged notifications from the PropertyPathWalker we need to force a refresh
+				Refresh ();
 			} catch (Exception ex) {
 				try {
 					error = new MoonError (ex);
@@ -313,15 +351,38 @@ namespace System.Windows.Data {
 			}
 		}
 
-		void MentorDataContextChanged ()
+		void Refresh ()
 		{
+			string dataError = null;
+			Exception exception = null;
+			// If we detach the binding, we set the Source of the PropertyPathWalker to null
+			// and emit a ValueChanged event which tries to update the target. We need to ignore this.
+			if (!Attached)
+				return;
+
+			var node = PropertyPathWalker.FinalNode;
+			AttachToNotifyError (node.Source as INotifyDataErrorInfo);
+
+			if (!Updating && Binding.ValidatesOnDataErrors && node.Source is IDataErrorInfo && node.PropertyInfo != null)
+				dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
+
+			bool oldUpdating = Updating;
 			try {
-				Invalidate ();
 				Updating = true;
+				Invalidate ();
 				Target.SetValue (Property, this);
-			} finally {
-				Updating = false;
+			} catch (Exception ex) {
+				if (Binding.ValidatesOnExceptions) {
+					if (ex is TargetInvocationException)
+						ex = ex.InnerException;
+					exception = ex;
+				}
 			}
+			finally {
+				Updating = oldUpdating;
+			}
+
+			MaybeEmitError (dataError, exception);
 		}
 
 		internal void Invalidate ()
@@ -380,7 +441,7 @@ namespace System.Windows.Data {
 				return cachedValue;
 
 			cached = true;
-			if (DataSource == null || PropertyPathWalker.IsPathBroken) {
+			if (PropertyPathWalker.IsPathBroken) {
 				cachedValue = null;
 			}
 			else {
@@ -424,7 +485,7 @@ namespace System.Windows.Data {
 				if (value != null) {
 					var converter = GetConverterTo (value.GetType ());
 					if (converter == null) {
-						if (DataSource == null || PropertyPathWalker.IsPathBroken) {
+						if (PropertyPathWalker.IsPathBroken) {
 							value = MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
 						}
 					}
@@ -445,35 +506,7 @@ namespace System.Windows.Data {
 
 		void PropertyPathValueChanged (object o, EventArgs EventArgs)
 		{
-			string dataError = null;
-			Exception exception = null;
-			// If we detach the binding, we set the Source of the PropertyPathWalker to null
-			// and emit a ValueChanged event which tries to update the target. We need to ignore this.
-			if (!Attached)
-				return;
-
-			var node = PropertyPathWalker.FinalNode;
-			AttachToNotifyError (node.Source as INotifyDataErrorInfo);
-
-			if (!Updating && Binding.ValidatesOnDataErrors && node.Source is IDataErrorInfo && node.PropertyInfo != null)
-				dataError = ((IDataErrorInfo) node.Source) [node.PropertyInfo.Name];
-			bool oldUpdating = Updating;
-			try {
-				Updating = true;
-				Invalidate ();
-				Target.SetValue (Property, this);
-			} catch (Exception ex) {
-				if (Binding.ValidatesOnExceptions) {
-					if (ex is TargetInvocationException)
-						ex = ex.InnerException;
-					exception = ex;
-				}
-			}
-			finally {
-				Updating = oldUpdating;
-			}
-
-			MaybeEmitError (dataError, exception);
+			Refresh ();
 		}
 
 		void MaybeEmitError (object message, Exception exception)

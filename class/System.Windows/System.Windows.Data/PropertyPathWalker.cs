@@ -145,6 +145,17 @@ namespace System.Windows.Data
 		{
 			Source = source;
 			Node.SetSource (source);
+			// When we change the source we must always emit a ValueChanged. The reason is that
+			// the PropertyPath walker can receive a 'null' as the source in two different circumstances
+			// 1) If the binding is broken (i.e. there's a missing link in the path and the final result
+			// can't be computed
+			// 2) If the binding is a DataContext based binding and 'null' is the value of the DataContext.
+			// For (1), we will end up using Binding.FallbackValue when the ValueChanged event is raised,
+			// for (2) we use Binding.TargetNull value. If we don't emit a ValueChanged when 'Updating'
+			// the source to NULL then we may not switch from using the Fallback to the TargetNull.
+			var h = ValueChanged;
+			if (h != null)
+				h (this, EventArgs.Empty);
 		}
 	}
 }

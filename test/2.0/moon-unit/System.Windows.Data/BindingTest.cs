@@ -1701,6 +1701,7 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MentorTest_TwoMentors_SetBindingThenMentors_Remove()
 		{
 			var mentor1 = new Rectangle { DataContext = Colors.Red };
@@ -3251,7 +3252,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug]
 		public void XamlStaticResource_sl4 ()
 		{
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"

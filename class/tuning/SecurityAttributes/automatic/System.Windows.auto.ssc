@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 633 methods
+# 632 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -449,7 +449,6 @@
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::ArrangeOverride(System.Windows.Size)
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::InvokeMeasureOverride(System.IntPtr,System.Windows.Size,Mono.MoonError&)
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::InvokeArrangeOverride(System.IntPtr,System.Windows.Size,Mono.MoonError&)
-+SSC-M: System.Void System.Windows.FrameworkElement::.cctor()
 +SSC-M: System.Windows.DependencyObject System.Windows.FrameworkTemplate::GetVisualTree(System.Windows.DependencyObject)
 +SSC-M: System.Windows.MessageBoxResult System.Windows.MessageBox::Show(System.String,System.String,System.Windows.MessageBoxButton)
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalCollectionChangedEventArgs::get_ChangedAction()
@@ -510,7 +509,7 @@
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnDetached(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::AttachDataContextHandlers(System.Windows.FrameworkElement)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::DetachDataContextHandlers(System.Windows.FrameworkElement)
-+SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnNativeMentorDataContextChangedSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SSC-M: System.Void System.Windows.Data.BindingExpressionBase::DataContextChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 +SSC-M: System.ComponentModel.TypeConverter System.Windows.Data.BindingExpressionBase::GetConverter(System.Type,System.String,System.Type)
 +SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object,System.Boolean)
