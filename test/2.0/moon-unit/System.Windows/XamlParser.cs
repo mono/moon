@@ -150,5 +150,27 @@ namespace MoonTest.System.Windows {
 				Assert.IsNotNull (c, "#1");
 			});
 		}
+		
+		[TestMethod]
+		[MinRuntimeVersion (4)]
+		public void MixedContent_CanSetPropertiesTwice ()
+		{
+			// Set properties, then content, then properties
+			Assert.DoesNotThrow (() => XamlReader.Load (@"
+<Grid
+        xmlns=""http://schemas.microsoft.com/client/2007""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+
+        <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock />
+
+        <Grid.RowDefinitions>
+                <RowDefinition />
+        </Grid.RowDefinitions>
+</Grid>"), "#1");
+		}
 	}
 }

@@ -470,8 +470,6 @@ namespace Mono.Xaml {
 
 		private void ParsePropertyElement ()
 		{
-			ValidateMixedContentForProperty ();
-
 			if (reader.ManagedType == null)
 				reader.ManagedType = ResolveType ();
 
@@ -1586,16 +1584,6 @@ namespace Mono.Xaml {
 			return dp;
 		}
 
-		void ValidateMixedContentForProperty ()
-		{
-			if (current_element == null)
-				return;
-			if (current_element.ContentSet || current_element.PropertiesSet) {
-				XamlElement sibling = current_element.Children[current_element.Children.Count - 1];
-				if (current_element.PropertiesSet && sibling is XamlObjectElement)
-					throw ParseException ("Mixed content and property element are not allowed: {0}.", reader.LocalName);
-			}
-		}
 
 		void ValidateMixedContentForObject ()
 		{
