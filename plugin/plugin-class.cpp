@@ -942,7 +942,7 @@ MoonlightGlyphTypefaceCollectionObject::Invoke (int id, NPIdentifier name, const
 	
 	switch (id) {
 	case MoonId_GetItem:
-		if (!check_arg_list ("i", argCount, args))
+		if (!check_arg_list ("d", argCount, args))
 			THROW_JS_EXCEPTION ("getItem");
 		
 		if ((index = NPVARIANT_TO_INT32 (args[0])) < 0)
@@ -3787,7 +3787,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_RemoveAt: {
-		if (!check_arg_list ("i", argCount, args))
+		if (!check_arg_list ("d", argCount, args))
 			THROW_JS_EXCEPTION ("removeAt");
 		
 		int index = NPVARIANT_TO_INT32 (args [0]);
@@ -3803,7 +3803,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_Insert: {
-		if (!check_arg_list ("i[o]", argCount, args)) {
+		if (!check_arg_list ("d[o]", argCount, args)) {
 			g_warning ("insert 1");
 			THROW_JS_EXCEPTION ("insert");
 		}
@@ -3856,7 +3856,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 			}
 		}
 
-		if (!check_arg_list ("i", argCount, args))
+		if (!check_arg_list ("d", argCount, args))
 			THROW_JS_EXCEPTION ("getItem");
 		
 		int index = NPVARIANT_TO_INT32 (args[0]);
