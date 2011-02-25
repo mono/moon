@@ -64,7 +64,6 @@ namespace System.Windows {
 			set { native = value; }
 		}
 
-		bool invalidatingLocalBindings;
 		internal Dictionary<DependencyProperty, Expression> expressions;
 
 		internal IntPtr native {
@@ -431,44 +430,6 @@ namespace System.Windows {
 		{
 			// Here just to ensure that the static ctor is executed and
 			// runtime init is initialized from some entry points
-		}
-
-		internal void InvalidateSubtreeBindings ()
-		{
-			for (int c = 0; c < VisualTreeHelper.GetChildrenCount (this); c++) {
-				FrameworkElement obj = VisualTreeHelper.GetChild (this, c) as FrameworkElement;
-				if (obj == null)
-					continue;
-				obj.InvalidateLocalBindings ();
-				obj.InvalidateSubtreeBindings ();
-			}
-		}
-
-		internal void InvalidateLocalBindings ()
-		{
-			if (expressions == null || expressions.Count == 0)
-				return;
-
-			if (invalidatingLocalBindings)
-				return;
-
-			invalidatingLocalBindings = true;
-
-			DependencyProperty[] keys = new DependencyProperty [expressions.Keys.Count];
-			Expression[] values = new Expression [expressions.Values.Count];
-
-			expressions.Keys.CopyTo (keys, 0);
-			expressions.Values.CopyTo (values, 0);
-
-			for (int i = 0; i < keys.Length; i ++) {
-				if (values[i] is BindingExpressionBase) {
-					BindingExpressionBase beb = (BindingExpressionBase) values[i];
-					beb.Invalidate ();
-					SetValue (keys[i], beb);
-				}
-			}
-
-			invalidatingLocalBindings = false;
 		}
 
 		void RemoveExpression (DependencyProperty dp)
