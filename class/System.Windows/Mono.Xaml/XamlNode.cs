@@ -150,15 +150,11 @@ namespace Mono.Xaml {
 			}
 		}
 
-		Dictionary<string, string> namespaces;
-		public Dictionary<string, string> Namespaces {
+		// this is only used when generating a xaml representation, and even then,
+		// only if the node doesn't store the original xaml already
+		Dictionary<string, string> Namespaces {
 			get {
-				if (top.namespaces == null) {
-					top.namespaces = new Dictionary<string, string> (
-						top.Attributes.Values.Where (x => x.IsMapping).ToDictionary (x => x.Name == "xmlns" ? "" : x.LocalName, x => x.Value)
-					);
-				}
-				return top.namespaces;
+				return Attributes.Values.Where (x => x.IsMapping).ToDictionary (x => x.Name == "xmlns" ? "" : x.LocalName, x => x.Value);
 			}
 		}
 
@@ -219,6 +215,14 @@ namespace Mono.Xaml {
 			if (Attributes.TryGetValue (name, out ret))
 				return ret.Value;
 			return null;
+		}
+
+		public string ResolvePrefix (string prefix)
+		{
+			string ret = (from o in Attributes.Values where o.IsMapping && o.LocalName == prefix select o.Value).FirstOrDefault ();
+			if (ret != null || parent == null)
+				return ret;
+			return parent.ResolvePrefix (prefix);
 		}
 
 		public void MoveToAttribute (int i)
@@ -387,7 +391,15 @@ namespace Mono.Xaml {
 			Ignore = false;
 		}
 		
-		
+		/**
+		@node If it's not null, it probably means we're on the top node and just
+				got called from public Parse method
+		@parent If it's null, it means we're on the top node
+		@skip don't do a read, we're already on the next node and ready to process it
+
+		If this method returns null, it means it has reached the end of the current
+		xml subtree (the end element of the parent node)
+		**/
 		static XamlNode Parse (XmlReader reader, XamlNode parent, XamlNode node, 
 								NodeEvent evstart, NodeEvent evend, 
 								AttributeEvent evattr, bool skip = false)
@@ -462,74 +474,74 @@ namespace Mono.Xaml {
 				if (node.HasValue)
 					node.val = reader.Value;
 
-				node.Initialized = true;
-			}
 
-			IXmlLineInfo linfo = reader as IXmlLineInfo;
-			if (linfo != null) {
-				node.LineNumber = linfo.LineNumber;
-				node.LinePosition = linfo.LinePosition;
+				IXmlLineInfo linfo = reader as IXmlLineInfo;
+				if (linfo != null) {
+					node.LineNumber = linfo.LineNumber;
+					node.LinePosition = linfo.LinePosition;
+				}
+
+				if (reader.HasAttributes) {
+					string ig = reader.GetAttribute ("Ignorable", IgnorableUri);
+					if (ig != null) {
+						foreach (string s in ig.Split (' '))
+							node.IgnorablePrefixes.Add (s);
+					}
+
+					if (node.Attributes.Count > 0 && evattr != null) {
+						foreach (XamlAttribute ai in node.Attributes.Values.Where (x => !x.IsMapping && !x.IsNsIgnorable && !x.IsNsClr))
+							evattr (node, ai);
+					} else {
+						reader.MoveToFirstAttribute ();
+
+						int count = 0;
+						do {
+							// this filters out ignorable attributes
+							if (node.IgnorablePrefixes.Contains (reader.Prefix))
+								continue;
+
+							XamlAttribute ai = new XamlAttribute (reader) {
+								Index = count++,
+							};
+
+							// an x: or equivalent attribute
+							ai.IsNsXaml = !ai.IsMapping && ai.NamespaceURI == XamlUri;
+							// an mc: or equivalent attribute (this attribute defines the list of ignorable prefixes)
+							ai.IsNsIgnorable = !ai.IsMapping && (ai.NamespaceURI == IgnorableUri || ai.Prefix == "mc");
+							// an xmlns:my='clr-namespace...' attribute
+							ai.IsNsClr = !ai.IsMapping && ai.NamespaceURI.StartsWith ("clr-namespace");
+							if (ai.IsNsXaml && ai.LocalName == "Class")
+								node.Class = ai.Value;
+
+							if (ai.IsMapping) {
+								if (node.top != node)
+									ai.Index = node.top.Attributes.Count;
+								node.top.Attributes [reader.Name] = ai;
+							} else {
+								if (ai.IsNsXaml) {
+									if (ai.LocalName == "Key")
+										node.X_Key = ai.Value;
+									else if (ai.LocalName == "Name")
+										node.X_Name = ai.Value;
+								}
+								node.Attributes [reader.Name] = ai;
+							}
+						} while (reader.MoveToNextAttribute ());
+
+						reader.MoveToElement ();
+					}
+				}
+			
+				node.Initialized = true;
 			}
 
 			if (evstart != null && (node.NodeType == XmlNodeType.Element || node.NodeType == XmlNodeType.Text))
 				evstart (node);
 
-			if (reader.HasAttributes) {
-				string ig = reader.GetAttribute ("Ignorable", IgnorableUri);
-				if (ig != null) {
-					foreach (string s in ig.Split (' '))
-						node.IgnorablePrefixes.Add (s);
-				}
-
-				if (node.Attributes.Count > 0 && evattr != null) {
-					foreach (XamlAttribute ai in node.Attributes.Values.Where (x => !x.IsMapping && !x.IsNsIgnorable && !x.IsNsClr))
-						evattr (node, ai);
-				} else {
-					reader.MoveToFirstAttribute ();
-
-					int count = 0;
-					do {
-						// this filters out ignorable attributes
-						if (node.IgnorablePrefixes.Contains (reader.Prefix))
-							continue;
-
-						XamlAttribute ai = new XamlAttribute (reader) {
-							Index = count++,
-						};
-
-						// an x: or equivalent attribute
-						ai.IsNsXaml = !ai.IsMapping && ai.NamespaceURI == XamlUri;
-						// an mc: or equivalent attribute (this attribute defines the list of ignorable prefixes)
-						ai.IsNsIgnorable = !ai.IsMapping && (ai.NamespaceURI == IgnorableUri || ai.Prefix == "mc");
-						// an xmlns:my='clr-namespace...' attribute
-						ai.IsNsClr = !ai.IsMapping && ai.NamespaceURI.StartsWith ("clr-namespace");
-						if (ai.IsNsXaml && ai.LocalName == "Class")
-							node.Class = ai.Value;
-
-						if (ai.IsMapping) {
-							if (node.top != node)
-								ai.Index = node.top.Attributes.Count;
-							node.top.Attributes [reader.Name] = ai;
-						} else {
-							if (ai.IsNsXaml) {
-								if (ai.LocalName == "Key")
-									node.X_Key = ai.Value;
-								else if (ai.LocalName == "Name")
-									node.X_Name = ai.Value;
-							}
-							node.Attributes [reader.Name] = ai;
-							if (evattr != null && !ai.IsNsIgnorable)
-								evattr (node, ai);
-						}
-					} while (reader.MoveToNextAttribute ());
-
-					reader.MoveToElement ();
-				}
+			if (evattr != null) {
+				foreach (XamlAttribute ai in node.Attributes.Values.Where (x => !x.IsNsIgnorable && !x.IsMapping))
+					evattr (node, ai);
 			}
-			
-			if (node.Repeat && evstart != null &&
-				(node.NodeType == XmlNodeType.Element || node.NodeType == XmlNodeType.Text))
-				evstart (node);
 
 			if (node.Ignore) {
 				node.outerXml = reader.ReadOuterXml ();
@@ -582,7 +594,6 @@ namespace Mono.Xaml {
 		string outerXml;
 
 		public bool Ignore;
-		public bool Repeat;
 		public bool Parsed;
 		public bool Initialized;
 		public bool IsEmptyElement;
@@ -603,4 +614,3 @@ namespace Mono.Xaml {
 		public delegate void AttributeEvent (XamlNode node, XamlAttribute ai);
 	}
 }
-

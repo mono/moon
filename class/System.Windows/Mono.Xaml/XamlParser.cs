@@ -422,10 +422,7 @@ namespace Mono.Xaml {
 			}
 
 			if (IsStaticResourceElement ()) {
-				if (!reader.Repeat)
-					reader.Repeat = true;
-				else
-					ParseStaticResourceElement ();
+				ParseStaticResourceElement ();
 				return;
 			}
 
@@ -1019,7 +1016,8 @@ namespace Mono.Xaml {
 			if (colon > 0) {
 				string local = str.Substring (0, colon);
 				name = str.Substring (++colon, str.Length - colon);
-				if (!reader.Namespaces.TryGetValue (local, out xmlns))
+				xmlns = reader.ResolvePrefix (local);
+				if (xmlns == null)
 					throw ParseException ("Could not find namespace for type {0} ({1}, {2}).", str, name, local);
 			}
 

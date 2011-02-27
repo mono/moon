@@ -288,9 +288,9 @@ namespace Mono.Xaml {
 
 					expanded.Remove (s + 1, te - s - 1);
 
-					string ns = null;
+					string ns = converter.parser.Current.ResolvePrefix (prefix);
 
-					if (!converter.parser.Current.Namespaces.TryGetValue (prefix, out ns)) {
+					if (ns == null) {
 						Console.WriteLine ("could not find xmlns value:  {0}", prefix);
 						return null;
 					}
