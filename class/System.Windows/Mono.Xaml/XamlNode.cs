@@ -504,21 +504,34 @@ namespace Mono.Xaml {
 								ai.Index = node.top.Attributes.Count;
 							node.top.Attributes [reader.Name] = ai;
 						} else {
-							if (ai.IsNsIgnorable && ai.LocalName == "Ignorable") {
-								foreach (string s in ai.Value.Split (' '))
-									node.IgnorablePrefixes.Add (s);
-							}
-							if (ai.IsNsXaml) {
-								if (ai.LocalName == "Key")
-									node.X_Key = ai.Value;
-								else if (ai.LocalName == "Name")
-									node.X_Name = ai.Value;
-							}
 							node.Attributes [reader.Name] = ai;
-							if (evattr != null && !ai.IsNsIgnorable)
-								evattr (node, ai);
 						}
 					} while (reader.MoveToNextAttribute ());
+
+					// First find any Ignore attributes and add them to the list
+					foreach (var ai in node.Attributes.Values.Where (a => a.IsNsIgnorable)) {
+						if (ai.LocalName == "Ignorable") {
+							foreach (string s in ai.Value.Split (' '))
+								node.IgnorablePrefixes.Add (s);
+						}
+					}
+
+					// Now stip anything which is ignored
+					var toRemove = node.Attributes.Where (a => node.IgnorablePrefixes.Contains (a.Value.Prefix)).ToList ();
+					foreach (var v in toRemove)
+						node.Attributes.Remove (v.Key);
+
+					foreach (var ai in node.Attributes.Values.Where (a => !a.IsMapping && !a.IsNsIgnorable)) {
+						if (ai.IsNsXaml) {
+							if (ai.LocalName == "Key")
+								node.X_Key = ai.Value;
+							else if (ai.LocalName == "Name")
+								node.X_Name = ai.Value;
+						}
+						if (evattr != null)
+							evattr (node, ai);
+					}
+
 
 					reader.MoveToElement ();
 				}

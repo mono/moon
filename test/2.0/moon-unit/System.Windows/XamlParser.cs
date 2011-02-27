@@ -158,19 +158,47 @@ namespace MoonTest.System.Windows {
 			// Set properties, then content, then properties
 			Assert.DoesNotThrow (() => XamlReader.Load (@"
 <Grid
-        xmlns=""http://schemas.microsoft.com/client/2007""
-        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+		xmlns=""http://schemas.microsoft.com/client/2007""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 
-        <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+		<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+		</Grid.ColumnDefinitions>
 
-        <TextBlock />
+		<TextBlock />
 
-        <Grid.RowDefinitions>
-                <RowDefinition />
-        </Grid.RowDefinitions>
+		<Grid.RowDefinitions>
+				<RowDefinition />
+		</Grid.RowDefinitions>
 </Grid>"), "#1");
 		}
+
+		[TestMethod]
+		public void SetIgnorableAfterUse ()
+		{
+			// Set properties, then content, then properties
+			Assert.DoesNotThrow(() => XamlReader.Load(@"
+<Grid
+		xmlns=""http://schemas.microsoft.com/client/2007""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		d:Foo.Bar=""Baz""
+		xmlns:d=""ignorableUri""
+		xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006""
+		mc:Ignorable=""d""
+		>
+</Grid>"), "#1");
+		}
+
+		[TestMethod]
+		public void SetXmlnsAfterUse()
+		{
+			var c = (Canvas) XamlReader.Load(@"
+<Canvas
+	xmlns=""http://schemas.microsoft.com/client/2007""
+	sys:Canvas.Top=""5""
+ 	xmlns:sys=""clr-namespace:System.Windows.Controls;assembly=System.Windows"" />"
+			);
+			Assert.AreEqual (5, Canvas.GetTop (c), "#1");
+			}
+		}
 	}
-}
