@@ -50,6 +50,8 @@ namespace System.Windows {
 			((UIElement) sender).RaiseUIAVisibilityChanged (args);
 		}
 
+		internal event EventHandler VisualParentChanged;
+
 		public Transform RenderTransform {
 			get {
 				Transform t = (Transform)GetValue (RenderTransformProperty);
@@ -96,9 +98,12 @@ namespace System.Windows {
 			NativeMethods.uielement_measure (native, availableSize);
 		}
 
-
 		internal DependencyObject SubtreeObject {
 			get; private set;
+		}
+
+		internal UIElement VisualParent {
+			get; set;
 		}
 
 		public void InvalidateMeasure ()
@@ -197,6 +202,10 @@ namespace System.Windows {
 		{
 			if (id == (IntPtr) WeakRefs.UIElement_SubtreeObject) {
 				SubtreeObject = (DependencyObject) value;
+			} else if (id == (IntPtr) WeakRefs.UIElement_VisualParent) {
+				VisualParent = (UIElement) value;
+				if (VisualParentChanged != null)
+					VisualParentChanged (this, EventArgs.Empty);
 			} else {
 				base.AddStrongRef (id, value);
 			}
@@ -206,6 +215,10 @@ namespace System.Windows {
 		{
 			if (id == (IntPtr) WeakRefs.UIElement_SubtreeObject) {
 				SubtreeObject = null;
+			} else if (id == (IntPtr) WeakRefs.UIElement_VisualParent) {
+				VisualParent = null;
+				if (VisualParentChanged != null)
+					VisualParentChanged (this, EventArgs.Empty);
 			} else {
 				base.ClearStrongRef (id, value);
 			}

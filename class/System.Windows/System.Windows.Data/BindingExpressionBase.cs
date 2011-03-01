@@ -45,7 +45,6 @@ namespace System.Windows.Data {
 		static readonly Type [] midParseParams = new Type [] { typeof (string), typeof (IFormatProvider) };
 		static readonly Type [] simpleParseParams = new Type [] { typeof (string) };
 
-		FrameworkElement mentor;
 		internal bool cached;
 		object cachedValue;
 		
@@ -63,11 +62,15 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
+		FrameworkElement DataContextSource {
+			get; set;
+		}
+
 		internal object DataSource {
 			get { return PropertyPathWalker.Source; }
 		}
 
-		bool IsDataContextBound {
+		bool IsBoundToAnyDataContext {
 			get {
 				return string.IsNullOrEmpty (Binding.ElementName)
 					&& Binding.Source == null
@@ -75,11 +78,25 @@ namespace System.Windows.Data {
 			}
 		}
 
-		bool IsMentorBound {
-			get { return Binding.ElementName == null
-				&& Binding.Source == null
-				&& Binding.RelativeSource == null
-				&& (!(Target is FrameworkElement) || (Target is FrameworkElement && Property == FrameworkElement.DataContextProperty));
+		bool IsSelfDataContextBound {
+			get {
+				return IsBoundToAnyDataContext
+					&& Target is FrameworkElement
+					&& Property != FrameworkElement.DataContextProperty;
+			}
+		}
+
+		bool IsParentDataContextBound {
+			get {
+				return IsBoundToAnyDataContext
+					&& Target is FrameworkElement
+					&& (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty);
+			}
+		}
+
+		bool IsMentorDataContextBound {
+			get {
+				return IsBoundToAnyDataContext && (!(Target is FrameworkElement));
 			}
 		}
 
@@ -138,7 +155,7 @@ namespace System.Windows.Data {
 				// to read the datacontext of the parent element.
 				var fe = Target as FrameworkElement;
 				if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
-					fe = (FrameworkElement) fe.Parent;
+					fe = (FrameworkElement) fe.VisualParent;
 
 				// If the FE's parent is null or if the Target is not an FE, we should take the datacontext from the mentor.
 				// Note that we use the mentor here for the first time because we don't want to accidentally select the mentors
@@ -188,7 +205,7 @@ namespace System.Windows.Data {
 			Property = property;
 
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
-			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView, IsDataContextBound);
+			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView, IsBoundToAnyDataContext);
 			if (Binding.Mode != BindingMode.OneTime)
 				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 		}
@@ -204,17 +221,15 @@ namespace System.Windows.Data {
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus += TextBoxLostFocus;
 
-			if (IsMentorBound) {
+			var targetFE = element as FrameworkElement;
+			if (IsMentorDataContextBound) {
 				Target.MentorChanged += MentorChanged;
-				mentor = Target.Mentor;
-				AttachDataContextHandlers (mentor);
-			}
-
-			if (IsDataContextBound) {
-				var fe = Target as FrameworkElement;
-				if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
-					fe = (FrameworkElement) fe.Parent;
-				AttachDataContextHandlers (fe);
+				SetDataContextSource (Target.Mentor);
+			} else if (IsParentDataContextBound) {
+				targetFE.VisualParentChanged += ParentChanged;
+				SetDataContextSource ((FrameworkElement) targetFE.VisualParent);
+			} else if (IsSelfDataContextBound) {
+				SetDataContextSource (targetFE);
 			}
 
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
@@ -243,10 +258,15 @@ namespace System.Windows.Data {
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus -= TextBoxLostFocus;
 
-			if (IsMentorBound) {
-				DetachDataContextHandlers (mentor);
-				mentor = null;
-				Target.MentorChanged -= MentorChanged;;
+			var targetFE = element as FrameworkElement;
+			if (IsMentorDataContextBound) {
+				Target.MentorChanged -= MentorChanged;
+				SetDataContextSource (null);
+			} else if (IsParentDataContextBound) {
+				targetFE.VisualParentChanged -= ParentChanged;
+				SetDataContextSource (null);
+			} else if (IsSelfDataContextBound) {
+				SetDataContextSource (null);
 			}
 
 			if (updateDataSourceCallback != null) {
@@ -257,16 +277,15 @@ namespace System.Windows.Data {
 			PropertyPathWalker.Update (null);
 		}
 
-		void AttachDataContextHandlers (FrameworkElement fe)
+		void SetDataContextSource (FrameworkElement fe)
 		{
-			if (fe != null)
-				fe.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
-		}
-
-		void DetachDataContextHandlers (FrameworkElement fe)
-		{
-			if (fe != null)
-				fe.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
+			if (DataContextSource != null)
+				DataContextSource.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
+			DataContextSource = fe;
+			if (DataContextSource != null) {
+				DataContextSource.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
+				PropertyPathWalker.Update (DataContextSource.DataContext);
+			}
 		}
 
 		void AttachToNotifyError (INotifyDataErrorInfo element)
@@ -321,14 +340,24 @@ namespace System.Windows.Data {
 		void MentorChanged (object sender, EventArgs e)
 		{
 			try {
-				DetachDataContextHandlers (mentor);
-				mentor = Target.Mentor;
-				AttachDataContextHandlers (mentor);
-				if (mentor != null)
-					PropertyPathWalker.Update (mentor.DataContext);
+				SetDataContextSource (Target.Mentor);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.MentorChanged: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
+		}
+
+		void ParentChanged (object sender, EventArgs e)
+		{
+			try {
+				var targetFE = (FrameworkElement) Target;
+				SetDataContextSource ((FrameworkElement) targetFE.VisualParent);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.ParentChanged: {0}", ex);
 				} catch {
 					// Ignore
 				}
@@ -473,7 +502,7 @@ namespace System.Windows.Data {
 				}
 				else if (value == null) {
 					value = Binding.TargetNullValue;
-					if (value == null && IsDataContextBound && string.IsNullOrEmpty (Binding.Path.Path))
+					if (value == null && IsBoundToAnyDataContext && string.IsNullOrEmpty (Binding.Path.Path))
 						value = dp.GetDefaultValue (Target);
 				} else {
 					string format = Binding.StringFormat;

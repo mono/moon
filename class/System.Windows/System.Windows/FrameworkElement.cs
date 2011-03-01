@@ -181,18 +181,20 @@ namespace System.Windows {
 
 		internal override void AddStrongRef (IntPtr id, object value)
 		{
-			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent)
+			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent) {
 				Parent = (DependencyObject) value;
-			else
+			} else {
 				base.AddStrongRef (id, value);
+			}
 		}
 
 		internal override void ClearStrongRef (IntPtr id, object value)
 		{
-			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent)
+			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent) {
 				Parent = null;
-			else
+			} else {
 				base.ClearStrongRef (id, value);
+			}
 		}
 
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;

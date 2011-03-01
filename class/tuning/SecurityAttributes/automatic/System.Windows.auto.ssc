@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 632 methods
+# 631 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -507,8 +507,7 @@
 +SSC-M: System.Void System.Windows.Window::DragResize(System.Windows.WindowResizeEdge)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnAttached(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::OnDetached(System.Windows.DependencyObject)
-+SSC-M: System.Void System.Windows.Data.BindingExpressionBase::AttachDataContextHandlers(System.Windows.FrameworkElement)
-+SSC-M: System.Void System.Windows.Data.BindingExpressionBase::DetachDataContextHandlers(System.Windows.FrameworkElement)
++SSC-M: System.Void System.Windows.Data.BindingExpressionBase::SetDataContextSource(System.Windows.FrameworkElement)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::DataContextChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 +SSC-M: System.ComponentModel.TypeConverter System.Windows.Data.BindingExpressionBase::GetConverter(System.Type,System.String,System.Type)
 +SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)

@@ -893,6 +893,95 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual(r.Fill, r.DataContext, "#1");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_PreferFrameworkElementParentOverMentor ()
+		{
+			var root1 = new Canvas { DataContext = 1 };
+			var root2 = new Canvas { DataContext = 2 };
+
+			var target = new ContentControl ();
+			target.SetBinding (FrameworkElement.DataContextProperty, new Binding ());
+
+			// This sets FrameworkElement.Parent
+			root1.Children.Add (target);
+
+			// This sets a new Mentor
+			ToolTipService.SetPlacementTarget (root2, target);
+			CreateAsyncTest (root1,
+				() => {
+					// We should be using the DataContext from FrameworkElement.Parent, not the mentor
+					Assert.AreEqual (1, target.DataContext, "#1");
+					// We pick up changes on the datacontext
+					root1.DataContext = 2;
+				}, () => {
+					Assert.AreEqual (2, target.DataContext, "#2");
+
+					// We ignore changes on the mentors datacontext
+					root2.DataContext = 4;
+				}, () => {
+					Assert.AreEqual (2, target.DataContext, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_PreferFrameworkElementParentOverMentor_SetParentToNull ()
+		{
+			var root1 = new Canvas { DataContext = 1 };
+			var root2 = new Canvas { DataContext = 2 };
+
+			var target = new ContentControl ();
+			target.SetBinding (FrameworkElement.DataContextProperty, new Binding ());
+
+			// This sets FrameworkElement.Parent
+			root1.Children.Add (target);
+
+			// This sets a new Mentor
+			ToolTipService.SetPlacementTarget (root2, target);
+			CreateAsyncTest (root1,
+				() => {
+					// We should be using the DataContext from FrameworkElement.Parent, not the mentor
+					Assert.AreEqual (1, target.DataContext, "#1");
+					root1.Children.Clear ();
+
+					// After clearing the Parent we no longer listen for DataContext changes on the parent
+					root1.DataContext = 3;
+				}, () => {
+					Assert.AreEqual (1, target.DataContext, "#2");
+
+					// We don't listen for the mentor either
+					root2.DataContext = 5;
+				}, () => {
+					Assert.AreEqual (1, target.DataContext, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_PreferFrameworkElementParentOverMentor_ParentAlwaysNull ()
+		{
+			var root1 = new Canvas { DataContext = 1 };
+			var root2 = new Canvas { DataContext = 2 };
+
+			var target = new ContentControl ();
+			target.SetBinding (FrameworkElement.DataContextProperty, new Binding ());
+
+			// This sets a new Mentor
+			ToolTipService.SetPlacementTarget (root2, target);
+
+			CreateAsyncTest (root1,
+				() => {
+					// We don't use the Mentors DataContext even though it's the only one
+					Assert.IsNull (target.DataContext, "#1");
+					root2.DataContext = 3;
+				}, () => {
+					Assert.IsNull (target.DataContext, "#2");
+				}
+			);
+		}
 
 		[TestMethod]
 		public void DataContext_NullLocal ()
