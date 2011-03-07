@@ -574,3 +574,9 @@ int InputHelper_SetKeyboardInputSpeed (unsigned int keyboardInputSpeed)
 	InputProvider::GetInstance ()->SetKeyboardInputSpeed (keyboardInputSpeed);
 	return 0;
 }
+
+int InputHelper_InjectPenEventFromBuffer (/* TODO */)
+{
+	Shocker_FailTestFast ("InputHelper_InjectPenEventFromBuffer (): not implemented");
+	return 0;
+}

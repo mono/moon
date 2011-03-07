@@ -86,7 +86,7 @@ void shocker_capture_image (const char *filename, int x, int y, int width, int h
 void CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay);
 
 void ImageHelper_CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay);
-
+int ImageHelper_CaptureMultipleImages (const char *directory, const char *filename, int x, int y, int width, int height, int count, int interval, int delay);
 void CompareImages (const char *imageFile1, const char *imageFile2, guint8 tolerance, const char *diffFileName, bool copySourceFiles, guint8 *result);
 
 G_END_DECLS

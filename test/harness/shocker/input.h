@@ -210,6 +210,7 @@ int InputHelper_MouseWheel (gint16 clicks);
 int InputHelper_MouseIsAtPosition (int x, int y, guint8 *result);
 int InputHelper_SendKeyInput (int vkey, bool down, bool extended, bool unicode);
 int InputHelper_SetKeyboardInputSpeed (unsigned int keyboardInputSpeed);
+int InputHelper_InjectPenEventFromBuffer (/* TODO */);
 G_END_DECLS
 
 #endif  // __INPUT_H__

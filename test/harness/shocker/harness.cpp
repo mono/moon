@@ -10,6 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  *
  */
+#include "config.h"
  
 #include <stdio.h>
 #include <stdlib.h>
@@ -581,6 +582,12 @@ void WindowHelper_GetPrimaryScreenSize (guint32 *width, guint32 *height)
 	XCloseDisplay (display);
 }
 
+int WindowHelper_GetOOBConsentDialogIconPosition (/* TODO */)
+{
+	Shocker_FailTestFast ("WindowHelper_GetOOBConsentDialogIconPosition (): Not implemented");
+	return 0;
+}
+
 int ClipboardHelper_ClearClipboard ()
 {
 	return Clipboard::ClearClipboard ();
@@ -649,14 +656,36 @@ int TestHost_SetRegKey (const char *keyPath, const char *keyName, gint32 Value)
 	return 0;
 }
 
-int Testhost_GetMachineName (char **name)
+int TestHost_GetMachineName (char **name)
 {
-	Shocker_FailTestFast ("Testhost_GetMachineName (): not implemented");
+	Shocker_FailTestFast ("TestHost_GetMachineName (): not implemented");
 	return 0;
 }
 
 void TestHost_GetJTRURenderDataCapturer (void **ppJtruWrapper)
 {
 	Shocker_FailTestFast ("TestHost_GetJTRURenderDataCapturer (): not implemented");
+}
+
+void NetworkHelper_DoNetworkRequestNative (/* TODO */)
+{
+	Shocker_FailTestFast ("NetworkHelper_DoNetworkRequestNative (): not implemented");
+}
+
+void FileSystemHelper_GetShortcutInfo (/* TODO */)
+{
+	Shocker_FailTestFast ("FileSystemHelper_GetShortcutInfo (): not implemented");
+}
+
+int PlatformServices_RunAppleScript ()
+{
+	Shocker_FailTestFast ("PlatformServices_RunAppleScript (): test has likely entered a mac-specific branch, which is probably not correct");
+	return 0;
+}
+
+int PlatformServices_GetEnvironmentVariable ()
+{
+	Shocker_FailTestFast ("PlatformServices_GetEnvironmentVariable (): not implemented");
+	return 0;
 }
 

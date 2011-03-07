@@ -330,6 +330,11 @@ ImageHelper_CaptureSingleImage (const char *directory, const char *filename, int
 	ImageCaptureProvider::CaptureSingleImage (directory, filename, x, y, width, height);
 }
 
+int ImageHelper_CaptureMultipleImages (const char *directory, const char *filename, int x, int y, int width, int height, int count, int interval, int delay)
+{
+	Shocker_FailTestFast (g_strdup_printf ("ImageHelper_CaptureMultipleImages (%s, %s, %i, %i, %i, %i, %i, %i, %i): not implemented", directory, filename, x, y, width, height, count, interval, delay));
+	return 0;
+}
 
 void CompareImages (const char *imageFile1, const char *imageFile2, guint8 tolerance, 
 	const char *diffFileName, bool copySourceFiles, guint8 * result)

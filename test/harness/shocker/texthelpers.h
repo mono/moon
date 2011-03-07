@@ -51,7 +51,20 @@ guint32 TextHelpers_GetContentType (UIElement *pUIElement,
 				    guint32 iTextPosition,
 				    TextHelpers_ContentType *pContentType);
 
+// the below are just stubs to show decent error messages instead of EntryPointNotFound messages.
 void TextHelpers_GetGlyphRuns ();
+void GeneralHelpers_IsRunningCheck ();
+void TextHelpers_GetTextRun ();
+void TextHelpers_SetFontSource ();
+void TextHelpers_CopyFontSource ();
+void TextHelpers_PixelToTextPosition ();
+void TextHelpers_SendKeyInputMessage ();
+void DirectInputHelper_SendKeyInputMessage ();
+void DirectInputHelper_SendMouseInputMessage ();
+void DirectInputHelper_SetCore ();
+void DirectInputHelper_SendIMELangChangeMessage ();
+void DirectInputHelper_SwitchLayoutLanguage ();
+
 
 };
 

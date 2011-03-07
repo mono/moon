@@ -61,3 +61,59 @@ TextHelpers_GetGlyphRuns ()
 {
 	Shocker_FailTestFast ("TextHelpers_GetGlyphRuns not implemented\n");
 }
+
+void GeneralHelpers_IsRunningCheck ()
+{
+	Shocker_FailTestFast ("GeneralHelpers_IsRunningCheck not implemented\n");
+}
+
+void TextHelpers_GetTextRun ()
+{
+	Shocker_FailTestFast ("TextHelpers_GetTextRun not implemented\n");
+}
+
+void TextHelpers_SetFontSource ()
+{
+	Shocker_FailTestFast ("TextHelpers_SetFontSource not implemented\n");
+}
+
+void TextHelpers_CopyFontSource ()
+{
+	Shocker_FailTestFast ("TextHelpers_CopyFontSource not implemented\n");
+}
+
+void TextHelpers_PixelToTextPosition ()
+{
+	Shocker_FailTestFast ("TextHelpers_PixelToTextPosition not implemented\n");
+}
+
+void TextHelpers_SendKeyInputMessage ()
+{
+	Shocker_FailTestFast ("TextHelpers_SendKeyInputMessage not implemented\n");
+}
+
+void DirectInputHelper_SendKeyInputMessage ()
+{
+	Shocker_FailTestFast ("DirectInputHelper_SendKeyInputMessage not implemented\n");
+}
+
+void DirectInputHelper_SendMouseInputMessage ()
+{
+	Shocker_FailTestFast ("DirectInputHelper_SendMouseInputMessage not implemented\n");
+}
+
+void DirectInputHelper_SetCore ()
+{
+	Shocker_FailTestFast ("DirectInputHelper_SetCore not implemented\n");
+}
+
+void DirectInputHelper_SendIMELangChangeMessage ()
+{
+	Shocker_FailTestFast ("DirectInputHelper_SendIMELangChangeMessage not implemented\n");
+}
+
+void DirectInputHelper_SwitchLayoutLanguage ()
+{
+	Shocker_FailTestFast ("DirectInputHelper_SwitchLayoutLanguage not implemented\n");
+}
+
