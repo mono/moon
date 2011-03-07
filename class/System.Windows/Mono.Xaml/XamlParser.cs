@@ -162,6 +162,8 @@ namespace Mono.Xaml {
 		{
 			if (!(CurrentElement is XamlObjectElement))
 				return;
+			if (IsStaticResourceElement ())
+				return;
 			currentNode = ai;
 			ParseAttribute (CurrentElement as XamlObjectElement, ai);
 			currentNode = node;
