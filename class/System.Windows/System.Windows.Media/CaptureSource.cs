@@ -31,14 +31,21 @@ using Mono;
 
 namespace System.Windows.Media {
 	public sealed partial class CaptureSource : DependencyObject {
-
 		public void CaptureImageAsync ()
 		{
+			if (State != CaptureState.Started)
+				throw new InvalidOperationException ("Capture source is not started");
+
 			NativeMethods.capture_source_capture_image_async (native);
 		}
 
 		public void Start ()
 		{
+			bool asked_user = false;
+
+			if (!CaptureDeviceConfiguration.AllowedDeviceAccess)
+				throw new InvalidOperationException ("Access denied to capture devices");
+
 			NativeMethods.capture_source_start (native);
 		}
 

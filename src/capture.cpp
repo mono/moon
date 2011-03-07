@@ -19,6 +19,8 @@
 #include "debug.h"
 #include "clock.h"
 #include "moonlightconfiguration.h"
+#include "timesource.h"
+#include "consent.h"
 
 namespace Moonlight {
 
@@ -76,24 +78,28 @@ CaptureSource::CaptureSource ()
 	LOG_CAPTURE ("CaptureSource::CaptureSource (): %p = %i\n", this, GetId ());
 	current_state = CaptureSource::Stopped;
 
-	cached_sampleData = NULL;
-	cached_sampleDataLength = 0;
-	cached_sampleTime = 0;
-	cached_frameDuration = 0;
-
-	need_image_capture = false;
-	video_capture_format = NULL;
+	pending_capture = false;
 }
 
-CaptureSource::~CaptureSource ()
+void
+CaptureSource::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	LOG_CAPTURE ("CaptureSource::~CaptureSource (): %p = %i\n", this, GetId ());
+	if (args->GetId () == CaptureSource::AudioCaptureDeviceProperty ||
+		args->GetId () == CaptureSource::VideoCaptureDeviceProperty) {
+		CaptureDevice *old_device = args->GetOldValue () ? args->GetOldValue ()->AsCaptureDevice () : NULL;
+		CaptureDevice *new_device = args->GetNewValue () ? args->GetNewValue ()->AsCaptureDevice () : NULL;
+		if (old_device != NULL) {
+			old_device->Stop ();
+			old_device->RemoveAllHandlers (this);
+		}
+		if (new_device != NULL) {
+			new_device->AddHandler (CaptureDevice::SampleReadyEvent, SampleReadyCallback, this);
+			new_device->AddHandler (CaptureDevice::CaptureStartedEvent, CaptureStartedCallback, this);
+			new_device->AddHandler (CaptureDevice::FormatChangedEvent, FormatChangedCallback, this);
+		}
+	}
 
-	g_free (cached_sampleData);
-	cached_sampleData = NULL;
-
-	delete video_capture_format;
-	video_capture_format = NULL;
+	DependencyObject::OnPropertyChanged (args, error);
 }
 
 void
@@ -101,16 +107,7 @@ CaptureSource::CaptureImageAsync ()
 {
 	LOG_CAPTURE ("CaptureSource::CaptureImageAsync ()\n");
 
-	if (current_state != CaptureSource::Started) {
-		VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
-		// we weren't started, so let's start now
-		if (video_device) {
-			video_device->SetCaptureSource (this);
-			video_device->Start ();
-		}
-	}
-
-	need_image_capture = true;
+	pending_capture = true;
 }
 
 void
@@ -119,64 +116,46 @@ CaptureSource::Start ()
 	AudioCaptureDevice *audio_device;
 	VideoCaptureDevice *video_device;
 
-	LOG_CAPTURE ("CaptureSource::Start () %p = %i current_state: %i audio device: %p video device: %p CaptureStarted %i FormatChanged: %i SampleReady: %i CaptureStopped: %i\n",
-		this, GetId (), current_state, GetAudioCaptureDevice (), GetVideoCaptureDevice (), HasHandlers (CaptureSource::CaptureStartedEvent), HasHandlers (CaptureSource::FormatChangedEvent), HasHandlers (CaptureSource::SampleReadyEvent), HasHandlers (CaptureSource::CaptureStoppedEvent));
+	LOG_CAPTURE ("CaptureSource::Start () %p %i current_state: %i audio device: %p video device: %p\n",
+		this, GetId (), current_state, GetAudioCaptureDevice (), GetVideoCaptureDevice ());
 
 	if (current_state == CaptureSource::Started)
 		return;
 
-	// We need to emit CaptureStarted before actually
-	// starting the devices, since their Start implementations
-	// will cause FormatChanged to be emitted, which must be
-	// emitted after CaptureStarted.
-	current_state = CaptureSource::Started;
-	if (HasHandlers (CaptureSource::CaptureStartedEvent))
-		Emit (CaptureSource::CaptureStartedEvent);
-
 	audio_device = GetAudioCaptureDevice ();
 	if (audio_device) {
-		audio_device->SetCaptureSource (this);
 		audio_device->Start ();
 	}
 
 	video_device = GetVideoCaptureDevice ();
 	if (video_device) {
-		video_device->SetCaptureSource (this);
-		if (!need_image_capture) {
-			// if need_image_capture is true the image
-			// capture stuff has already started the
-			// device
-			video_device->Start ();
-		}
+		video_device->Start ();
 	}
+
+	current_state = CaptureSource::Started;
 }
 
 void
 CaptureSource::Stop ()
 {
-	LOG_CAPTURE ("CaptureSource::Stop () %p = %i\n", this, GetId ());
+	AudioCaptureDevice *audio_device;
+	VideoCaptureDevice *video_device;
 
-	AudioCaptureDevice *audio_device = GetAudioCaptureDevice ();
-	VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
+	LOG_CAPTURE ("CaptureSource::Stop () %p = %i state: %i\n", this, GetId (), current_state);
 
-	if (current_state != CaptureSource::Started && !need_image_capture)
+	if (current_state != CaptureSource::Started)
 		return;
 
+	audio_device = GetAudioCaptureDevice ();
 	if (audio_device)
 		audio_device->Stop ();
-	if (video_device) {
-		if (need_image_capture) {
-			// if we're waiting for an image capture,
-			// wait until the image capture has completed
-		}
-		else {
-			video_device->Stop ();
-		}
-	}
+
+	video_device = GetVideoCaptureDevice ();
+	if (video_device)
+		video_device->Stop ();
 
 	current_state = CaptureSource::Stopped;
-	if (HasHandlers (CaptureSource::CaptureStoppedEvent))
-		Emit (CaptureSource::CaptureStoppedEvent);
+	Emit (CaptureSource::CaptureStoppedEvent); // this is emitted sync.
 }
 
 int
@@ -186,144 +165,68 @@ CaptureSource::GetState ()
 }
 
 void
-CaptureSource::OnSampleReadyCallback (EventObject *obj)
+CaptureSource::CaptureStartedHandler (CaptureDevice *source, EventArgs *args)
 {
-	((CaptureSource *) obj)->OnSampleReady ();
-}
-
-void
-CaptureSource::OnSampleReady ()
-{
-	SampleData *data = NULL;
-
-	mutex.Lock ();
-	data = (SampleData *) samples.First ();
-	if (data != NULL)
-		samples.Unlink (data);
-	mutex.Unlock ();
-
-	if (data) {
-		ReportSample (data->sampleTime, data->frameDuration, data->sampleData, data->sampleDataLength);
-		data->sampleData = NULL;
-		delete data;
+	if (HasHandlers (CaptureSource::CaptureStartedEvent)) {
+		Emit (CaptureSource::CaptureStartedEvent);
 	}
 }
 
 void
-CaptureSource::ReportSample (gint64 sampleTime, gint64 frameDuration, void *sampleData, int sampleDataLength)
+CaptureSource::FormatChangedHandler (CaptureDevice *source, CaptureFormatChangedEventArgs *args)
 {
-	SampleData *data;
+	if (HasHandlers (CaptureSource::FormatChangedEvent)) {
+		args->ref ();
+		Emit (CaptureSource::FormatChangedEvent, args);
+	}
+}
 
-	SetCurrentDeployment (false); // we can't call into managed code here, we might be on the audio thread
-
-	if (!Surface::InMainThread ()) {
-		data = new SampleData ();
-		data->sampleTime = sampleTime;
-		data->frameDuration = frameDuration;
-		data->sampleData = sampleData;
-		data->sampleDataLength = sampleDataLength;
-		mutex.Lock ();
-		samples.Append (data);
-		mutex.Unlock ();
-		AddTickCall (OnSampleReadyCallback);
+void
+CaptureSource::SampleReadyHandler (CaptureDevice *source, SampleReadyEventArgs *args)
+{
+	if (current_state != Started) {
+#if SANITY
+		printf ("CaptureSource::SampleReadyHandler (): got sample when not started (state: %i)\n", current_state);
+#endif
 		return;
 	}
 
-	SetCurrentDeployment (); // now we're not on the audio thread anymore
+	if (source->Is (Type::AUDIOCAPTUREDEVICE)) {
+		/* Nothing to do here */
+		LOG_CAPTURE ("CaptureSource::SampleReadyHandler (%s)  %p %i sampleTime: %" G_GINT64_FORMAT " = %" G_GINT64_FORMAT "ms, frameDuration: %" G_GINT64_FORMAT " = %" G_GINT64_FORMAT " ms, sampleDataLength: %d\n",
+			source->GetTypeName (), this, GetId (), args->GetSampleTime (), MilliSeconds_FromPts (args->GetSampleTime ()), args->GetFrameDuration (), MilliSeconds_FromPts (args->GetFrameDuration ()), args->GetSampleDataLength ());
+	} else if (source->Is (Type::VIDEOCAPTUREDEVICE)) {
+		VideoFormat *format = args->GetVideoFormat ();
+		void *sampleData = args->GetSampleData ();
+		guint32 sampleDataLength = args->GetSampleDataLength ();
 
-	g_free (cached_sampleData);
-	cached_sampleData = sampleData;
-	cached_sampleDataLength = sampleDataLength;
-	cached_sampleTime = sampleTime;
-	cached_frameDuration = frameDuration;
+		if (pending_capture) {
+			if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
+				BitmapImage *source = MoonUnmanagedFactory::CreateBitmapImage ();
+				CaptureImageCompletedEventArgs *capture_args;
+				source->SetPixelWidth (format->width);
+				source->SetPixelHeight (format->height);
+				source->SetBitmapData (g_memdup (sampleData, sampleDataLength), true);
+				source->Invalidate (); // causes the BitmapSource to create its image_surface
 
-	if (need_image_capture) {
-		CaptureImageReportSample (sampleTime, frameDuration, cached_sampleData, sampleDataLength);
-		need_image_capture = false;
+				capture_args = MoonUnmanagedFactory::CreateCaptureImageCompletedEventArgs (NULL);
+				capture_args->SetSource (source);
+				source->unref ();
+
+				Emit (CaptureSource::CaptureImageCompletedEvent, capture_args);
+			}
+
+			pending_capture = false;
+		}
+
+		LOG_CAPTURE ("CaptureSource::SampleReadyHandler (%s)  %p %i %ix%i sampleTime: %" G_GINT64_FORMAT " = %" G_GINT64_FORMAT "ms, frameDuration: %" G_GINT64_FORMAT " = %" G_GINT64_FORMAT " ms, sampleDataLength: %d\n",
+			source->GetTypeName (), this, GetId (), args->GetVideoFormat ()->width, args->GetVideoFormat ()->height, args->GetSampleTime (), MilliSeconds_FromPts (args->GetSampleTime ()), args->GetFrameDuration (), MilliSeconds_FromPts (args->GetFrameDuration ()), args->GetSampleDataLength ());
 	}
-
-	LOG_CAPTURE ("CaptureSource::ReportSample (%" G_GINT64_FORMAT " = %" G_GINT64_FORMAT "ms, %" G_GINT64_FORMAT " = %" G_GINT64_FORMAT " ms, %d) %p %i has handlers: %i\n",
-		sampleTime, MilliSeconds_FromPts (sampleTime), frameDuration, MilliSeconds_FromPts (frameDuration), sampleDataLength, this, GetId (), HasHandlers (CaptureSource::SampleReadyEvent));
 
 	if (HasHandlers (CaptureSource::SampleReadyEvent)) {
-		Emit (CaptureSource::SampleReadyEvent,
-		      new SampleReadyEventArgs (cached_sampleTime, cached_frameDuration, cached_sampleData, cached_sampleDataLength));
+		args->ref ();
+		Emit (CaptureSource::SampleReadyEvent, args);
 	}
-}
-
-void
-CaptureSource::VideoFormatChanged (VideoFormat *format)
-{
-	SetCurrentDeployment ();
-
-	LOG_CAPTURE ("CaptureSource::VideoFormatChanged\n");
-
-	delete video_capture_format;
-	video_capture_format = new VideoFormat (*format);
-
-	if (HasHandlers (CaptureSource::FormatChangedEvent)) {
-		Emit (CaptureSource::FormatChangedEvent, new CaptureFormatChangedEventArgs (format));
-	}
-}
-
-void
-CaptureSource::AudioFormatChanged (AudioFormat *format)
-{
-	SetCurrentDeployment ();
-
-	LOG_CAPTURE ("CaptureSource::AudioFormatChanged () %p = %i has handlers: %i %s channels: %i rate: %i bits per sample: %i\n",
-		this, GetId (), HasHandlers (CaptureSource::FormatChangedEvent), GetTypeName (), format->channels, format->samplesPerSecond, format->bitsPerSample);
-
-	if (HasHandlers (CaptureSource::FormatChangedEvent)) {
-		Emit (CaptureSource::FormatChangedEvent, new CaptureFormatChangedEventArgs (format));
-	}
-}
-
-void
-CaptureSource::CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration, void *sampleData, int sampleDataLength)
-{
-	SetCurrentDeployment ();
-
-	LOG_CAPTURE ("CaptureSource::CaptureImageReportSample (%lld, %lld, %d\n", (long long) sampleTime, (long long) frameDuration, sampleDataLength);
-
-	if (HasHandlers (CaptureSource::CaptureImageCompletedEvent)) {
-		BitmapImage *source = MoonUnmanagedFactory::CreateBitmapImage ();
-		source->SetPixelWidth (video_capture_format->width);
-		source->SetPixelHeight (video_capture_format->height);
-
-		source->SetBitmapData (sampleData, false);
-
-		source->Invalidate (); // causes the BitmapSource to create its image_surface
-
-		CaptureImageCompletedEventArgs *args = MoonUnmanagedFactory::CreateCaptureImageCompletedEventArgs (NULL);
-
-		args->SetSource (source);
-
-		source->unref ();
-
-		Emit (CaptureSource::CaptureImageCompletedEvent, args);
-	}
-
-	// if we started the pal device strictly for an image capture
-	// (or kept it running after the user had called
-	// CaptureSource::Stop), stop it now.
-	if (current_state != CaptureSource::Started) {
-		VideoCaptureDevice *video_device = GetVideoCaptureDevice ();
-		video_device->Stop();
-	}
-}
-
-void
-CaptureSource::GetSample (gint64 *sampleTime, gint64 *frameDuration, void **sampleData, int *sampleDataLength)
-{
-	if (sampleTime)
-		*sampleTime = cached_sampleTime;
-	if (frameDuration)
-		*frameDuration = cached_frameDuration;
-	if (sampleData)
-		*sampleData = cached_sampleData;
-	if (sampleDataLength)
-		*sampleDataLength = cached_sampleDataLength;
 }
 
 /*
@@ -333,20 +236,199 @@ CaptureSource::GetSample (gint64 *sampleTime, gint64 *frameDuration, void **samp
 CaptureDevice::CaptureDevice (Type::Kind object_type)
 	: DependencyObject (object_type)
 {
-	capture_source = NULL;
 	pal_device = NULL;
+	start_position = 0;
+	audio_buffer = NULL;
+	audio_buffer_size = 0;
+	audio_buffer_used = 0;
+	audio_position = 0;
+}
+
+void
+CaptureDevice::Dispose ()
+{
+	delete pal_device;
+	pal_device = NULL;
+
+	DependencyObject::Dispose ();
 }
 
 CaptureDevice::~CaptureDevice ()
 {
-	delete pal_device;
+	g_free (audio_buffer);
+	audio_buffer = NULL;
 }
 
 void
-CaptureDevice::SetCaptureSource (CaptureSource *value)
+CaptureDevice::SetPalDevice (MoonCaptureDevice *value)
 {
-	LOG_CAPTURE ("%s::SetCaptureSource (%p)\n", GetTypeName (), value);
-	capture_source = value;
+	VERIFY_MAIN_THREAD;
+#if SANITY
+	g_warn_if_fail (pal_device == NULL);
+#endif
+	pal_device = value;
+}
+
+MoonCaptureDevice *
+CaptureDevice::GetPalDevice ()
+{
+	VERIFY_MAIN_THREAD;
+	return pal_device;
+}
+
+void
+CaptureDevice::EmitEventCallback (EventObject *sender)
+{
+	((CaptureDevice *) sender)->EmitEvent ();
+}
+
+void
+CaptureDevice::EmitEvent ()
+{
+	EventData *data;
+
+	VERIFY_MAIN_THREAD;
+
+	events_mutex.Lock ();
+	data = (EventData *) events.First ();
+	if (data != NULL)
+		events.Unlink (data);
+	events_mutex.Unlock ();
+
+	if (data == NULL)
+		return;
+
+	if (data->event == CaptureDevice::SampleReadyEvent) {
+		LOG_CAPTURE ("%s::EmitEvent () SampleReadyEvent\n", GetTypeName ());
+		if (Is (Type::AUDIOCAPTUREDEVICE)) {
+			AudioCaptureDevice *device = (AudioCaptureDevice *) this;
+			AudioFormat *format = data->aformat;
+			guint64 audio_duration = format->GetDuration (audio_buffer_size);
+			guint8 *buf_ptr;
+			guint32 buf_left;
+			guint32 buf_cp;
+	
+			LOG_CAPTURE ("AudioCaptureDevice::SampleReadyHandler () %p %i sample data length: %d audio_buffer_used: %i audio_buffer_size: %i frame size: %i\n",
+				this, GetId (), data->sampleDataLength, audio_buffer_used, audio_buffer_size, device->GetClampedAudioFrameSize ());
+
+			buf_left = data->sampleDataLength;
+			buf_ptr = (guint8 *) data->sampleData;
+	
+			do {
+				buf_cp = MIN (audio_buffer_size - audio_buffer_used, buf_left);
+				memcpy (audio_buffer + audio_buffer_used, buf_ptr, buf_cp);
+				buf_ptr += buf_cp;
+				buf_left -= buf_cp;
+				audio_buffer_used += buf_cp;
+
+				if (audio_buffer_used == audio_buffer_size) {
+					/* Report the audio data we have */
+					LOG_CAPTURE ("AudioCaptureDevice::SampleReadyHandler () emitting: position: %" G_GUINT64_FORMAT " ms duration: %" G_GUINT64_FORMAT " ms bytes: %i\n",
+						MilliSeconds_FromPts (audio_position), MilliSeconds_FromPts (audio_duration), audio_buffer_size);
+					Emit (CaptureDevice::SampleReadyEvent, new SampleReadyEventArgs (audio_position, audio_duration, audio_buffer, audio_buffer_size, data->aformat, data->vformat));
+					audio_position += audio_duration;
+					audio_buffer_used = 0;
+				}
+			} while (buf_left > 0);
+		} else if (Is (Type::VIDEOCAPTUREDEVICE)) {
+			gint64 sampleTime = get_now () - start_position;
+			gint64 frameDuration = 10000000000ULL / data->vformat->framesPerSecond;
+			LOG_CAPTURE ("CaptureDevice::EmitEvent () emitting video SampleReadyEvent %ix%i, %p, %i)\n", data->vformat->width, data->vformat->height, data->sampleData, data->sampleDataLength);
+			Emit (CaptureDevice::SampleReadyEvent, new SampleReadyEventArgs (sampleTime, frameDuration, data->sampleData, data->sampleDataLength, data->aformat, data->vformat));
+		}
+	} else if (data->event == CaptureDevice::CaptureStartedEvent) {
+		LOG_CAPTURE ("%s::EmitEvent () CaptureStartedEvent\n", GetTypeName ());
+		Emit (CaptureDevice::CaptureStartedEvent);
+	} else if (data->event == CaptureDevice::FormatChangedEvent) {
+		LOG_CAPTURE ("%s::EmitEvent () FormatChangedEvent\n", GetTypeName ());
+		if (Is (Type::AUDIOCAPTUREDEVICE)) {
+			AudioCaptureDevice *device = (AudioCaptureDevice *) this;
+			AudioFormat *format = data->aformat;
+			/* resize buffer */
+			audio_buffer_size = format->GetByteCount (device->GetClampedAudioFrameSize ());
+			audio_buffer = (guint8 *) g_realloc (audio_buffer, audio_buffer_size);
+			audio_buffer_used = 0;
+			Emit (CaptureDevice::FormatChangedEvent, new CaptureFormatChangedEventArgs (data->aformat));
+		} else if (Is (Type::VIDEOCAPTUREDEVICE)) {
+			Emit (CaptureDevice::FormatChangedEvent, new CaptureFormatChangedEventArgs (data->vformat));
+		}
+	}
+
+	delete data;
+}
+
+void
+CaptureDevice::EmitCaptureStarted ()
+{
+	SetCurrentDeployment (false);
+	events_mutex.Lock ();
+	events.Append (new EventData (CaptureDevice::CaptureStartedEvent));
+	events_mutex.Unlock ();
+	AddTickCall (EmitEventCallback);
+}
+
+void
+CaptureDevice::EmitVideoFormatChanged (VideoFormat *format)
+{
+	SetCurrentDeployment (false);
+	events_mutex.Lock ();
+	events.Append (new EventData (CaptureDevice::FormatChangedEvent, new VideoFormat (*format)));
+	events_mutex.Unlock ();
+	AddTickCall (EmitEventCallback);
+}
+
+void
+CaptureDevice::EmitAudioFormatChanged (AudioFormat *format)
+{
+	SetCurrentDeployment (false);
+	events_mutex.Lock ();
+	events.Append (new EventData (CaptureDevice::FormatChangedEvent, new AudioFormat (*format)));
+	events_mutex.Unlock ();
+	AddTickCall (EmitEventCallback);
+}
+
+void
+CaptureDevice::EmitAudioSampleReady (AudioFormat *format, void *sampleData, int sampleDataLength)
+{
+	SetCurrentDeployment (false);
+	events_mutex.Lock ();
+	events.Append (new EventData (CaptureDevice::SampleReadyEvent, new AudioFormat (*format), sampleData, sampleDataLength));
+	events_mutex.Unlock ();
+	AddTickCall (EmitEventCallback);
+}
+
+void
+CaptureDevice::EmitVideoSampleReady (VideoFormat *format, void *sampleData, int sampleDataLength)
+{
+	LOG_CAPTURE ("CaptureDevice::EmitVideoSampleReady (%ix%i, %p, %i)\n", format->width, format->height, sampleData, sampleDataLength);
+	SetCurrentDeployment (false);
+	events_mutex.Lock ();
+	if (events.Length () < 50) {
+		events.Append (new EventData (CaptureDevice::SampleReadyEvent, new VideoFormat (*format), sampleData, sampleDataLength));
+	} else {
+		g_free (sampleData);
+	}
+	events_mutex.Unlock ();
+	AddTickCall (EmitEventCallback);
+}
+
+void
+CaptureDevice::Start ()
+{
+	LOG_CAPTURE ("%s::Start ()\n", GetTypeName ());
+	start_position = get_now ();
+	audio_position = 0;
+	GetPalDevice ()->StartCapturing ();
+}
+
+void
+CaptureDevice::Stop ()
+{
+	LOG_CAPTURE ("%s::Stop ()\n", GetTypeName ());
+	GetPalDevice ()->StopCapturing ();
+	events_mutex.Lock ();
+	events.Clear (true);
+	events_mutex.Unlock ();
 }
 
 /*
@@ -359,8 +441,15 @@ AudioCaptureDevice::AudioCaptureDevice ()
 	LOG_CAPTURE ("AudioCaptureDevice ()\n");
 }
 
-AudioCaptureDevice::~AudioCaptureDevice ()
+int
+AudioCaptureDevice::GetClampedAudioFrameSize ()
 {
+	int v = GetValue (AudioCaptureDevice::AudioFrameSizeProperty)->AsInt32 ();
+	if (v < 10)
+		return 10;
+	if (v > 2000)
+		return 2000;
+	return v;
 }
 
 void
@@ -382,20 +471,6 @@ AudioCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 	SetFriendlyName (audio_device->GetFriendlyName ());
 }
 
-void
-AudioCaptureDevice::Start ()
-{
-	LOG_CAPTURE ("AudioCaptureDevice::Start ()\n");
-	((MoonAudioCaptureDevice*)GetPalDevice())->StartCapturing ();
-}
-
-void
-AudioCaptureDevice::Stop ()
-{
-	((MoonAudioCaptureDevice*)GetPalDevice())->StopCapturing ();
-}
-
-
 /*
  * VideoCaptureDevice
  */
@@ -404,10 +479,6 @@ VideoCaptureDevice::VideoCaptureDevice ()
 	: CaptureDevice (Type::VIDEOCAPTUREDEVICE)
 {
 	LOG_CAPTURE ("VideoCaptureDevice ()\n");
-}
-
-VideoCaptureDevice::~VideoCaptureDevice ()
-{
 }
 
 void
@@ -428,21 +499,6 @@ VideoCaptureDevice::SetPalDevice (MoonCaptureDevice *device)
 	SetFriendlyName (video_device->GetFriendlyName());
 }
 
-void
-VideoCaptureDevice::Start ()
-{
-	LOG_CAPTURE ("VideoCaptureDevice::Start ()\n");
-	((MoonVideoCaptureDevice*)GetPalDevice())->StartCapturing ();
-}
-
-void
-VideoCaptureDevice::Stop ()
-{
-	LOG_CAPTURE ("VideoCaptureDevice::Stop ()\n");
-	((MoonVideoCaptureDevice*)GetPalDevice())->StopCapturing ();
-
-}
-
 /*
  * CaptureDeviceConfiguration
  */
@@ -450,7 +506,7 @@ VideoCaptureDevice::Stop ()
 AudioCaptureDevice *
 CaptureDeviceConfiguration::GetDefaultAudioCaptureDevice ()
 {
-	AudioCaptureDeviceCollection *col = new AudioCaptureDeviceCollection ();
+	AudioCaptureDeviceCollection *col = MoonUnmanagedFactory::CreateAudioCaptureDeviceCollection ();
 	AudioCaptureDevice *result;
 
 	GetAvailableAudioCaptureDevices (col);
@@ -465,7 +521,7 @@ CaptureDeviceConfiguration::GetDefaultAudioCaptureDevice ()
 VideoCaptureDevice *
 CaptureDeviceConfiguration::GetDefaultVideoCaptureDevice ()
 {
-	VideoCaptureDeviceCollection *col = new VideoCaptureDeviceCollection ();
+	VideoCaptureDeviceCollection *col = MoonUnmanagedFactory::CreateVideoCaptureDeviceCollection ();
 	VideoCaptureDevice *result;
 
 	GetAvailableVideoCaptureDevices (col);
@@ -503,15 +559,6 @@ CaptureDeviceConfiguration::GetAvailableAudioCaptureDevices (AudioCaptureDeviceC
 		return;
 	audio->GetAvailableCaptureDevices (col);
 	SelectDefaultDevice (col, "Audio");
-}
-
-bool
-CaptureDeviceConfiguration::RequestSystemAccess ()
-{
-	MoonCaptureService *service = Runtime::GetCaptureService ();
-	if (service == NULL)
-		return false;
-	return service->RequestSystemAccess ();
 }
 
 CaptureDevice *

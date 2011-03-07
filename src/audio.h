@@ -247,7 +247,7 @@ class AudioSources {
 };
 
 class AudioRecorder : public EventObject {
-	AudioCaptureDevice *device; // main thread only
+	AudioCaptureDevice *device;
 
 protected:
 	/* @SkipFactories */
@@ -257,6 +257,8 @@ protected:
 
 public:
 	virtual void Record () = 0;
+	// Stop must not return until recording has actually stopped,
+	// and a derived implementation can not call GetDevice after Stop has been called.
 	virtual void Stop () = 0;
 	virtual void GetSupportedFormats (AudioFormatCollection *col) = 0;
 	virtual const char *GetFriendlyName () = 0;
@@ -271,7 +273,6 @@ class AudioPlayer {
 	
 	static AudioPlayer *CreatePlayer ();
 		
-
 	AudioSource *AddImpl (MediaPlayer *mplayer, AudioStream *stream);
 	void RemoveImpl (AudioSource *node);
 	void ShutdownImpl ();

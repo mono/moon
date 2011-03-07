@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 597 methods needs to be decorated.
+# 595 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -24,9 +24,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::application_is_running_out_of_browser(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::capture_device_configuration_request_system_access()
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::check_and_download_update_completed_event_args_get_update_available(System.IntPtr)
@@ -56,7 +53,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::collection_set_value_at_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::consent_prompt_user_for(System.Int32,System.Boolean&)
++SC-M: System.Boolean Mono.NativeMethods::consent_prompt_user_for(System.Int32,System.Boolean&,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::content_control_get_content_sets_parent(System.IntPtr)
@@ -1116,9 +1113,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::capture_device_configuration_get_available_video_capture_devices(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::capture_device_set_pal_device(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::capture_image_completed_event_args_get_error_(System.IntPtr,Mono.MoonError&)

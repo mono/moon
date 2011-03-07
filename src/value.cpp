@@ -453,6 +453,24 @@ Value::Value (VideoFormat format)
 	SetIsNull (false);
 }
 
+Value::Value (AudioFormat *format)
+{
+	Init ();
+	k = Type::AUDIOFORMAT;
+	u.audioformat = g_new (AudioFormat, 1);
+	*u.audioformat = AudioFormat (*format);
+	SetIsNull (false);
+}
+
+Value::Value (VideoFormat *format)
+{
+	Init ();
+	k = Type::VIDEOFORMAT;
+	u.videoformat = g_new (VideoFormat, 1);
+	*u.videoformat = VideoFormat (*format);
+	SetIsNull (false);
+}
+
 Value::Value (GlyphTypeface *typeface)
 {
 	Init ();

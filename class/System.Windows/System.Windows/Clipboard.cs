@@ -88,7 +88,7 @@ namespace System.Windows {
 			if (consented.HasValue && consented.Value)
 				return;
 
-			if (!NativeMethods.consent_prompt_user_for (0, out asked_user))
+			if (!NativeMethods.consent_prompt_user_for (0, out asked_user, true))
 				throw new SecurityException ("Clipboard access is not allowed");
 
 			if (asked_user)

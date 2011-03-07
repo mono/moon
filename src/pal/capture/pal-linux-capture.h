@@ -22,15 +22,6 @@ public:
 
 	virtual MoonVideoCaptureService *GetVideoCaptureService();
 	virtual MoonAudioCaptureService *GetAudioCaptureService();
-
-	// return true if the platform requires its own user
-	// interaction to enable access to video/audio capture devices
-	virtual bool RequiresSystemPermissionForDeviceAccess ();
-
-	// it's alright to block waiting on a response here, return
-	// true if the user has allowed access.
-	virtual bool RequestSystemAccess ();
-
 private:
 
 	MoonVideoCaptureService *video_service;

@@ -431,6 +431,9 @@ public:
 
 	virtual const char* GetFriendlyName () = 0;
 	void SetDevice (CaptureDevice *value) { device = value; }
+
+	virtual void StartCapturing () = 0;
+	virtual void StopCapturing () = 0;
 };
 
 class MoonVideoCaptureDevice : public MoonCaptureDevice {
@@ -442,9 +445,6 @@ public:
 	virtual ~MoonVideoCaptureDevice () {};
 
 	virtual void GetSupportedFormats (VideoFormatCollection *col) = 0;
-
-	virtual void StartCapturing () = 0;
-	virtual void StopCapturing () = 0;
 };
 
 class MoonAudioCaptureDevice : public MoonCaptureDevice {
@@ -456,9 +456,6 @@ public:
 	virtual ~MoonAudioCaptureDevice () {};
 
 	virtual void GetSupportedFormats (AudioFormatCollection *col) = 0;
-
-	virtual void StartCapturing () = 0;
-	virtual void StopCapturing () = 0;
 };
 
 class MoonVideoCaptureService {
@@ -484,14 +481,6 @@ public:
 
 	virtual MoonVideoCaptureService *GetVideoCaptureService() = 0;
 	virtual MoonAudioCaptureService *GetAudioCaptureService() = 0;
-
-	// return true if the platform requires its own user
-	// interaction to enable access to video/audio capture devices
-	virtual bool RequiresSystemPermissionForDeviceAccess () = 0;
-
-	// it's alright to block waiting on a response here, return
-	// true if the user has allowed access.
-	virtual bool RequestSystemAccess () = 0;
 };
 
 class MoonNetworkService {

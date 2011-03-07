@@ -950,6 +950,7 @@ VideoBrush::VideoBrush ()
 	: TileBrush (Type::VIDEOBRUSH), source (this, SourceWeakRef)
 {
 	video_format = NULL;
+	video_data = NULL;
 }
 
 VideoBrush::~VideoBrush ()
@@ -961,13 +962,14 @@ VideoBrush::~VideoBrush ()
 			source = NULL;
 		}
 		else /* Is (Type::CAPTURESOURCE) */ {
-			source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
-			source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+			source->RemoveHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
+			source->RemoveHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);
 			source = NULL;
 		}
 	}
 
 	delete video_format;
+	g_free (video_data);
 }
 
 void
@@ -999,8 +1001,6 @@ VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
 		return;
 	}
 
-	CaptureSource *capture = (CaptureSource *) (DependencyObject *) source;
-
 	Transform *transform = GetTransform ();
 	Transform *relative_transform = GetRelativeTransform ();
 	AlignmentX ax = GetAlignmentX ();
@@ -1008,13 +1008,8 @@ VideoBrush::SetupBrushFromCaptureSource (cairo_t *cr, const Rect &area)
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
-	
-	void *sampleData;
-	int sampleDataLength;
 
-	capture->GetSample (NULL, NULL, &sampleData, &sampleDataLength);
-
-	surface = cairo_image_surface_create_for_data ((unsigned char *) sampleData,
+	surface = cairo_image_surface_create_for_data (video_data,
 						       CAIRO_FORMAT_ARGB32,
 						       video_format->width,
 						       video_format->height,
@@ -1131,8 +1126,8 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			}
 			else /* Is (Type::CAPTURESOURCE) */ {
-				source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
-				source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+				source->RemoveHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
+				source->RemoveHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);
 			}
 			
 			source = NULL;
@@ -1176,8 +1171,8 @@ VideoBrush::SetSource (DependencyObject *source)
 			this->source->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		}
 		else /* Is (Type::CAPTURESOURCE) */ {
-			this->source->RemoveHandler (CaptureSource::SampleReadyEvent, update_brush, this);
-			this->source->RemoveHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+			this->source->RemoveHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
+			this->source->RemoveHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);
 		}
 
 		this->source = NULL;
@@ -1197,8 +1192,8 @@ VideoBrush::SetSource (DependencyObject *source)
 
 			this->source = source;
 
-			this->source->AddHandler (CaptureSource::SampleReadyEvent, update_brush, this);
-			this->source->AddHandler (CaptureSource::FormatChangedEvent, video_format_changed, this);
+			this->source->AddHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
+			this->source->AddHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);
 		}
 		else {
 			g_warning ("invalid object of type '%s' passed to VideoBrush::SetSource", source->GetTypeName());
@@ -1238,20 +1233,21 @@ VideoBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 }
 
 void
-VideoBrush::VideoFormatChanged (CaptureFormatChangedEventArgs *args)
+VideoBrush::SampleReadyHandler (CaptureSource *source, SampleReadyEventArgs *args)
 {
-	printf ("VideoBrush::VideoFormatChanged\n");
-	delete video_format;
-	video_format = new VideoFormat (*args->GetNewVideoFormat());
+	LOG_CAPTURE ("VideoBrush::SampleReadyHandler ()\n");
+	g_free (video_data);
+	video_data_length = args->GetSampleDataLength ();
+	video_data = (guint8 *) g_memdup (args->GetSampleData (), video_data_length);
+	update_brush (NULL, NULL, this);
 }
 
 void
-VideoBrush::video_format_changed (EventObject *, EventArgs *args, gpointer closure)
+VideoBrush::FormatChangedHandler (CaptureSource *source, CaptureFormatChangedEventArgs *args)
 {
-	VideoBrush *b = (VideoBrush*)closure;
-	CaptureFormatChangedEventArgs *vargs = (CaptureFormatChangedEventArgs*)args;
-
-	b->VideoFormatChanged (vargs);
+	LOG_CAPTURE ("VideoBrush::FormatChangedHandler (%ix%i %f fps)\n", args->GetNewVideoFormat ()->width, args->GetNewVideoFormat ()->height, args->GetNewVideoFormat ()->framesPerSecond);
+	delete video_format;
+	video_format = new VideoFormat (*args->GetNewVideoFormat());
 }
 
 //

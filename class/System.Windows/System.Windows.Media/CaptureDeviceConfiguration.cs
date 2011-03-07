@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows.Media {
 	public static class CaptureDeviceConfiguration {
-		static bool last_device_access_response = false;
+		static bool? consented;
 
 		public static ReadOnlyCollection<AudioCaptureDevice> GetAvailableAudioCaptureDevices ()
 		{
@@ -81,13 +81,28 @@ namespace System.Windows.Media {
 
 		public static bool RequestDeviceAccess ()
 		{
-			last_device_access_response = NativeMethods.capture_device_configuration_request_system_access ();
-			return last_device_access_response;
+			bool asked_user = false;
+
+			if (consented.HasValue && consented.Value)
+				return true;
+
+			if (!NativeMethods.consent_prompt_user_for (2, out asked_user, Helper.IsUserInitiated ()))
+				return false;
+
+			if (asked_user)
+				consented = true;
+
+			return true;
 		}
 
 		public static bool AllowedDeviceAccess {
 			get {
-				return last_device_access_response;
+				bool asked_user = false;
+
+				if (consented.HasValue && consented.Value)
+					return true;
+
+				return NativeMethods.consent_prompt_user_for (2, out asked_user, false);
 			}
 		}
 	}

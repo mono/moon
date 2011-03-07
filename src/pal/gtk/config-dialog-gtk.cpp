@@ -528,7 +528,7 @@ WebCamMicConfigDialogPage::SelectAudioDevice (int index)
 	}
 
 	if (device) {
-		device->SetAudioFrameSize (100); /* we want a data event every 100 ms */
+		device->SetValue (AudioCaptureDevice::AudioFrameSizeProperty, Value (100)); /* we want a data event every 100 ms */
 		microphone_source = new CaptureSource ();
 		microphone_source->AddHandler (CaptureSource::SampleReadyEvent, SampleReadyCallback, this);
 		microphone_source->AddHandler (CaptureSource::FormatChangedEvent, FormatChangedCallback, this);

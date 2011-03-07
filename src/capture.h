@@ -22,7 +22,7 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
-struct VideoFormat {
+class VideoFormat {
 public:
 	VideoFormat (MoonPixelFormat format, float framesPerSecond, int stride, int width, int height);
 	VideoFormat (const VideoFormat &format);
@@ -46,7 +46,7 @@ public:
 };
 
 /* @IncludeInKinds */
-struct AudioFormat {
+class AudioFormat {
 public:
 	AudioFormat (MoonWaveFormatType format, int bitsPerSample, int channels, int samplesPerSecond);
 	AudioFormat ();
@@ -65,17 +65,31 @@ public:
 	{
 		return !(*this == format);
 	}
+
+	// Returns the number of bytes required to hold the specified duration of audio
+	double GetByteCount (guint32 milliseconds)
+	{
+		return (milliseconds * (bitsPerSample / 8) * channels * samplesPerSecond) / (double) 1000;
+	}
+
+	// Returns the duration (in pts) of the specifed number of bytes.
+	guint64 GetDuration (guint32 bytes)
+	{
+		return bytes * 10000000ULL / channels / (bitsPerSample / 8) / samplesPerSecond;
+	}
 };
 
 /* @Namespace=None */
 class SampleReadyEventArgs : public EventArgs {
 public:
-	SampleReadyEventArgs (gint64 sampleTime, gint64 frameDuration, void *sampleData, int sampleDataLength)
+	SampleReadyEventArgs (gint64 sampleTime, gint64 frameDuration, void *sampleData, int sampleDataLength, AudioFormat *aformat, VideoFormat *vformat)
 		: EventArgs (Type::SAMPLEREADYEVENTARGS),
 		  sampleTime (sampleTime),
 		  frameDuration (frameDuration),
 		  sampleData (sampleData),
-		  sampleDataLength (sampleDataLength)
+		  sampleDataLength (sampleDataLength),
+		  video_format (vformat),
+		  audio_format (aformat)
 	{
 	}
 
@@ -87,7 +101,10 @@ public:
 	void* GetSampleData () { return sampleData; }
 	/* @GeneratePInvoke */
 	int GetSampleDataLength () { return sampleDataLength; }
-	
+
+	VideoFormat *GetVideoFormat () { return video_format; }
+	AudioFormat *GetAudioFormat () { return audio_format; }
+
 protected:
 	virtual ~SampleReadyEventArgs () { };
 
@@ -96,6 +113,8 @@ private:
 	gint64 frameDuration;
 	void *sampleData;
 	int sampleDataLength;
+	VideoFormat *video_format;
+	AudioFormat *audio_format;
 };
 
 /* @Namespace=None */
@@ -161,9 +180,6 @@ public:
 	/* @GeneratePInvoke */
 	int GetState ();
 
-	// used by VideoBrush
-	void GetSample (gint64 *sampleTime, gint64 *frameDuration, void **sampleData, int *sampleDataLength);
-
 	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int CaptureFailedEvent;
 
@@ -180,49 +196,24 @@ public:
 	/* @ManagedAccess=Internal */
 	const static int CaptureStoppedEvent;
 
-	// the callee is given ownership of the sampleData buffer
-	void ReportSample (gint64 sampleTime, gint64 frameDuration, void *sampleData, int sampleDataLength); // thread-safe
-	void VideoFormatChanged (VideoFormat *format);
-	void AudioFormatChanged (AudioFormat *format);
-	void CaptureImageReportSample (gint64 sampleTime, gint64 frameDuration, void *sampleData, int sampleDataLength);
+	EVENTHANDLER (CaptureSource, SampleReady, CaptureDevice, SampleReadyEventArgs);
+	EVENTHANDLER (CaptureSource, FormatChanged, CaptureDevice, CaptureFormatChangedEventArgs);
+	EVENTHANDLER (CaptureSource, CaptureStarted, CaptureDevice, EventArgs);
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 protected:
-
-	virtual ~CaptureSource ();
+	virtual ~CaptureSource () {}
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
 private:
 	State current_state;
-	void *cached_sampleData;
-	int cached_sampleDataLength;
-	gint64 cached_sampleTime;
-	gint64 cached_frameDuration;
 
-	bool need_image_capture;
-	VideoFormat *video_capture_format;
+	bool pending_capture;
 
-	static void OnSampleReadyCallback (EventObject *obj);
-	void OnSampleReady ();
-
-	List samples;
-	Mutex mutex;
-
-	class SampleData : public List::Node {
-	public:
-		gint64 sampleTime;
-		gint64 frameDuration;
-		void *sampleData;
-		gsize sampleDataLength;
-		bool copy_data;
-
-		virtual ~SampleData ()
-		{
-			if (copy_data)
-				g_free (sampleData);
-		}
-	};
+	void EmitAudioSample (AudioFormat *format, void *sampleData, int sampleDataLength);
 };
 
 /* @Namespace=System.Windows.Media */
@@ -234,36 +225,80 @@ public:
 	/* @PropertyType=bool,GenerateAccessors,ReadOnly,DefaultValue=false */
 	const static int IsDefaultDeviceProperty;
 
+	// properties
 	const char *GetFriendlyName ();
 	void SetFriendlyName (const char *value);
 
 	bool GetIsDefaultDevice ();
 	void SetIsDefaultDevice (bool value);
 
+	const static int SampleReadyEvent;
+	const static int FormatChangedEvent;
+	const static int CaptureStartedEvent;
+
 	void Start ();
 	void Stop ();
 
-	MoonCaptureDevice* GetPalDevice () { return pal_device; }
-	/* @GeneratePInvoke */
-	virtual void SetPalDevice (MoonCaptureDevice *device) { pal_device = device; }
-	void SetCaptureSource (CaptureSource *value);
-	CaptureSource *GetCaptureSource () { return capture_source; }
+	// the callee is given ownership of the sampleData buffer for both audio and video
+	void EmitAudioSampleReady (AudioFormat *format, void *sampleData, int sampleDataLength); // thread-safe
+	void EmitVideoSampleReady (VideoFormat *format, void *sampleData, int sampleDataLength); // thread-safe
+	void EmitCaptureStarted (); // thread-safe
+	void EmitVideoFormatChanged (VideoFormat *format); // thread-safe
+	void EmitAudioFormatChanged (AudioFormat *format); // thread-safe
+
+	virtual void SetPalDevice (MoonCaptureDevice *device);
+
+	virtual void Dispose ();
 
 protected:
 	/* @ManagedAccess=None */
 	CaptureDevice (Type::Kind object_type);
-
 	virtual ~CaptureDevice ();
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 
 private:
-	MoonCaptureDevice* pal_device;
-	CaptureSource *capture_source;
+	MoonCaptureDevice* pal_device; // main thread only
+	List events; // list of events to be emitted (on the main thread). thread-safe
+	Mutex events_mutex;
+
+	guint8 *audio_buffer;
+	guint32 audio_buffer_size;
+	guint32 audio_buffer_used;
+	guint64 audio_position;
+
+	guint64 start_position;
+
+	MoonCaptureDevice* GetPalDevice ();
 
 	/* @ManagedAccess=None */
 	CaptureDevice () {}
+
+	class EventData : public List::Node {
+	public:
+		int event;
+		void *sampleData;
+		int sampleDataLength;
+		VideoFormat *vformat;
+		AudioFormat *aformat;
+
+		EventData (int event)                                                               : event (event), sampleData (NULL), sampleDataLength (0), vformat (NULL), aformat (NULL) {}
+		EventData (int event, VideoFormat *format)                                          : event (event), sampleData (NULL), sampleDataLength (0), vformat (format), aformat (NULL) {}
+		EventData (int event, AudioFormat *format)                                          : event (event), sampleData (NULL), sampleDataLength (0), vformat (NULL), aformat (format) {}
+		EventData (int event, VideoFormat *format, void *sampleData, int sampleDataLength) : event (event), sampleData (sampleData), sampleDataLength (sampleDataLength), vformat (format), aformat (NULL) {}
+		EventData (int event, AudioFormat *format, void *sampleData, int sampleDataLength) : event (event), sampleData (sampleData), sampleDataLength (sampleDataLength), vformat (NULL), aformat (format) {}
+
+		virtual ~EventData ()
+		{
+			g_free (sampleData);
+			delete vformat;
+			delete aformat;
+		}
+	};
+
+	static void EmitEventCallback (EventObject *sender);
+	void EmitEvent ();
 };
 
 /* @Namespace=System.Windows.Media */
@@ -274,8 +309,7 @@ public:
 protected:
 	/* @GeneratePInvoke */
 	AudioFormatCollection () : Collection (Type::AUDIOFORMAT_COLLECTION) { }
-
-	virtual ~AudioFormatCollection () { }
+	virtual ~AudioFormatCollection () {}
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -284,7 +318,8 @@ protected:
 /* @Namespace=System.Windows.Media */
 class AudioCaptureDevice : public CaptureDevice {
 public:
-	/* @PropertyType=gint32,GenerateAccessors,DefaultValue=1000 */
+	// We do not generate accessors here, to force the usage of GetClampedAudioFrameSize */
+	/* @PropertyType=gint32,DefaultValue=1000 */
 	const static int AudioFrameSizeProperty;
 
 	/* @PropertyType=AudioFormatCollection,ManagedPropertyType=PresentationFrameworkCollection<AudioFormat>,ManagedFieldAccess=Private,GenerateManagedAccessors=false,GenerateAccessors */
@@ -292,9 +327,6 @@ public:
 
 	/* @PropertyType=AudioFormat,ManagedFieldAccess=Private,GenerateAccessors */
 	const static int DesiredFormatProperty;
-
-	int GetAudioFrameSize ();
-	void SetAudioFrameSize (int value);
 
 	AudioFormatCollection* GetSupportedFormats ();
 	void SetSupportedFormats (AudioFormatCollection *formats);
@@ -304,14 +336,12 @@ public:
 
 	virtual void SetPalDevice (MoonCaptureDevice *device);
 
-	void Start ();
-	void Stop ();
+	int GetClampedAudioFrameSize ();
 
 protected:
 	/* @ManagedAccess=Internal,GeneratePInvoke */
 	AudioCaptureDevice ();
-
-	virtual ~AudioCaptureDevice ();
+	virtual ~AudioCaptureDevice () {}
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -325,8 +355,7 @@ public:
 protected:
 	/* @GeneratePInvoke */
 	VideoFormatCollection () : Collection (Type::VIDEOFORMAT_COLLECTION) { }
-
-	virtual ~VideoFormatCollection () { }
+	virtual ~VideoFormatCollection () {}
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -347,16 +376,13 @@ public:
 	VideoFormatCollection* GetSupportedFormats ();
 	void SetSupportedFormats (VideoFormatCollection *formats);
 
-	void SetPalDevice (MoonCaptureDevice *device);
-
-	void Start ();
-	void Stop ();
+	virtual void SetPalDevice (MoonCaptureDevice *device);
 
 protected:
 	/* @ManagedAccess=Internal,GeneratePInvoke */
 	VideoCaptureDevice ();
 
-	virtual ~VideoCaptureDevice ();
+	virtual ~VideoCaptureDevice () {}
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
@@ -366,7 +392,7 @@ private:
 	Collection *supported_formats;
 };
 
-class CaptureDeviceConfiguration {
+class MOON_API CaptureDeviceConfiguration {
 private:
 	static CaptureDevice *SelectDefaultDevice (DependencyObjectCollection *col, const char *type);
 
@@ -383,9 +409,6 @@ public:
 
 	/* @GeneratePInvoke */
 	static void GetAvailableAudioCaptureDevices (AudioCaptureDeviceCollection *col);
-
-	/* @GeneratePInvoke */
-	static bool RequestSystemAccess ();
 };
 
 };

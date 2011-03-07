@@ -1003,7 +1003,6 @@ PulseRecorder::PulseRecorder (PulsePlayer *player, SourceNode *info)
 		info->name, info->description, info->sample_spec.channels, info->sample_spec.format, info->sample_spec.rate);
 	pulse_stream = NULL;
 	this->player = player;
-	initialized = false;
 	is_ready = false;
 	name = g_strdup (info->name);
 	description = g_strdup (info->description);
@@ -1011,22 +1010,12 @@ PulseRecorder::PulseRecorder (PulsePlayer *player, SourceNode *info)
 	recording_format = NULL;
 	pthread_mutex_init (&ready_mutex, NULL);
 	pthread_cond_init (&ready_cond, NULL);
-	position = 0;
-	capture_source = NULL;
 }
 
 void
 PulseRecorder::Dispose ()
 {
-	player->LockLoop ();
-	if (pulse_stream) {
-		pa_stream_set_state_callback (pulse_stream, NULL, NULL);
-		pa_stream_set_read_callback (pulse_stream, NULL, NULL);
-		pa_stream_disconnect (pulse_stream);
-		pa_stream_unref (pulse_stream);
-		pulse_stream = NULL;
-	}
-	player->UnlockLoop ();
+	Stop ();
 	AudioRecorder::Dispose ();
 }
 
@@ -1050,7 +1039,7 @@ PulseRecorder::InitializePA ()
 	
 	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::InitializePA () name: %s\n", name);
 		
-	if (initialized)
+	if (is_ready)
 		return true;
 	
 	if (player->GetPAState () != PA_CONTEXT_READY) {
@@ -1059,8 +1048,7 @@ PulseRecorder::InitializePA ()
 	}
 
 	desired_format = GetDevice ()->GetDesiredFormat ();
-	audio_frame_size = GetDevice ()->GetAudioFrameSize ();
-	audio_frame_size = MIN (2000, MAX (10, audio_frame_size));
+	audio_frame_size = GetDevice ()->GetClampedAudioFrameSize ();
 
 	player->LockLoop ();
 
@@ -1121,8 +1109,10 @@ PulseRecorder::InitializePA ()
 	pa_stream_set_state_callback (pulse_stream, OnStateChanged, this);
 	pa_stream_set_read_callback (pulse_stream, OnRead, this);
 
+	recording_format = new AudioFormat (SampleSpecToAudioFormat (&recording_spec));
+
 	buffer_attr.maxlength = (uint32_t) -1;
-	buffer_attr.fragsize = pa_sample_size (&recording_spec) * recording_spec.channels * recording_spec.rate * audio_frame_size / 1000;
+	buffer_attr.fragsize = recording_format->GetByteCount (audio_frame_size);
 
 	err = pa_stream_connect_record (pulse_stream, name, &buffer_attr, (pa_stream_flags_t) (PA_STREAM_START_CORKED));
 	if (err < 0) {
@@ -1131,10 +1121,9 @@ PulseRecorder::InitializePA ()
 	}
 	
 	result = true;
-	initialized = true;
 
-	recording_format = new AudioFormat (SampleSpecToAudioFormat (&recording_spec));
-	GetDevice ()->GetCaptureSource ()->AudioFormatChanged (recording_format);
+	GetDevice ()->EmitCaptureStarted ();
+	GetDevice ()->EmitAudioFormatChanged (recording_format);
 
 cleanup:
 	player->UnlockLoop ();
@@ -1185,15 +1174,6 @@ PulseRecorder::Record ()
 	if (!InitializePA ())
 		return;
 
-	position = 0;
-
-	capture_mutex.Lock ();
-	if (capture_source == NULL) {
-		capture_source = GetDevice ()->GetCaptureSource ();
-		capture_source->ref ();
-	}
-	capture_mutex.Unlock ();
-
 	player->LockLoop ();
 	if (pulse_stream) {
 		pa_operation_unref (pa_stream_cork (pulse_stream, 0, NULL, NULL));
@@ -1204,23 +1184,31 @@ PulseRecorder::Record ()
 void
 PulseRecorder::Stop ()
 {
-	CaptureSource *old_source = NULL;
-
 	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::Stop ()\n");
 	VERIFY_MAIN_THREAD;
 
 	player->LockLoop ();
 	if (pulse_stream) {
-		pa_operation_unref (pa_stream_cork (pulse_stream, 1, NULL, NULL));
+		pa_stream_set_read_callback (pulse_stream, NULL, NULL);
+		pa_stream_disconnect (pulse_stream);
 	}
 	player->UnlockLoop ();
 
-	capture_mutex.Lock ();
-	old_source = capture_source;
-	capture_source = NULL;
-	capture_mutex.Unlock ();
-	if (old_source)
-		old_source->unref ();
+	// Wait until we've really stopped.
+	pthread_mutex_lock (&ready_mutex);
+	while (is_ready) {
+		pthread_cond_wait (&ready_cond, &ready_mutex);
+	}
+	pthread_mutex_unlock (&ready_mutex);
+
+	player->LockLoop ();
+	if (pulse_stream) {
+		pa_stream_set_state_callback (pulse_stream, NULL, NULL);
+		pa_stream_unref (pulse_stream);
+		pulse_stream = NULL;
+	}
+	player->UnlockLoop ();
+	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::Stop () Stopped.\n");
 }
 
 pa_stream_state_t
@@ -1272,10 +1260,16 @@ PulseRecorder::OnStateChanged (pa_stream *pulse_stream)
 		pthread_cond_signal (&ready_cond);
 		pthread_mutex_unlock (&ready_mutex);
 		break;
-	case PA_STREAM_CREATING:
 	case PA_STREAM_TERMINATED:
+		pthread_mutex_lock (&ready_mutex);
+		is_ready = false;
+		pthread_cond_signal (&ready_cond);
+		pthread_mutex_unlock (&ready_mutex);
+		break;
+	case PA_STREAM_CREATING:
 		break;
 	case PA_STREAM_FAILED:
+		is_ready = false;
 	default:
 		LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnStateChanged (): Stream error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		break;
@@ -1291,10 +1285,8 @@ PulseRecorder::OnRead (pa_stream *s, size_t length, void *userdata)
 void
 PulseRecorder::OnRead (size_t length)
 {
-	guint64 pts;
 	size_t nbytes = 0;
 	const void *data;
-	CaptureSource *source;
 
 	if (pulse_stream == NULL) {
 		// We've been destroyed
@@ -1308,19 +1300,7 @@ PulseRecorder::OnRead (size_t length)
 	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulseRecorder::OnRead (%" G_GINT64_FORMAT "): Read %" G_GUINT64_FORMAT " bytes\n", (gint64) length, (gint64) nbytes);
 
 	if (data != NULL && nbytes > 0) {
-		pts = nbytes * 10000000ULL / recording_spec.channels / pa_sample_size (&recording_spec);
-
-		capture_mutex.Lock ();
-		source = capture_source;
-		if (source)
-			source->ref ();
-		capture_mutex.Unlock ();
-		if (source) {
-			source->ReportSample (position, pts, g_memdup (data, nbytes), nbytes);
-			source->unref ();
-		}
-
-		position += pts;
+		GetDevice ()->EmitAudioSampleReady (recording_format, g_memdup (data, nbytes), nbytes);
 		pa_stream_drop (pulse_stream);
 	} else {
 		/* no data ?*/

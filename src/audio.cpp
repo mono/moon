@@ -1284,13 +1284,20 @@ void
 AudioRecorder::SetDevice (AudioCaptureDevice *value)
 {
 	VERIFY_MAIN_THREAD;
+#if SANITY
+	if (device != NULL && value != NULL)
+		printf ("AudioRecorder::SetDevice (): setting device multiple times!\n");
+#endif
+	if (value == NULL) {
+		// We need to stop recording before clearing the device
+		Stop ();
+	}
 	device = value;
 }
 
 AudioCaptureDevice *
 AudioRecorder::GetDevice ()
 {
-	VERIFY_MAIN_THREAD;
 	return device;
 }
 

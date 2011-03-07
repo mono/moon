@@ -79,7 +79,6 @@ private:
 	};
 	PulsePlayer *player;
 	pa_stream *pulse_stream;
-	bool initialized;
 	bool is_ready;
 	pthread_mutex_t ready_mutex;
 	pthread_cond_t ready_cond;
@@ -88,9 +87,6 @@ private:
 	pa_sample_spec default_spec;
 	pa_sample_spec recording_spec;
 	AudioFormat *recording_format;
-	guint64 position;
-	CaptureSource *capture_source;
-	Mutex capture_mutex;
 
 	bool InitializePA ();
 

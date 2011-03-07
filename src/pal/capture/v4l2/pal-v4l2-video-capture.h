@@ -12,6 +12,7 @@
 #define MOON_PAL_VIDEO_CAPTURE_V4L2_H
 
 #include "pal.h"
+#include "capture.h"
 
 namespace Moonlight {
 
@@ -24,11 +25,17 @@ public:
 	int height;
 	int width;
 	int stride;
+	int input_stride;
+
+	MoonVideoFormatV4L2 ()
+		: v4l2PixelFormat (0), framesPerSecond (0), height (0), width (0), stride (0), input_stride (0)
+	{
+	}
 };
 
 class MoonVideoCaptureDeviceV4L2 : public MoonVideoCaptureDevice {
 public:
-	MoonVideoCaptureDeviceV4L2 (int fd, const char *friendly_name);
+	MoonVideoCaptureDeviceV4L2 (const char *filename, int input_index, const char *friendly_name);
 	virtual ~MoonVideoCaptureDeviceV4L2 ();
 
 	virtual void GetSupportedFormats (VideoFormatCollection *col);
@@ -38,13 +45,17 @@ public:
 	virtual void StartCapturing ();
 	virtual void StopCapturing ();
 
+	void RetrieveFormats (int fd);
+
 private:
 	static void * CaptureLoopCallback (gpointer context);
 	void CaptureLoop ();
-	void RetrieveFormats ();
 
 	int fd;
+	int input_index;
+	char *filename;
 	MoonVideoFormatV4L2 capturing_format;
+	VideoFormat capturing_video_format;
 	char *friendly_name;
 
 	typedef struct {
@@ -54,8 +65,6 @@ private:
 
 	int buffer_count;
 	Buffer *buffers;
-
-	guint64 first_pts;
 
 	guint32 format_count;
 	MoonVideoFormatV4L2 **formats;

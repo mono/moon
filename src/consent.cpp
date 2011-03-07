@@ -70,7 +70,7 @@ Consent::GetConsentType (const char *name)
 }
 
 bool
-Consent::PromptUserFor (MoonConsentType consent, bool *asked_user)
+Consent::PromptUserFor (MoonConsentType consent, bool *asked_user, bool ask_user)
 {
 	bool result;
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
@@ -112,7 +112,7 @@ Consent::PromptUserFor (MoonConsentType consent, bool *asked_user)
 		break;
 	}
 
-	result = PromptUserFor (consent, question, detail, website, asked_user);
+	result = PromptUserFor (consent, question, detail, website, asked_user, ask_user);
 
 	g_free (website);
 
@@ -120,7 +120,7 @@ Consent::PromptUserFor (MoonConsentType consent, bool *asked_user)
 }
 
 bool
-Consent::PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user)
+Consent::PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user, bool ask_user)
 {
 	bool remember = false;
 	bool rv = false; 
@@ -134,6 +134,8 @@ Consent::PromptUserFor (MoonConsentType consent, const char *question, const cha
 		return rv;
 	}
 
+	if (!ask_user)
+		return false;
 
 	MoonWindowingSystem *windowing_system = Runtime::GetWindowingSystem ();
 

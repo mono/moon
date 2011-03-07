@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 634 methods
+# 635 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -543,6 +543,7 @@
 +SSC-M: System.Windows.Media.AudioCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultAudioCaptureDevice()
 +SSC-M: System.Windows.Media.VideoCaptureDevice System.Windows.Media.CaptureDeviceConfiguration::GetDefaultVideoCaptureDevice()
 +SSC-M: System.Boolean System.Windows.Media.CaptureDeviceConfiguration::RequestDeviceAccess()
++SSC-M: System.Boolean System.Windows.Media.CaptureDeviceConfiguration::get_AllowedDeviceAccess()
 +SSC-M: System.Void System.Windows.Media.CaptureFormatChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::.ctor(System.IntPtr,System.Exception,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.GetKind()

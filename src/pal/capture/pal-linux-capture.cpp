@@ -13,7 +13,6 @@
 #include "pal-linux-capture.h"
 #include "pal-linux-audio-capture.h"
 #include "deployment.h"
-#include "consent.h"
 #include "runtime.h"
 
 #if PAL_V4L2_VIDEO_CAPTURE
@@ -48,21 +47,4 @@ MoonAudioCaptureService*
 MoonCaptureServiceLinux::GetAudioCaptureService()
 {
 	return audio_service;
-}
-
-bool
-MoonCaptureServiceLinux::RequiresSystemPermissionForDeviceAccess ()
-{
-	return false;
-}
-
-bool
-MoonCaptureServiceLinux::RequestSystemAccess ()
-{
-	// this must be called from a user initiated event (clicking a
-	// button, etc), or else it fails outright.
-	if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
-		return false;
-
-	return Consent::PromptUserFor (MOON_CONSENT_CAPTURE, NULL);
 }

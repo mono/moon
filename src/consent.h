@@ -33,8 +33,8 @@ public:
 	static MoonConsentType GetConsentType (const char *name);
 
 	/* @GeneratePInvoke */
-	static bool PromptUserFor (/* @MarshalAs=int */ MoonConsentType consent, bool *asked_user);
-	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user);
+	static bool PromptUserFor (/* @MarshalAs=int */ MoonConsentType consent, bool *asked_user, bool ask_user);
+	static bool PromptUserFor (MoonConsentType consent, const char *question, const char *detail, const char *website, bool *asked_user, bool ask_user);
 };
 
 };

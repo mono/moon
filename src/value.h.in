@@ -43,8 +43,8 @@ struct GridLength;
 struct Thickness;
 struct CornerRadius;
 struct ManagedTypeInfo;
-struct AudioFormat;
-struct VideoFormat;
+class AudioFormat;
+class VideoFormat;
 
 struct Value;
 
@@ -110,6 +110,8 @@ public:
 	Value (GridLength grid_length);
 	Value (Thickness thickness);
 	Value (CornerRadius radius);
+	Value (VideoFormat *format);
+	Value (AudioFormat *format);
 	Value (VideoFormat format);
 	Value (AudioFormat format);
 	Value (GlyphTypeface *typeface);
@@ -189,8 +191,6 @@ public:
 	GridLength*     AsGridLength () const       { checked_get_exact (Type::GRIDLENGTH, NULL, u.grid_length); }
 	Thickness*      AsThickness () const        { checked_get_exact (Type::THICKNESS, NULL, u.thickness); }
 	CornerRadius*   AsCornerRadius () const     { checked_get_exact (Type::CORNERRADIUS, NULL, u.corner); }
-	AudioFormat*    AsAudioFormat () const      { checked_get_exact (Type::AUDIOFORMAT, NULL, u.audioformat); }
-	VideoFormat*    AsVideoFormat () const      { checked_get_exact (Type::VIDEOFORMAT, NULL, u.videoformat); }
 	/* nullable primitives (all but bool) */
 	double*		AsNullableDouble ()         { checked_get_exact (Type::DOUBLE, NULL, &u.d); }
 	guint64*	AsNullableUint64 ()         { checked_get_exact (Type::UINT64, NULL, &u.ui64); }

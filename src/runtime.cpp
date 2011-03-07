@@ -1134,7 +1134,7 @@ Surface::SetFullScreen (bool value)
 
 	if (full_screen_options != FullScreenOptionsNone && !full_screen_options_consented) {
 		bool asked = false;
-		if (!Consent::PromptUserFor (MOON_CONSENT_FULLSCREEN_PINNING, &asked))
+		if (!Consent::PromptUserFor (MOON_CONSENT_FULLSCREEN_PINNING, &asked, true))
 			return;
 		if (asked)
 			full_screen_options_consented = true;
