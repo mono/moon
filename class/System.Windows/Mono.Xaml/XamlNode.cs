@@ -508,48 +508,43 @@ namespace Mono.Xaml {
 							node.IgnorablePrefixes.Add (s);
 					}
 
-					if (node.Attributes.Count > 0 && evattr != null) {
-						foreach (XamlAttribute ai in node.Attributes.Values.Where (x => !x.IsMapping && !x.IsNsIgnorable && !x.IsNsClr))
-							evattr (node, ai);
-					} else {
-						reader.MoveToFirstAttribute ();
+					reader.MoveToFirstAttribute ();
 
-						int count = 0;
-						do {
-							// this filters out ignorable attributes
-							if (node.IgnorablePrefixes.Contains (reader.Prefix))
-								continue;
+					int count = 0;
+					do {
+						// this filters out ignorable attributes
+						if (node.IgnorablePrefixes.Contains (reader.Prefix))
+							continue;
 
-							XamlAttribute ai = new XamlAttribute (reader) {
-								Index = count++,
-							};
+						XamlAttribute ai = new XamlAttribute (reader) {
+							Index = count++,
+						};
 
-							// an x: or equivalent attribute
-							ai.IsNsXaml = !ai.IsMapping && ai.NamespaceURI == XamlUri;
-							// an mc: or equivalent attribute (this attribute defines the list of ignorable prefixes)
-							ai.IsNsIgnorable = !ai.IsMapping && (ai.NamespaceURI == IgnorableUri || ai.Prefix == "mc");
-							// an xmlns:my='clr-namespace...' attribute
-							ai.IsNsClr = !ai.IsMapping && ai.NamespaceURI.StartsWith ("clr-namespace");
-							if (ai.IsNsXaml && ai.LocalName == "Class")
-								node.Class = ai.Value;
+						// an x: or equivalent attribute
+						ai.IsNsXaml = !ai.IsMapping && ai.NamespaceURI == XamlUri;
+						// an mc: or equivalent attribute (this attribute defines the list of ignorable prefixes)
+						ai.IsNsIgnorable = !ai.IsMapping && (ai.NamespaceURI == IgnorableUri || ai.Prefix == "mc");
+						// an xmlns:my='clr-namespace...' attribute
+						ai.IsNsClr = !ai.IsMapping && ai.NamespaceURI.StartsWith ("clr-namespace");
+						if (ai.IsNsXaml && ai.LocalName == "Class")
+							node.Class = ai.Value;
 
-							if (ai.IsMapping) {
-								if (node.top != node)
-									ai.Index = node.top.Attributes.Count;
-								node.top.Attributes [reader.Name] = ai;
-							} else {
-								if (ai.IsNsXaml) {
-									if (ai.LocalName == "Key")
-										node.X_Key = ai.Value;
-									else if (ai.LocalName == "Name")
-										node.X_Name = ai.Value;
-								}
-								node.Attributes [reader.Name] = ai;
+						if (ai.IsMapping) {
+							if (node.top != node)
+								ai.Index = node.top.Attributes.Count;
+							node.top.Attributes [reader.Name] = ai;
+						} else {
+							if (ai.IsNsXaml) {
+								if (ai.LocalName == "Key")
+									node.X_Key = ai.Value;
+								else if (ai.LocalName == "Name")
+									node.X_Name = ai.Value;
 							}
-						} while (reader.MoveToNextAttribute ());
+							node.Attributes [reader.Name] = ai;
+						}
+					} while (reader.MoveToNextAttribute ());
 
-						reader.MoveToElement ();
-					}
+					reader.MoveToElement ();
 				}
 			
 				node.Initialized = true;
