@@ -60,7 +60,7 @@ public:
 	virtual void GrabFocus ();
 	virtual bool HasFocus ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GeneratePInvoke */
 	void *GetNativeWidget () { return NULL; }  // same as GetWidget, just without bleeding CocoaWidget into the cbindings
 	
 	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType);

@@ -25,6 +25,7 @@
 namespace Moonlight {
 
 /* @Namespace=None */
+/* @ManagedDependencyProperties=Manual */
 class MediaAttribute : public DependencyObject {
  protected:
 	virtual ~MediaAttribute () {}
