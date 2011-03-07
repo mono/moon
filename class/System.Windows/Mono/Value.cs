@@ -119,7 +119,7 @@ namespace Mono {
 
 		public VideoFormat ToVideoFormat ()
 		{
-			return new VideoFormat (pixelFormat, height, width, framesPerSecond);
+			return new VideoFormat (pixelFormat, width, height, framesPerSecond);
 		}
 	}
 
