@@ -1,3 +1,5 @@
 # [SecuritySafeCritical] needed inside System.ServiceModel to call all [SecurityCritical] methods
-# 0 methods
+# 2 methods
 
++SSC-M: TChannel System.ServiceModel.ChannelFactory`1::CreateChannel(System.ServiceModel.EndpointAddress,System.Uri)
++SSC-M: System.Void System.ServiceModel.ClientRealProxy::.ctor(System.Type,System.ServiceModel.MonoInternal.IInternalContextChannel,System.Boolean)
