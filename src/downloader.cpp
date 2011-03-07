@@ -169,6 +169,7 @@ Downloader::GetDownloadedFilename (const char *partname)
 		// extract the file from the zip archive... (closes the fd on success and fail)
 		if (!ExtractFile (zipfile, fd))
 			goto exception3;
+		close (fd);
 		
 		unzCloseCurrentFile (zipfile);
 		unzClose (zipfile);
@@ -259,7 +260,9 @@ Downloader::GetUnzippedPath ()
 		if ((fd = g_open (path->str, O_WRONLY | O_CREAT | O_EXCL, 0600)) != -1) {
 			if (!ExtractFile (zip, fd))
 				unzipped = false;
-		} else if (errno != EEXIST) {
+			else
+				close (fd);
+		}  else if (errno != EEXIST) {
 			unzipped = false;
 		}
 		

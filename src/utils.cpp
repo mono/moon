@@ -645,7 +645,8 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		}
 		
 		unzCloseCurrentFile (zip);
-		
+		close (fd);
+
 		if (mode == CanonModeXap && is_dll_exe_or_mdb (filename, info.size_filename)) {
 			g_free (canonicalized_filename);
 			canonicalized_filename = Deployment::GetCurrent ()->CanonicalizeFileName (filename, false);
