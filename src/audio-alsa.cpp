@@ -289,7 +289,7 @@ AlsaSource::SetupHW ()
 	}
 	
 	// test for available transfer modes
-	if (!(moonlight_flags & RUNTIME_INIT_AUDIO_ALSA_MMAP)) {
+	if (!(moonlight_flags & RUNTIME_INIT_AUDIO_ALSA_RW)) {
 		err = snd_pcm_hw_params_test_access (pcm, params, SND_PCM_ACCESS_RW_INTERLEAVED);
 		if (err < 0) {
 			LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup: RW access mode not supported (%s).\n", snd_strerror (err));			
@@ -297,7 +297,7 @@ AlsaSource::SetupHW ()
 			rw_available = true;
 		}
 	}
-	if (!(moonlight_flags & RUNTIME_INIT_AUDIO_ALSA_RW)) {
+	if (moonlight_flags & RUNTIME_INIT_AUDIO_ALSA_RW) {
 		err = snd_pcm_hw_params_test_access (pcm, params, SND_PCM_ACCESS_MMAP_INTERLEAVED);
 		if (err < 0) {
 			LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup: MMAP access mode not supported (%s).\n", snd_strerror (err));

@@ -1166,7 +1166,7 @@ AudioPlayer::CreatePlayer ()
 	// If any of the flags are specified, we disable all players
 	// and re-enable according to the flag.
 	
-	overridden  = moonlight_flags & (RUNTIME_INIT_AUDIO_PULSE | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_ALSA_MMAP | RUNTIME_INIT_AUDIO_ALSA_RW);
+	overridden  = moonlight_flags & (RUNTIME_INIT_AUDIO_PULSE | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_ALSA_RW);
 
 #if INCLUDE_PULSEAUDIO
 	if (result != NULL) {
@@ -1196,7 +1196,7 @@ AudioPlayer::CreatePlayer ()
 #if INCLUDE_ALSA
 	if (result != NULL) {
 		LOG_AUDIO ("AudioPlayer: Not checking for Alsa support, we already found support for another configuration.\n");
-	} else if (overridden && !(moonlight_flags & (RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_ALSA_MMAP | RUNTIME_INIT_AUDIO_ALSA_RW))) {
+	} else if (overridden && !(moonlight_flags & (RUNTIME_INIT_AUDIO_ALSA))) {
 		LOG_AUDIO ("AudioPlayer: Alsa disabled with environment variable (MOONLIGHT_OVERRIDES)\n");
 	} else if (!AlsaPlayer::IsInstalled ()) {
 		LOG_AUDIO ("AudioPlayer: Alsa is not installed or configured correctly.\n");
