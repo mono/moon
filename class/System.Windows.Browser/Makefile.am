@@ -61,6 +61,7 @@ JS_RESOURCES_DEPS = $(srcdir)/System.Windows.Browser/json.js
 
 EXTRA_DIST = $(system_windows_browser_sources) 				\
 	$(test_sources)							\
+	$(JS_RESOURCES_DEPS)						\
 	Assembly/ChangeLog						\
 	System.Windows.Browser/ChangeLog				\
 	System.Windows.Browser.Net/ChangeLog				\

@@ -196,10 +196,6 @@ test/2.0/Microsoft.SilverlightControls/Controls.Extended.Test/Makefile
 test/2.0/Microsoft.SilverlightControls/site/Makefile
 test/harness/Makefile
 test/harness/shocker/Makefile
-test/parsertest/Makefile
-test/sizes/Makefile
-test/templates/Makefile
-test/templates/managed/Makefile
 test/cpp/Makefile
 test/leak/Makefile
 tools/Makefile
@@ -232,7 +228,6 @@ plugin/install/manifest.json
 plugin/test/Makefile
 plugin/samples/Makefile
 plugin/lunar-launcher/Makefile
-perf/Makefile
 sdk/Makefile
 generators/Makefile
 ])

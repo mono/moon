@@ -5,7 +5,8 @@ bin_SCRIPTS = mxap
 moon_DATA = mxap.exe
 
 EXTRA_DIST = \
-	$(mxap_exe_CS)
+	$(mxap_exe_CS)		\
+	mxap.in
 
 CLEANFILES = 		\
 	mxap 		\

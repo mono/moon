@@ -111,7 +111,7 @@ EXTRA_DIST = \
 	silverlight-versions.h.in \
 	plugin-class.h.in \
 	plugin-class.g.cpp.in \
-	plugin-spinner.h
+	plugin-spinner.xaml
 
 DISTCLEANFILES= silverlight-version.h
 
