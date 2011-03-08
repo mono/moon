@@ -128,6 +128,9 @@ public:
 
 	virtual void Clear (Color *color);
 
+	virtual void Blit (unsigned char *data,
+			   int           stride);
+
 	virtual void Blend (MoonSurface *src,
 			    double      alpha,
 			    double      x,

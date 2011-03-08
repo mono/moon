@@ -316,6 +316,13 @@ Context::Clear (Color *color)
 }
 
 void
+Context::Blit (unsigned char *data,
+	       int           stride)
+{
+	g_warning ("Context::Blit has been called. The derived class should have overridden it.");
+}
+
+void
 Context::Blend (MoonSurface *src,
 		double      alpha,
 		double      x,

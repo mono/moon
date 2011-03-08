@@ -258,6 +258,42 @@ GLContext::Clear (Color *color)
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
+void
+GLContext::Blit (unsigned char *data,
+		 int           stride)
+{
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLSurface       *dst = (GLSurface *) ms;
+	GLuint          texture = dst->Texture ();
+	Rect            clip;
+
+	Top ()->GetClip (&clip);
+
+	// no support for clipping
+	g_assert (r == clip);
+
+	// need word alignment
+	g_assert ((stride % 4) == 0);
+
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, stride / 4);
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTexSubImage2D (GL_TEXTURE_2D,
+			 0,
+			 0,
+			 0,
+			 dst->Width (),
+			 dst->Height (),
+			 GL_BGRA,
+			 GL_UNSIGNED_BYTE,
+			 data);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
+
+	ms->unref ();
+}
+
 GLuint
 GLContext::CreateShader (GLenum       shaderType,
 			 GLsizei      count,

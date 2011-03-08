@@ -57,6 +57,31 @@ CairoContext::Clear (Color *color)
 }
 
 void
+CairoContext::Blit (unsigned char *data,
+		    int           stride)
+{
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	cairo_surface_t *surface =
+		cairo_image_surface_create_for_data (data,
+						     CAIRO_FORMAT_ARGB32, 
+						     r.width,
+						     r.height,
+						     stride);
+	cairo_t         *cr = Context::Push (Cairo ());
+
+	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	cairo_set_source_surface (cr, surface, 0, 0);
+	cairo_paint (cr);
+	cairo_surface_destroy (surface);
+
+	Pop ();
+
+	ms->unref ();
+}
+
+void
 CairoContext::Blend (MoonSurface *src,
 		     double      alpha,
 		     double      x,

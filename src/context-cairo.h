@@ -24,6 +24,9 @@ public:
 
 	void Clear (Color *color);
 
+	void Blit (unsigned char *data,
+		   int           stride);
+
 	void Blend (MoonSurface *src,
 		    double      alpha,
 		    double      x,

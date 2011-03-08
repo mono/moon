@@ -516,6 +516,28 @@ GLXContext::Clear (Color *color)
 }
 
 void
+GLXContext::Blit (unsigned char *data,
+		  int           stride)
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
+
+	ForceCurrent ();
+
+	// no support for blit to drawable at the moment
+	g_assert (!dst->GetGLXDrawable ());
+
+	// mark target as initialized
+	target->SetInit (ms);
+
+	GLContext::Blit (data, stride);
+
+	ms->unref ();
+}
+
+void
 GLXContext::Blend (MoonSurface *src,
 		   double      alpha,
 		   double      x,
