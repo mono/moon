@@ -659,6 +659,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 	v4l2_format fmt;
 	v4l2_requestbuffers reqbuf = { 0 };
 	v4l2_buffer buffer;
+	v4l2_streamparm stream;
 
 	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing ()\n");
 	VERIFY_MAIN_THREAD;
@@ -684,7 +685,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 	desired_format = GetDevice ()->GetDesiredFormat ();
 
 	if (desired_format) {
-		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing () desired format: width: %i height: %i fps: %f\n", desired_format->width, desired_format->height, desired_format->framesPerSecond);
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): desired format: width: %i height: %i fps: %f\n", desired_format->width, desired_format->height, desired_format->framesPerSecond);
 		for (guint32 i = 0; i < format_count; i++) {
 			if (formats [i]->width == desired_format->width &&
 				formats [i]->height == desired_format->height &&
@@ -696,7 +697,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 			}
 		}
 	} else {
-		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing () no desired format\n");
+		LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): no desired format\n");
 	}
 
 	if (!found_desired_format) {
@@ -739,6 +740,43 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 		return;
 	}
 
+	memset (&stream, 0, sizeof (stream));
+	stream.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	if (-1 == ioctl (fd, VIDIOC_G_PARM, &stream)) {
+		if (errno == EINVAL) {
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_G_PARM not supported.\n");
+		} else {
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_G_PARM failed: %s\n", strerror (errno));
+			return;
+		}
+	} else {
+		if ((stream.parm.capture.capability & V4L2_CAP_TIMEPERFRAME) == 0) {
+			LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_G_PARM doesn't support V4L2_CAP_TIMEPERFRAME\n");
+		} else {
+			stream.parm.capture.timeperframe.numerator = 1000;
+			stream.parm.capture.timeperframe.denominator = capturing_format.framesPerSecond * 1000;
+			if (-1 == ioctl (fd, VIDIOC_S_PARM, &stream)) {
+				if (errno == EINVAL) {
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_S_PARM not supported.\n");
+				} else {
+					LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_S_PARM failed: %s\n", strerror (errno));
+					return;
+				}
+			} else {
+				if (-1 == ioctl (fd, VIDIOC_G_PARM, &stream)) {
+					if (errno == EINVAL) {
+						LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_G_PARM (2) not supported.\n");
+					} else {
+						LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): VIDIOC_G_PARM (2) failed: %s\n", strerror (errno));
+						return;
+					}
+				} else {
+					capturing_format.framesPerSecond = (double) stream.parm.capture.timeperframe.denominator / (double) stream.parm.capture.timeperframe.numerator;
+				}
+			}
+		}
+	}
+
 	capturing_format.stride = fmt.fmt.pix.width * 4;
 	capturing_format.width = fmt.fmt.pix.width;
 	capturing_format.height = fmt.fmt.pix.height;
@@ -750,7 +788,7 @@ MoonVideoCaptureDeviceV4L2::StartCapturing ()
 	capturing_video_format.framesPerSecond = capturing_format.framesPerSecond;
 	capturing_video_format.pixelFormat = MoonPixelFormatRGBA32;
 
-	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing () capturing with format %c%c%c%c %dx%d input stride: %d output stride: %d fps: %f colorspace: %i\n",
+	LOG_CAPTURE ("MoonVideoCaptureDeviceV4L2::StartCapturing (): capturing with format %c%c%c%c %dx%d input stride: %d output stride: %d fps: %f colorspace: %i\n",
 		(char)(fmt.fmt.pix.pixelformat & 0xff),
 		(char)((fmt.fmt.pix.pixelformat >> 8) & 0xff),
 		(char)((fmt.fmt.pix.pixelformat >> 16) & 0xff),
