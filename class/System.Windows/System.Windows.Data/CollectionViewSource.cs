@@ -171,6 +171,9 @@ namespace System.Windows.Data {
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
 		{
+			if (newSource is ICollectionView)
+				throw new ArgumentException ("Source cannot be an ICollectionView");
+
 			if (!Initializing)
 				CreateView (newSource);
 		}
