@@ -218,7 +218,6 @@ private:
 	void SendDescribeRequest (); /* Main thread only */
 	void SendPlayRequest ();/* Main thread only */
 	void SendSelectStreamRequest (); /* Main thread only */
-	void SendLogRequest ();/* Main thread only */
 
 	void ProcessResponseHeader (const char *header, const char *value); /* Main thread only */
 
@@ -235,8 +234,9 @@ private:
 	bool ProcessStreamSwitchPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
 	bool ProcessEndPacket          (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *size); /* Main thread only */
 
-	void CreateDownloaders (const char *method); /* Thread-safe since it doesn't touch any instance fields */
-	void CreateDownloaders (const char *method, HttpRequest **request); /* Main thread only */
+	void CreateDownloaders (const char *method); /* Main thread only */
+	void CreateDownloaders (const char *method, HttpRequest **request); /* Thread-safe since it doesn't touch any instance fields */
+	void CreateDownloaders (const char *method, HttpRequest **request, HttpRequest::Options additional_options); /* Thread-safe since it doesn't touch any instance fields */
 	void SetStreamSelectionHeaders (HttpRequest *request); /* Main thread only */
 	HttpRequest *GetRequestReffed (); /* Thread-safe */
 
@@ -282,10 +282,11 @@ public:
 
 	guint64 GetMaxBitRate (); /* thread-safe */
 
-
 	/* The MmsDemuxer calls this function when OpenDemuxerAsync is called.
 	 * This function returns true if the caller must call ReportOpenDemuxerCompleted. */
 	bool OpenMmsDemuxerCalled (); /* thread-safe */
+
+	void SendLogRequest (MediaLog *log);/* Main thread only */
 };
 
 /*

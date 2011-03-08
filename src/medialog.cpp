@@ -16,6 +16,8 @@
 #include "medialog.h"
 #include "factory.h"
 #include "deployment.h"
+#include "runtime.h"
+#include "debug.h"
 
 namespace Moonlight {
 
@@ -33,6 +35,8 @@ MediaLog::MediaLog ()
 	cs_user_agent = g_strdup ("");
 	c_quality = 100;
 	x_duration = 0;
+	filelength = g_strdup ("");
+	filesize = g_strdup ("");
 }
 
 MediaLog::~MediaLog ()
@@ -43,14 +47,37 @@ MediaLog::~MediaLog ()
 	g_free (c_playerversion);
 	g_free (cs_referrer);
 	g_free (cs_user_agent);
+	g_free (filelength);
+	g_free (filesize);
 }
 
 LogReadyRoutedEventArgs *
 MediaLog::CreateEventArgs ()
 {
+	LogReadyRoutedEventArgs *args;
+
+	args = MoonUnmanagedFactory::CreateLogReadyRoutedEventArgs ();
+	args->GiveLog (GetLog (true));
+
+	return args;
+}
+
+char *
+MediaLog::GetLog (bool include_user_name)
+{
 	GPtrArray *keys = g_ptr_array_new ();
 	GPtrArray *values = g_ptr_array_new ();
-	LogReadyRoutedEventArgs *args;
+	Deployment *deployment = Deployment::GetCurrent ();
+	const Uri *source_location;
+	char *result;
+
+	VERIFY_MAIN_THREAD;
+
+	source_location = deployment->GetSourceLocation (NULL);
+	if (source_location != NULL)
+		SetReferrer (source_location->ToString ());
+	SetPlayerVersion (deployment->GetRuntimeVersion ());
+	SetUserAgent (deployment->GetUserAgent ());
 
 	mutex.Lock ();
 
@@ -135,11 +162,11 @@ MediaLog::CreateEventArgs ()
 
 	// "<filelength>-</filelength>"
 	g_ptr_array_add (keys, (void *) "filelength");
-	g_ptr_array_add (values, g_strdup_printf ("%" G_GUINT64_FORMAT, filelength));
+	g_ptr_array_add (values, g_strdup (filelength));
 
 	// "<filesize>-</filesize>"
 	g_ptr_array_add (keys, (void *) "filesize");
-	g_ptr_array_add (values, g_strdup_printf ("%" G_GUINT64_FORMAT, filesize));
+	g_ptr_array_add (values, g_strdup (filesize));
 
 	// "<avgbandwidth>-</avgbandwidth>"
 	g_ptr_array_add (keys, (void *) "avgbandwidth");
@@ -233,9 +260,11 @@ MediaLog::CreateEventArgs ()
 	g_ptr_array_add (keys, (void *) "s-cpu-util");
 	g_ptr_array_add (values, g_strdup ("-"));
 
-	// "<s-cpu-util>-</s-cpu-util>"
-	g_ptr_array_add (keys, (void *) "cs-user-name");
-	g_ptr_array_add (values, g_strdup ("-"));
+	if (include_user_name) {
+		// "<cs-user-name>-</cs-user-name>"
+		g_ptr_array_add (keys, (void *) "cs-user-name");
+		g_ptr_array_add (values, g_strdup ("-"));
+	}
 
 	// "<cs-url>%s</cs-url>"
 	g_ptr_array_add (keys, (void *) "cs-url");
@@ -254,20 +283,14 @@ MediaLog::CreateEventArgs ()
 
 	mutex.Unlock ();
 
-	char *result = Deployment::GetCurrent ()->CreateMediaLogXml ((const char **) keys->pdata, (const char **) values->pdata);
+	result = Deployment::GetCurrent ()->CreateMediaLogXml ((const char **) keys->pdata, (const char **) values->pdata);
 
-	//printf ("setting managed log to\n%s\n", result);
-
-	args = MoonUnmanagedFactory::CreateLogReadyRoutedEventArgs ();
-	args->SetLog (result);
-
-	g_free (result);
 	g_ptr_array_free (keys, true);
 	for (unsigned int i = 0; i < values->len; i++)
 		g_free (g_ptr_array_index (values, i));
 	g_ptr_array_free (values, true);
 
-	return args;
+	return result;
 }
 
 void
@@ -343,16 +366,44 @@ MediaLog::SetUserAgent (const char *value)
 void
 MediaLog::SetFileLength (guint64 value)
 {
+	char *tmp = g_strdup_printf ("%" G_GUINT64_FORMAT, value);
+	SetFileLength (tmp);
+	g_free (tmp);
+}
+
+void
+MediaLog::SetFileLength (const char *value)
+{
+	if (value == NULL)
+		return;
+
 	mutex.Lock ();
-	filelength = value;
+	if (strcmp (value, filelength) != 0) {
+		g_free (filelength);
+		filelength = g_strdup (value);
+	}
 	mutex.Unlock ();
 }
 
 void
 MediaLog::SetFileSize (guint64 value)
 {
+	char *tmp = g_strdup_printf ("%" G_GUINT64_FORMAT, value);
+	SetFileSize (tmp);
+	g_free (tmp);
+}
+
+void
+MediaLog::SetFileSize (const char *value)
+{
+	if (value == NULL)
+		return;
+
 	mutex.Lock ();
-	filesize = value;
+	if (strcmp (value, filesize) != 0) {
+		g_free (filesize);
+		filesize = g_strdup (value);
+	}
 	mutex.Unlock ();
 }
 

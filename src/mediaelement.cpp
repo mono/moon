@@ -26,6 +26,7 @@
 #include "timemanager.h"
 #include "factory.h"
 #include "medialog.h"
+#include "pipeline-asf.h"
 
 namespace Moonlight {
 
@@ -1730,6 +1731,7 @@ MediaElement::RequestLog (LogSource log_source)
 	Media *media = NULL;
 	MediaLog *log = NULL;
 	LogReadyRoutedEventArgs *args;
+	MmsSource *mms_source = NULL;
 
 	LOG_MEDIAELEMENT ("MediaElement::RequestLog ()\n");
 
@@ -1746,36 +1748,47 @@ MediaElement::RequestLog (LogSource log_source)
 	if (GetDeployment ()->IsShuttingDown ())
 		return;
 
-	if (!HasHandlers (LogReadyEvent))
-		return;
-
 	if (playlist != NULL)
 		entry = playlist->GetCurrentEntryLeaf ();
 
 	if (entry != NULL)
 		media = entry->GetMedia ();
 
+	/* We need to send logs to the windows media server (if we're playing mms) when media ends.
+	 * So if we're reporting a media end, check if we have an MmsSource */
+	if (log_source == LogSourceEndOfStream && media != NULL && media->GetSource () != NULL && media->GetSource ()->GetObjectType () == Type::MMSSOURCE) {
+		mms_source = (MmsSource *) media->GetSource ();
+	}
+
+	if (!HasHandlers (LogReadyEvent) && mms_source == NULL)
+		return;
+
 	if (media != NULL)
 		log = media->GetLog ();
 
 	if (log != NULL) {
-		const Uri *source_location = GetDeployment ()->GetSourceLocation (NULL);
-		if (source_location != NULL)
-			log->SetReferrer (source_location->ToString ());
-		log->SetPlayerVersion (GetDeployment ()->GetRuntimeVersion ());
-		log->SetFileLength (TimeSpan_ToSeconds (GetNaturalDuration ()->GetTimeSpan ()));
 		if (GetState () == MediaElementStatePlaying || GetState () == MediaElementStatePaused) {
 			log->SetDuration (TimeSpan_ToSeconds (GetPosition () - log_position_start));
 		} else {
 			log->SetDuration (0);
 		}
-		log->SetUserAgent (GetDeployment ()->GetUserAgent ());
+		if (mms_source != NULL) {
+			mms_source->SendLogRequest (log);
+		} else {
+			log->SetFileLength (TimeSpan_ToSeconds (GetNaturalDuration ()->GetTimeSpan ()));
+		}
+
 		args = log->CreateEventArgs ();
 	} else {
 		args = MoonUnmanagedFactory::CreateLogReadyRoutedEventArgs ();
 	}
 	args->SetLogSource (log_source);
-	EmitAsync (LogReadyEvent, args);
+
+	if (HasHandlers (LogReadyEvent)) {
+		EmitAsync (LogReadyEvent, args);
+	} else {
+		args->unref ();
+	}
 }
 
 bool 

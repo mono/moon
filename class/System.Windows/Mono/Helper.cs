@@ -306,12 +306,13 @@ namespace Mono {
 			StringBuilder result = new StringBuilder ();
 			StringBuilder summary = new StringBuilder ();
 			System.Xml.XmlWriterSettings settings = new System.Xml.XmlWriterSettings ();
-			settings.Indent = true;
 			settings.OmitXmlDeclaration = true;
 			System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create (result, settings);
 
 			for (int c = 0; names [c] != IntPtr.Zero; c++) {
 				string value = Marshal.PtrToStringAnsi (values [c]).Replace (' ', '_');
+				if (string.IsNullOrEmpty (value))
+					value = "-";
 				summary.Append (value);
 				summary.Append (" ");
 			}
@@ -322,6 +323,8 @@ namespace Mono {
 			for (int c = 0; names [c] != IntPtr.Zero; c++) {
 				string name = Marshal.PtrToStringAnsi (names [c]);
 				string value = Marshal.PtrToStringAnsi (values [c]).Replace (' ', '_');
+				if (string.IsNullOrEmpty (value))
+					value = "-";
 				writer.WriteElementString (name, value);
 
 			}

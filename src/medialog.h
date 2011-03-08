@@ -31,8 +31,8 @@ class MediaLog {
 	char *cs_referrer;
 	char *cs_user_agent;
 	guint32 c_quality;
-	guint64 filesize;
-	guint64 filelength;
+	char *filesize;
+	char *filelength;
 	guint64 x_duration;
 
 public:
@@ -40,6 +40,7 @@ public:
 	~MediaLog ();
 
 	LogReadyRoutedEventArgs *CreateEventArgs ();
+	char *GetLog (bool include_user_name); /* Caller must g_free the returned value */
 
 	void SetUrl (const char *value);
 	void SetUriStem (const char *value);
@@ -48,6 +49,8 @@ public:
 	void SetUserAgent (const char *value);
 	void SetFileLength (guint64 value);
 	void SetFileSize (guint64 value);
+	void SetFileLength (const char *value);
+	void SetFileSize (const char *value);
 	void SetQuality (guint32 value);
 	void SetReferrer (const char *value);
 	void SetDuration (guint64 duration);

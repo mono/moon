@@ -20,6 +20,7 @@
 #include "clock.h"
 #include "timesource.h"
 #include "factory.h"
+#include "medialog.h"
 
 // according to http://msdn.microsoft.com/en-us/library/cc307965(VS.85).aspx the maximum size is 10 MB
 #define ASF_OBJECT_MAX_SIZE (10 * 1024 * 1024)
@@ -1684,13 +1685,19 @@ MmsSource::Initialize ()
 void
 MmsSource::CreateDownloaders (const char *method, HttpRequest **req)
 {
+	CreateDownloaders (method, req, (HttpRequest::Options) 0);
+}
+
+void
+MmsSource::CreateDownloaders (const char *method, HttpRequest **req, HttpRequest::Options additional_options)
+{
 	/* Thread-safe since it doesn't touch any instance fields */
 	HttpRequest *request;
 	char *id;
 
 	*req = NULL;
 
-	request = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableCache | HttpRequest::DisableFileStorage));
+	request = GetDeployment ()->CreateHttpRequest ((HttpRequest::Options) (HttpRequest::CustomHeaders | HttpRequest::DisableCache | HttpRequest::DisableFileStorage | additional_options));
 	*req = request;
 	if (request == NULL) {
 		ReportErrorOccurred ("Couldn't create httprequest.");
@@ -1851,260 +1858,66 @@ MmsSource::SendSelectStreamRequest ()
 }
 
 void
-MmsSource::SendLogRequest ()
+MmsSource::SendLogRequest (MediaLog *log)
 {
-//	Downloader *dl;
-//	MmsDownloader *mms_dl;
+	HttpRequest *request = NULL;
+	int length;
+	char *content = NULL;
+	char *content_length = NULL;
+	char *player_id = NULL;
 
 	LOG_MMS ("MmsSource::SendLogRequest ()\n");
 	VERIFY_MAIN_THREAD;
 
-	printf ("MmsSource::SendLogRequest (): Not implemented\n");
+	/* We need to force HTTP/1.0, since curl otherwise confuse the server by sending
+	 * just the headers with an additional Expect: 100 header, expecting the server
+	 * to respond to that before sending the data */
+	CreateDownloaders ("POST", &request, HttpRequest::ForceHttp_1_0);
 
-//	CreateDownloaders ("POST", &dl, &mms_dl);
-//
-//	g_return_if_fail (this->mms_dl != mms_dl);
-//	g_return_if_fail (this->dl != dl);
-//	g_return_if_fail (dl != NULL);
-//
-//	mms_dl->ClearSource (); /* We don't want any data from this mms downloader */
-//	Lock ();
-//	if (temporary_downloaders == NULL)
-//		temporary_downloaders = new List ();
-//	temporary_downloaders->Append (new Downloader::Node (dl));
-//	Unlock ();
-//
-////
-//// POST /SSPLDrtOnDemandTest HTTP/1.0
-//// Host: moonlightmedia
-//// Content-Length: 2203
-//// User-Agent: NSPlayer/11.08.0005.0000
-//// Accept: * / *
-//// Accept-Language: en-us, *;q=0.1
-//// Connection: Keep-Alive
-//// Content-Type: application/x-wms-Logstats
-//// Pragma: client-id=3375607867
-//// Pragma: playlist-gen-id=2769
-//// Pragma: xClientGuid={00000000-0000-0000-0000-000000000000}
-//// Supported: com.microsoft.wm.srvppair, com.microsoft.wm.sswitch, com.microsoft.wm.startupprofile, com.microsoft.wm.predstrm
-//// 
-//
-//	dl->InternalSetHeader ("Content-Type", "application/x-wms-Logstats");
-//
-//	GString *all = g_string_new (NULL);
-//	GString *xml = g_string_new (NULL);
-//	GString *summary = g_string_new (NULL);
-//
-//	// "<c-ip>0.0.0.0</c-ip>"
-//	g_string_append (summary, "0.0.0.0 ");
-//	g_string_append (xml, "<c-ip>0.0.0.0</c-ip>");
-//
-//	// "<date>%.4i-%.2i-%.2i</date>" // yyyy-MM-dd
-//	tm now;
-//	time_t time_now = time (NULL);
-//	gmtime_r (&time_now, &now);
-//	g_string_append_printf (summary, "%.4i-%.2i-%.2i ", now.tm_year + 1900, now.tm_mon + 1, now.tm_mday);
-//	g_string_append_printf (xml, "<date>%.4i-%.2i-%.2i</date>", now.tm_year + 1900, now.tm_mon + 1, now.tm_mday);
-//
-//	// "<time>%.2i:%.2i:%.2i</time>" // HH:mm:ss
-//	g_string_append_printf (summary, "%.2i:%.2i:%.2i ", now.tm_hour, now.tm_min, now.tm_sec);
-//	g_string_append_printf (xml, "<time>%.2i:%.2i:%.2i</time>", now.tm_hour, now.tm_min, now.tm_sec);
-//
-//	// "<c-dns>-</c-dns>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-dns>-</c-dns>");
-//
-//	// "<cs-uri-stem>-</cs-uri-stem>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<cs-uri-stem>-</cs-uri-stem>");
-//
-//	// "<c-starttime>0</c-starttime>"
-//	g_string_append_printf (summary, "0 ");
-//	g_string_append_printf (xml, "<c-starttime>0</c-starttime>");
-//
-//	// "<x-duration>0</x-duration>"
-//	g_string_append_printf (summary, "0 ");
-//	g_string_append_printf (xml, "<x-duration>0</x-duration>");
-//
-//	//"<c-rate>-</c-rate>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-rate>-</c-rate>");
-//
-//	//"<c-status>200</c-status>"
-//	g_string_append_printf (summary, "200 ");
-//	g_string_append_printf (xml, "<c-status>200</c-status>");
-//
-//	// "<c-playerid>" CLIENT_GUID "</c-playerid>"
-//	g_string_append_printf (summary, "%s ", CLIENT_GUID);
-//	g_string_append_printf (xml, "<c-playerid>%s</c-playerid>", CLIENT_GUID);
-//
-//	// "<c-playerversion>-</c-playerversion>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-playerversion>-</c-playerversion>");
-//
-//	// "<c-playerlanguage>-</c-playerlanguage>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-playerlanguage>-</c-playerlanguage>");
-//
-//	// "<cs-User-Agent>%s</cs-User-Agent>"
-//	const char *user_agent = "Mozilla/5.0_(Windows;_U;_Windows_NT_5.1;_en-GB;_rv:1.9.0.9)_Gecko/2009040821_Firefox/3.0.9_(.NET_CLR_3.5.30729)_NSPlayer/11.08.0005.0000_Silverlight/2.0.40115.0"; //"Firefox";
-//	g_string_append_printf (summary, "%s ", user_agent);
-//	g_string_append_printf (xml, "<cs-User-Agent>%s</cs-User-Agent>", user_agent);
-//
-//	// "<cs-Referer>%s</cs-Referer>"
-//	const char *referrer = "http://192.168.1.4:8080/media/video/test-server-side-playlist.html";//"http://example.com/";
-//	g_string_append_printf (summary, "%s ", referrer);
-//	g_string_append_printf (xml, "<cs-Referer>%s</cs-Referer>", referrer);
-//
-//	// "<c-hostexe>-</c-hostexe>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-hostexe>-</c-hostexe>");
-//
-//	// "<c-hostexever>-</c-hostexever>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-hostexever>-</c-hostexever>");
-//
-//	// "<c-os>Linux</c-os>"
-//	g_string_append_printf (summary, "Windows_XP ");
-//	g_string_append_printf (xml, "<c-os>Windows_XP</c-os>");
-//
-//	// "<c-osversion>-</c-osversion>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-osversion>-</c-osversion>");
-//
-//	// "<c-cpu>-</c-cpu>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-cpu>-</c-cpu>");
-//
-//	// "<filelength>-</filelength>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<filelength>-</filelength>");
-//
-//	// "<filesize>-</filesize>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<filesize>-</filesize>");
-//
-//	// "<avgbandwidth>-</avgbandwidth>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<avgbandwidth>-</avgbandwidth>");
-//
-//	// "<protocol>http</protocol>"
-//	g_string_append_printf (summary, "http ");
-//	g_string_append_printf (xml, "<protocol>http</protocol>");
-//
-//	// "<transport>TCP</transport>"
-//	g_string_append_printf (summary, "TCP ");
-//	g_string_append_printf (xml, "<transport>TCP</transport>");
-//
-//	// "<audiocodec>-</audiocodec>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<audiocodec>-</audiocodec>");
-//
-//	// "<videocodec>-</videocodec>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<videocodec>-</videocodec>");
-//
-//	// "<c-channelURL>-</c-channelURL>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-channelURL>-</c-channelURL>");
-//
-//	// "<sc-bytes>-</sc-bytes>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<sc-bytes>-</sc-bytes>");
-//
-//	// "<c-bytes>-</c-bytes>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-bytes>-</c-bytes>");
-//
-//	// "<s-pkts-sent>-</s-pkts-sent>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<s-pkts-sent>-</s-pkts-sent>");
-//
-//	// "<c-pkts-received>-</c-pkts-received>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-pkts-received>-</c-pkts-received>");
-//
-//	// "<c-pkts-lost-client>-</c-pkts-lost-client>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-pkts-lost-client>-</c-pkts-lost-client>");
-//
-//	// "<c-pkts-lost-net>-</c-pkts-lost-net>"+
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-pkts-lost-net>-</c-pkts-lost-net>");
-//
-//	// "<c-pkts-lost-cont-net>-</c-pkts-lost-cont-net>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-pkts-lost-cont-net>-</c-pkts-lost-cont-net>");
-//
-//	// "<c-resendreqs>-</c-resendreqs>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-resendreqs>-</c-resendreqs>");
-//
-//	// "<c-pkts-recovered-ECC>-</c-pkts-recovered-ECC>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-pkts-recovered-ECC>-</c-pkts-recovered-ECC>");
-//
-//	// "<c-pkts-recovered-resent>-</c-pkts-recovered-resent>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-pkts-recovered-resent>-</c-pkts-recovered-resent>");
-//
-//	// "<c-buffercount>-</c-buffercount>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-buffercount>-</c-buffercount>");
-//
-//	// "<c-totalbuffertime>-</c-totalbuffertime>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-totalbuffertime>-</c-totalbuffertime>");
-//
-//	// "<c-quality>-</c-quality>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<c-quality>-</c-quality>");
-//
-//	// "<s-ip>-</s-ip><s-dns>-</s-dns>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<s-ip>-</s-ip><s-dns>-</s-dns>");
-//
-//	// "<s-totalclients>-</s-totalclients>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<s-totalclients>-</s-totalclients>");
-//
-//	// "<s-cpu-util>-</s-cpu-util>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<s-cpu-util>-</s-cpu-util>");
-//
-//	// "<cs-url>%s</cs-url>"
-//	g_string_append_printf (summary, "%s ", uri);
-//	g_string_append_printf (xml, "<cs-url>%s</cs-url>", uri);
-//
-//	// "<cs-media-name>-</cs-media-name>"
-//	g_string_append_printf (summary, "- ");
-//	g_string_append_printf (xml, "<cs-media-name>-</cs-media-name>");
-//
-//	// "<cs-media-role>-</cs-media-role>"
-//	g_string_append_printf (summary, "-"); // skip the last space
-//	g_string_append_printf (xml, "<cs-media-role>-</cs-media-role>");
-//
-//	g_string_append_printf (header, "Content-Length: %i\r\n", summary->len + xml->len + 11  + 19); // length of <XML></XML>  + <Summary/> 
-//
-//	g_string_append_printf (header, "\r\n"); // end of header
-//
-//	g_string_append (all, header->str);
-//	g_string_append (all, "<XML><Summary>");
-//	g_string_append (all, summary->str);
-//	g_string_append (all, "</Summary>");
-//	g_string_append (all, xml->str);
-//	g_string_append (all, "</XML>");
-//
-//	dl->InternalSetBody (all->str, all->len);
-//
-//	g_string_free (all, true);
-//	g_string_free (xml, true);
-//	g_string_free (summary, true);
-//	g_string_free (header, true);
-//
-//	dl->Send ();
-//
-//	LOG_MMS ("MmsDownloader: sent log.\n");
+	if (request == NULL) {
+		printf ("Moonlight: Could not create http request to send mms log\n");
+		return;
+	}
+
+	Lock ();
+	if (temporary_downloaders == NULL)
+		temporary_downloaders = new List ();
+	temporary_downloaders->Append (new MmsRequestNode (request));
+	Unlock ();
+
+	// POST /SSPLDrtOnDemandTest HTTP/1.0
+	// Host: moonlightmedia
+	// Content-Length: 2203
+	// User-Agent: NSPlayer/11.08.0005.0000
+	// Accept: * / *
+	// Accept-Language: en-us, *;q=0.1
+	// Connection: Keep-Alive
+	// Content-Type: application/x-wms-Logstats
+	// Pragma: client-id=3375607867
+	// Pragma: playlist-gen-id=2769
+	// Pragma: xClientGuid={00000000-0000-0000-0000-000000000000}
+	// Supported: com.microsoft.wm.srvppair, com.microsoft.wm.sswitch, com.microsoft.wm.startupprofile, com.microsoft.wm.predstrm
+
+	player_id = g_strdup_printf ("{3300AD50-2C39-46C0-AE0A-%.12X}", (guint32) g_ascii_strtoull (client_id, NULL, 10));
+	log->SetPlayerId (player_id);
+	log->SetUrl (request_uri->ToString ());
+
+	content = log->GetLog (false);
+	length = strlen (content);
+	content_length = g_strdup_printf ("%i", length);
+
+	request->SetHeader ("Content-Length", content_length, false);
+	request->SetHeader ("Content-Type", "application/x-wms-Logstats", false);
+	request->SetBody (content, length);
+
+	request->Send ();
+
+	LOG_MMS ("MmsSource::SendLogRequest () sent log:\n%s\n", content);
+
+	g_free (content_length);
+	g_free (content);
+	g_free (player_id);
+	request->unref ();
 }
 
 void
@@ -2911,6 +2724,7 @@ MmsSource::NotifyFinished (guint32 reason)
 		// The server has finished streaming the current playlist entry. Other playlist
 		// entries still remain to be streamed. The server will transmit a stream change packet
 		// when it switches to the next entry.
+
 		entry = GetCurrentReffed ();
 		if (entry != NULL) {
 			entry->NotifyFinished ();

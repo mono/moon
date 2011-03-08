@@ -12,7 +12,6 @@
 #define __EVENTARGS_H__
 
 #include <glib.h>
-
 #include <cairo.h>
 #include "dependencyobject.h"
 #include "keyboard.h"
@@ -369,7 +368,8 @@ public:
 	/* @GeneratePInvoke */
 	LogSource GetLogSource () { return log_source; }
 
-	void SetLog (const char *value) { g_free (log); log = g_strdup (value); }
+	/* We receive ownership of the log and will free it when deleted */
+	void GiveLog (char *value) { g_free (log); log = value; }
 	void SetLogSource (LogSource value) { log_source = value; }
 
 protected:

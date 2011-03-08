@@ -884,6 +884,8 @@ Media::OpenInternal ()
 	
 	LOG_PIPELINE ("Media::OpenInteral (): opened successfully.\n");
 	
+	log->SetFileLength (TimeSpan_ToSeconds (demuxer ? demuxer->GetDuration () : 0));
+
 	EmitSafe (OpenCompletedEvent);
 
 	if (seek_when_opened) {
