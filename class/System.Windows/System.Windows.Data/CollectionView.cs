@@ -7,6 +7,8 @@ using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
+using Microsoft.Internal;
+
 namespace System.Windows {
 
 	abstract class CollectionView : ICollectionView, INotifyPropertyChanged {

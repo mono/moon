@@ -5,8 +5,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Collections.Specialized;
+using System.Windows.Data;
 
-namespace System.Windows.Data {
+// Drt 233 checks that this class is in the Microsoft.Internal namespace.
+namespace MS.Internal {
 
 	class EnumerableCollectionView : ICollectionView, INotifyPropertyChanged, IDeferRefresh {
 
