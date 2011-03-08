@@ -104,6 +104,11 @@ void FileSystemHelper_GetShortcutInfo ();
 int PlatformServices_RunAppleScript ();
 int PlatformServices_GetEnvironmentVariable ();
 
+int HardwareHelper_StartWebCamWriter (const char *filename, int width, int height, short framerate, int color_format);
+int HardwareHelper_StopWebCamWriter ();
+int HardwareHelper_StartMicrophoneWriter (const char *filename);
+int HardwareHelper_EnsureDevice (int device_type, guint8 *has_device);
+
 G_END_DECLS
 
 #endif /* __HARNESS_H__ */

@@ -23,12 +23,28 @@
 #include <errno.h>
 #include <arpa/inet.h>
 #include <gtk/gtk.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#if PAL_V4L2_VIDEO_CAPTURE
+#include <linux/videodev2.h>
+#endif
+#include <sys/ioctl.h>
+
+#if 0
+#if INCLUDE_PULSEAUDIO
+#include <pulse/simple.h>
+#include <pulse/error.h>
+#include <pulse/gccmacro.h>
+#endif
+#endif
 
 #include "debug.h"
 #include "harness.h"
 #include "shocker-plugin.h"
 #include "clipboard.h"
 #include "src/moonlightconfiguration.h"
+#include "src/capture.h"
 
 bool
 send_all (int sockfd, const char *buffer, guint32 length)
@@ -649,6 +665,37 @@ int TestHost_SetRegKey (const char *keyPath, const char *keyName, gint32 Value)
 			Shocker_FailTestFast ("TestHost_SetRegKey (): Unknown clipboard access value");
 		}
 		configuration.Save ();
+	} else if (strcmp (keyName, "WebcamAndMicrophone") == 0) {
+		if (strncmp (keyPath, "Settings\\Permissions\\", 21) == 0)
+			keyPath += 21;
+
+		char key [strlen (keyPath) + 16];
+		int key_len = strlen (keyPath);
+
+		memcpy (key, keyPath, key_len);
+
+			// strip off any trailing backslashes
+		if (key [key_len - 1] == '\\') {
+			key [key_len - 1] = 0;
+			key_len--;
+		}
+
+		memcpy (key + key_len, "-capture", 9);
+
+		Moonlight::MoonlightConfiguration configuration;
+		if (Value == 17) { // Allow
+			LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i): Allowing capture for key '%s'\n", keyPath, keyName, Value, key);
+			configuration.SetBooleanValue ("Permissions", key, true);
+		} else if (Value == 4) { // Deny
+			LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i): Denying capture for key '%s'\n", keyPath, keyName, Value, key);
+			configuration.SetBooleanValue ("Permissions", key, false);
+		} else if (Value == 0) { // Remove
+			LOG_HARNESS ("TestHost_SetRegKey ('%s', '%s', %i): Removing capture key '%s'\n", keyPath, keyName, Value, key);
+			configuration.RemoveKey ("Permissions", key);
+		} else {
+			Shocker_FailTestFast ("TestHost_SetRegKey (): Unknown clipboard access value");
+		}
+		configuration.Save ();
 	} else {
 		Shocker_FailTestFast ("TestHost_SetRegKey (): not implemented");
 	}
@@ -689,3 +736,318 @@ int PlatformServices_GetEnvironmentVariable ()
 	return 0;
 }
 
+enum HWHelper_PixelFormat
+{
+    I420 = 0, //IYUV
+    RGB24 = 1,
+    UYVY = 2,
+    NV12 = 3,
+    YV12 = 4,
+    YVYU = 5,
+    YUY2 = 6,
+    YVU9 = 7,
+    MJPG = 8,
+};
+
+static void
+write_to_vivimoon (void *data, int size)
+{
+	GDir *dir;
+	GError *err = NULL;
+	char name [PATH_MAX];
+	const char *entry_name;
+	int fd;
+	bool sent_command = false;
+	v4l2_capability cap;
+
+	// find the vivimoon driver
+	dir = g_dir_open ("/dev", 0, &err);
+	if (!dir) { 
+		// should hopefully never happen.  what is this, !linux?
+		Shocker_FailTestFast (g_strdup_printf ("write_to_vivimoon (): Could not open /dev: %s\n",err->message));
+		g_error_free (err);
+		return;
+	}
+
+	while ((entry_name = g_dir_read_name (dir))) {
+		if (strncmp (entry_name, "video", 5))
+			continue;
+
+		if (g_snprintf (name, PATH_MAX, "/dev/%s", entry_name) > PATH_MAX)
+			continue;
+
+		// found a video device, make sure it works.
+		fd = open (name, O_RDWR);
+		if (fd == -1) {
+			printf ("[libshocker] write_to_vivimoon (): Could not open %s: %s\n", name, strerror (errno));
+			continue;
+		}
+
+		// find the friendly name
+		memset (&cap, 0, sizeof (cap));
+		if (-1 == ioctl (fd, VIDIOC_QUERYCAP, &cap)) {
+			printf ("[libshocker] write_to_vivimoon (): Could not query device capabilities for %s: %s\n", name, strerror (errno));
+			close (fd);
+			continue;
+		}
+
+		LOG_HARNESS ("[libshocker] write_to_vivimoon (): Found driver: %s: %s\n",name, cap.driver);
+
+		if (!strcmp ((const char *) cap.driver, "vivimoon")) {
+			sent_command = true;
+			write (fd, data, size); // send the command to the driver
+			close (fd);
+			break;
+		}
+
+		close (fd);
+	}
+
+	g_dir_close (dir);
+
+	if (!sent_command) {
+		Shocker_FailTestFast (g_strdup_printf ("write_to_vivimoon (): You must install the vivimoon virtual webcam driver\n"));
+	}
+}
+
+int HardwareHelper_StartWebCamWriter (const char *filename, int width, int height, short framerate, int color_format)
+{
+#if PAL_V4L2_VIDEO_CAPTURE
+	int input_idx = -1;
+	unsigned char cmd [10];
+
+	const char *inputs [] = { "Black.avi", "Red.avi", "Green.avi", "Yellow.avi", "Blue.avi", "Pink.avi", "Aqua.avi", "White.avi", "CaptureTestRGB.avi", "CaptureTest640_480.YUY.avi", "CaptureTest1280_720.UYVY.avi", NULL };
+	int inputi [] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 0 };
+	const char *colors [] = { "I420", "RGB24", "UYVY", "NV12", "YV12", "YVYU", "YUY2", "YVU9", "MJPG", NULL };
+	const char *fourcc [] = { "I420", "RGB3", "UYVY", "NV12", "YV12", "YVYU", "YUYV", "YVU9", "MJPG", NULL };
+
+	for (int i = 0; inputs [i] != NULL; i++) {
+		if (!strcmp (filename, inputs [i])) {
+			input_idx = inputi [i];
+			break;
+		}
+	}
+
+	if (input_idx == -1) {
+		Shocker_FailTestFast (g_strdup_printf ("HardwareHelper_StartWebCamWriter (%s, %i, %i, %i, %i): Unknown input file", filename, width, height, framerate, color_format));
+	}
+
+	cmd [0] = input_idx;
+	cmd [1] = width >> 8;
+	cmd [2] = width & 0xFF;
+	cmd [3] = height >> 8;
+	cmd [4] = height & 0xFF;
+	cmd [5] = framerate;
+	cmd [6] = fourcc [color_format] [3];
+	cmd [7] = fourcc [color_format] [2];
+	cmd [8] = fourcc [color_format] [1];
+	cmd [9] = fourcc [color_format] [0];
+
+	LOG_HARNESS ("[libshocker] HardwareHelper_StartWebCamWriter (%s = %i, %i, %i, %i, %i = %s = %s) writing 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n", filename
+		, input_idx, width, height, framerate, color_format, colors [color_format], fourcc [color_format], cmd [0], cmd [1], cmd [2], cmd [3], cmd [4], cmd [5], cmd [6], cmd [7], cmd [8], cmd [9]);
+
+	write_to_vivimoon (cmd, sizeof (cmd));
+
+#else
+	Shocker_FailTestFast (g_strdup_printf ("HardwareHelper_StartWebCamWriter (%s, %i, %i, %i, %i): You must install the v4l2 devel package\n", filename, width, height, framerate, color_format));
+#endif
+	return 0;
+}
+
+int HardwareHelper_StopWebCamWriter ()
+{
+	unsigned char cmd [1];
+
+	LOG_HARNESS ("[libshocker] HardwareHelper_StopWebCamWriter ().\n");
+
+	cmd [0] = 0;
+	//write_to_vivimoon (cmd, 1);
+
+	return 0;
+}
+
+#if 0
+// I'm leaving this audio writing code in for now, who knows if it'll become useful
+// some time in the future. Right now I can't get it to play/record click-free, so
+// the tests are obviously not even close to passing.
+pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;
+static char *mic_files [] = { NULL, NULL, NULL, NULL, NULL, NULL };
+static bool running = false;
+
+void *
+microphone_writer_thread (void *)
+{
+#if INCLUDE_PULSEAUDIO
+	/* The Sample format to use */
+	const int BUFSIZE = 10240;
+	pa_sample_spec ss;
+	pa_buffer_attr buff;
+	ss.format = PA_SAMPLE_S16LE;
+	ss.rate = 48000;
+	ss.channels = 1;
+
+	pa_simple *s = NULL;
+	int ret = 1;
+	int error;
+
+	/* Create a new playback stream */
+	memset (&buff, 0, sizeof (buff));
+	buff.maxlength = (uint32_t) -1;
+	buff.tlength = (uint32_t) -1;
+	buff.minreq = (uint32_t) -1;
+	buff.prebuf = (uint32_t) -1;
+	buff.tlength = (uint32_t) -1;
+	if (!(s = pa_simple_new (NULL, "Moonlight Microphone Writer", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, &buff, &error))) {
+		Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): could not create pa stream: %s\n", pa_strerror (error)));
+		goto finish;
+	}
+
+	while (1) {
+		char *file = NULL;
+		pthread_mutex_lock (&file_mutex);
+		for (int i = 0; i < 6; i++) {
+			if (mic_files [i] != NULL) {
+				file = mic_files [i];
+				for (int j = i + 1; j < 6; j++)
+					mic_files [j - 1] = mic_files [j];
+				mic_files [5] = NULL;
+				break;
+			}
+		}
+		if (file == NULL)
+			running = false;
+		pthread_mutex_unlock (&file_mutex);
+		if (file == NULL) {
+			printf ("microphone_writer_thread (): nothing more to write\n");
+			break;
+		}
+		printf ("microphone_writer_thread (): reading %s\n", file);
+	
+		guint16 header [19];
+	
+		FILE *fd = fopen (file, "r");
+		if (fd == NULL) {
+			Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): could not open file %s: %s\n", file, strerror (errno)));
+		}
+
+		if (fread (header, 1, 38, fd) != 38) {
+			Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): could not read file header of %s: %s\n", file, strerror (errno)));
+		}
+
+		int header_size = 20 + header [8] + (header [9] << 16) + 8;
+		printf ("microphone_writer_thread (): skipping header to %s %i, wFormatTag: %i channels: %i samplesPerSec: %ihz BytesPerSec: %i BlockAlign: %i BitsPerSample: %i\n",
+			file, header_size, header [10], header [11], (header [13] << 16) + header [12], (header [15] << 16) + header [14], header [16], header [17]);
+
+		if (fseek (fd, header_size, SEEK_SET) != 0) {
+			Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): could not seek beyond file header of %s at %i: %s\n", file, header_size, strerror (errno)));
+		}
+	
+		while (1) {
+			uint8_t buf[BUFSIZE];
+			ssize_t r;
+
+			r = fread (buf, 1, BUFSIZE, fd);
+			if (r == 0) {
+				printf ("microphone_writer_thread () eof: %s\n", file);
+				break;
+			}
+	
+			if (r < 0) {
+				Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): read failed in %s: %s\n", file, strerror (errno)));
+				break;
+			}
+	
+			/* ... and play it */
+			printf ("microphone_writer_thread () %s about to write %i bytes\n", file, (int) r);
+			int pa_r = pa_simple_write (s, buf, (size_t) r, &error);
+			if (r < 0) {
+				Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): write failed: %s\n", pa_strerror (error)));
+				break;
+			} else {
+				printf ("microphone_writer_thread () %s pa result: %i, wrote %i bytes\n", file, pa_r, (int) r);
+			}
+		}
+
+		fclose (fd);
+		g_free (file);
+	}
+
+	/* Make sure that every single sample was played */
+	if (pa_simple_drain(s, &error) < 0) {
+		Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): drain failed: %s\n", pa_strerror (error)));
+		goto finish;
+	}
+
+	ret = 0;
+
+finish:
+	if (s)
+		pa_simple_free(s);
+
+#else
+	Shocker_FailTestFast (g_strdup_printf ("microphone_writer_thread (): you need to build with pulseaudio support\n", filename, err->message));
+#endif
+
+	printf ("microphone_writer_thread (): done\n");
+	return NULL;
+}
+
+pthread_t mic_thread;
+
+int HardwareHelper_StartMicrophoneWriter (const char *filename)
+{
+	printf ("HardwareHelper_StartMicrophoneWriter (%s)\n", filename);
+
+	pthread_mutex_lock (&file_mutex);
+	for (int i = 0; i < 6; i++) {
+		if (mic_files [i] != NULL)
+			continue;
+		//mic_files [i] = g_strdup_printf ("/home/rolf/test/rec/%s", filename);
+		mic_files [i] = g_strdup ("/home/rolf/test/rec/012.wav");
+		break;
+	}
+	if (!running) {
+		running = true;
+		if (pthread_create (&mic_thread, NULL, microphone_writer_thread, NULL) != 0) {
+			Shocker_FailTestFast (g_strdup_printf ("HardwareHelper_StartMicrophoneWriter (%s): could not create mic thread: %s", filename, strerror (errno)));
+		} else {
+			printf ("HardwareHelper_StartMicrophoneWriter (%s): started mic thread!\n", filename);
+		}
+		pthread_detach (mic_thread);
+	}
+	pthread_mutex_unlock (&file_mutex);
+
+	return 0;
+}
+#endif
+
+int HardwareHelper_EnsureDevice (int device_type, guint8 *has_device)
+{
+	Moonlight::CaptureDevice *dev;
+
+	LOG_HARNESS ("HardwareHelper_EnsureDevice (%i = %s)", device_type, device_type == 0 ? "webcam" : (device_type == 1 ? "microphone" : (device_type == 2 ? "digitizer" : "?")));
+
+	*has_device = 0;
+
+	switch (device_type) {
+	case 0: // webcam
+		dev = Moonlight::CaptureDeviceConfiguration::GetDefaultVideoCaptureDevice ();
+		if (dev != NULL) {
+			*has_device = 1;
+			dev->unref ();
+		}
+		break;
+	case 1: // microphone
+		dev = Moonlight::CaptureDeviceConfiguration::GetDefaultAudioCaptureDevice ();
+		if (dev != NULL) {
+			*has_device = 1;
+			dev->unref ();
+		}
+		break;
+		break;
+	case 2: // digitizer
+	default:
+		return 0;
+	}
+	return 0;
+}

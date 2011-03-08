@@ -35,6 +35,7 @@ libshocker_la_LDFLAGS = \
 	-avoid-version -module
 
 libshocker_la_LIBADD = \
+	$(PULSEAUDIO_SIMPLE_LIBS) \
 	$(SHOCKER_LIBS) \
 	$(top_builddir)/plugin/libmoonplugin.la
 

@@ -34,6 +34,7 @@ AC_DEFUN([MOONLIGHT_CHECK_SOUND],
 		if pkg-config --exists libpulse; then
 			AC_DEFINE([INCLUDE_PULSEAUDIO], [1], [Include pulseaudio sound support])
 			PKG_CHECK_MODULES(PULSEAUDIO, libpulse)
+			PKG_CHECK_MODULES(PULSEAUDIO_SIMPLE, libpulse-simple)
 		else
 			with_pulseaudio=no
 			pulseaudio_reason="(reason: could not find libpulse development package)"
