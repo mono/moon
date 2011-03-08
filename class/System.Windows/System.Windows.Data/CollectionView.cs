@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
-using Microsoft.Internal;
+using MS.Internal;
 
 namespace System.Windows {
 
