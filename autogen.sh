@@ -178,7 +178,7 @@ for arg; do
       mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
     --with-mono-path* )
       mono_path=$(echo $arg|sed -e 's,.*=,,') ;;
-    --woth-mono-basic-path* )
+    --with-mono-basic-path* )
       mono_basic_path=$(echo $arg|sed -e 's,.*=,,') ;;
     --with-manual-gallium=yes | --with-manual-gallium )
       build_gallium=0
