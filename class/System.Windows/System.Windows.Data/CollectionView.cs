@@ -11,7 +11,7 @@ using Microsoft.Internal;
 
 namespace System.Windows {
 
-	abstract class CollectionView : ICollectionView, INotifyPropertyChanged {
+	abstract class CollectionView : ICollectionView, INotifyPropertyChanged, IDeferRefresh {
 
 		public static ICollectionView Create (IEnumerable collection)
 		{
@@ -25,6 +25,8 @@ namespace System.Windows {
 		public event CurrentChangingEventHandler CurrentChanging;
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		object currentItem;
+		int currentPosition;
 		INPCProperty<CultureInfo> culture;
 		Predicate<object> filter;
 		INPCProperty<bool> isCurrentAfterLast;
@@ -49,11 +51,28 @@ namespace System.Windows {
 		}
 
 		public object CurrentItem {
-			get; protected set;
+			get {
+				ThrowIfDeferred ();
+				return currentItem;
+			}
+			protected set { currentItem = value; }
 		}
 
 		public int CurrentPosition {
-			get; protected set;
+			get {
+				ThrowIfDeferred ();
+				return currentPosition;
+			}
+			protected set { currentPosition = value; }
+		}
+
+		protected int DeferLevel {
+			get; set;
+		}
+
+		int IDeferRefresh.DeferLevel {
+			get { return DeferLevel; }
+			set { DeferLevel = value; }
 		}
 
 		public Predicate<object> Filter {
@@ -73,7 +92,10 @@ namespace System.Windows {
 		}
 
 		public bool IsCurrentAfterLast {
-			get { return isCurrentAfterLast.Value; }
+			get {
+				ThrowIfDeferred ();
+				return isCurrentAfterLast.Value;
+			}
 			protected set {
 				if (IsCurrentAfterLast != value)
 					isCurrentAfterLast.Value = value;
@@ -81,7 +103,10 @@ namespace System.Windows {
 		}
 
 		public bool IsCurrentBeforeFirst {
-			get { return isCurrentBeforeFirst.Value; }
+			get {
+				ThrowIfDeferred ();
+				return isCurrentBeforeFirst.Value;
+			}
 			protected set {
 				if (IsCurrentBeforeFirst != value)
 					isCurrentBeforeFirst.Value = value;
@@ -150,6 +175,12 @@ namespace System.Windows {
 			var h = PropertyChanged;
 			if (h != null)
 				h (this, new PropertyChangedEventArgs (propertyName));
+		}
+
+		protected void ThrowIfDeferred ()
+		{
+			if (DeferLevel != 0)
+				throw new InvalidOperationException ("Cannot access the CollectionView while refresh is deferred");
 		}
 
 		public abstract bool Contains (object item);

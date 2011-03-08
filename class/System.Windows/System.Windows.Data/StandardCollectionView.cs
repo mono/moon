@@ -12,7 +12,7 @@ using Mono;
 
 namespace System.Windows.Data {
 
-	sealed class ListCollectionView : EditableCollectionView, IDeferRefresh, IComparer<object> {
+	sealed class ListCollectionView : EditableCollectionView, IComparer<object> {
 
 		public IList ActiveList {
 			get {
@@ -31,21 +31,16 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		int DeferLevel {
-			get; set;
-		}
-
-		int IDeferRefresh.DeferLevel {
-			get { return DeferLevel; }
-			set { DeferLevel = value; }
-		}
-
 		ObservableList<object> filteredList {
 			get; set;
 		}
 
 		bool Grouping {
 			get { return Groups != null; }
+		}
+
+		bool IgnoreFilteredListChanges {
+			get; set;
 		}
 
 		bool IsValidSelection {
@@ -104,7 +99,7 @@ namespace System.Windows.Data {
 
 		void HandleFilteredListCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (DeferLevel == 0 && ActiveList == filteredList && !Grouping)
+			if (DeferLevel == 0 && ActiveList == filteredList && !Grouping && !IgnoreFilteredListChanges)
 				RaiseCollectionChanged (e);
 		}
 
@@ -271,6 +266,7 @@ namespace System.Windows.Data {
 
 		public override bool Contains (object item)
 		{
+			ThrowIfDeferred ();
 			return ActiveList.Contains (item);
 		}
 
@@ -353,26 +349,31 @@ namespace System.Windows.Data {
 
 		public override bool MoveCurrentToFirst ()
 		{
+			ThrowIfDeferred ();
 			return MoveCurrentTo (0);
 		}
 
 		public override bool MoveCurrentToLast ()
 		{
+			ThrowIfDeferred ();
 			return MoveCurrentTo (ActiveList.Count - 1);
 		}
 
 		public override bool MoveCurrentToNext ()
 		{
+			ThrowIfDeferred ();
 			return CurrentPosition != ActiveList.Count && MoveCurrentTo (CurrentPosition + 1);
 		}
 
 		public override bool MoveCurrentToPosition (int position)
 		{
+			ThrowIfDeferred ();
 			return MoveCurrentTo (position);
 		}
 
 		public override bool MoveCurrentToPrevious ()
 		{
+			ThrowIfDeferred ();
 			return CurrentPosition != -1 && MoveCurrentTo (CurrentPosition - 1);
 		}
 
@@ -381,47 +382,45 @@ namespace System.Windows.Data {
 			if (IsAddingNew || IsEditingItem)
 				throw new InvalidOperationException ("Cannot refresh while adding or editing an item");
 
-			if (((IDeferRefresh) this).DeferLevel != 0)
+			if (DeferLevel != 0)
 				return;
 
-			try {
-				DeferLevel ++;
-				Groups = null;
-				RootGroup.ClearItems ();
-	
-				if (ActiveList != SourceCollection) {
+			Groups = null;
+			RootGroup.ClearItems ();
+
+			if (ActiveList != SourceCollection) {
+				try {
+					IgnoreFilteredListChanges = true;
 					filteredList.Clear ();
 					foreach (var item in SourceCollection)
 						AddToFiltered (item, false);
-	
+
 					if (SortDescriptions.Count > 0)
 						filteredList.Sort (new PropertyComparer (SortDescriptions));
-	
-					if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
-						foreach (var item in filteredList)
-							RootGroup.AddInSubtree (item, Culture, GroupDescriptions, false);
-						Groups = RootGroup.Items;
-					}
+				} finally {
+					IgnoreFilteredListChanges = false;
 				}
-	
-				IsEmpty = ActiveList.Count == 0;
-				IsCurrentAfterLast = CurrentPosition == ActiveList.Count || ActiveList.Count == 0;
-				IsCurrentBeforeFirst = CurrentPosition == -1 || ActiveList.Count == 0;
-				int index = IndexOf (CurrentItem);
-				if (index < 0 && CurrentPosition != -1 && !IsEmpty)
-					index = 0;
-	
-				RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset), false);
-				MoveCurrentTo (index, true, false);
-			} finally {
-				DeferLevel --;
+				if (GroupDescriptions.Count > 0 && filteredList.Count > 0) {
+					foreach (var item in filteredList)
+						RootGroup.AddInSubtree (item, Culture, GroupDescriptions, false);
+					Groups = RootGroup.Items;
+				}
 			}
+
+			IsEmpty = ActiveList.Count == 0;
+			IsCurrentAfterLast = CurrentPosition == ActiveList.Count || ActiveList.Count == 0;
+			IsCurrentBeforeFirst = CurrentPosition == -1 || ActiveList.Count == 0;
+			int index = IndexOf (CurrentItem);
+			if (index < 0 && CurrentPosition != -1 && !IsEmpty)
+				index = 0;
+
+			RaiseCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset), false);
+			MoveCurrentTo (index, true, false);
 		}
 
 		public override object AddNew ()
 		{
-			if (((IDeferRefresh) this).DeferLevel != 0)
-				throw new InvalidOperationException ("Cannot add a new item while refresh is deferred");
+			ThrowIfDeferred ();
 
 			if (ItemConstructor == null)
 				throw new InvalidOperationException ("The underlying collection does not support adding new items");
