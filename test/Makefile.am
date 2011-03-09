@@ -1,10 +1,11 @@
 
 SUBDIRS=harness leak
-DIST_SUBDIRS = $(SUBDIRS) cpp templates
 
 if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += 2.0
 endif
+
+DIST_SUBDIRS = $(SUBDIRS)
 
 if INCLUDE_TESTING
 TESTING = true

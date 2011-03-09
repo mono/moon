@@ -26,7 +26,6 @@ libmoon_include_headers = 	\
 	brush.h			\
 	canvas.h		\
 	capture.h		\
-	cbinding.h		\
 	clock.h			\
 	collection.h		\
 	color.h			\
@@ -158,13 +157,11 @@ libmoon_include_headers = 	\
 	timesource.h		\
 	transform.h		\
 	trigger.h		\
-	type.h			\
 	uielement.h		\
 	uri.h			\
 	usercontrol.h		\
 	utils.h			\
 	validators.h		\
-	value.h			\
 	weakrefmanager.h	\
 	webbrowser.h		\
 	writeablebitmap.h	\
@@ -172,7 +169,13 @@ libmoon_include_headers = 	\
 	xap.h			\
 	yuv-converter.h
 
-libmoon_la_SOURCES = 		\
+nodist_libmoon_la_SOURCES = \
+	cbinding.cpp		\
+	dependencyproperty.g.cpp\
+	factory.cpp		\
+	type-generated.cpp
+
+dist_libmoon_la_SOURCES = 		\
 	animation.cpp		\
 	application.cpp		\
 	applier.cpp		\
@@ -185,7 +188,6 @@ libmoon_la_SOURCES = 		\
 	brush.cpp		\
 	canvas.cpp		\
 	capture.cpp		\
-	cbinding.cpp		\
 	clock.cpp		\
 	collection.cpp		\
 	color.cpp		\
@@ -200,7 +202,6 @@ libmoon_la_SOURCES = 		\
 	deepzoomimagetilesource.cpp \
 	dependencyobject.cpp	\
 	dependencyproperty.cpp	\
-	dependencyproperty.g.cpp\
 	deployment.cpp		\
 	dirty.cpp		\
 	dirty.h			\
@@ -210,7 +211,6 @@ libmoon_la_SOURCES = 		\
 	enums.cpp		\
 	error.cpp		\
 	eventargs.cpp		\
-	factory.cpp			\
 	fontmanager.cpp		\
 	fonts.cpp		\
 	frameworkelement.cpp	\
@@ -235,11 +235,11 @@ libmoon_la_SOURCES = 		\
 	mp3.cpp			\
 	multiscaleimage.cpp	\
 	multiscalesubimage.cpp	\
-	network.cpp				\
+	network.cpp		\
 	notificationwindow.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
-	pal/pal.cpp	\
+	pal/pal.cpp		\
 	pal/window.cpp		\
 	panel.cpp		\
 	pipeline-asf.cpp	\
@@ -281,7 +281,6 @@ libmoon_la_SOURCES = 		\
 	transform.cpp		\
 	trigger.cpp		\
 	type.cpp		\
-	type-generated.cpp	\
 	uielement.cpp		\
 	uri.cpp			\
 	usercontrol.cpp 	\
@@ -301,33 +300,27 @@ libmoon_la_SOURCES = 		\
 	zip/unzip.h
 
 
-if GTK_PAL
-libmoon_la_SOURCES += \
+libmoon_la_SOURCES_GTK = 		\
 	pal/gtk/clipboard-gtk.cpp	\
-	pal/gtk/config-dialog-gtk.cpp\
-	pal/gtk/im-gtk.cpp	\
-	pal/gtk/install-dialog-gtk.cpp\
-	pal/gtk/pal-gtk.cpp	\
-	pal/gtk/pixbuf-gtk.cpp	\
-	pal/gtk/window-gtk.cpp	\
+	pal/gtk/config-dialog-gtk.cpp	\
+	pal/gtk/im-gtk.cpp		\
+	pal/gtk/install-dialog-gtk.cpp	\
+	pal/gtk/pal-gtk.cpp		\
+	pal/gtk/pixbuf-gtk.cpp		\
+	pal/gtk/window-gtk.cpp		\
 	pal/gtk/nocodec-ui-gtk.cpp	\
 	pal/gtk/debug-ui-gtk.cpp
 
 # FIXME: This should be individually guarded ot the pal backends, not lumped with GTK
-libmoon_la_SOURCES += \
+libmoon_la_SOURCES_PAL_GTK = \
 	pal/capture/pal-linux-capture.cpp	\
 	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
 	pal/capture/pal-linux-audio-capture.cpp 	\
 	pal/messaging/glib/pal-glib-msg.cpp	\
 	pal/network/dbus/pal-dbus-network.cpp	\
 	pal/network/pal-linux-network.cpp
-endif
 
-if COCOA_PAL
-libmoon_la_OBJCFLAGS = $(AM_OBJCFLAGS)
-libmoon_la_OBJCXXFLAGS = $(AM_OBJCXXFLAGS)
-
-libmoon_la_SOURCES += \
+libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/MLView.m		\
 	pal/cocoa/MLEvent.m	\
 	pal/cocoa/MLTimer.m	\
@@ -339,40 +332,32 @@ libmoon_la_SOURCES += \
 	pal/cocoa/pixbuf-cocoa.m	\
 	pal/cocoa/window-cocoa.m	\
 	pal/cocoa/debug-ui-cocoa.m
-endif
 
-if CODECS_SUPPORTED
-INCLUDES += -I$(CODECS_PATH)/libmoon
-endif
+libmoon_la_SOURCES_FFMPEG = 	\
+	pipeline-ffmpeg.cpp	\
+	pipeline-ffmpeg.h
 
-if INCLUDE_FFMPEG
-libmoon_la_SOURCES += pipeline-ffmpeg.cpp pipeline-ffmpeg.h
-endif
+libmoon_la_SOURCES_ALSA =	\
+	audio-alsa.cpp		\
+	audio-alsa.h
 
-if INCLUDE_ALSA
-libmoon_la_SOURCES += audio-alsa.cpp audio-alsa.h
-endif
+libmoon_la_SOURCES_PULSEAUDIO =	\
+	audio-pulse.cpp		\
+	audio-pulse.h
 
-if INCLUDE_PULSEAUDIO
-libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
-endif
+libmoon_la_SOURCES_CURL =	\
+	network-curl.cpp	\
+	network-curl.h
 
-if HAVE_CURL
-libmoon_la_SOURCES += network-curl.cpp network-curl.h
-endif
-
-if HAVE_GALLIUM
-libmoon_la_SOURCES += 		\
+libmoon_la_SOURCES_GALLIUM =	\
 	surface-gallium.cpp	\
 	surface-gallium.h	\
 	surface-gallium-egl.cpp	\
 	surface-gallium-egl.h	\
 	context-gallium.cpp	\
 	context-gallium.h
-endif
 
-if HAVE_GLX
-libmoon_la_SOURCES += 	\
+libmoon_la_SOURCES_GLX = 	\
 	surface-gl.cpp	\
 	surface-gl.h	\
 	context-gl.cpp	\
@@ -381,6 +366,47 @@ libmoon_la_SOURCES += 	\
 	surface-glx.h	\
 	context-glx.cpp	\
 	context-glx.h
+
+
+# Conditionally built items are added to the nodist target as they
+# are already in EXTRA_DIST.
+if GTK_PAL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GTK)
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PAL_GTK)
+endif
+
+if COCOA_PAL
+libmoon_la_OBJCFLAGS = $(AM_OBJCFLAGS)
+libmoon_la_OBJCXXFLAGS = $(AM_OBJCXXFLAGS)
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PAL_COCOA)
+endif
+
+if CODECS_SUPPORTED
+INCLUDES += -I$(CODECS_PATH)/libmoon
+endif
+
+if INCLUDE_FFMPEG
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_FFMPEG)
+endif
+
+if INCLUDE_ALSA
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_ALSA)
+endif
+
+if INCLUDE_PULSEAUDIO
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PULSEAUDIO)
+endif
+
+if HAVE_CURL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_CURL)
+endif
+
+if HAVE_GALLIUM
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GALLIUM)
+endif
+
+if HAVE_GLX
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GLX)
 endif
 
 EXTRA_DIST = \
@@ -397,17 +423,28 @@ EXTRA_DIST = \
 	png-to-header.cs \
 	zip/README \
 	zip/ChangeLogUnzip \
-	$(libmoon_include_headers)
+	$(libmoon_include_headers) \
+	$(libmoon_la_SOURCES_GTK) \
+	$(libmoon_la_SOURCES_PAL_GTK) \
+	$(libmoon_la_SOURCES_PAL_COCOA) \
+	$(libmoon_la_SOURCES_FFMPEG) \
+	$(libmoon_la_SOURCES_ALSA) \
+	$(libmoon_la_SOURCES_PULSEAUDIO) \
+	$(libmoon_la_SOURCES_CURL) \
+	$(libmoon_la_SOURCES_GALLIUM) \
+	$(libmoon_la_SOURCES_GLX)
 
 libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
 libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
-libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
+dist_libmoonxpi_la_SOURCES = $(dist_libmoon_la_SOURCES)
+nodist_libmoonxpi_la_SOURCES = $(nodist_libmoon_la_SOURCES)
 
 # we do not link with gallium libs here, they are static libs, and whoever links with libmoon-static 
 # must also lik with the gallium libs.
-libmoon_static_la_SOURCES = $(libmoon_la_SOURCES)
+dist_libmoon_static_la_SOURCES = $(dist_libmoon_la_SOURCES)
+nodist_libmoon_static_la_SOURCES = $(nodist_libmoon_la_SOURCES)
 libmoon_static_la_LDFLAGS = -static 
 libmoon_static_la_LIBADD = $(MOON_LIBS)
 

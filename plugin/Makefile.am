@@ -42,9 +42,13 @@ libmoonplugin_la_LDFLAGS = \
 
 libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon-static.la $(PLUGIN_LIBS)
 
-libmoonplugin_la_SOURCES = \
-	cbinding.h	\
-	cbinding.cpp	\
+nodist_libmoonplugin_la_SOURCES = 	\
+	cbinding.h			\
+	cbinding.cpp			\
+	plugin-class.g.cpp		\
+	plugin-class.h
+
+dist_libmoonplugin_la_SOURCES = \
 	browser-bridge.h		\
 	moonlight.h			\
 	npstream-request.cpp		\
@@ -60,20 +64,22 @@ libmoonplugin_la_SOURCES = \
 	plugin-entry.cpp 		\
 	plugin-glue.cpp 		\
 	plugin-class.cpp 		\
-	plugin-class.g.cpp 		\
-	plugin-class.h			\
 	plugin-utils.cpp
 
-if GTK_PAL
-libmoonplugin_la_SOURCES += \
+libmoonplugin_la_SOURCES_PAL_GTK = 		\
 	../src/pal/gtk/windowless-gtk.cpp	\
 	../src/pal/gtk/windowless-gtk.h
+
+libmoonplugin_la_SOURCES_PAL_COCOA =		\
+	../src/pal/cocoa/windowless-cocoa.m	\
+	../src/pal/cocoa/windowless-cocoa.h
+
+if GTK_PAL
+nodist_libmoonplugin_la_SOURCES += $(libmoonplugin_la_SOURCES_PAL_GTK)
 endif
 
 if COCOA_PAL
-libmoonplugin_la_SOURCES += \
-	../src/pal/cocoa/windowless-cocoa.m	\
-	../src/pal/cocoa/windowless-cocoa.h
+nodist_libmoonplugin_la_SOURCES += $(libmoonplugin_la_SOURCES_PAL_COCOA)
 endif
 
 plugin.lo: plugin-spinner.h
@@ -86,8 +92,8 @@ libmoonpluginxpi_la_LDFLAGS = $(libmoonplugin_la_LDFLAGS) -rpath /nowhere
 
 libmoonpluginxpi_la_LIBADD = $(top_builddir)/src/libmoon-static.la $(PLUGIN_XPI_LIBS)
 
-libmoonpluginxpi_la_SOURCES = $(libmoonplugin_la_SOURCES)
-
+dist_libmoonpluginxpi_la_SOURCES = $(dist_libmoonplugin_la_SOURCES)
+nodist_libmoonpluginxpi_la_SOURCES = $(nodist_libmoonplugin_la_SOURCES)
 # custom install rule
 install-test-plugin test-plugin: libmoonloader.la libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
@@ -111,7 +117,9 @@ EXTRA_DIST = \
 	silverlight-versions.h.in \
 	plugin-class.h.in \
 	plugin-class.g.cpp.in \
-	plugin-spinner.xaml
+	plugin-spinner.xaml \
+	$(libmoonplugin_la_SOURCES_PAL_GTK) \
+	$(libmoonplugin_la_SOURCES_PAL_COCOA)
 
 DISTCLEANFILES= silverlight-version.h
 

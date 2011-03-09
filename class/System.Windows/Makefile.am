@@ -50,7 +50,16 @@ RUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/SDKControls
 MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
-system_windows_sources =							\
+nodist_system_windows_sources =							\
+	$(srcdir)/Mono/GeneratedPInvokes.cs					\
+	$(srcdir)/Mono/Kind.cs							\
+	$(srcdir)/Mono/Types.g.cs						\
+	$(srcdir)/System.Windows/DependencyObject.g.cs				\
+	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
+	$(srcdir)/System.Windows/Events.g.cs					\
+	$(srcdir)/System.Windows/WeakRefs.g.cs
+
+dist_system_windows_sources =							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
@@ -66,7 +75,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
-	$(srcdir)/Mono/GeneratedPInvokes.cs					\
 	$(srcdir)/Mono/HeapUtil.cs						\
 	$(srcdir)/Mono/Helper.cs						\
 	$(srcdir)/Mono/Helper.PublicKey.cs					\
@@ -80,7 +88,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/INativeEventObjectWrapper.cs				\
 	$(srcdir)/Mono/IRefContainer.cs						\
 	$(srcdir)/Mono/IWeakListener.cs						\
-	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/MoonError.cs						\
 	$(srcdir)/Mono/MoonException.cs						\
@@ -99,7 +106,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/TimeManager.cs					\
 	$(srcdir)/Mono/ToggleRef.cs						\
 	$(srcdir)/Mono/Types.cs							\
-	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/UriHelper.cs				\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/WeakCollectionChangedListener.cs				\
@@ -767,10 +773,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Printing/PrintDocument.cs			\
 	$(srcdir)/System.Windows.Printing/PrintPageEventArgs.cs			\
 	$(srcdir)/System.Windows.Printing/BeginPrintEventArgs.cs		\
-	$(srcdir)/System.Windows/DependencyObject.g.cs				\
-	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
-	$(srcdir)/System.Windows/Events.g.cs					\
-	$(srcdir)/System.Windows/WeakRefs.g.cs					\
 \
 	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\
@@ -818,10 +820,14 @@ system_windows_sources =							\
 	$(MSCONTROLS)/Src/ToolTip/ToolTip.cs					\
 	$(MSCONTROLS)/Src/ToolTip/ToolTipService.cs
 
+system_windows_sources = 		\
+	$(dist_system_windows_sources)	\
+	$(nodist_system_windows_sources)
+
 XAML_RESOURCES = $(MSRUNTIMECONTROLS)/themes/generic.xaml,themes/generic.xaml
 XAML_RESOURCES_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
 
-EXTRA_DIST = $(system_windows_sources)		\
+EXTRA_DIST = $(dist_system_windows_sources)	\
 	$(assembly).dll.config			\
 	scripts/checks.cs 			\
 	scripts/README				\
