@@ -175,7 +175,9 @@ namespace System.Windows.Data {
 			// based binding and the DO initially had no mentor. We now have a mentor so
 			// we can do our name lookup.
 			Target.MentorChanged -= InvalidateAfterMentorChanged;
-			var o = Target.Mentor.FindName (Binding.ElementName);
+			var o = Target.FindName (Binding.ElementName);
+			if (o == null)
+				o = Target.TemplateOwner.FindName (Binding.ElementName);
 			if (o == null) {
 				Target.Mentor.Loaded += HandleFeTargetLoaded;
 			} else {
@@ -193,7 +195,11 @@ namespace System.Windows.Data {
 			// so the odds are we should be able to find the named element.
 			FrameworkElement fe = (FrameworkElement) sender;
 			fe.Loaded -= HandleFeTargetLoaded;
-			PropertyPathWalker.Update (Target.FindName (Binding.ElementName));
+			var o = Target.FindName (Binding.ElementName);
+			if (o == null)
+				o = Target.TemplateOwner.FindName (Binding.ElementName);
+			if (o != null)
+				PropertyPathWalker.Update (o);
 			Invalidate ();
 			Target.SetValue (Property, this);
 		}
