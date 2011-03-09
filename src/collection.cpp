@@ -150,11 +150,13 @@ Collection::Clear ()
 {
 	EmitChanged (CollectionChangedActionClearing, NULL, NULL, -1);
 
-	guint len = array->len;
-	Value** vals = new Value*[len];
-	memmove (vals, array->pdata, len * sizeof(Value*));
+	GPtrArray *old_array = array;
 
-	g_ptr_array_set_size (array, 0);
+	array = g_ptr_array_new ();
+
+	guint len = old_array->len;
+	Value** vals = (Value**)old_array->pdata;
+
 	generation++;
 	
 	SetCount (0);
@@ -163,7 +165,8 @@ Collection::Clear ()
 		RemovedFromCollection (vals[i], true);
 		delete vals[i];
 	}
-	delete[] vals;
+
+	g_ptr_array_free (old_array, TRUE);
 	
 	EmitChanged (CollectionChangedActionCleared, NULL, NULL, -1);
 
