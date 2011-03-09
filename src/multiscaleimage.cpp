@@ -1715,13 +1715,15 @@ MultiScaleImage::AnimateViewportOrigin (Point *origin)
 void
 MultiScaleImage::SetIsIdle (bool value)
 {
-	SetValue (MultiScaleImage::IsIdleProperty, Value (value));
+	Value v(value);
+	SetValue (MultiScaleImage::IsIdleProperty, &v);
 }
 
 void
 MultiScaleImage::SetIsDownloading (bool value)
 {
-	SetValue (MultiScaleImage::IsDownloadingProperty, Value (value));
+	Value v(value);
+	SetValue (MultiScaleImage::IsDownloadingProperty, &v);
 }
 
 void

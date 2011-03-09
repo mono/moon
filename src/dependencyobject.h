@@ -349,15 +349,15 @@ public:
 	DependencyObject *GetContent ();
 	DependencyProperty *GetDependencyProperty (const char *name);
 	
-	bool SetValue (DependencyProperty *property, Value *value);
-	bool SetValue (DependencyProperty *property, Value value);
+	bool SetValue (DependencyProperty *property, const Value *value);
+	bool SetValue (DependencyProperty *property, const Value &value);
 	
-	bool SetValue (int property, Value *value);
-	bool SetValue (int property, Value value);
+	bool SetValue (int property, const Value *value);
+	bool SetValue (int property, const Value &value);
 
 	/* @GeneratePInvoke */
-	bool SetValueWithError (DependencyProperty *property, Value *value, MoonError *error);
-	bool SetValueWithError (DependencyProperty *property, Value value, MoonError *error);
+	bool SetValueWithError (DependencyProperty *property, const Value *value, MoonError *error);
+	bool SetValueWithError (DependencyProperty *property, const Value &value, MoonError *error);
 
 	bool PropagateInheritedValue (InheritedPropertyValueProvider::Inheritable inheritableProperty,
 				      DependencyObject *source, Value *new_value);
@@ -535,7 +535,7 @@ protected:
 	//
 	bool IsValueValid (DependencyProperty *property, Value *value, MoonError *error);
 	
-	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
+	virtual bool SetValueWithErrorImpl (DependencyProperty *property, const Value *value, MoonError *error);
 	
 	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args, MoonError *error);
 	void NotifyListenersOfPropertyChange (DependencyProperty *property, MoonError *error);

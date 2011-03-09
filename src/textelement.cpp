@@ -181,7 +181,7 @@ TextElement::DownloaderComplete (Downloader *downloader)
 }
 
 bool
-TextElement::CoerceTextDecorations (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+TextElement::CoerceTextDecorations (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error)
 {
 	if (!value || value->GetIsNull())
 		*coerced = new Value (TextDecorationsNone, Type::TEXTDECORATIONS);
@@ -676,7 +676,7 @@ Run::SerializeXamlProperties (bool force, GString *str, int start, int length)
 }
 
 bool
-Run::CoerceText (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+Run::CoerceText (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error)
 {
 	if (!value || value->GetIsNull())
 		*coerced = new Value ("");

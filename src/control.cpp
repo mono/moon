@@ -92,7 +92,8 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		PropertyChangedEventArgs *pargs = new PropertyChangedEventArgs (args->GetProperty(),
 										args->GetId (),
 										args->GetOldValue(),
-										args->GetNewValue());
+										args->GetNewValue(),
+										true);
 		EmitAsync (IsEnabledChangedEvent, pargs);
 	} else if (args->GetId () == Control::HorizontalContentAlignmentProperty
 		   || args->GetId () == Control::VerticalContentAlignmentProperty) {

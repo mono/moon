@@ -1692,9 +1692,8 @@ void
 Deployment::remove_loaded_handler (EventObject *obj, int token, gpointer closure)
 {
 	Deployment *deployment = (Deployment*)closure;
-	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj, token);
-	deployment->RemoveMatchingHandlers (Deployment::LoadedEvent, match_loaded_closure, lclosure);
-	delete lclosure;
+	LoadedClosure lclosure ((UIElement*)obj, token);
+	deployment->RemoveMatchingHandlers (Deployment::LoadedEvent, match_loaded_closure, &lclosure);
 }
 
 void

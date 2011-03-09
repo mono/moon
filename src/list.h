@@ -151,6 +151,7 @@ public:
 	
 	void EnsureCapacity (int capacity);
 	int Add (void *item);
+	void RemoveAt (int index);
 	void *& operator [] (int index) { return array [index]; }
 };
 

@@ -1318,40 +1318,43 @@ class Generator {
 							   is_attached ? "obj->" : "",
 							   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
 							   field.ParentType.Name, field.Name);
-					text.AppendLine ("\telse");
+					text.AppendLine ("\telse {");
+					text.AppendLine ("\t\tValue v (*value);");
 					text.Append ("\t\t");
-					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, Value (*value));\n",
+					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, &v);\n",
 							   is_attached ? "obj->" : "",
 							   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
 							   field.ParentType.Name, field.Name);
+					text.AppendLine ("\t}");
 				} else {
 					if (!nullable_setter && prop_type.IsStruct)
 						text.AppendLine ("\tif (!value) return;");
 					text.Append ("\t");
-					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, ",
+					if (prop_type.Name == "guint64" || prop_type.Name == "TimeSpan") {
+						text.AppendFormat ("Value v(value, Type::{0});\n",
+								   prop_type.KindName);
+					}
+					else if (prop_type.Name == "char") {
+						text.AppendLine ("Value v(value, Type::CHAR);");
+					}
+					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
+						text.AppendLine ("Value v(*value);");
+					}
+					else if (prop_type.IsClass) {
+						text.AppendLine ("Value v(value);");
+					}
+					else if (prop_type.IsEnum) {
+						text.AppendFormat ("Value v((gint32) value, Type::{0});", prop_type.KindName);
+						text.AppendLine ();
+					} else {
+						text.AppendLine ("Value v(value);");
+					}
+					text.Append ("\t");
+					text.AppendFormat ("{0}{1}SetValue ({2}::{3}, &v);\n",
 							   is_attached ? "obj->" : "",
 							   field.ParentType.NeedsQualifiedGetValue(all) ? "DependencyObject::" : "",
 							   field.ParentType.Name, field.Name);
 
-					if (prop_type.Name == "guint64" || prop_type.Name == "TimeSpan") {
-						text.AppendFormat ("Value (value, Type::{0}));\n",
-								   prop_type.KindName);
-					}
-					else if (prop_type.Name == "char") {
-						text.AppendLine ("Value (value, Type::CHAR));");
-					}
-					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
-						text.AppendLine ("Value (*value));");
-					}
-					else if (prop_type.IsClass) {
-						text.AppendLine ("Value (value));");
-					}
-					else if (prop_type.IsEnum) {
-						text.AppendFormat ("Value ((gint32) value, Type::{0}));", prop_type.KindName);
-						text.AppendLine ();
-					} else {
-						text.AppendLine ("Value (value));");
-					}
 				}
 				text.AppendLine ("}");
 				text.AppendLine ();

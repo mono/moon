@@ -45,21 +45,27 @@ protected:
 /* @Namespace=None */
 class PropertyChangedEventArgs : public EventArgs {
 public:
-	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv)
+	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv, bool copy_values = false) : obj (p), id (pid), copy_values(copy_values), old_value(ov), new_value (nv)
 	{
-		if (new_value)
-			new_value = new Value (*new_value);
-		if (old_value)
-			old_value = new Value (*old_value);
+		if (copy_values) {
+			if (old_value)
+				old_value = new Value(*old_value);
+			if (new_value)
+				new_value = new Value(*new_value);
+		}
 	}
 
-	PropertyChangedEventArgs () : obj (NULL), id (0), old_value(NULL), new_value (NULL) { }
+	PropertyChangedEventArgs () : obj (NULL), id (0), copy_values (false), old_value(NULL), new_value (NULL) { }
 
 
 	virtual ~PropertyChangedEventArgs ()
 	{
-		delete new_value;
-		delete old_value;
+		if (copy_values) {
+			delete old_value;
+			delete new_value;
+		}
+		new_value = NULL;
+		old_value = NULL;
 	}
 
 	/* @GeneratePInvoke */
@@ -73,11 +79,12 @@ public:
 
 	void SetProperty (DependencyProperty *prop) { obj = prop; }
 	void SetId (int id) { this->id = id; }
-	void SetOldValue (Value* old_value) { delete this->old_value; this->old_value = old_value ? new Value (*old_value) : NULL; }
-	void SetNewValue (Value* new_value) { delete this->new_value; this->new_value = new_value ? new Value (*new_value) : NULL; }
+	void SetOldValue (Value* old_value) { if (copy_values) delete this->old_value; this->old_value = old_value; if (copy_values && old_value) this->old_value = new Value (*old_value); }
+	void SetNewValue (Value* new_value) { if (copy_values) delete this->new_value; this->new_value = new_value; if (copy_values && new_value) this->new_value = new Value (*new_value); }
 private:
 	DependencyProperty *obj;
 	int id;
+	bool copy_values;
 
 	Value *old_value;
 	Value *new_value;

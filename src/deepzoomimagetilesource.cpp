@@ -1219,7 +1219,8 @@ item_end (DZParserInfo *info)
 			subimage->SetViewportWidth (item->vp_w);
 		}
 		
-		subimage->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double) item->width / (double) item->height));
+		Value v((double) item->width / (double) item->height);
+		subimage->SetValue (MultiScaleSubImage::AspectRatioProperty, &v);
 		
 		g_ptr_array_add (collection->subimages, subimage);
 	} else {

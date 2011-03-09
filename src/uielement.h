@@ -658,7 +658,7 @@ public:
 	// parents to see if any are loaded.
 	static bool IsSubtreeLoaded (UIElement *element);
 
-	static bool CoerceCursor (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
+	static bool CoerceCursor (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error);
 
 	// Helper methods for properties that should be ignored when runtime
 	// flags are not present

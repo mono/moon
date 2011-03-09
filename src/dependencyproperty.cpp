@@ -306,7 +306,7 @@ DependencyProperty::Validate (DependencyObject *instance, Value *value, MoonErro
 }
 
 bool
-DependencyProperty::Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error)
+DependencyProperty::Coerce (DependencyObject *instance, const Value *value, Value **coerced, MoonError *error)
 { 
 	if (!coercer) {
 		*coerced = value ? new Value (*value) : NULL;

@@ -137,7 +137,7 @@ public:
 
 	bool GetIsManaged () const;
 
-	static bool IsNull (Value *value) { return value == NULL ? true : value->GetIsNull (); }
+	static bool IsNull (const Value *value) { return value == NULL ? true : value->GetIsNull (); }
 	bool GetIsNull () const;
 	void SetIsNull (bool isNull);
 

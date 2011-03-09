@@ -380,7 +380,7 @@ public:
 	void SetKeyTime (KeyTime keytime) { SetKeyTime (&keytime); }
 	virtual void SetKeyTime (KeyTime *keytime) = 0;
 
-	static bool CoerceKeyTime (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
+	static bool CoerceKeyTime (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error);
 
 protected:
 	virtual ~KeyFrame ();

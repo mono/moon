@@ -1775,7 +1775,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 }
 
 bool
-DependencyObject::SetValue (int id, Value *value)
+DependencyObject::SetValue (int id, const Value *value)
 {
 	if (IsDisposed ())
 		return false;
@@ -1783,35 +1783,35 @@ DependencyObject::SetValue (int id, Value *value)
 }
 
 bool
-DependencyObject::SetValue (int id, Value value)
+DependencyObject::SetValue (int id, const Value &value)
 {
 	if (IsDisposed ())
 		return false;
-	return SetValue (GetDeployment ()->GetTypes ()->GetProperty (id), value);
+	return SetValue (GetDeployment ()->GetTypes ()->GetProperty (id), &value);
 }
 
 bool
-DependencyObject::SetValue (DependencyProperty *property, Value *value)
+DependencyObject::SetValue (DependencyProperty *property, const Value *value)
 {
 	MoonError err;
 	return SetValueWithError (property, value, &err);
 }
 
 bool
-DependencyObject::SetValue (DependencyProperty *property, Value value)
+DependencyObject::SetValue (DependencyProperty *property, const Value &value)
 {
 	MoonError err;
 	return SetValueWithError (property, &value, &err);
 }
 
 bool
-DependencyObject::SetValueWithError (DependencyProperty* property, Value value, MoonError *error)
+DependencyObject::SetValueWithError (DependencyProperty* property, const Value &value, MoonError *error)
 {
 	return SetValueWithError (property, &value, error);
 }
 
 bool
-DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
+DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, const Value *value, MoonError *error)
 {
 	if (is_frozen) {
 		char *error_msg = g_strdup_printf ("Cannot set value for property '%s' on frozen DependencyObject '%s'", property->GetName(), GetTypeName());
@@ -1877,10 +1877,10 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 }
 
 bool
-DependencyObject::SetValueWithError (DependencyProperty *property, Value *value, MoonError *error)
+DependencyObject::SetValueWithError (DependencyProperty *property, const Value *value, MoonError *error)
 {
 	bool ret;
-	Value *coerced = value;
+	Value *coerced = const_cast<Value*>(value);
 	bool hasCoercer = property->HasCoercer ();
 
 	if ((hasCoercer && !property->Coerce (this, value, &coerced, error)) ||
@@ -2060,7 +2060,8 @@ DependencyObject::SetNameOnScope (const char* name, NameScope *scope)
 	if (scope->FindName (name))
 		return false;
 
-	SetValue (property, Value (name));
+	Value v (name);
+	SetValue (property, &v);
 	scope->RegisterName (name, this);
 
 	return true;
@@ -2450,27 +2451,15 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
 		if (notify_listeners && !GetDeployment()->IsShuttingDown()) {
-			Value old_value_copy, new_value_copy;
-			Value *old_value_ptr = NULL, *new_value_ptr = NULL;
-
-			if (old_value != NULL) {
-				old_value_copy = Value (*old_value);
-				old_value_ptr = &old_value_copy;
-			}
-			if (new_value != NULL) {
-				new_value_copy = Value (*new_value);
-				new_value_ptr = &new_value_copy;
-			}
-
 #if EVENT_ARG_REUSE
 			PropertyChangedEventArgs* args = GetDeployment()->GetPropertyChangedEventArgs ();
 
 			args->SetProperty (property);
 			args->SetId (property->GetId());
-			args->SetOldValue (old_value_ptr);
-			args->SetNewValue (new_value_ptr);
+			args->SetOldValue (old_value);
+			args->SetNewValue (new_value);
 #else
-			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value_ptr, new_value_ptr);
+			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value, new_value);
 #endif
 
 			listeners_notified = false;

@@ -94,7 +94,7 @@ public:
 	/* @PropertyType=FontResource,GenerateManagedDP=false,GenerateManagedAccessors=false,GenerateAccessors */
 	const static int FontResourceProperty;
 
-	static bool CoerceTextDecorations (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
+	static bool CoerceTextDecorations (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
@@ -274,7 +274,7 @@ class Run : public Inline {
 	void SetText (const char *text);
 	const char *GetText ();
 
-	static bool CoerceText (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error);
+	static bool CoerceText (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error);
 };
 
 

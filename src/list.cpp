@@ -13,6 +13,7 @@
 #include <config.h>
 
 #include <glib.h>
+#include <string.h>
 #include "list.h"
 
 namespace Moonlight {
@@ -594,6 +595,16 @@ ArrayList::Add (void *item)
 	EnsureCapacity (count + 1);
 	array [count] = item;
 	return count++;
+}
+
+void
+ArrayList::RemoveAt (int index)
+{
+	if (index < 0 || index >= count)
+		return;
+
+	memmove (array + index, array + index + 1, count - index - 1);
+	count--;
 }
 
 //#define TEST_PROGRAM

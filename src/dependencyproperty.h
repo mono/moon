@@ -23,7 +23,7 @@ namespace Moonlight {
 class PropertyChangedEventArgs;
 class MoonError;
 
-typedef bool ValueCoercer (DependencyObject *instance, DependencyProperty *property, Value *value, Value **coerced, MoonError *error);
+typedef bool ValueCoercer (DependencyObject *instance, DependencyProperty *property, const Value *value, Value **coerced, MoonError *error);
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 typedef Value* AutoCreator  (Type::Kind type, DependencyProperty *property, DependencyObject *forObj);
 
@@ -80,7 +80,7 @@ class DependencyProperty {
 
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
-	bool Coerce (DependencyObject *instance, Value *value, Value **coerced, MoonError *error);
+	bool Coerce (DependencyObject *instance, const Value *value, Value **coerced, MoonError *error);
 	bool HasCoercer () { return coercer != NULL; }
 	/* @GeneratePInvoke */
 	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);

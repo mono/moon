@@ -142,7 +142,7 @@ UIElement::IsSubtreeLoaded (UIElement *element)
 
 
 bool
-UIElement::CoerceCursor (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+UIElement::CoerceCursor (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error)
 {
 	if (Value::IsNull (value))
 		*coerced = new Value (CursorTypeDefault, Type::CURSORTYPE);
@@ -972,12 +972,15 @@ UIElement::PropagateFlagUp (UIElementFlags flag)
 int
 UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
-	int token = FindHandlerToken (event_id, handler, data);
+	if (event_id == UIElement::LoadedEvent) {
+		int token = FindHandlerToken (event_id, handler, data);
 
-	if (token != -1)
-		RemoveHandler (event_id, token);
+		if (token != -1)
+			Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+		return token;
+	}
 
-	return token;
+	return DependencyObject::RemoveHandler (event_id, handler, data);
 }
 
 void

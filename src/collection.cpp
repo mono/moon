@@ -226,11 +226,7 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 	
 		SetCount ((int) array->len);
 
-		Value *added_copy = new Value (*added);
-
-		EmitChanged (CollectionChangedActionAdd, added_copy, NULL, index);
-
-		delete added_copy;
+		EmitChanged (CollectionChangedActionAdd, added, NULL, index);
 
 		Deployment *deployment = GetDeployment ();
 		if (addManagedRef && added->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {

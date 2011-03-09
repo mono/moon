@@ -251,12 +251,9 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 
 		g_hash_table_insert (hash, g_strdup (key), v);
 
-		Value *v_copy = new Value (*v);
 		v->Weaken (GetDeployment ());
 
-		EmitChanged (CollectionChangedActionAdd, v_copy, NULL, key);
-
-		delete v_copy;
+		EmitChanged (CollectionChangedActionAdd, v, NULL, key);
 
 		if (!strncmp (key, INTERNAL_TYPE_KEY_MAGIC_COOKIE, sizeof (INTERNAL_TYPE_KEY_MAGIC_COOKIE) - 1)
 		    && v->Is (GetDeployment (), Type::STYLE)) {
@@ -377,13 +374,11 @@ ResourceDictionary::Remove (const char *key)
 
 	// No need to strengthen orig_value before clearing
 	// because we copy it first.
-	Value *orig_copy = new Value (*orig_value);
+	Value orig_copy (*orig_value);
 
 	g_hash_table_remove (hash, key);
 
-	EmitChanged (CollectionChangedActionRemove, NULL, orig_copy, key);
-
-	delete orig_copy;
+	EmitChanged (CollectionChangedActionRemove, NULL, &orig_copy, key);
 
 	return true;
 }
@@ -400,7 +395,7 @@ ResourceDictionary::Set (const char *key, Value *value)
 		return false;
 	}
 
-	Value *orig_copy = new Value (*orig_value);
+	Value orig_copy (*orig_value);
 	Value *v = new Value (*value);
 
 	from_resource_dictionary_api = true;
@@ -412,8 +407,7 @@ ResourceDictionary::Set (const char *key, Value *value)
 	g_hash_table_replace (hash, g_strdup (key), v);
 
 	v->Weaken (GetDeployment ());
-	EmitChanged (CollectionChangedActionReplace, v, orig_copy, key);
-	delete orig_copy;
+	EmitChanged (CollectionChangedActionReplace, v, &orig_copy, key);
 
 	return true; // XXX
 }
@@ -529,11 +523,8 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 		g_hash_table_insert (hash, g_strdup (key), obj_value);
 
-		Value *obj_value_copy = new Value (*obj_value);
-
 		obj_value->Weaken (GetDeployment ());
-		EmitChanged (CollectionChangedActionAdd, obj_value_copy, NULL, key);
-		delete obj_value_copy;
+		EmitChanged (CollectionChangedActionAdd, obj_value, NULL, key);
 	}
 
 cleanup:

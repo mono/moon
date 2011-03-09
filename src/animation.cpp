@@ -1165,7 +1165,7 @@ KeyFrame::~KeyFrame ()
 }
 
 bool
-KeyFrame::CoerceKeyTime (DependencyObject *obj, DependencyProperty *p, Value *value, Value **coerced, MoonError *error)
+KeyFrame::CoerceKeyTime (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error)
 {
 	if (!value || value->GetIsNull())
 		*coerced = new Value (KeyTime());
