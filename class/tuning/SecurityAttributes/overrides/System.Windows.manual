@@ -263,3 +263,6 @@
 +SC-M: System.Windows.Point System.Windows.Point::FromString(System.String)
 +SC-M: System.Windows.Rect System.Windows.Rect::FromString(System.String)
 
+# analytics
++SSC-M: System.Void System.Windows.Analytics::Sample()
++SC-M: System.Void System.Windows.Analytics::HandleTimerTick(System.Object,System.EventArgs)

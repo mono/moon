@@ -21,25 +21,67 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 
 namespace System.Windows
 {
 
 	public class Analytics {
+		System.Windows.Threading.DispatcherTimer timer;
+		AnalyticsProvider provider;
+
+		public Analytics ()
+		{
+			provider = new AnalyticsLinux ();
+			timer = new System.Windows.Threading.DispatcherTimer ();
+			timer.Interval = TimeSpan.FromSeconds (1);
+			timer.Tick += HandleTimerTick;
+			timer.Start ();
+		}
 
 		~Analytics ()
 		{
+			timer.Stop ();
+		}
+
+		void HandleTimerTick (object sender, EventArgs e)
+		{
+			try {
+				Sample ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Analytics.HandleTimerTick (): unexpected exception: {0}", ex);
+				} catch (Exception ex2) {
+					// ignore
+				}
+			}
+		}
+
+		void Sample ()
+		{
+			provider.Sample ();
 		}
 
 		public float AverageProcessLoad {
-			get { return 0; }
+			get {
+				float result = provider.AverageProcessLoad * 100;
+				result = Math.Min (result, 100);
+				result = Math.Max (result, 0);
+				return result;
+			}
 		}
 
 		public float AverageProcessorLoad {
-			get { return 0; }
+			get {
+				float result = provider.AverageProcessorLoad * 100;
+				result = Math.Min (result, 100);
+				result = Math.Max (result, 0);
+				return result;
+			}
 		}
 
 		public ReadOnlyCollection<GpuInformation> GpuCollection {
@@ -55,5 +97,4 @@ namespace System.Windows
 			}
 		}
 	}
-
 }

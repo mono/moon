@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 635 methods
+# 636 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -381,6 +381,7 @@
 +SSC-M: System.Double System.Windows.Media.Animation.SineEase::EaseInCore(System.Double)
 +SSC-M: System.Void System.Windows.Media.Effects.ShaderEffect::UpdateShaderConstant(System.IntPtr,System.Int32,System.Double,System.Double,System.Double,System.Double)
 +SSC-M: System.Void System.Windows.Media.Effects.ShaderEffect::UpdateShaderSampler(System.IntPtr,System.Int32,System.Int32,System.IntPtr)
++SSC-M: System.Void System.Windows.Analytics::.ctor()
 +SSC-M: System.Void System.Windows.Application::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: Mono.Kind System.Windows.Application::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
