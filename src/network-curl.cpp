@@ -1088,7 +1088,8 @@ CurlHttpHandler::GetData ()
 
 		LOG_CURL ("BRIDGE CurlHttpHandler::GetData (): Entering select...\n");
 		if (pselect (available + 1, &r, &w, &x, &tv, NULL) < 0) {
-			fprintf(stderr, "Moonlight: Curl Error: select (%i,,,,%li): %i: %s\n", available + 1, timeout, errno, strerror (errno));
+			// ths is harmless
+			//fprintf(stderr, "Moonlight: Curl Error: select (%i,,,,%li): %i: %s\n", available + 1, timeout, errno, strerror (errno));
 		} else if (FD_ISSET (fds [0], &r)) {
 			/* We need to read a byte from our pipe */
 			guint32 tmp;
