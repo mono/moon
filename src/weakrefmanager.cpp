@@ -47,49 +47,41 @@ WeakRefBase::Clear ()
 		return;
 
 	/* clear old field value */
-	if (field != NULL && field->AsEventObject ()) {
-		field->AsEventObject ()->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
+	if (field != NULL) {
+		field->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 		if (storeInManaged && obj && obj->clearManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since clearManagedRef is a managed callback */
 			// Don't strengthen the Value* because we're going to delete it next.
-			obj->clearManagedRef (obj, field->AsGCHandle (), id);
+			obj->clearManagedRef (obj, field->GetManagedHandle (), id);
 		}
 	}
-	delete field;
 	field = NULL;
 }
 
 void
-WeakRefBase::Set (const EventObject *ptr)
+WeakRefBase::Set (EventObject *ptr)
 {
-	if (field == NULL && ptr == NULL)
+	if (field == ptr)
 		return;
-
-	if (field != NULL)
-		if (field->AsEventObject () == ptr)
-			return;
 
 #ifdef DEBUG_WEAKREF
 	printf ("WeakRefBase::Set () %p changing field '%s::%p' from %p = %i = %s to %p = %i = %s\n",
 		this, obj ? obj->GetTypeName () : NULL, id,
-		field, GET_OBJ_ID (((EventObject *) field)), field ? ((EventObject *) field)->GetTypeName () : NULL,
-		ptr, GET_OBJ_ID (((EventObject *) ptr)), ptr ? ((EventObject *) ptr)->GetTypeName () : NULL);
+		field, GET_OBJ_ID (field), field ? field->GetTypeName () : NULL,
+		ptr, GET_OBJ_ID (ptr), ptr ? ptr->GetTypeName () : NULL);
 #endif
 
 	/* clear old field value */
 	Clear ();
-	field = ptr ? new Value ((EventObject *) ptr) : NULL;
+	field = ptr;
 
 	/* set new field value */
 	if (field != NULL) {
-		field->AsEventObject ()->unref ();
-		field->SetNeedUnref (false);
-
 		if (storeInManaged && obj && obj->addManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since addManagedRef is a managed callback */
-			obj->addManagedRef (obj, field->AsGCHandle (), id);
+			obj->addManagedRef (obj, field->GetManagedHandle (), id);
 		}
-		field->AsEventObject ()->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
+		field->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 	}
 }
 

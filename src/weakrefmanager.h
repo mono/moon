@@ -17,7 +17,7 @@ class EventObject;
 class WeakRefBase {
 protected:
 	EventObject *obj;
-	Value *field;
+	EventObject *field;
 	const void *id;
 	bool storeInManaged;
 
@@ -34,11 +34,11 @@ protected:
 	}
 	static void clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure);
 	void ClearWeakRef ();
-	void Set (const EventObject *ptr);
+	void Set (EventObject *ptr);
 	void Clear ();
 
 public:
-	EventObject *GetFieldValue () { return field ? field->AsEventObject () : NULL; }
+	EventObject *GetFieldValue () { return field; }
 };
 
 template<typename EO>
@@ -50,10 +50,10 @@ public:
 	{
 	}
 
-	operator EO* () const { return (EO *) (field ? field->AsEventObject () : NULL); }
-	void operator=(const EO *ptr) { Set (ptr); }
+	operator EO* () const { return (EO *) (field); }
+	void operator=(EO *ptr) { Set (ptr); }
 
-	EO* operator->() const { return (EO *) (field ? field->AsEventObject () : NULL); }
+	EO* operator->() const { return (EO *) (field); }
 
 private:
 	// Disallow the following operations
