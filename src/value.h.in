@@ -150,8 +150,8 @@ public:
 	Value& operator= (const Value& other);
 	
 	bool		Is (Deployment *deployment, Type::Kind type) const { return Type::IsAssignableFrom (deployment, type, k); }
-	bool		IsEventObject (Deployment *deployment);
-	bool		IsDependencyObject (Deployment *deployment);
+	bool		IsEventObject (Deployment *deployment) const;
+	bool		IsDependencyObject (Deployment *deployment) const;
 
 	bool		AsBool () const	            { checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	gunichar	AsChar () const             { checked_get_exact (Type::CHAR, 0, u.c); }
@@ -179,6 +179,7 @@ public:
 	DependencyProperty* AsDependencyProperty () const { checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	gint64		AsDateTime (Types *types = NULL) const { checked_get_datetime (); }
 	
+	GCHandle	AsGCHandle () const;
 	void *		AsManagedObject () const    { g_return_val_if_fail (GetIsManaged (), NULL); return u.managed_object; }
 	void *		AsNPObj () const            { checked_get_exact (Type::NPOBJ, NULL, u.npobj); }
 	

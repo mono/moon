@@ -79,10 +79,10 @@ namespace Mono {
 				if (container == null)
 					return;
 	
-				container.AddStrongRef (id, Value.ToObject (referent));
+				container.AddStrongRef (id, GCHandle.FromIntPtr (referent).Target);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.AddStrongRef: {0}", ex);
 				} catch {
 				}
 			}
@@ -95,10 +95,10 @@ namespace Mono {
 				if (container == null)
 					return;
 	
-				container.ClearStrongRef (id, Value.ToObject (referent));
+				container.ClearStrongRef (id, GCHandle.FromIntPtr (referent).Target);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.MentorChanged: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.ClearStrongRef: {0}", ex);
 				} catch {
 				}
 			}

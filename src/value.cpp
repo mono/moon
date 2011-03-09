@@ -471,15 +471,28 @@ Value::Value (ManagedTypeInfo *type_info)
 }
 
 bool
-Value::IsEventObject (Deployment *d)
+Value::IsEventObject (Deployment *d) const
 {
 	return d->GetTypes ()->Find (k)->IsEventObject ();
 }
 
 bool
-Value::IsDependencyObject (Deployment *d)
+Value::IsDependencyObject (Deployment *d) const
 {
 	return d->GetTypes ()->Find (k)->IsDependencyObject ();
+}
+
+GCHandle
+Value::AsGCHandle () const
+{
+	if (GetIsManaged ())
+		return (GCHandle) u.managed_object;
+	if (u.dependency_object == NULL)
+		return GCHandle::Zero;
+#if DEBUG
+	g_return_val_if_fail (IsEventObject (Deployment::GetCurrent ()), GCHandle::Zero);
+#endif
+	return u.dependency_object->GetManagedHandle ();
 }
 
 bool

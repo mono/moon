@@ -965,7 +965,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 #endif
 
 	if (obj->addManagedRef && value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
-		obj->addManagedRef (obj, value, property);
+		obj->addManagedRef (obj, value->AsGCHandle (), property);
 		value->Weaken (deployment);
 	}
 

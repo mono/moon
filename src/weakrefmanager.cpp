@@ -52,7 +52,7 @@ WeakRefBase::Clear ()
 		if (storeInManaged && obj && obj->clearManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since clearManagedRef is a managed callback */
 			// Don't strengthen the Value* because we're going to delete it next.
-			obj->clearManagedRef (obj, field, id);
+			obj->clearManagedRef (obj, field->AsGCHandle (), id);
 		}
 	}
 	delete field;
@@ -87,7 +87,7 @@ WeakRefBase::Set (const EventObject *ptr)
 
 		if (storeInManaged && obj && obj->addManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since addManagedRef is a managed callback */
-			obj->addManagedRef (obj, field, id);
+			obj->addManagedRef (obj, field->AsGCHandle (), id);
 		}
 		field->AsEventObject ()->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 	}

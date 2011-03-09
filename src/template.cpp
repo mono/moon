@@ -45,7 +45,7 @@ FrameworkTemplate::ClearXamlBuffer ()
 	}
 	if (holdManagedRef && clearManagedRef && !GetDeployment ()->IsShuttingDown ()) {
 		// No need to strengthen the Value* because we're deleting it next
-		clearManagedRef (this, this->parse_template_data, XamlContextWeakRef);
+		clearManagedRef (this, this->parse_template_data->AsGCHandle (), XamlContextWeakRef);
 	}
 	parse_template = NULL;
 	delete parse_template_data;
@@ -62,7 +62,7 @@ FrameworkTemplate::SetXamlBuffer (parse_template_func parse_template, Value *par
 	this->parse_template = parse_template;
 	this->parse_template_data = new Value (*parse_template_data);
 	if (holdManagedRef && addManagedRef && !GetDeployment ()->IsShuttingDown ()) {
-		addManagedRef (this, this->parse_template_data, XamlContextWeakRef);
+		addManagedRef (this, this->parse_template_data->AsGCHandle (), XamlContextWeakRef);
 		this->parse_template_data->Weaken (GetDeployment ());
 	} else {
 		// If we can't add a managed ref to the xaml context we may end up with a circular ref
