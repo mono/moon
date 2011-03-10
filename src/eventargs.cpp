@@ -594,11 +594,18 @@ SendCompletedEventArgs::~SendCompletedEventArgs ()
 //
 // CaptureImageCompletedEventArgs
 //
+CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs ()
+	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS),
+	  source (this, SourceWeakRef)
+{
+	this->error = NULL;
+}
 
 CaptureImageCompletedEventArgs::CaptureImageCompletedEventArgs (MoonError *error)
 	: EventArgs (Type::CAPTUREIMAGECOMPLETEDEVENTARGS),
 	  source (this, SourceWeakRef)
 {
+	EnsureManagedPeer ();
 	this->error = error ? new MoonError (*error) : NULL;
 }
 

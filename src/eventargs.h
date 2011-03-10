@@ -569,6 +569,7 @@ private:
 /* @Namespace=None,ManagedDependencyProperties=None */
 class CaptureImageCompletedEventArgs : public EventArgs {
 public:
+	/* @SkipFactories */
 	CaptureImageCompletedEventArgs (MoonError *error);
 
 	/* @GeneratePInvoke */
@@ -589,7 +590,12 @@ public:
 	const static void *SourceWeakRef;
 
 protected:
+	/* @GeneratePInvoke */
+	CaptureImageCompletedEventArgs ();
 	virtual ~CaptureImageCompletedEventArgs ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
 
 private:
 	MoonError *error;

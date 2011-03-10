@@ -24,7 +24,6 @@
   </Configurations>
   <Contents>
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyProperty.g.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyObject.g.cs" />
     <File subtype="Code" buildaction="Compile" name="Assembly/MonoTODOAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="Assembly/AssemblyInfo.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/DispatcherTimer.cs" />
@@ -810,6 +809,7 @@
     <File subtype="Code" buildaction="Compile" name="Mono.Xaml/XamlNode.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/TimeManager.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/AnalyticsProvider.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyObject.g.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

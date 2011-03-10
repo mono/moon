@@ -209,7 +209,7 @@ CaptureSource::SampleReadyHandler (CaptureDevice *source, SampleReadyEventArgs *
 				source->SetBitmapData (g_memdup (sampleData, sampleDataLength), true);
 				source->Invalidate (); // causes the BitmapSource to create its image_surface
 
-				capture_args = MoonUnmanagedFactory::CreateCaptureImageCompletedEventArgs (NULL);
+				capture_args = MoonUnmanagedFactory::CreateCaptureImageCompletedEventArgs ();
 				capture_args->SetSource (source);
 				source->unref ();
 

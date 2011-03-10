@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace System.Windows.Media {
 
-	public class CaptureImageCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper {
+	public partial class CaptureImageCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper, IRefContainer {
 
 		DependencyObjectHandle handle;
 
@@ -53,6 +53,7 @@ namespace System.Windows.Media {
 		public CaptureImageCompletedEventArgs (WriteableBitmap image)
 			: base (null, false, null)
 		{
+			// Note: When this is implemented a native peer will have to be created.
 			Console.WriteLine ("NIEX: System.Windows.Media.CaptureImageCompletedEventArgs:.ctor");
 			throw new NotImplementedException ();
 		}
@@ -61,11 +62,14 @@ namespace System.Windows.Media {
 		public WriteableBitmap Result {
 			get {
 				if (result == null) {
-					BitmapSource source = (BitmapSource)NativeDependencyObjectHelper.FromIntPtr (NativeMethods.capture_image_completed_event_args_get_source (NativeHandle));
-					result = new WriteableBitmap (source);
+					result = new WriteableBitmap (Source);
 				}
 				return result;
 			}
+		}
+
+		BitmapImage Source {
+			get; set;
 		}
 
 #region "INativeEventObjectWrapper interface"
@@ -106,6 +110,14 @@ namespace System.Windows.Media {
 			catch (Exception e) {
 				return e;
 			}
+		}
+
+		void IRefContainer.SetStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr) WeakRefs.CaptureImageCompletedEventArgs_Source)
+				Source = (BitmapImage) value;
+			else
+				throw new Exception (string.Format ("CaptureImageCompletedEventArgs.SetStrongRef does not support id: {0}", id));
 		}
 	}
 }
