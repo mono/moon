@@ -99,10 +99,8 @@
 +SC-T: System.Runtime.Remoting.Messaging.CADObjRef
 +SC-T: System.Runtime.Remoting.Messaging.ClientContextReplySink
 +SC-T: System.Runtime.Remoting.Messaging.ClientContextTerminatorSink
-+SC-T: System.Runtime.Remoting.Messaging.ConstructionCall
 +SC-T: System.Runtime.Remoting.Messaging.ConstructionResponse
 +SC-T: System.Runtime.Remoting.Messaging.EnvoyTerminatorSink
-+SC-T: System.Runtime.Remoting.Messaging.MethodCall
 +SC-T: System.Runtime.Remoting.Messaging.MethodResponse
 +SC-T: System.Runtime.Remoting.Messaging.ObjRefSurrogate
 +SC-T: System.Runtime.Remoting.Messaging.RemotingSurrogate
@@ -114,7 +112,6 @@
 +SC-T: System.Runtime.Remoting.Metadata.SoapTypeAttribute
 +SC-T: System.Runtime.Remoting.ObjRef
 +SC-T: System.Runtime.Remoting.Proxies.ProxyAttribute
-+SC-T: System.Runtime.Remoting.Proxies.RealProxy
 +SC-T: System.Runtime.Remoting.Proxies.RemotingProxy
 +SC-T: System.Runtime.Remoting.RemotingConfiguration
 +SC-T: System.Runtime.Remoting.RemotingServices

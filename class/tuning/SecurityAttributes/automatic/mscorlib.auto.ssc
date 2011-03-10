@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 465 methods
+# 475 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -90,6 +90,8 @@
 +SSC-M: System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.String,System.Boolean,System.Boolean)
 +SSC-M: System.Object System.Delegate::DynamicInvoke(System.Object[])
 +SSC-M: System.Boolean System.Delegate::IsTransparentProxy()
++SSC-M: System.Void System.Diagnostics.Contracts.Contract::AssertMustUseRewriter(System.Diagnostics.Contracts.ContractFailureKind,System.String)
++SSC-M: System.Void System.Diagnostics.Contracts.Internal.ContractHelper::TriggerFailure(System.Diagnostics.Contracts.ContractFailureKind,System.String,System.String,System.String,System.Exception)
 +SSC-M: System.Boolean System.Diagnostics.Debugger::get_IsAttached()
 +SSC-M: System.String System.Diagnostics.StackFrame::GetSecureFileName()
 +SSC-M: System.Void System.Diagnostics.StackTrace::.ctor()
@@ -316,7 +318,15 @@
 +SSC-M: System.Void System.RuntimeMethodHandle::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
 +SSC-M: System.Boolean System.RuntimeMethodHandle::Equals(System.Object)
 +SSC-M: System.Boolean System.RuntimeMethodHandle::Equals(System.RuntimeMethodHandle)
++SSC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Remoting.Messaging.CADMethodCallMessage)
++SSC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::InitMethodProperty(System.String,System.Object)
++SSC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::ResolveMethod()
 +SSC-M: System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
++SSC-M: System.Type System.Runtime.Remoting.Proxies.RealProxy::GetProxiedType()
++SSC-M: System.Void System.Runtime.Remoting.Proxies.RealProxy::GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
++SSC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::PrivateInvoke(System.Runtime.Remoting.Proxies.RealProxy,System.Runtime.Remoting.Messaging.IMessage,System.Exception&,System.Object[]&)
++SSC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::GetAppDomainTarget()
++SSC-M: System.Object[] System.Runtime.Remoting.Proxies.RealProxy::ProcessResponse(System.Runtime.Remoting.Messaging.IMethodReturnMessage,System.Runtime.Remoting.Messaging.MonoMethodMessage)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
