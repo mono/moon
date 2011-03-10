@@ -959,6 +959,10 @@ namespace System.Windows {
 
 		void IRefContainer.SetStrongRef (IntPtr id, object value)
 		{
+#if DEBUG
+			if (id == IntPtr.Zero)
+				Console.WriteLine ("Moon Error: Application.SetStrongRef was called with an invalid ID with value: {0}", value);
+#endif
 #if DEBUG_REF
 			Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value == null ? 0 : value.GetHashCode(), value);
 #endif

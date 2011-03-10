@@ -37,24 +37,7 @@ WeakRefBase::ClearWeakRef ()
 		this, obj ? obj->GetTypeName () : NULL, id, field, GET_OBJ_ID (field), field ? field->GetTypeName () : NULL);
 #endif
 
-	Clear ();
-}
-
-void
-WeakRefBase::Clear ()
-{
-	if (field == NULL)
-		return;
-
-	/* clear old field value */
-	if (field != NULL) {
-		field->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
-		if (storeInManaged && obj && obj->setManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
-			/* We have to check if we're shutting down, since setManagedRef is a managed callback */
-			obj->setManagedRef (obj, GCHandle::Zero, id);
-		}
-	}
-	field = NULL;
+	Set (NULL);
 }
 
 void
@@ -70,17 +53,15 @@ WeakRefBase::Set (EventObject *ptr)
 		ptr, GET_OBJ_ID (ptr), ptr ? ptr->GetTypeName () : NULL);
 #endif
 
-	/* clear old field value */
-	Clear ();
+	if (field)
+		field->RemoveHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 	field = ptr;
-
-	/* set new field value */
-	if (field != NULL) {
-		if (storeInManaged && obj && obj->setManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
-			/* We have to check if we're shutting down, since setManagedRef is a managed callback */
-			obj->setManagedRef (obj, field->GetManagedHandle (), id);
-		}
+	if (field)
 		field->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
+
+	if (storeInManaged && obj && obj->setManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
+		/* We have to check if we're shutting down, since setManagedRef is a managed callback */
+		obj->setManagedRef (obj, field ? field->GetManagedHandle () : GCHandle::Zero, id);
 	}
 }
 

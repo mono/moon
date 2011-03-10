@@ -131,6 +131,10 @@ namespace System.Windows {
 
 		void IRefContainer.SetStrongRef (IntPtr id, object value)
 		{
+#if DEBUG
+			if (id == IntPtr.Zero)
+				Console.WriteLine ("Moon Error: DependencyObject.SetStrongRef was called with an invalid ID with value: {0}", value);
+#endif
 			SetStrongRef (id, value);
 		}
 

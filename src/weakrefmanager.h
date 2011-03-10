@@ -35,7 +35,6 @@ protected:
 	static void clear_weak_ref (EventObject *sender, EventArgs *callData, gpointer closure);
 	void ClearWeakRef ();
 	void Set (EventObject *ptr);
-	void Clear ();
 
 public:
 	EventObject *GetFieldValue () { return field; }
