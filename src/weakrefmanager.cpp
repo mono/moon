@@ -60,7 +60,7 @@ WeakRefBase::Set (EventObject *ptr)
 		field->AddHandler (EventObject::DestroyedEvent, clear_weak_ref, this);
 
 	// If 'id' is NULL then it means this WeakRef should not be mirrored in managed code
-	if (id && obj->setManagedRef && !obj->GetDeployment ()->IsShuttingDown ()) {
+	if (id && !obj->GetDeployment ()->IsShuttingDown ()) {
 		/* We have to check if we're shutting down, since setManagedRef is a managed callback */
 		obj->setManagedRef (obj, field ? field->GetManagedHandle () : GCHandle::Zero, id);
 	}
