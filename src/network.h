@@ -149,6 +149,7 @@ public:
 	const Uri  *GetFinalUri () { return final_uri; }
 	const char *GetFilename () { return tmpfile; }
 	gint64 GetNotifiedSize () { return notified_size; }
+	bool IsCrossDomain () { return is_cross_domain; }
 
 	/* Events */
 	const static int StartedEvent; /* HttpResponse (and its headers/response status) is available when this event is emitted */
@@ -202,6 +203,7 @@ private:
 	gint64 written_size;
 	DownloaderAccessPolicy access_policy;
 	char *local_file; /* the local file we're to serve */
+	bool is_cross_domain;
 
 	bool CheckRedirectionPolicy (const Uri *url);
 	static void SendAsyncCallback (EventObject *obj);

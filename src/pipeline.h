@@ -643,6 +643,7 @@ private:
 	bool error_reported; // If an error has been reported.
 	bool in_open_internal; // detect recursive calls to OpenInternal
 	bool http_retried;
+	bool is_cross_domain;
 	double download_progress;
 	double buffering_progress;
 	TimeSpan start_time;
@@ -773,6 +774,9 @@ public:
 	const Uri *GetFinalUri (); // main thread only
 	
 	MediaLog *GetLog () { return log; }
+
+	bool GetIsCrossDomain () { return is_cross_domain; }
+	void SetIsCrossDomain (bool value) { is_cross_domain = value; }
 
 	const static int OpeningEvent;
 	const static int OpenCompletedEvent;

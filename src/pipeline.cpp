@@ -84,6 +84,7 @@ Media::Media (PlaylistEntry *entry)
 	seek_when_opened = true;
 	final_uri = NULL;
 	log = new MediaLog ();
+	is_cross_domain = false;
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -1966,6 +1967,7 @@ ProgressiveSource::Notify (NotifyType type, gint64 args)
 				if (media->GetFinalUri () == NULL)
 					media->SetFinalUri (request->GetFinalUri ());
 				media->GetLog ()->SetFileSize (request->GetNotifiedSize ());
+				media->SetIsCrossDomain (request->IsCrossDomain ());
 				media->unref ();
 			}
 			response = request->GetResponse ();
@@ -3683,10 +3685,15 @@ IMediaDemuxer::ReportOpenDemuxerCompleted ()
 			continue;
 		vs = (VideoStream *)  stream;
 		if ((vs->GetHeight () > MAX_VIDEO_HEIGHT) || (vs->GetWidth () > MAX_VIDEO_WIDTH)) {
-			char *msg = g_strdup_printf ("%s: Video stream size (width: %d, height: %d) outside limits (%d, %d)", 
+			if (media->GetIsCrossDomain ()) {
+				ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
+			} else if (Is (Type::EXTERNALDEMUXER)) {
+				ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3016, "AG_E_INVALIDMEDIATYPE")));
+			} else {
+				ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT")));
+			}
+			fprintf (stderr, "Moonlight: %s: Video stream size (width: %d, height: %d) outside limits (%d, %d)\n",
 				GetTypeName (), vs->GetHeight (), vs->GetWidth (), MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
-			ReportErrorOccurred (msg);
-			g_free (msg);
 			return;
 		}
 

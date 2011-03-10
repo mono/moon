@@ -50,6 +50,7 @@ HttpRequest::HttpRequest (Type::Kind type, HttpHandler *handler, HttpRequest::Op
 	written_size = 0;
 	access_policy = (DownloaderAccessPolicy) -1;
 	local_file = NULL;
+	is_cross_domain = false;
 }
 
 HttpRequest::~HttpRequest ()
@@ -210,6 +211,7 @@ HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, Downlo
 		Abort ();
 		goto cleanup;
 	}
+	is_cross_domain = !Uri::SameDomain (source_location, request_uri) || !Uri::SameScheme (source_location, request_uri);
 
 	if (request_uri->IsScheme ("file")) {
 		local_file = g_strdup (request_uri->GetUnescapedPath ());
