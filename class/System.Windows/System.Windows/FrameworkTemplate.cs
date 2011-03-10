@@ -50,20 +50,12 @@ namespace System.Windows {
 			get; set;
 		}
 
-		internal override void AddStrongRef (IntPtr id, object value)
+		internal override void SetStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr) WeakRefs.FrameworkTemplate_XamlContext)
 				XamlContext = value;
 			else
-				base.AddStrongRef (id, value);
-		}
-
-		internal override void ClearStrongRef (IntPtr id, object value)
-		{
-			if (id == (IntPtr) WeakRefs.FrameworkTemplate_XamlContext)
-				XamlContext = null;
-			else
-				base.ClearStrongRef (id, value);
+				base.SetStrongRef (id, value);
 		}
 
 		internal DependencyObject GetVisualTree ()

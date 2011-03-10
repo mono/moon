@@ -198,7 +198,7 @@ namespace System.Windows {
 				throw new NotImplementedException ();
 		}
 
-		internal override void AddStrongRef (IntPtr id, object value)
+		internal override void SetStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr) WeakRefs.UIElement_SubtreeObject) {
 				SubtreeObject = (DependencyObject) value;
@@ -207,20 +207,7 @@ namespace System.Windows {
 				if (VisualParentChanged != null)
 					VisualParentChanged (this, EventArgs.Empty);
 			} else {
-				base.AddStrongRef (id, value);
-			}
-		}
-
-		internal override void ClearStrongRef (IntPtr id, object value)
-		{
-			if (id == (IntPtr) WeakRefs.UIElement_SubtreeObject) {
-				SubtreeObject = null;
-			} else if (id == (IntPtr) WeakRefs.UIElement_VisualParent) {
-				VisualParent = null;
-				if (VisualParentChanged != null)
-					VisualParentChanged (this, EventArgs.Empty);
-			} else {
-				base.ClearStrongRef (id, value);
+				base.SetStrongRef (id, value);
 			}
 		}
 

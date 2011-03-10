@@ -957,26 +957,15 @@ namespace System.Windows {
 
 		Dictionary<IntPtr,object> strongRefs;
 
-		void IRefContainer.AddStrongRef (IntPtr id, object value)
-		{
-			if (strongRefs.ContainsKey (id))
-				return;
-
-			if (value != null) {
-#if DEBUG_REF
-				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
-#endif
-				strongRefs.Add (id, value);
-			}
-		}
-
-		void IRefContainer.ClearStrongRef (IntPtr id, object value)
+		void IRefContainer.SetStrongRef (IntPtr id, object value)
 		{
 #if DEBUG_REF
-			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
-			Console.WriteLine (Environment.StackTrace);
+			Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value == null ? 0 : value.GetHashCode(), value);
 #endif
-			strongRefs.Remove (id);
+			if (value == null)
+				strongRefs.Remove (id);
+			else
+				strongRefs [id] = value;
 		}
 
 #if HEAPVIZ

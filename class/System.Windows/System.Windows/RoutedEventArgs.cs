@@ -60,34 +60,18 @@ namespace System.Windows {
 			return NativeMethods.event_object_get_object_type (NativeHandle);
 		}
 
-		void IRefContainer.AddStrongRef (IntPtr id, object value)
+		void IRefContainer.SetStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr) WeakRefs.RoutedEventArgs_Source) {
 				source = value;
 			} else {
 				if (strongRefs == null)
 					strongRefs = new Dictionary<IntPtr, object> ();
-				else if (strongRefs.ContainsKey (id))
-					return;
 
-				if (value != null) {
-#if DEBUG_REF
-					Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
-#endif
-					strongRefs.Add (id, value);
-				}
-			}
-		}
-
-		void IRefContainer.ClearStrongRef (IntPtr id, object value)
-		{
-			if (id == (IntPtr) WeakRefs.RoutedEventArgs_Source) {
-				source = null;
-			} else if (strongRefs != null) {
-#if DEBUG_REF
-				Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
-#endif
-				strongRefs.Remove (id);
+				if (value == null)
+					strongRefs.Remove (id);
+				else
+					strongRefs [id] = value;
 			}
 		}
 

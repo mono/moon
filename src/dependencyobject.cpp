@@ -216,8 +216,7 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
-	addManagedRef = NULL;
-	clearManagedRef = NULL;
+	setManagedRef = NULL;
 	mentorChanged = NULL;
 	hadManagedPeer = false;
 
@@ -310,12 +309,10 @@ EventObject::ClearWeakRef (EventObject *sender, EventArgs *args, gpointer closur
 }
 
 void
-EventObject::SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
-				      ManagedRefCallback clear_strong_ref,
+EventObject::SetManagedPeerCallbacks (ManagedRefCallback set_managed_ref,
 				      MentorChangedCallback mentor_changed)
 {
-	this->addManagedRef = add_strong_ref;
-	this->clearManagedRef = clear_strong_ref;
+	this->setManagedRef = set_managed_ref;
 	this->mentorChanged = mentor_changed;
 }
 
@@ -1852,22 +1849,20 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, const Val
 			new_value = NULL;
 
 		// clear out the current value from the managed side if there's a ref to it
-		if (current_value) {
-			if (clearManagedRef && current_value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
+		bool changeManagedRef = setManagedRef
+							&& !deployment->IsShuttingDown ()
+							&& ((current_value && current_value->HoldManagedRef (deployment)) || (new_value && new_value->HoldManagedRef (deployment)));
+
+		if (changeManagedRef) {
+			if (current_value)
 				current_value->Strengthen (deployment);
-				clearManagedRef (this, current_value->AsGCHandle (), property);
-			}
-		}
-
-		// replace it with the new value
-		if (new_value) {
-			if (addManagedRef && new_value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
-				addManagedRef (this, new_value->AsGCHandle (), property);
+			setManagedRef (this, new_value ? new_value->AsGCHandle () : GCHandle::Zero, property);
+			if (new_value)
 				new_value->Weaken (deployment);
-			}
-
-			providers.localvalue->SetValue (property, new_value);
 		}
+
+		if (new_value)
+			providers.localvalue->SetValue (property, new_value);
 		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, true, error);
 		
 		delete current_value;

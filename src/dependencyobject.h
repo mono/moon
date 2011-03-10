@@ -194,9 +194,7 @@ public:
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
 	/* @GeneratePInvoke */
-	void SetManagedPeerCallbacks (ManagedRefCallback add_strong_ref,
-				      ManagedRefCallback clear_strong_ref,
-				      MentorChangedCallback mentor_changed);
+	void SetManagedPeerCallbacks (ManagedRefCallback set_managed_ref, MentorChangedCallback mentor_changed);
 
 	virtual void EnsureManagedPeer ();
 
@@ -244,8 +242,7 @@ public:
 	/* @GeneratePInvoke */
 	void SetManagedHandle (GCHandle managed_handle);
 
-	ManagedRefCallback addManagedRef;
-	ManagedRefCallback clearManagedRef;
+	ManagedRefCallback setManagedRef;
 	MentorChangedCallback mentorChanged;
 
 	bool hadManagedPeer;

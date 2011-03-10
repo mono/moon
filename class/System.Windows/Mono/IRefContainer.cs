@@ -33,8 +33,7 @@ using System.Collections;
 namespace Mono {
 
 	internal interface IRefContainer {
-		void AddStrongRef (IntPtr id, object value);
-		void ClearStrongRef (IntPtr id, object value);
+		void SetStrongRef (IntPtr id, object value);
 
 #if HEAPVIZ
 		ICollection GetManagedRefs ();

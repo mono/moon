@@ -206,20 +206,12 @@ namespace System.Windows {
 				}
 			}
 		}
-		internal override void AddStrongRef (IntPtr id, object value)
+		internal override void SetStrongRef (IntPtr id, object value)
 		{
 			if (id == ResourceDictionary.MergedDictionariesProperty.Native)
 				mergedDictionaries = (PresentationFrameworkCollection<ResourceDictionary>) value;
 			else
-				base.AddStrongRef (id, value);
-		}
-
-		internal override void ClearStrongRef (IntPtr id, object value)
-		{
-			if (id == ResourceDictionary.MergedDictionariesProperty.Native)
-				mergedDictionaries = null;
-			else
-				base.ClearStrongRef (id, value);
+				base.SetStrongRef (id, value);
 		}
 
 		public Uri Source {

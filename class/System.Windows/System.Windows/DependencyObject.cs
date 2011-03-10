@@ -129,39 +129,26 @@ namespace System.Windows {
 
 		Dictionary<IntPtr,object> strongRefs;
 
-		void IRefContainer.AddStrongRef (IntPtr id, object value)
+		void IRefContainer.SetStrongRef (IntPtr id, object value)
 		{
-			AddStrongRef (id, value);
+			SetStrongRef (id, value);
 		}
 
-		internal virtual void AddStrongRef (IntPtr id, object value)
+		internal virtual void SetStrongRef (IntPtr id, object value)
 		{
-			if (strongRefs != null && strongRefs.ContainsKey (id))
+			if (strongRefs == null && value == null)
 				return;
 
-			if (value != null) {
 #if DEBUG_REF
-				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5})", GetHashCode(), this, value.GetHashCode(), value, NativeDependencyObjectHelper.IdToName (id), value);
+			Console.WriteLine ("Setting ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5})", GetHashCode(), this, value == null ? 0 : value.GetHashCode(), value, NativeDependencyObjectHelper.IdToName (id), value);
 #endif
-				if (strongRefs == null)
-					strongRefs = new Dictionary<IntPtr,object> ();
-				strongRefs.Add (id, value);
-			}
-		}
+			if (strongRefs == null)
+				strongRefs = new Dictionary<IntPtr,object> ();
 
-		void IRefContainer.ClearStrongRef (IntPtr id, object value)
-		{
-			ClearStrongRef (id, value);
-			
-		}
-
-		internal virtual void ClearStrongRef (IntPtr id, object value)
-		{
-#if DEBUG_REF
-			Console.WriteLine ("Clearing ref from {0}/{1} to referent = {2:x}", GetHashCode(), this, value);
-#endif
-			if (strongRefs != null)
+			if (value == null)
 				strongRefs.Remove (id);
+			else
+				strongRefs[id] = value;
 		}
 
 #if HEAPVIZ
