@@ -884,9 +884,6 @@
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_marker_routed_event_args_get_marker(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::timeline_marker_routed_event_args_new(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::touch_device_get_directly_over(System.IntPtr)
 
 # p/invoke declaration
@@ -1560,6 +1557,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_set_maximum_refresh_rate(System.IntPtr,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::timeline_marker_routed_event_args_set_marker(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target_(System.IntPtr,System.IntPtr,Mono.MoonError&)

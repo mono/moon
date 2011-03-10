@@ -648,10 +648,29 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 // TimelineMarkerRoutedEventArgs
 //
 
+TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs ()
+	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS), marker (this, MarkerWeakRef)
+{
+
+}
+
 TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs (TimelineMarker *marker)
 	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS), marker (this, MarkerWeakRef)
 {
+	EnsureManagedPeer ();
 	this->marker = marker;
+}
+
+TimelineMarker *
+TimelineMarkerRoutedEventArgs::GetMarker ()
+{
+	return marker;
+}
+
+void
+TimelineMarkerRoutedEventArgs::SetMarker (TimelineMarker *value)
+{
+	marker = value;
 }
 
 TimelineMarkerRoutedEventArgs::~TimelineMarkerRoutedEventArgs ()

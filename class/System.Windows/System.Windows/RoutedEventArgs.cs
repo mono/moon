@@ -66,6 +66,11 @@ namespace System.Windows {
 			if (id == IntPtr.Zero)
 				Console.WriteLine ("Moon Error: RoutedEventArgs.SetStrongRef was called with an invalid ID with value: {0}", value);
 #endif
+			SetStrongRef (id, value);
+		}
+
+		internal virtual void SetStrongRef (IntPtr id, object value)
+		{
 			if (id == (IntPtr) WeakRefs.RoutedEventArgs_Source) {
 				source = value;
 			} else {

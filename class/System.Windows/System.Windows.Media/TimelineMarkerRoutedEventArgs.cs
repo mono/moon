@@ -34,21 +34,29 @@ namespace System.Windows.Media
 {
 	public sealed class TimelineMarkerRoutedEventArgs : RoutedEventArgs
 	{
-		private TimelineMarker marker;
-		
-		public TimelineMarkerRoutedEventArgs () : base (NativeMethods.timeline_marker_routed_event_args_new (IntPtr.Zero), true)
+		TimelineMarker marker;
+
+		public TimelineMarker Marker {
+			get { return marker; }
+			set { Mono.NativeMethods.timeline_marker_routed_event_args_set_marker (NativeHandle, value == null ? IntPtr.Zero : value.native); }
+		}
+
+		public TimelineMarkerRoutedEventArgs () : base (SafeNativeMethods.timeline_marker_routed_event_args_new (), true)
 		{
 			
 		}
 		
 		internal TimelineMarkerRoutedEventArgs (IntPtr raw, bool dropref) : base (raw, dropref)
 		{
-			this.marker = NativeDependencyObjectHelper.FromIntPtr (NativeMethods.timeline_marker_routed_event_args_get_marker (raw)) as TimelineMarker;
+
 		}
-		
-		public TimelineMarker Marker {
-			get { return marker; }
-			set { marker = value; }
+
+		internal override void SetStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr)WeakRefs.TimelineMarkerRoutedEventArgs_Marker)
+				marker = (TimelineMarker) value;
+			else
+				base.SetStrongRef (id, value);
 		}
 	}
 }

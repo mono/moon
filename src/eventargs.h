@@ -624,14 +624,21 @@ class TimelineMarkerRoutedEventArgs : public RoutedEventArgs {
 	WeakRef<TimelineMarker> marker;
 	
  protected:
-	virtual ~TimelineMarkerRoutedEventArgs ();
-	
- public:
 	/* @GeneratePInvoke */
+	TimelineMarkerRoutedEventArgs ();
+	virtual ~TimelineMarkerRoutedEventArgs ();
+
+	friend class MoonUnmanagedFactory;
+	friend class MoonManagedFactory;
+
+ public:
+	/* @SkipFactories */
 	TimelineMarkerRoutedEventArgs (TimelineMarker *marker);
 
 	/* @GeneratePInvoke */
-	TimelineMarker *GetMarker () { return marker; }
+	TimelineMarker *GetMarker ();
+	/* @GeneratePInvoke */
+	void SetMarker (TimelineMarker *value);
 
 	const static void *MarkerWeakRef;
 };
