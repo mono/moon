@@ -1455,7 +1455,7 @@ private:
 class WildcardListener : public Listener {
 public:
 	WildcardListener (int token, DependencyObject *obj, DependencyProperty *prop)
-		: Listener (token), obj (NULL, 0, false)
+		: Listener (token), obj (NULL, NULL)
 	{
 		this->obj = obj;
 		this->prop = prop;
@@ -2652,21 +2652,21 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 
 DependencyObject::DependencyObject ()
 	: EventObject (Type::DEPENDENCY_OBJECT),
-	mentor (this, MentorWeakRef, false), parent (this, ParentWeakRef, false), template_owner (this, TemplateOwnerWeakRef, false), secondary_parent (this, SecondaryParentWeakRef, false)
+	mentor (this), parent (this), template_owner (this), secondary_parent (this)
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
 	: EventObject (deployment, object_type),
-	mentor (this, MentorWeakRef, false), parent (this, ParentWeakRef, false), template_owner (this, TemplateOwnerWeakRef, false), secondary_parent (this, SecondaryParentWeakRef, false)
+	mentor (this), parent (this), template_owner (this), secondary_parent (this)
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Type::Kind object_type)
 	: EventObject (object_type),
-	mentor (this, MentorWeakRef, false), parent (this, ParentWeakRef, false), template_owner (this, TemplateOwnerWeakRef, false), secondary_parent (this, SecondaryParentWeakRef, false)
+	mentor (this), parent (this), template_owner (this), secondary_parent (this)
 {
 	Initialize ();
 }

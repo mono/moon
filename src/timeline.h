@@ -85,8 +85,6 @@ public:
 	// events
 	const static int CompletedEvent;
 
-	const static void *ManualTargetWeakRef;
-
 protected:
 	virtual ~Timeline ();
 	virtual void Dispose ();

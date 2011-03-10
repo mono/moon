@@ -512,11 +512,6 @@ public:
 	void SetIsBeingParsed (bool v) { is_being_parsed = v; }
 	bool IsBeingParsed () { return is_being_parsed; }
 
-	const static void *MentorWeakRef;
-	const static void *ParentWeakRef;
-	const static void *SecondaryParentWeakRef;
-	const static void *TemplateOwnerWeakRef;
-
 protected:
  	/* @GeneratePInvoke */
 	DependencyObject ();
