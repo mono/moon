@@ -176,7 +176,7 @@ namespace System.Windows.Data {
 			// we can do our name lookup.
 			Target.MentorChanged -= InvalidateAfterMentorChanged;
 			var o = Target.FindName (Binding.ElementName);
-			if (o == null)
+			if (o == null && Target.TemplateOwner != null)
 				o = Target.TemplateOwner.FindName (Binding.ElementName);
 			if (o == null) {
 				Target.Mentor.Loaded += HandleFeTargetLoaded;
@@ -196,7 +196,7 @@ namespace System.Windows.Data {
 			FrameworkElement fe = (FrameworkElement) sender;
 			fe.Loaded -= HandleFeTargetLoaded;
 			var o = Target.FindName (Binding.ElementName);
-			if (o == null)
+			if (o == null && Target.TemplateOwner != null)
 				o = Target.TemplateOwner.FindName (Binding.ElementName);
 			if (o != null)
 				PropertyPathWalker.Update (o);
