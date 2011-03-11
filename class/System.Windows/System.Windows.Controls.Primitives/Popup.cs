@@ -33,6 +33,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Automation.Peers;
+using MS.Internal;
 
 namespace System.Windows.Controls.Primitives {
 
@@ -86,6 +87,7 @@ namespace System.Windows.Controls.Primitives {
 			Child = root;
 			root.Children.Add (_clickCatcher);
 			root.Children.Add (child);
+			_clickCatcher.LayoutUpdated += (sender, args) => { UpdateCatcher (); };
 			
 			Child = root;
 
@@ -100,17 +102,36 @@ namespace System.Windows.Controls.Primitives {
 		{
 			if (_clickCatcher == null)
 				return;
-			
+
+			//_clickCatcher.Background = new SolidColorBrush (Colors.Red);
+			//_clickCatcher.Opacity = .5;
+
 			try {
-				GeneralTransform xform = Application.Current.RootVisual.TransformToVisual (this);
-				
-				_clickCatcher.RenderTransform = (Transform)xform;
-			} catch (ArgumentException) {
+				// In this case Child is the _clickCatcher's parent
+				GeneralTransform general_xform = Child.TransformToVisual (null);
+
+				if (general_xform is Transform) {
+					var xform = general_xform as Transform;
+					
+					// clear any projections
+					_clickCatcher.Projection = null;
+					_clickCatcher.RenderTransform = (Transform)xform.Inverse;
+				} else if (general_xform is InternalTransform) {
+					var internal_xform = general_xform as InternalTransform;
+					var projection = new Matrix3DProjection();
+					
+					projection.ProjectionMatrix = ((InternalTransform)internal_xform.Inverse).Matrix;
+
+					// clear any render transforms;
+					_clickCatcher.RenderTransform = null;
+					_clickCatcher.Projection = projection;
+				} else {
+				        throw new Exception ("Unknown Transform Type");
+				}
+			} catch (ArgumentException e) {
 				// Drop errors looking up the transform
 			}
 
-			Canvas.SetTop (_clickCatcher, -VerticalOffset);
-			Canvas.SetLeft (_clickCatcher, -HorizontalOffset);
 			_clickCatcher.Height = Application.Current.Host.Content.ActualHeight;
 			_clickCatcher.Width = Application.Current.Host.Content.ActualWidth;		
 		}
