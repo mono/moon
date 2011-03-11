@@ -53,7 +53,9 @@ namespace Mono {
 
 	internal static class NativeDependencyObjectHelper {
 
-		public static ManagedRefCallback set_strong_ref = new ManagedRefCallback (SetStrongRef);
+		public static ManagedRefCallback add_strong_ref = new ManagedRefCallback (AddStrongRef);
+		public static ManagedRefCallback clear_strong_ref = new ManagedRefCallback (ClearStrongRef);
+
 		public static MentorChangedCallback mentor_changed = new MentorChangedCallback (MentorChanged);
 
 #if DEBUG_REF
@@ -70,18 +72,33 @@ namespace Mono {
 		}
 #endif
 
-		static void SetStrongRef (IntPtr referer, IntPtr referent, IntPtr id)
+		static void AddStrongRef (IntPtr referer, IntPtr referent, IntPtr id)
 		{
 			try {
 				IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
 				if (container == null)
 					return;
-
-				object target = referent == IntPtr.Zero ? null : GCHandle.FromIntPtr (referent).Target;
-				container.SetStrongRef (id, target);
+	
+				container.AddStrongRef (id, GCHandle.FromIntPtr (referent).Target);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.SetStrongRef: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.AddStrongRef: {0}", ex);
+				} catch {
+				}
+			}
+		}
+
+		static void ClearStrongRef (IntPtr referer, IntPtr referent, IntPtr id)
+		{
+			try {
+				IRefContainer container = NativeDependencyObjectHelper.Lookup (referer) as IRefContainer;
+				if (container == null)
+					return;
+	
+				container.ClearStrongRef (id, GCHandle.FromIntPtr (referent).Target);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in NativeDependencyObjectHelper.ClearStrongRef: {0}", ex);
 				} catch {
 				}
 			}
@@ -107,7 +124,8 @@ namespace Mono {
 		{
 			IRefContainer container = obj as IRefContainer;
 			NativeMethods.event_object_set_managed_peer_callbacks (obj.NativeHandle,
-									       container == null ? null : NativeDependencyObjectHelper.set_strong_ref,
+									       container == null ? null : NativeDependencyObjectHelper.add_strong_ref,
+									       container == null ? null : NativeDependencyObjectHelper.clear_strong_ref,
 									       NativeDependencyObjectHelper.mentor_changed);
 		}
 

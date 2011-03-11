@@ -95,19 +95,34 @@ namespace Mono
 
 		Dictionary<IntPtr,object> strongRefs;
 
-		void IRefContainer.SetStrongRef (IntPtr id, object value)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
 #if DEBUG
 			if (id == IntPtr.Zero)
-				Console.WriteLine ("Moon Error: Surface.SetStrongRef was called with an invalid ID with value: {0}", value);
+				Console.WriteLine ("Moon Error: Surface.AddStrongRef was called with an invalid ID with value: {0}", value);
+#endif
+
+			if (strongRefs.ContainsKey (id))
+				return;
+
+			if (value != null) {
+#if DEBUG_REF
+				Console.WriteLine ("Adding ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
+#endif
+				strongRefs.Add (id, value);
+			}
+		}
+
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
+		{
+#if DEBUG
+			if (id == IntPtr.Zero)
+				Console.WriteLine ("Moon Error: Surface.ClearStrongRef was called with an invalid ID with value: {0}", value);
 #endif
 #if DEBUG_REF
-			Console.WriteLine ("Setting ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value == null ? 0 : value.GetHashCode(), value);
+			Console.WriteLine ("Clearing ref from {0}/{1} to {2}/{3}", GetHashCode(), this, value.GetHashCode(), value);
 #endif
-			if (value == null)
-				strongRefs.Remove (id);
-			else
-				strongRefs [id] = value;
+			strongRefs.Remove (id);
 		}
 
 #if HEAPVIZ

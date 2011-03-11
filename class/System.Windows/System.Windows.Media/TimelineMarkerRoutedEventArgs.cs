@@ -51,12 +51,17 @@ namespace System.Windows.Media
 
 		}
 
-		internal override void SetStrongRef (IntPtr id, object value)
+		internal override void AddStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr)WeakRefs.TimelineMarkerRoutedEventArgs_Marker)
 				marker = (TimelineMarker) value;
 			else
-				base.SetStrongRef (id, value);
+				base.AddStrongRef (id, value);
+		}
+
+		public void ClearStrongRef (IntPtr id, object value)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

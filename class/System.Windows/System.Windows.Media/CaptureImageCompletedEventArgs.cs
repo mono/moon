@@ -112,12 +112,20 @@ namespace System.Windows.Media {
 			}
 		}
 
-		void IRefContainer.SetStrongRef (IntPtr id, object value)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr) WeakRefs.CaptureImageCompletedEventArgs_Source)
 				Source = (BitmapImage) value;
 			else
-				throw new Exception (string.Format ("CaptureImageCompletedEventArgs.SetStrongRef does not support id: {0}", id));
+				throw new Exception (string.Format ("CaptureImageCompletedEventArgs.AddStrongRef does not support id: {0}", id));
+		}
+
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr) WeakRefs.CaptureImageCompletedEventArgs_Source)
+				Source = null;
+			else
+				throw new Exception (string.Format ("CaptureImageCompletedEventArgs.ClearStrongRef does not support id: {0}", id));
 		}
 	}
 }

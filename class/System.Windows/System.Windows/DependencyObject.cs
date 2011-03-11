@@ -129,30 +129,46 @@ namespace System.Windows {
 
 		Dictionary<IntPtr,object> strongRefs;
 
-		void IRefContainer.SetStrongRef (IntPtr id, object value)
+		void IRefContainer.AddStrongRef (IntPtr id, object value)
 		{
 #if DEBUG
 			if (id == IntPtr.Zero)
-				Console.WriteLine ("Moon Error: DependencyObject.SetStrongRef was called with an invalid ID with value: {0}", value);
+				Console.WriteLine ("Moon Error: DependencyObject.AddStrongRef was called with an invalid ID with value: {0}", value);
 #endif
-			SetStrongRef (id, value);
+			AddStrongRef (id, value);
 		}
 
-		internal virtual void SetStrongRef (IntPtr id, object value)
+		internal virtual void AddStrongRef (IntPtr id, object value)
 		{
-			if (strongRefs == null && value == null)
+			if (strongRefs != null && strongRefs.ContainsKey (id))
 				return;
 
+			if (value != null) {
 #if DEBUG_REF
-			Console.WriteLine ("Setting ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5})", GetHashCode(), this, value == null ? 0 : value.GetHashCode(), value, NativeDependencyObjectHelper.IdToName (id), value);
+				Console.WriteLine ("Adding ref named `{4}' from {0}/{1} to {2}/{3} (referent = {5})", GetHashCode(), this, value.GetHashCode(), value, NativeDependencyObjectHelper.IdToName (id), value);
 #endif
-			if (strongRefs == null)
-				strongRefs = new Dictionary<IntPtr,object> ();
+				if (strongRefs == null)
+					strongRefs = new Dictionary<IntPtr,object> ();
+				strongRefs.Add (id, value);
+			}
+		}
 
-			if (value == null)
+		void IRefContainer.ClearStrongRef (IntPtr id, object value)
+		{
+#if DEBUG
+			if (id == IntPtr.Zero)
+				Console.WriteLine ("Moon Error: DependencyObject.ClearStrongRef was called with an invalid ID with value: {0}", value);
+#endif
+			ClearStrongRef (id, value);
+		}
+
+		internal virtual void ClearStrongRef (IntPtr id, object value)
+		{
+#if DEBUG_REF
+			Console.WriteLine ("Clearing ref from {0}/{1} to referent = {2:x}", GetHashCode(), this, value);
+#endif
+			if (strongRefs != null)
 				strongRefs.Remove (id);
-			else
-				strongRefs[id] = value;
 		}
 
 #if HEAPVIZ

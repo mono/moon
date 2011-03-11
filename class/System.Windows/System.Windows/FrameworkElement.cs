@@ -179,12 +179,21 @@ namespace System.Windows {
 			get; private set;
 		}
 
-		internal override void SetStrongRef (IntPtr id, object value)
+		internal override void AddStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent) {
 				Parent = (DependencyObject) value;
 			} else {
-				base.SetStrongRef (id, value);
+				base.AddStrongRef (id, value);
+			}
+		}
+
+		internal override void ClearStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr) WeakRefs.FrameworkElement_LogicalParent) {
+				Parent = null;
+			} else {
+				base.ClearStrongRef (id, value);
 			}
 		}
 

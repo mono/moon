@@ -81,12 +81,20 @@ namespace System.Windows {
 
 		Application current_app;
 
-		internal override void SetStrongRef (IntPtr id, object value)
+		internal override void AddStrongRef (IntPtr id, object value)
 		{
 			if (id == (IntPtr) WeakRefs.Deployment_CurrentApplication)
 				current_app = (Application) value;
 			else
-				base.SetStrongRef (id, value);
+				base.AddStrongRef (id, value);
+		}
+
+		internal override void ClearStrongRef (IntPtr id, object value)
+		{
+			if (id == (IntPtr) WeakRefs.Deployment_CurrentApplication)
+				current_app = null;
+			else
+				base.ClearStrongRef (id, value);
 		}
 
 #if HEAPVIZ
