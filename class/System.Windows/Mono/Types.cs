@@ -150,6 +150,8 @@ namespace Mono
 					info.native_handle = NativeMethods.types_register_type (native, type.FullName, cp,
 						GCHandle.ToIntPtr (info.gc_handle), 
 						(parent != null ? parent.native_handle : Kind.INVALID), 
+						type.IsEnum,
+						type.IsValueType,
 						type.IsInterface, 
 						type.IsEnum || type.GetConstructor (Type.EmptyTypes) != null, 
 						interface_kinds, interface_kinds.Length);

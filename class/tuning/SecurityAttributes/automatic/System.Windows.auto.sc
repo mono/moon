@@ -11,7 +11,7 @@
 +SC-M: Mono.Kind Mono.NativeMethods::event_object_get_object_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: Mono.Value Mono.Xaml.XamlParser::HydrateFromString(System.String,Mono.Value*,System.Boolean,System.Boolean)

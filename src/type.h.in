@@ -144,8 +144,8 @@ public:
 	Types ();
 	~Types ();
 
-	/* @GeneratePInvoke */	
-	Type::Kind RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
+	/* @GeneratePInvoke */
+	Type::Kind RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface, bool ctor_visible, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
 
 	/* @GeneratePInvoke */	
 	void RegisterInterfaces (Type::Kind type, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
