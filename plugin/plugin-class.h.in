@@ -222,6 +222,10 @@ struct MoonNameIdMapping {
 #define NPVARIANT_IS_NUMERIC(v) ((v).type == NPVariantType_Int32 || (v).type == NPVariantType_Double)
 #define NPVARIANT_AS_DOUBLE(v) ((v).type == NPVariantType_Int32 ? (double) (v).value.intValue : (v).value.doubleValue)
 #define NPVARIANT_AS_INT32(v) ((v).type == NPVariantType_Int32 ? (v).value.intValue : (int) (v).value.doubleValue)
+#undef NPVARIANT_TO_INT32
+#define NPVARIANT_TO_INT32(v) use NPVARIANT_AS_* instead
+#undef NPVARIANT_TO_DOUBLE
+#define NPVARIANT_TO_DOUBLE(v) use NPVARIANT_AS_* instead
 
 };
 

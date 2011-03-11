@@ -35,7 +35,6 @@ decode_arg_ctype (char c)
 	case 'v': return MethodArgTypeVoid;
 	case 'n': return MethodArgTypeNull;
 	case 'b': return MethodArgTypeBool;
-	case 'i': return MethodArgTypeInt32;
 	case 'd': return (MethodArgType) (MethodArgTypeDouble | MethodArgTypeInt32);
 	case 's': return MethodArgTypeString;
 	case 'o': return MethodArgTypeObject;
@@ -79,9 +78,9 @@ decode_arg_type (const char **in)
  *
  * The @typestr argument should follow the following syntax:
  *
- * simple-arg-type ::= "v" / "n" / "b" / "i" / "d" / "s" / "o" / "*"
+ * simple-arg-type ::= "v" / "n" / "b" / "d" / "s" / "o" / "*"
  *                     ; each char represents one of the following
- *                     ; NPVariant types: Void, Null, Bool, Int32,
+ *                     ; NPVariant types: Void, Null, Bool, Int32 or
  *                     ; Double, String, Object and wildcard
  *
  * arg-type        ::= simple-arg-type / "(" 1*(simple-arg-type) ")"

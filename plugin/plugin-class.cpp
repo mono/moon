@@ -307,10 +307,10 @@ variant_to_value (const NPVariant *v, Value **result)
 		*result = new Value (NPVARIANT_TO_BOOLEAN (*v));
 		break;
 	case NPVariantType_Int32:
-		*result = new Value ((int32_t) NPVARIANT_TO_INT32 (*v));
+		*result = new Value ((int32_t) NPVARIANT_AS_INT32 (*v));
 		break;
 	case NPVariantType_Double:
-		*result = new Value (NPVARIANT_TO_DOUBLE (*v));
+		*result = new Value (NPVARIANT_AS_DOUBLE (*v));
 		break;
 	case NPVariantType_String: {
 		char *value = STRDUP_FROM_VARIANT (*v);
@@ -946,7 +946,7 @@ MoonlightGlyphTypefaceCollectionObject::Invoke (int id, NPIdentifier name, const
 		if (!check_arg_list ("d", argCount, args))
 			THROW_JS_EXCEPTION ("getItem");
 		
-		if ((index = NPVARIANT_TO_INT32 (args[0])) < 0)
+		if ((index = NPVARIANT_AS_INT32 (args[0])) < 0)
 			THROW_JS_EXCEPTION ("getItem");
 		
 		if (index >= typefaces->GetCount ()) {
@@ -1007,10 +1007,10 @@ MoonlightPoint::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	switch (id) {
 	case MoonId_X:
-		point.x = NPVARIANT_TO_DOUBLE (*value);
+		point.x = NPVARIANT_AS_DOUBLE (*value);
 		return true;
 	case MoonId_Y:
-		point.y = NPVARIANT_TO_DOUBLE (*value);
+		point.y = NPVARIANT_AS_DOUBLE (*value);
 		return true;
 	default:
 		return MoonlightObject::SetProperty (id, name, value);
@@ -1071,19 +1071,19 @@ MoonlightRect::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	switch (id) {
 	case MoonId_X:
-		rect.x = NPVARIANT_TO_DOUBLE (*value);
+		rect.x = NPVARIANT_AS_DOUBLE (*value);
 		return true;
 
 	case MoonId_Y:
-		rect.y = NPVARIANT_TO_DOUBLE (*value);
+		rect.y = NPVARIANT_AS_DOUBLE (*value);
 		return true;
 
 	case MoonId_Width:
-		rect.width = NPVARIANT_TO_DOUBLE (*value);
+		rect.width = NPVARIANT_AS_DOUBLE (*value);
 		return true;
 
 	case MoonId_Height:
-		rect.height = NPVARIANT_TO_DOUBLE (*value);
+		rect.height = NPVARIANT_AS_DOUBLE (*value);
 		return true;
 
 	default:
@@ -1155,7 +1155,7 @@ MoonlightDuration::SetProperty (int id, NPIdentifier name, const NPVariant *valu
 		return true;
 
 	case MoonId_Seconds:
-		parent_obj->SetValue (parent_property, Value(Duration::FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value))));
+		parent_obj->SetValue (parent_property, Value(Duration::FromSecondsFloat (NPVARIANT_AS_DOUBLE (*value))));
 		return true;
 
 	default:
@@ -1243,10 +1243,8 @@ MoonlightTimeSpan::SetProperty (int id, NPIdentifier name, const NPVariant *valu
 		return true;
 
 	case MoonId_Seconds:
-		if (NPVARIANT_IS_INT32 (*value)) {
-			this->value = TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value));
-		} else if (NPVARIANT_IS_DOUBLE (*value)) {
-			this->value = TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value));
+		if (NPVARIANT_IS_NUMERIC (*value)) {
+			this->value = TimeSpan_FromSecondsFloat (NPVARIANT_AS_DOUBLE (*value));
 		} else {
 			return false;
 		}
@@ -1327,10 +1325,8 @@ MoonlightKeyTime::SetProperty (int id, NPIdentifier name, const NPVariant *value
 		return true;
 
 	case MoonId_Seconds:
-		if (NPVARIANT_IS_INT32 (*value))
-			parent_obj->SetValue (parent_property, Value(KeyTime::FromTimeSpan (TimeSpan_FromSecondsFloat (NPVARIANT_TO_INT32 (*value)))));
-		else if (NPVARIANT_IS_DOUBLE (*value)) 
-			parent_obj->SetValue (parent_property, Value(KeyTime::FromTimeSpan (TimeSpan_FromSecondsFloat (NPVARIANT_TO_DOUBLE (*value)))));
+		if (NPVARIANT_IS_NUMERIC (*value))
+			parent_obj->SetValue (parent_property, Value(KeyTime::FromTimeSpan (TimeSpan_FromSecondsFloat (NPVARIANT_AS_DOUBLE (*value)))));
 
 		return true;
 	default:
@@ -1588,7 +1584,7 @@ MoonlightGridLength::SetProperty (int id, NPIdentifier name, const NPVariant *va
 		return true;
 
 	case MoonId_Value:
-		gridlength.val = NPVARIANT_TO_DOUBLE (*value);
+		gridlength.val = NPVARIANT_AS_DOUBLE (*value);
 		parent_obj->SetValue (parent_property, Value(gridlength.val));
 		return true;
 	case MoonId_GridUnitType: {
@@ -2745,7 +2741,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 
 	// not implemented yet.
 	case MoonId_MaxFrameRate:
-		plugin->SetMaxFrameRate (NPVARIANT_TO_INT32 (*value));
+		plugin->SetMaxFrameRate (NPVARIANT_AS_INT32 (*value));
 		return true;
 
 	// Cant be set after initialization so return true
@@ -3220,11 +3216,11 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			
 			strval = strbuf;
 		} else if (NPVARIANT_IS_INT32 (*value)) {
-			g_snprintf (strbuf, sizeof (strbuf), "%d", NPVARIANT_TO_INT32 (*value));
+			g_snprintf (strbuf, sizeof (strbuf), "%d", NPVARIANT_AS_INT32 (*value));
 			
 			strval = strbuf;
 		} else if (NPVARIANT_IS_DOUBLE (*value)) {
-			g_ascii_dtostr (strbuf, sizeof (strbuf), NPVARIANT_TO_DOUBLE (*value));
+			g_ascii_dtostr (strbuf, sizeof (strbuf), NPVARIANT_AS_DOUBLE (*value));
 			
 			strval = strbuf;
 		} else if (NPVARIANT_IS_STRING (*value)) {
@@ -3549,7 +3545,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_RemoveEventListener: {
-		if (!check_arg_list ("s(is)", argCount, args))
+		if (!check_arg_list ("s(ds)", argCount, args))
 			THROW_JS_EXCEPTION ("removeEventListener");
 		
 		char *event = STRDUP_FROM_VARIANT (args[0]);
@@ -3558,8 +3554,8 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		
 		if (id == -1) {
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_DELEVENT");
-		} else if (NPVARIANT_IS_INT32 (args [1])) {
-			dob->RemoveHandler (id, NPVARIANT_TO_INT32 (args[1]));
+		} else if (NPVARIANT_IS_NUMERIC (args [1])) {
+			dob->RemoveHandler (id, NPVARIANT_AS_INT32 (args[1]));
 		} else if (NPVARIANT_IS_STRING (args[1])) {
 			char *value = STRDUP_FROM_VARIANT (args[1]);
 			NamedProxyPredicate predicate (value);
@@ -3835,7 +3831,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		if (!check_arg_list ("d", argCount, args))
 			THROW_JS_EXCEPTION ("removeAt");
 		
-		int index = NPVARIANT_TO_INT32 (args [0]);
+		int index = NPVARIANT_AS_INT32 (args [0]);
 		
 		if (index < 0 || index >= col->GetCount ())
 			THROW_JS_EXCEPTION ("removeAt");
@@ -3864,7 +3860,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		}
 		
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
-		int index = NPVARIANT_TO_INT32 (args[0]);
+		int index = NPVARIANT_AS_INT32 (args[0]);
 		MoonError err;
 		Value val (el->GetDependencyObject ());
 
@@ -3904,7 +3900,7 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		if (!check_arg_list ("d", argCount, args))
 			THROW_JS_EXCEPTION ("getItem");
 		
-		int index = NPVARIANT_TO_INT32 (args[0]);
+		int index = NPVARIANT_AS_INT32 (args[0]);
 		
 		if (index < 0)
 			THROW_JS_EXCEPTION ("getItem");
@@ -4001,14 +3997,14 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 
 		return true;
 	case MoonId_Seek: {
-		if (!check_arg_list ("(is)", argCount, args))
+		if (!check_arg_list ("(ds)", argCount, args))
 			THROW_JS_EXCEPTION ("seek");
 		
 		TimeSpan ts;
 		bool ok;
 		
-		if (NPVARIANT_IS_INT32 (args[0])) {
-			ts = (TimeSpan) NPVARIANT_TO_INT32 (args[0]);
+		if (NPVARIANT_IS_NUMERIC (args[0])) {
+			ts = (TimeSpan) NPVARIANT_AS_INT32 (args[0]);
 		} else if (NPVARIANT_IS_STRING (args[0])) {
 			char *span = STRDUP_FROM_VARIANT (args[0]);
 			ok = Xaml::TimeSpanFromStr (span, &ts);
@@ -4172,9 +4168,9 @@ MoonlightMultiScaleImageObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 
 		case MoonId_MultiScaleImage_GetIthSubImage: {
-			if (!check_arg_list ("i", argCount, args))
+			if (!check_arg_list ("d", argCount, args))
 				THROW_JS_EXCEPTION ("GetIthSubImage");
-			int arg0 = NPVARIANT_TO_INT32 (args[0]);
+			int arg0 = NPVARIANT_AS_INT32 (args[0]);
 			MultiScaleSubImage * ret = dob->GetIthSubImage(arg0);
 			if (ret)
 				object_to_npvariant (EventObjectCreateWrapper (GetPlugin (), ret), *result);
@@ -4192,10 +4188,10 @@ MoonlightMultiScaleImageObject::Invoke (int id, NPIdentifier name,
 		}
 
 		case MoonId_MultiScaleImage_LogicalToElementX: {
-			if (!check_arg_list ("ii", argCount, args))
+			if (!check_arg_list ("dd", argCount, args))
 				THROW_JS_EXCEPTION ("LogicalToElementX");
-			int arg0 = NPVARIANT_TO_INT32 (args[0]);
-			int arg1 = NPVARIANT_TO_INT32 (args[1]);
+			int arg0 = NPVARIANT_AS_INT32 (args[0]);
+			int arg1 = NPVARIANT_AS_INT32 (args[1]);
 			int ret = dob->LogicalToElementX(arg0,arg1);
 			INT32_TO_NPVARIANT (ret, *result);
 			return true;
@@ -4203,10 +4199,10 @@ MoonlightMultiScaleImageObject::Invoke (int id, NPIdentifier name,
 		}
 
 		case MoonId_MultiScaleImage_LogicalToElementY: {
-			if (!check_arg_list ("ii", argCount, args))
+			if (!check_arg_list ("dd", argCount, args))
 				THROW_JS_EXCEPTION ("LogicalToElementY");
-			int arg0 = NPVARIANT_TO_INT32 (args[0]);
-			int arg1 = NPVARIANT_TO_INT32 (args[1]);
+			int arg0 = NPVARIANT_AS_INT32 (args[0]);
+			int arg1 = NPVARIANT_AS_INT32 (args[1]);
 			int ret = dob->LogicalToElementY(arg0,arg1);
 			INT32_TO_NPVARIANT (ret, *result);
 			return true;
@@ -4475,11 +4471,11 @@ MoonlightTextBoxObject::Invoke (int id, NPIdentifier name,
 	
 	switch (id) {
 	case MoonId_Select:
-		if (!check_arg_list ("ii", argCount, args))
+		if (!check_arg_list ("dd", argCount, args))
 			THROW_JS_EXCEPTION ("select");
 
-		if (!textbox->SelectWithError (NPVARIANT_TO_INT32 (args[0]),
-					       NPVARIANT_TO_INT32 (args[1]),
+		if (!textbox->SelectWithError (NPVARIANT_AS_INT32 (args[0]),
+					       NPVARIANT_AS_INT32 (args[1]),
 					       &err)) {
 			THROW_JS_EXCEPTION (err.message);
 		}
@@ -4533,11 +4529,11 @@ MoonlightPasswordBoxObject::Invoke (int id, NPIdentifier name,
 	
 	switch (id) {
 	case MoonId_Select:
-		if (!check_arg_list ("ii", argCount, args))
+		if (!check_arg_list ("dd", argCount, args))
 			THROW_JS_EXCEPTION ("select");
 
-		if (!passwordbox->SelectWithError (NPVARIANT_TO_INT32 (args[0]),
-						   NPVARIANT_TO_INT32 (args[1]),
+		if (!passwordbox->SelectWithError (NPVARIANT_AS_INT32 (args[0]),
+						   NPVARIANT_AS_INT32 (args[1]),
 						   &err)) {
 			THROW_JS_EXCEPTION (err.message);
 		}
