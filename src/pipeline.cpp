@@ -3966,7 +3966,7 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 				duration = stream->GetLastEnqueuedDemuxedPts () - stream->GetFirstPts ();
 				//if (end_pts < stream->GetLastEnqueuedDemuxedPts ()) {
 				if (duration >= media->GetStartTime () + media->GetDuration ()) {
-					printf ("IMediaDemuxer::GetFrameAsync (): reached end of fixed duration, "
+					LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (): reached end of fixed duration, "
 					"last enqueued demuxed pts: %" G_GUINT64_FORMAT " ms "
 					"- first pts: %" G_GUINT64_FORMAT " ms "
 					"= %" G_GUINT64_FORMAT " ms "

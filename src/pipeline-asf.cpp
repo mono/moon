@@ -2717,7 +2717,8 @@ MmsSource::StoppedHandler (HttpRequest *request, HttpRequestStoppedEventArgs *ar
 		goto cleanup; /* Nothing more to do here, don't report failures for temporary downloaders */
 	}
 
-	g_return_if_fail (media != NULL);
+	if (media == NULL)
+		return;
 
 	media->RetryHttp ();
 
