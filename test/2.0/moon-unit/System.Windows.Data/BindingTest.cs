@@ -1378,6 +1378,93 @@ namespace MoonTest.System.Windows.Data
 			EnqueueTestComplete();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_ControlTemplate_DepObjectToOuterDepObject ()
+		{
+			// ElementName bindings can find elements outside the template.
+			var control = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<ContentControl.Resources>
+		<SolidColorBrush Name=""OuterBrush"" Color=""Red"" />
+	</ContentControl.Resources>
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid Name=""Inner"" Width=""50"" >
+				<Grid.Resources>
+					<SolidColorBrush Name=""InnerBrush"" Color=""{Binding Color, ElementName='OuterBrush'}"" />
+				</Grid.Resources>
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>");
+
+			CreateAsyncTest (control,
+				() => { },
+				() => {
+				var innerGrid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				var innerBrush = (SolidColorBrush) innerGrid.Resources["InnerBrush"];
+
+				Assert.AreEqual (Colors.Red.ToString (), innerBrush.Color.ToString (), "#color");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_ControlTemplate_FrameworkElementToInnerFrameworkElement ()
+		{
+			// ElementName bindings can find elements inside the template.
+			var control = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid Name=""Inner"" Width=""50"" >
+				<Grid Name=""A"" Width=""{Binding Width, ElementName='Inner'}""/>
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>");
+
+			CreateAsyncTest (control, () => {
+				var innerGrid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				var gridA = (Grid) innerGrid.FindName ("A");
+
+				Assert.AreEqual (50, gridA.Width, "#1");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_ControlTemplate_FrameworkElementToOuterFrameworkElement ()
+		{
+			// ElementName bindings can find elements outside the template.
+			var control = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	Width=""{Binding Width, ElementName='Outer'}"">
+	<ContentControl.Resources>
+		<Rectangle Name=""Outer"" Width=""55"" />
+	</ContentControl.Resources>
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid>
+				<Grid Name=""A"" Width=""{Binding Width, ElementName='Outer'}""/>
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>");
+
+			CreateAsyncTest (control,
+				() => { },
+				() => {
+				var innerGrid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				var gridA = (Grid) innerGrid.FindName ("A");
+
+				Assert.AreEqual (55, gridA.Width, "#1");
+				Assert.AreEqual (55, control.Width, "#2");
+			});
+			EnqueueTestComplete ();
+		}
 
 		[TestMethod]
 		[Asynchronous]
