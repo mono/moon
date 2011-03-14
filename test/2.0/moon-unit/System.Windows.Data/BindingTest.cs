@@ -2703,6 +2703,15 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
+		public void PathIsDot ()
+		{
+			var target = new Canvas ();
+			target.DataContext = "5";
+			target.SetBinding (Canvas.WidthProperty, new Binding ("."));
+			Assert.AreEqual (5, target.Width, "#1");
+		}
+
+		[TestMethod]
 		public void PathNotValid()
 		{
 			Binding binding = new Binding {

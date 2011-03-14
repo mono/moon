@@ -100,7 +100,7 @@ namespace System.Windows.Data
 			CollectionViewNode lastCVNode = null;
 			Path = path;
 
-			if (string.IsNullOrEmpty (path)) {
+			if (string.IsNullOrEmpty (path) || path == ".") {
 				// If the property path is null or empty, we still need to add a CollectionViewNode
 				// to handle the case where we bind diretly to a CollectionViewSource. i.e. new Binding () { Source = cvs }
 				// An empty path means we always bind directly to the view.
