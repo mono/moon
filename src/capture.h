@@ -149,6 +149,7 @@ class CaptureSource : public DependencyObject {
 public:
 	/* @GeneratePInvoke */
 	CaptureSource ();
+	virtual void Dispose ();
 
 	/* @PropertyType=AudioCaptureDevice,GenerateAccessors */
 	const static int AudioCaptureDeviceProperty;

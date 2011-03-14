@@ -82,6 +82,21 @@ CaptureSource::CaptureSource ()
 }
 
 void
+CaptureSource::Dispose ()
+{
+	CaptureDevice *dev;
+
+	dev = GetAudioCaptureDevice ();
+	if (dev != NULL)
+		dev->RemoveAllHandlers (this);
+	dev = GetVideoCaptureDevice ();
+	if (dev != NULL)
+		dev->RemoveAllHandlers (this);
+
+	DependencyObject::Dispose ();
+}
+
+void
 CaptureSource::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == CaptureSource::AudioCaptureDeviceProperty ||
