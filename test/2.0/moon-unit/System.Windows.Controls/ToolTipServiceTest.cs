@@ -2,6 +2,7 @@ using System;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Shapes;
+using System.Windows.Controls.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
