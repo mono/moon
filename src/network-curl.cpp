@@ -467,6 +467,7 @@ CurlDownloaderRequest::Close ()
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::Close request:%p response:%p\n", this, response);
 
 	VERIFY_MAIN_THREAD
+	SetCurrentDeployment ();
 
 	if (state != OPENED && state != ABORTED)
 		return;
