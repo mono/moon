@@ -74,10 +74,11 @@ void
 moon_path_clear (moon_path* path)
 {
 	g_return_if_fail (path != NULL);
-
 	path->cairo.status = CAIRO_STATUS_SUCCESS;
-	memset (path->cairo.data, 0, path->allocated * sizeof (cairo_path_data_t));
-	path->cairo.num_data = 0;
+	if (path->cairo.num_data != 0) {
+		memset (path->cairo.data, 0, path->allocated * sizeof (cairo_path_data_t));
+		path->cairo.num_data = 0;
+	}
 }
 
 /**
