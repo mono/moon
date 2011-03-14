@@ -245,13 +245,13 @@ namespace System.Windows.Controls
                 var h = Opened;
                 if (h != null)
                     h (this, new RoutedEventArgs { OriginalSource = this });
-		this.LayoutUpdated += OnLayoutUpdated;
+                this.LayoutUpdated += OnLayoutUpdated;
             };
             this._parentPopup.Closed += delegate {
                 var h = Closed;
                 if (h != null)
                     h (this, new RoutedEventArgs { OriginalSource = this });
-		this.LayoutUpdated -= OnLayoutUpdated;
+                this.LayoutUpdated -= OnLayoutUpdated;
             };
             this.IsTabStop = false;
 
