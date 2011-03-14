@@ -607,7 +607,6 @@ MoonVideoCaptureDeviceV4L2::CaptureLoop ()
 					in_ptr += 3;
 				}
 			}
-			g_file_set_contents (g_strdup_printf ("/tmp/image-%ix%i-%i.rgb", capturing_format.width, capturing_format.height, ctr++), (const gchar *) buffer, buflen, NULL);
 			break;
 		}
 		default: {
