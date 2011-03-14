@@ -46,6 +46,7 @@ namespace System.Windows.Media {
 			: base (exc, false, null)
 		{
 			NativeHandle = raw;
+			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 			if (dropref)
 				NativeMethods.event_object_unref (raw);
 		}
