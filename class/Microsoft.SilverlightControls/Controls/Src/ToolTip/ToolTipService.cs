@@ -435,7 +435,9 @@ namespace System.Windows.Controls
             owner.MouseLeave += new MouseEventHandler(OnOwnerMouseLeave); 
             owner.MouseLeftButtonDown += new MouseButtonEventHandler(OnOwnerMouseLeftButtonDown);
             owner.KeyDown += new KeyEventHandler(OnOwnerKeyDown);
-            owner.SetValue (AssignedToolTipProperty, ConvertToToolTip(toolTip));
+            var converted = ConvertToToolTip (toolTip);
+            owner.SetValue (AssignedToolTipProperty, converted);
+            converted.TooltipParent = owner as FrameworkElement;
         } 
 
         private static void SetRootVisual() 
@@ -466,6 +468,7 @@ namespace System.Windows.Controls
             owner.KeyDown -= new KeyEventHandler(OnOwnerKeyDown); 
 
             ToolTip toolTip = (ToolTip) owner.GetValue (AssignedToolTipProperty);
+            toolTip.TooltipParent = null;
             if (toolTip.IsOpen)
             {
                 if (toolTip == ToolTipService._currentToolTip) 

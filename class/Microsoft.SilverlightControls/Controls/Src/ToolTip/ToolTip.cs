@@ -11,6 +11,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 
+using Mono;
+
 namespace System.Windows.Controls
 { 
     [TemplateVisualState(Name = "Closed", GroupName = "OpenStates")]
@@ -195,7 +197,9 @@ namespace System.Windows.Controls
         #endregion Events 
 
         #region Data
- 
+
+        UnmanagedPropertyChangeHandler propagateDataContext;
+        FrameworkElement tooltipParent;
         Popup _parentPopup;
         internal Popup ParentPopup {
             get { return _parentPopup; }
@@ -209,6 +213,20 @@ namespace System.Windows.Controls
             get; set;
         }
 
+        // If ToolTipService attatches a tooltip to an object we need
+        // to proxy the DataContext from that object. 'TooltipParent' is
+        // where we store the object the tooltip is attached to.
+        internal FrameworkElement TooltipParent {
+            get { return tooltipParent; }
+            set {
+                if (tooltipParent != null)
+                    tooltipParent.RemovePropertyChangedHandler (DataContextProperty, propagateDataContext);
+                tooltipParent = value;
+                if (tooltipParent != null)
+                    tooltipParent.AddPropertyChangedHandler (DataContextProperty, propagateDataContext);
+            }
+        }
+
         #endregion Data
 
         /// <summary> 
@@ -217,9 +235,11 @@ namespace System.Windows.Controls
         public ToolTip()
         { 
             DefaultStyleKey = typeof (ToolTip);
-
-	    //this.LayoutUpdated += OnLayoutUpdated;
-        } 
+            propagateDataContext = delegate {
+                if (_parentPopup != null && TooltipParent != null)
+                _parentPopup.DataContext = TooltipParent.DataContext;
+            };
+        }
 
         #region Protected Methods
  
@@ -241,6 +261,7 @@ namespace System.Windows.Controls
             Debug.Assert(this._parentPopup == null, "this._parentPopup should be null, we want to set visual tree once"); 
  
             this._parentPopup = new Popup();
+            this._parentPopup.DataContext = TooltipParent == null ? null : TooltipParent.DataContext;
             this._parentPopup.Opened += delegate {
                 var h = Opened;
                 if (h != null)

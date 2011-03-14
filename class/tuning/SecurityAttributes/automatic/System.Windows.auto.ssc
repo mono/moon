@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 636 methods
+# 637 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -400,6 +400,7 @@
 +SSC-M: System.Void System.Windows.Threading.Dispatcher::Dispatch()
 +SSC-M: System.Void System.Windows.Threading.DispatcherTimer::Start()
 +SSC-M: System.Void System.Windows.Threading.DispatcherTimer::Stop()
++SSC-M: System.Void System.Windows.Controls.ToolTip::set_TooltipParent(System.Windows.FrameworkElement)
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::application_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::arc_segment_new()
 +SSC-M: System.IntPtr Mono.SafeNativeMethods::assembly_part_new()

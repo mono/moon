@@ -48,6 +48,32 @@ namespace MoonTest
 		}
 
 		[TestMethod]
+		public void CopiesDataContextOnOpen ()
+		{
+			var tooltip = new ToolTip ();
+			var target = new Rectangle { DataContext = "A" };
+			ToolTipService.SetToolTip (target, tooltip);
+
+			Assert.IsNull (tooltip.DataContext, "#1");
+			tooltip.IsOpen = true;
+			Assert.AreEqual (tooltip.DataContext, target.DataContext, "#2");
+			Assert.IsUnset (tooltip, ToolTip.DataContextProperty, "#3");
+		}
+
+		[TestMethod]
+		public void DataContextSetLocallyOnPopup ()
+		{
+			var tooltip = new ToolTip ();
+			var target = new Rectangle { DataContext = "A" };
+			ToolTipService.SetToolTip (target, tooltip);
+
+			tooltip.IsOpen = true;
+			var popup = (Popup) tooltip.Parent;
+			Assert.AreEqual (target.DataContext, popup.ReadLocalValue (FrameworkElement.DataContextProperty), "#1");
+			tooltip.IsOpen = false;
+		}
+
+		[TestMethod]
 		public void SameTooltipObjectForMultipleObjects ()
 		{
 			// ToolTip does not set "ContentControl.ContentSetsParent" to false
@@ -149,6 +175,34 @@ namespace MoonTest
 
 			target2.ClearValue (ToolTipService.ToolTipProperty);
 			Assert.IsInstanceOfType<ToolTip> (data.Parent);
+		}
+
+		[TestMethod]
+		public void TracksDataContextChangesWhenClosed ()
+		{
+			var tooltip = new ToolTip ();
+			var target = new Rectangle { DataContext = "A" };
+			ToolTipService.SetToolTip (target, tooltip);
+
+			Assert.IsNull (tooltip.DataContext, "#1");
+			tooltip.IsOpen = true;
+			tooltip.IsOpen = false;
+
+			target.DataContext = "B";
+			Assert.AreEqual ("B", tooltip.DataContext, "#2");
+		}
+
+		[TestMethod]
+		public void TracksDataContextChangesWhenOpen ()
+		{
+			var tooltip = new ToolTip ();
+			var target = new Rectangle { DataContext = "A" };
+			ToolTipService.SetToolTip (target, tooltip);
+
+			Assert.IsNull (tooltip.DataContext, "#1");
+			tooltip.IsOpen = true;
+			target.DataContext = "B";
+			Assert.AreEqual ("B", tooltip.DataContext, "#2");
 		}
 	}
 }
