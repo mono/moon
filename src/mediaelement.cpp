@@ -90,6 +90,12 @@ MediaElement::MediaElement ()
 		
 	marker_timeout = 0;
 	mplayer = NULL;
+
+	native_buffer = NULL;
+	native = NULL;
+	native_width = 0;
+	native_height = 0;
+	native_ctx = 0;
 	
 	Reinitialize (false);
 	
@@ -446,6 +452,10 @@ MediaElement::OnIsAttachedChanged (bool value)
 		LOG_MEDIAELEMENT ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
 		RequestLog (LogSourceMediaElementShutdown);
 		detached_state = state;
+		if (native_buffer) {
+			native_buffer->unref ();
+			native_buffer = native = NULL;
+		}
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
 		if (playlist)
@@ -471,7 +481,12 @@ MediaElement::Reinitialize (bool is_shutting_down)
 {
 	LOG_MEDIAELEMENT ("MediaElement::Reinitialize ()\n");
 	VERIFY_MAIN_THREAD;
-	
+
+	if (native_buffer) {
+		native_buffer->unref ();
+		native_buffer = native = NULL;
+	}
+
 	if (mplayer) {
 		mplayer->Dispose ();
 		mplayer->unref ();
@@ -736,6 +751,86 @@ MediaElement::GetQualityLevel (int min, int max)
 	}
 	
 	return MIN (max, quality_level + min);
+}
+
+MoonSurface *
+MediaElement::GetSurface (Context *ctx)
+{
+	cairo_surface_t *surface;
+	int             width;
+	int             height;
+
+	if (!mplayer || !(surface = mplayer->GetCairoSurface ()))
+		return NULL;
+
+	width = cairo_image_surface_get_width (surface);
+	height = cairo_image_surface_get_height (surface);
+
+	if (width  != native_width  ||
+	    height != native_height ||
+	    ctx    != native_ctx) {
+		if (native_buffer) {
+			native_buffer->unref ();
+			native_buffer = native = NULL;
+		}
+	}
+
+	if (!native) {
+		if (native_buffer)
+			ctx->Push (Context::Group (Rect (0,
+							 0,
+							 width,
+							 height)),
+				   native_buffer);
+		else
+			ctx->Push (Context::Group (Rect (0,
+							 0,
+							 width,
+							 height)));
+
+		ctx->Blit (cairo_image_surface_get_data (surface),
+			   cairo_image_surface_get_stride (surface));
+		ctx->Pop (&native);
+
+		native_buffer = native;
+		native_width  = width;
+		native_height = height;
+		native_ctx    = ctx;
+	}
+
+	return native;
+}
+
+void
+MediaElement::Render (Context *ctx, Region *region)
+{
+	Size specified (GetActualWidth (), GetActualHeight ());
+	Size stretched = ApplySizeConstraints (specified);
+
+	if (GetStretch () != StretchFill || specified != GetRenderSize ()) {
+		UIElement::Render (ctx, region);
+		return;
+	}
+
+	MoonSurface *src = GetSurface (ctx);
+	if (!src)
+		return;
+
+	specified = specified.Min (stretched);
+	Rect paint = Rect (0, 0, specified.width, specified.height);
+	Rect video = Rect (0,
+			   0,
+			   mplayer->GetVideoWidth (),
+			   mplayer->GetVideoHeight ());
+
+	cairo_matrix_t matrix;
+	cairo_matrix_init_scale (&matrix,
+				 paint.width / video.width,
+				 paint.height / video.height);
+
+	ctx->Push (Context::Transform (matrix));
+	ctx->Blend (src, 1.0, 0, 0);
+	ctx->Pop ();
 }
 
 void
@@ -1322,6 +1417,7 @@ MediaElement::MediaInvalidate ()
 {
 	Emit (MediaInvalidatedEvent);
 	Invalidate ();
+	native = NULL;
 }
 
 void

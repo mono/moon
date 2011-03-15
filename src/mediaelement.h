@@ -42,6 +42,12 @@ class MediaElement : public FrameworkElement {
 	
 	MediaPlayer *mplayer;
 	Playlist *playlist;
+
+	MoonSurface *native_buffer;
+	MoonSurface *native;
+	gint32 native_width;
+	gint32 native_height;
+	Context *native_ctx;
 	
 	// 
 	guint32 marker_timeout;
@@ -135,6 +141,8 @@ class MediaElement : public FrameworkElement {
 	void CreatePlaylist ();
 	void SetPlaylist (Playlist *playlist); // Adds/removes event handlers
 
+	MoonSurface *GetSurface (Context *ctx);
+
  protected:
 	virtual ~MediaElement () {}
 	
@@ -219,6 +227,7 @@ class MediaElement : public FrameworkElement {
 	MediaPlayer *GetMediaPlayer () { return mplayer; }
 	
 	// overrides
+	virtual void Render (Context *ctx, Region *region);
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Point GetTransformOrigin ();
 
