@@ -2043,14 +2043,6 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 void
 TextBoxBase::OnLostFocus (RoutedEventArgs *args)
 {
-	BatchPush ();
-	emit = NOTHING_CHANGED;
-	SetSelectionStart (selection_cursor);
-	SetSelectionLength (0);
-	BatchPop ();
-	
-	SyncAndEmit ();
-	
 	focused = false;
 	
 	if (view)
