@@ -63,6 +63,8 @@ class DependencyProperty {
 	bool IsReadOnly () { return is_readonly; }
 	/* @GeneratePInvoke */
 	bool IsAttached () { return is_attached; }
+	bool IsAutoCreated () { return autocreator != NULL; }
+	AutoCreator* GetAutoCreator () { return autocreator; }
 	bool AlwaysChange () { return always_change; }
 	bool IsCustom () { return is_custom; }
 	PropertyChangeHandler GetChangedCallback () { return changed_callback; }
@@ -73,13 +75,8 @@ class DependencyProperty {
 
 	/* @GeneratePInvoke */
 	Value *GetDefaultValue (Type::Kind kind);
+	Value *GetDefaultValue (Type::Kind kind, DependencyObject *forObj);
 	void AddDefaultValueOverride (Type::Kind kind, Value *value);
-	bool HasDefaultValue () { return default_value != NULL; }
-
-	bool IsAutoCreated () { return autocreator != NULL; }
-	AutoCreator* GetAutoCreator () { return autocreator; }
-	/* @GeneratePInvoke */
-	Value *GetAutoCreatedValue (Type::Kind kind, DependencyObject *forObj);
 
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 

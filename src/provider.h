@@ -37,7 +37,6 @@ class StylePropertyValueProvider;
 class ImplicitStylePropertyValueProvider;
 class InheritedPropertyValueProvider;
 class InheritedDataContextValueProvider;
-class DefaultValueProvider;
 class AutoCreatePropertyValueProvider;
 
 enum PropertyPrecedence {
@@ -50,7 +49,6 @@ enum PropertyPrecedence {
 
 	PropertyPrecedence_Inherited,
 	PropertyPrecedence_InheritedDataContext,
-	PropertyPrecedence_DefaultValue,
 	PropertyPrecedence_AutoCreate,
 
 	PropertyPrecedence_Count,
@@ -68,7 +66,6 @@ struct PropertyValueProviderVTable {
 	ImplicitStylePropertyValueProvider *defaultstyle;
 	InheritedPropertyValueProvider *inherited;
 	InheritedDataContextValueProvider *inheriteddatacontext;
-	DefaultValueProvider *defaultvalue;
 	AutoCreatePropertyValueProvider *autocreate;
 };
 
@@ -217,14 +214,6 @@ private:
 	void WalkTree (Types *types, DependencyObject *rootParent, DependencyObject *element, InheritedContext *context, Inheritable props, bool adding);
 
 	GHashTable *propertyToSupplyingAncestor;
-};
-
-class DefaultValueProvider : public PropertyValueProvider {
- public:
-	DefaultValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
-	virtual ~DefaultValueProvider ();
-
-	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
 typedef Value* AutoCreator  (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 596 methods needs to be decorated.
+# 595 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -540,9 +540,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_(System.IntPtr,System.IntPtr,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_auto_created_value(System.IntPtr,Mono.Kind,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_default_value(System.IntPtr,Mono.Kind)

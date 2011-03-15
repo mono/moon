@@ -927,26 +927,6 @@ InheritedPropertyValueProvider::SetPropertySource (Inheritable inheritableProper
 }
 
 //
-// DefaultValueProvider
-//
-DefaultValueProvider::DefaultValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
-	: PropertyValueProvider (obj, precedence)
-{
-
-}
-
-DefaultValueProvider::~DefaultValueProvider ()
-{
-
-}
-
-Value *
-DefaultValueProvider::GetPropertyValue (DependencyProperty *property)
-{
-	return property->GetDefaultValue (obj->GetObjectType ());
-}
-
-//
 // AutoPropertyValueProvider
 //
 
@@ -967,12 +947,12 @@ Value *
 AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	Value *value;
-
+	
 	// return previously set auto value next
 	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
 		return value;
-
-	if (!(value = property->IsAutoCreated () ? property->GetAutoCreatedValue (obj->GetObjectType (), obj) : NULL))
+	
+	if (!(value = property->GetDefaultValue (obj->GetObjectType (), obj)))
 		return NULL;
 
 	Deployment *deployment = obj->GetDeployment();
