@@ -1,2 +1,16 @@
 #!/bin/sh
-mcs -noconfig -lib:@prefix@/lib/moonlight/2.0 -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll "$@"
+profile=plugin
+for arg
+do
+    case "$arg" in
+	-profile:desktop)
+		profile=2.0
+		shift ;;
+	-profile:plugin)
+		shift ;;
+    -*) switches="$switches $arg" ;;
+    *)  files="$files $arg" ;;
+    esac
+done
+
+mcs -sdk:2.1 -lib:@profile@/lib/moonlight/$profile -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"

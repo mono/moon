@@ -509,10 +509,7 @@ namespace Moonlight {
 			if (warn_as_error_arg != null)
 				compiler_args.AppendFormat (" {0}", warn_as_error_arg);
 
-			if (desktop)
-				return RunProcess ("mcs", compiler_args.ToString());
-			else
-				return RunProcess ("smcs", "\"-lib:" + prefix + "/lib/moonlight/plugin/\" " + compiler_args.ToString ());
+			return RunProcess ("smcs", String.Format ("-profile:{0} {1}", desktop ? "desktop" : "plugin", compiler_args.ToString()));
 		}
 
 		public bool CreateXap ()
