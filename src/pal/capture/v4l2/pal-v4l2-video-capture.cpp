@@ -441,7 +441,7 @@ MoonVideoCaptureDeviceV4L2::CaptureLoopCallback (gpointer context)
 	((MoonVideoCaptureDeviceV4L2 *) context)->CaptureLoop ();
 	return NULL;
 }
-static int ctr = 0;
+
 void
 MoonVideoCaptureDeviceV4L2::CaptureLoop ()
 {
