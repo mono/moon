@@ -67,15 +67,15 @@ namespace System.Windows {
 				// Type converting doesn't happen for TemplateBindings
 				Updating = true;
 				try {
-					Target.SetValue (TargetProperty, Value.ToObject (SourceProperty.PropertyType,
-											     NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs)));
+					Target.SetValue (TargetProperty, GetValue (null));
 				} catch {
 					Target.SetValue (TargetProperty, TargetProperty.GetDefaultValue (Target));
 				}
-				Updating = false;
 			}
 			catch (Exception ex) {
 				error = new MoonError (ex);
+			} finally {
+				Updating = false;
 			}
 		}
 
