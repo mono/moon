@@ -2756,8 +2756,8 @@ DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObjec
 void
 DependencyObject::propagate_mentor (DependencyProperty *key, Value *value, gpointer data)
 {
-	Deployment *d = Deployment::GetCurrent ();
 	DependencyObject *mentor = (DependencyObject *) data;
+	Deployment *d = mentor ? mentor->GetDeployment () : Deployment::GetCurrent ();
 	if (value->IsDependencyObject (d)) {
 		DependencyObject *v = value->AsDependencyObject ();
 		if (v)
