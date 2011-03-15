@@ -421,10 +421,21 @@ namespace System.Windows {
 		
 		internal virtual object GetDefaultValue (Kind kind)
 		{
-			var ptr = Mono.NativeMethods.dependency_property_get_default_value (native, kind);
-			var result = Value.ToObject (PropertyType, ptr);
-			Mono.NativeMethods.value_free_value2 (ptr);
-			return result;
+			IntPtr ptr;
+			object ret = null;
+
+			// The value from GetDefaultValue does not need to be deleted
+			ptr = Mono.NativeMethods.dependency_property_get_default_value (native, kind);
+			if (ptr == IntPtr.Zero) {
+				// The value from GetAutoCreatedValue does need to be deleted
+				ptr = NativeMethods.dependency_property_get_auto_created_value (native, kind, IntPtr.Zero);
+				ret = Value.ToObject (ptr);
+				NativeMethods.value_delete_value2 (ptr);
+			} else {
+				ret = Value.ToObject (PropertyType, ptr);
+			}
+
+			return ret;
 		}
 
 		internal IntPtr Native {

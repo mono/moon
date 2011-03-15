@@ -88,31 +88,27 @@ DependencyProperty::CanBeSetToNull ()
 Value *
 DependencyProperty::GetDefaultValue (Type::Kind kind)
 {
-	return GetDefaultValue (kind, NULL);
-}
-
-Value *
-DependencyProperty::GetDefaultValue (Type::Kind kind, DependencyObject *forObj)
-{
 	if (default_value_overrides) {
 		Value *value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (kind));
 		if (value)
-			return new Value (*value);
+			return value;
 	
 		Types *types = Deployment::GetCurrent ()->GetTypes ();
 		Type *t = types->Find (kind);
 		while ((t = t->GetParentType ()) != NULL) {
 			value = (Value *) g_hash_table_lookup (default_value_overrides, GINT_TO_POINTER (t->GetKind ()));
 			if (value)
-				return new Value (*value);
+				return value;
 		}
 	}
 
-	if (autocreator) {
-		return autocreator (kind, this, forObj);
-	} else {
-		return default_value ? new Value (*default_value) : NULL;
-	}
+	return default_value;
+}
+
+Value *
+DependencyProperty::GetAutoCreatedValue (Type::Kind kind, DependencyObject *forObj)
+{
+	return autocreator ? autocreator (kind, this, forObj) : NULL;
 }
 
 void

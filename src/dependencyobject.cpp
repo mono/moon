@@ -2195,8 +2195,12 @@ DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence sta
 	int provider_bitmask = GPOINTER_TO_INT (g_hash_table_lookup (provider_bitmasks, property));
 	// providers we *always* consult
 	provider_bitmask |= ((1 << PropertyPrecedence_Inherited) |
-			     (1 << PropertyPrecedence_DynamicValue) |
-			     (1 << PropertyPrecedence_AutoCreate));
+			     (1 << PropertyPrecedence_DynamicValue));
+	if (property->IsAutoCreated ())
+		provider_bitmask |= 1 << PropertyPrecedence_AutoCreate;
+	if (property->HasDefaultValue ())
+		provider_bitmask |= 1 << PropertyPrecedence_DefaultValue;
+
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	lookups ++; // for the provider bitmask
 #endif
@@ -2244,7 +2248,7 @@ DependencyObject::GetValueNoDefault (DependencyProperty *property)
 	Value *value = NULL;
 
 	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
-	for (int i = 0; i < PropertyPrecedence_AutoCreate; i ++) {
+	for (int i = 0; i < PropertyPrecedence_DefaultValue; i ++) {
 		if (!provider_array[i])
 			continue;
 		value = provider_array[i]->GetPropertyValue (property);
@@ -2311,8 +2315,11 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 	higher &= provider_bitmask;
 
 	higher |= ((1 << PropertyPrecedence_Inherited) |
-		   (1 << PropertyPrecedence_DynamicValue) |
-		   (1 << PropertyPrecedence_AutoCreate));
+		   (1 << PropertyPrecedence_DynamicValue));
+	if (property->IsAutoCreated ())
+		higher |= 1 << PropertyPrecedence_AutoCreate;
+	if (property->HasDefaultValue ())
+		higher |= 1 << PropertyPrecedence_DefaultValue;
 
 	PropertyValueProvider **provider_array = (PropertyValueProvider**)&providers;
 
@@ -2684,8 +2691,9 @@ DependencyObject::Initialize ()
 
 	// and install the ones all DO's have
 	providers.localvalue = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue, dispose_value);
+	providers.defaultvalue = new DefaultValueProvider (this, PropertyPrecedence_DefaultValue);
 	providers.autocreate = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate, dispose_value);
-	
+
 	listener_list = NULL;
 	is_hydrated = false;
 	is_frozen = false;
@@ -3127,7 +3135,9 @@ DependencyObject::GetPropertyValueProvider (DependencyProperty *property)
 		int p = 1 << i;
 		if ((provider_bitmask & p) == p)
 			return i;
-		if (i == PropertyPrecedence_AutoCreate && (property->GetAutoCreator() || property->GetDefaultValue (GetObjectType())))
+		if (i == PropertyPrecedence_DefaultValue && property->HasDefaultValue ())
+			return i;
+		if (i == PropertyPrecedence_AutoCreate && (property->IsAutoCreated ()))
 			return i;
 	}
 
