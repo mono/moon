@@ -2879,6 +2879,29 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
+		public void TemplateBinding_IncompatibleSourceAndTargetType_SourceIsObject ()
+		{
+			// A source property which is typeof (object) is not deemed to
+			// be incompatible with any destination property.
+			var control = (ContentControl) XamlReader.Load (
+@"
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate TargetType=""ContentControl"">
+			<Grid Background=""{TemplateBinding Content}"" />
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			CreateAsyncTest (control, () => {
+				Grid grid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				Assert.IsInstanceOfType<TemplateBindingExpression> (grid.ReadLocalValue (Grid.BackgroundProperty), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void UpdateDataContext ()
 		{
 			string s = "Hello";

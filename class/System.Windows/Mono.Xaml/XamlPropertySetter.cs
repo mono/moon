@@ -269,8 +269,9 @@ namespace Mono.Xaml {
 			tb.SourceProperty = source_prop;
 
 			// If we TemplateBind two incompatible properties we silently discard
-			// the TemplateBinding object
-			if (prop.PropertyType.IsAssignableFrom (source_prop.PropertyType))
+			// the TemplateBinding object. Source properties of type object can
+			// potentially be of the correct type, so we allow that too.
+			if (source_prop.PropertyType == typeof (object) || prop.PropertyType.IsAssignableFrom (source_prop.PropertyType))
 				fwe.SetTemplateBinding (prop, tb);
 		}
 
