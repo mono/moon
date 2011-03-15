@@ -187,6 +187,7 @@ MediaElement::AddStreamedMarkerCallback (MediaClosure *c)
 void
 MediaElement::AddStreamedMarker (MediaMarker *marker)
 {
+	LOG_MARKERS ("MediaElement::AddStreamedMarker ()\n");
 	g_return_if_fail (marker != NULL);
 	
 	mutex.Lock ();
@@ -861,7 +862,8 @@ MediaElement::BufferUnderflowHandler (Playlist *sender, EventArgs *args)
 	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms\n", 
 		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()));
 		
-	flags |= PlayRequested;
+	if (state == MediaElementStatePlaying)
+		flags |= PlayRequested;
 	SetBufferingProgress (0.0);
 	Emit (BufferingProgressChangedEvent);
 	SetState (MediaElementStateBuffering);
@@ -1054,7 +1056,8 @@ MediaElement::OpenCompletedHandler (Playlist *playlist, EventArgs *args)
 	if (!(flags & MediaOpenedEmitted)) {
 		flags |= MediaOpenedEmitted;
 		
-		PlayOrStop ();
+		if (state != MediaElementStateStopped)
+			PlayOrStop ();
 	
 		// This is a workaround for MS DRT #78: it tests that download progress has changed
 		// from the latest DownloadProgressChanged event to the MediaOpened event (unless
@@ -1153,6 +1156,10 @@ MediaElement::SeekCompletedHandler (Playlist *playlist, EventArgs *args)
 	
 	seek_to_position = -1;
 	log_position_start = GetPosition ();
+	if (!(flags & BufferingDisabled) && state == MediaElementStatePlaying) {
+		flags |= PlayRequested;
+		SetState (MediaElementStateBuffering);
+	}
 	SetMarkerTimeout (true);
 }
 
@@ -1293,11 +1300,6 @@ MediaElement::BufferingProgressChangedHandler (Playlist *playlist, EventArgs *ar
 		if (state == MediaElementStatePlaying || state == MediaElementStatePaused) {
 			if (state == MediaElementStatePlaying)
 				flags |= PlayRequested;
-			/* this is wrong when the user calls Play while we're still buffering because we'd jump back to the buffering state later (but we'd continue playing) */
-			/* if we set this earlier though (SeekCompletedHandler) MS DRT #115 fails */
-			if (!(flags & BufferingDisabled)) {
-				SetState (MediaElementStateBuffering);
-			}
 		}
 		SetBufferingProgress (pea->progress);
 		if (IsAttached ())
@@ -2005,7 +2007,9 @@ MediaElementPropertyValueProvider::GetPosition ()
 		position = 0;
 	} else {
 		position -= start_time;
-		position = MIN (position, element->mplayer->GetDuration ());
+		if (!element->mplayer->GetIsLive ()) {
+			position = MIN (position, element->mplayer->GetDuration ());
+		}
 	}
 		
 	this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);

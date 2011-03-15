@@ -150,6 +150,9 @@ MediaPlayer::CheckFinished ()
 	if (element == NULL || IsDisposed ())
 		return;
 
+	if (GetDuration () != 0)
+		target_pts = GetDuration ();
+
 	element->MediaInvalidate ();
 	Emit (MediaEndedEvent);
 }

@@ -1115,9 +1115,7 @@ ASFDemuxer::OpenDemuxer (MemoryBuffer *buffer)
 		if (stream != NULL) {
 			streams [i] = stream;
 			stream->SetIndex (i);
-			if (!GetFileProperties ()->IsBroadcast ()) {
-				stream->SetDuration (GetFileProperties ()->play_duration - MilliSeconds_ToPts (GetPreroll ()));
-			}
+			stream->SetDuration (GetFileProperties ()->play_duration - MilliSeconds_ToPts (GetPreroll ()));
 			stream_to_asf_index [i] = current_stream;
 		}
 		

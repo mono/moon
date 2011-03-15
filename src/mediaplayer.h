@@ -149,6 +149,7 @@ class MediaPlayer : public EventObject {
 	void SetState (PlayerState s); // thread safe
 	PlayerState GetState (); // thread safe
 	static const char *GetStateName (PlayerState state);
+	bool GetIsLive () { return GetBit (IsLive); }
 
 	void SetBufferUnderflow (); // thread safe
 	void SetAudioStreamIndex (gint32 i);
@@ -183,6 +184,7 @@ class MediaPlayer : public EventObject {
 	
 	guint64 GetLastRenderedPts () { return last_rendered_pts; }
 	guint64 GetCurrentPts () { return current_pts; }
+	guint64 GetFirstLivePts () { return first_live_pts; }
 	
 	void SetMuted (bool muted);
 	bool GetMuted ();
