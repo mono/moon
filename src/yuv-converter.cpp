@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "yuv-converter.h"
+#include "cpu.h"
 
 namespace Moonlight {
 
@@ -269,54 +270,9 @@ YUVConverterInfo::Create (Media* media, VideoStream* stream)
 
 YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter (Type::YUVCONVERTER, media, stream)
 {
-#if defined(__amd64__) && defined(__x86_64__)
-	have_mmx = true;
-	have_sse2 = true;
-#else
-#  if HAVE_MMX
-	int have_cpuid = 0;
-	int features = 0;
+	have_mmx = CPU::HaveMMX ();
+	have_sse2 = CPU::HaveSSE2 ();
 
-	have_mmx = false;
-	have_sse2 = false;
-
-	__asm__ __volatile__ (
-		"pushfl;"
-		"popl %%eax;"
-		"movl %%eax, %%edx;"
-		"xorl $0x200000, %%eax;"
-		"pushl %%eax;"
-		"popfl;"
-		"pushfl;"
-		"popl %%eax;"
-		"xorl %%edx, %%eax;"
-		"andl $0x200000, %%eax;"
-		"movl %%eax, %0"
-		: "=r" (have_cpuid)
-		:
-		: "%eax", "%edx"
-	);
-
-	if (have_cpuid) {
-		__asm__ __volatile__ (
-			"movl $0x0000001, %%eax;"
-			"pushl %%ebx;"
-			"cpuid;"
-			"popl %%ebx;"
-			"movl %%edx, %0;"
-			: "=r" (features)
-			:
-			: "%eax"
-		);
-
-		have_mmx = features & 0x00800000;
-		have_sse2 = features & 0x04000000;
-	}
-#  else
-	have_mmx = false;
-	have_sse2 = false;
-#  endif
-#endif
 	if (posix_memalign ((void **)(&rgb_uv), 16, 96))
 		rgb_uv = NULL;
 }

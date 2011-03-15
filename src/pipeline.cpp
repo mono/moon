@@ -33,6 +33,7 @@
 #include "pipeline-mp4.h"
 #include "factory.h"
 #include "medialog.h"
+#include "cpu.h"
 
 #if CODECS_SUPPORTED
 #include "pipeline-ui.h"
@@ -357,7 +358,11 @@ Media::Initialize ()
 	Media::RegisterDecoder (new ASFMarkerDecoderInfo ());
 	if (moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS) {
 #if CODECS_SUPPORTED
-		RegisterMSCodecs ();
+		if (CPU::HaveSSE2 ()) {
+			RegisterMSCodecs ();
+		} else {
+			fprintf (stderr, "Moonlight: The Media Codec Pack has been disabled since your cpu doesn't support SSE2 instructions.\n");
+		}
 #endif
 	}
 #ifdef INCLUDE_FFMPEG

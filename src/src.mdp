@@ -402,6 +402,8 @@
     <File subtype="Code" buildaction="Nothing" name="pal/capture/pal-linux-audio-capture.h" />
     <File subtype="Code" buildaction="Nothing" name="medialog.h" />
     <File subtype="Code" buildaction="Compile" name="medialog.cpp" />
+    <File subtype="Code" buildaction="Compile" name="cpu.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="cpu.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
