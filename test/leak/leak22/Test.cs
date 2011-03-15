@@ -25,31 +25,31 @@ namespace Leak
 		void Create ()
 		{
 			var run = new Run { Text = "Hello From The Run" };
-            var paragraph = new Paragraph();
-            paragraph.Inlines.Add(run);
+			var paragraph = new Paragraph();
+			paragraph.Inlines.Add(run);
 
-            RichTextBox box = new RichTextBox { };
-            box.Blocks.Add(paragraph);
+			RichTextBox box = new RichTextBox { };
+			box.Blocks.Add(paragraph);
 
-            var insertion = box.ContentEnd.GetPositionAtOffset(-2, LogicalDirection.Backward).GetPositionAtOffset(-1, LogicalDirection.Backward);
-            box.Selection.Select(insertion, insertion);
-            box.Selection.Insert(new Run { Text = "ARGH" });
+			var insertion = box.ContentEnd.GetPositionAtOffset(-2, LogicalDirection.Backward).GetPositionAtOffset(-1, LogicalDirection.Backward);
+			box.Selection.Select(insertion, insertion);
+			box.Selection.Insert(new Run { Text = "ARGH" });
 
 			if (((Paragraph)box.Blocks[0]).Inlines.Count != 3)
 				Fail ("We should have three inlines");
 				
-            foreach (var v in ((Paragraph)box.Blocks[0]).Inlines) {
-            	if (v == null)
-            		Fail ("No inline should be null");
-            	runs.Add (new WeakReference (v));
-            }
-            
-            GCAndInvoke (() => {
-            	foreach (var r in runs)
-            		if (r.Target != null)
-            			Fail ("The run should be GC'ed");
-            	Succeed ();
-            });
+			foreach (var v in ((Paragraph)box.Blocks[0]).Inlines) {
+				if (v == null)
+					Fail ("No inline should be null");
+				runs.Add (new WeakReference (v));
+			}
+			
+			GCAndInvoke (() => {
+				foreach (var r in runs)
+					if (r.Target != null)
+						Fail ("The run should be GC'ed");
+				Succeed ();
+			});
 		}
 	}
 }
