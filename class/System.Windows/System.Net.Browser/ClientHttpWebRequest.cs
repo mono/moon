@@ -67,7 +67,11 @@ namespace System.Net.Browser {
 		}
 
 		public override bool HaveResponse {
-			get { return (response != null); }
+			get {
+				if (response != null)
+					return true;
+				return ((async_result != null && async_result.Response != null));
+			}
 		}
 
 		public override bool SupportsCookieContainer {
