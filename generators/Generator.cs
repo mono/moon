@@ -2231,6 +2231,7 @@ class Generator {
 		f ("TimeSpan", "TIMESPAN");
 		f ("Enum", "ENUM");
 		f ("DateTime", "DATETIME");
+		f ("Type", "MANAGEDTYPEINFO");
 
 		f ("System.Windows.Application", "APPLICATION");
 		f ("System.Windows.Thickness", "THICKNESS");
