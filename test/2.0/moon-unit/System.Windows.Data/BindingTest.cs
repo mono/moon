@@ -2830,6 +2830,67 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
+		public void TemplateBinding_CanvasTop ()
+		{
+			var control = (ContentControl) XamlReader.Load (
+@"
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				Canvas.Top=""50"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Canvas Width=""{TemplateBinding Canvas.Top}"">
+
+			</Canvas>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			control.Content = "Hello!";
+			CreateAsyncTest (control, () => {
+				var c = (Canvas) VisualTreeHelper.GetChild (control, 0);
+				Assert.AreEqual (50, c.Width, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TemplateBinding_ObjectToString ()
+		{
+			var control = (ContentControl) XamlReader.Load (
+@"
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+	<ContentControl.Template>
+		<ControlTemplate TargetType=""ContentControl"">
+			<TextBlock Text=""{TemplateBinding Content}"">
+
+			</TextBlock>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			control.Content = "Hello!";
+
+			CreateAsyncTest (control, () => {
+				var tb = (TextBlock) VisualTreeHelper.GetChild (control, 0);
+
+				Assert.AreEqual ("Hello!", tb.Text, "#1");
+
+				// This is the wrong type so it is ignored
+				control.Content = 16;
+				Assert.AreEqual ("", tb.Text, "#2");
+
+				// This is the wrong type so it is ignored
+				control.Content = new object ();
+				Assert.AreEqual ("", tb.Text, "#3");
+
+				// This is the right type
+				control.Content = "Test";
+				Assert.AreEqual ("Test", tb.Text, "#4");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[Ignore ("This blows up Silverlight")]
 		public void TemplateBindingOnTooltip ()
 		{
