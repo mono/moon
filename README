@@ -13,8 +13,13 @@ Requirements
 ============
 
 	At this time, Moonlight trunk (this release) requires you to use
-	Mono 2.10 or trunk to get the required dependency (e.g. latest 
-	Mono.Cecil) and compilers (e.g. the new 'mcs' compiler).
+	trunk to get the required dependency (e.g. latest Mono.Cecil) and
+	compilers (e.g. the new 'mcs' compiler). To build mono, do like this:
+
+		git clone git://github.com/mono/mono.git system-mono
+		cd system-mono && ./autogen.sh && make && sudo make install
+		
+	Note that here we checkout mono to a different directory than below.
 
 	To build Moonlight, you'll also need to get the source code for mono
 	and mono-basic repositories from a specific revision from trunk.
