@@ -257,10 +257,9 @@ namespace System.Windows.Browser {
 			CheckName (name);
 			Mono.Value res;
 			NativeMethods.html_object_get_property (PluginHost.Handle, h, name, out res);
-			if (res.k != Mono.Kind.INVALID)
-				result = ScriptObjectHelper.FromValue (res);
-
-			NativeMethods.value_free_value (ref res);
+			using (res)
+				if (res.k != Mono.Kind.INVALID)
+					result = ScriptObjectHelper.FromValue (res);
 			return result;
 		}
 
@@ -275,9 +274,9 @@ namespace System.Windows.Browser {
 			CheckName (name);
 			Mono.Value dp = new Mono.Value ();
 			ScriptObjectHelper.ToValue (ref dp, value);
-			NativeMethods.html_object_set_property (PluginHost.Handle, h, name, ref dp);
-
-			NativeMethods.value_free_value (ref dp);
+			using (dp) {
+				NativeMethods.html_object_set_property (PluginHost.Handle, h, name, ref dp);
+			}
 		}
 
 		internal void SetPropertyInternal (string name, object value)
@@ -301,10 +300,9 @@ namespace System.Windows.Browser {
 			if (!NativeMethods.html_object_invoke (PluginHost.Handle, Handle, name, vargs, (uint) length, out res))
 				throw new InvalidOperationException ();
 
-			if (res.k != Mono.Kind.INVALID)
-				result = ScriptObjectHelper.FromValue (res);
-
-			NativeMethods.value_free_value (ref res);
+			using (res)
+				if (res.k != Mono.Kind.INVALID)
+					result = ScriptObjectHelper.FromValue (res);
 
 			return result;
 		}
@@ -320,14 +318,18 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < length; i++)
 				ScriptObjectHelper.ToValue (ref vargs [i], args [i]);
 
-			if (!NativeMethods.html_object_invoke_self (PluginHost.Handle, Handle, vargs, (uint)length, out res))
-				throw new InvalidOperationException ();
+			try {
+				if (!NativeMethods.html_object_invoke_self (PluginHost.Handle, Handle, vargs, (uint)length, out res))
+					throw new InvalidOperationException ();
 
-			if (res.k != Mono.Kind.INVALID)
-				result = ScriptObjectHelper.FromValue (res);
-
-			NativeMethods.value_free_value (ref res);
-
+				if (res.k != Mono.Kind.INVALID)
+					result = ScriptObjectHelper.FromValue (res);
+			}
+			finally {
+				res.Dispose ();
+				foreach (var v in vargs)
+					v.Dispose ();
+			}
 			return result;
 		}
 

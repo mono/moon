@@ -182,7 +182,7 @@ namespace Mono {
 						Value val;
 						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
 						double r = (double)ScriptObjectHelper.FromValue (val);
-						NativeMethods.value_free_value (ref val);
+						val.Dispose ();
 						if (isChrome)
 							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (int)v.u.p);
 
