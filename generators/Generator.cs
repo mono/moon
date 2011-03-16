@@ -1187,6 +1187,10 @@ class Generator {
 			prop_type = field.GetDPPropertyType (all);
 
 			switch (prop_type.Name) {
+			case "XmlLanguage":
+				prop_type_str = "const char *";
+				value_str = "XmlLanguage";
+				break;
 			case "char*":
 				prop_type_str = "const char *";
 				value_str = "String";
@@ -1336,6 +1340,8 @@ class Generator {
 					}
 					else if (prop_type.Name == "char") {
 						text.AppendLine ("Value v(value, Type::CHAR);");
+					}  else if (prop_type.Name == "char*" || prop_type.Name == "XmlLanguage") {
+						text.AppendFormat ("Value v (value, Type::{0});\n", prop_type.KindName);
 					}
 					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
 						text.AppendLine ("Value v(*value);");
@@ -1380,6 +1386,8 @@ class Generator {
 			return string.Format ("Value::CreateUnrefPtr ({0})", default_value);
 		else if (field.GetDPPropertyType (all).IsEnum)
 			return string.Format ("new Value ((gint32) {0}, Type::{1})", default_value, field.GetDPPropertyType (all).KindName);
+		else if (field.GetDPPropertyType (all).Name == "char*" || field.GetDPPropertyType (all).Name == "XmlLanguage")
+			return string.Format ("new Value ({0}, Type::{1})", default_value, field.GetDPPropertyType (all).KindName);
 		else
 			return string.Format ("new Value ({0})", default_value);
 	}
@@ -1544,7 +1552,7 @@ class Generator {
 		t.Interfaces.Add (IEquatableCharInfo);
 
 		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true, false));
-		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 
 		// Set IncludeInKinds for all types which inherit from EventObject
 		foreach (MemberInfo member in all.Children.Values) {

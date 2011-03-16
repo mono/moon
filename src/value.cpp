@@ -399,10 +399,10 @@ Value::Value (KeyTime keytime)
 	SetIsNull (false);
 }
 
-Value::Value (const char *s, bool take)
+Value::Value (const char *s, Type::Kind kind, bool take)
 {
 	Init ();
-	k = Type::STRING;
+	k = kind;
 	
 	u.s = take ? (char *) s : g_strdup (s);
 	SetIsNull (s == NULL);
@@ -579,6 +579,7 @@ Value::Copy (const Value& v)
 
 	/* make a copy of the string instead of just the pointer */
 	switch (k) {
+	case Type::XMLLANGUAGE:
 	case Type::STRING:
 		u.s = g_strdup (v.u.s);
 		break;
@@ -745,6 +746,7 @@ Value::FreeValueInternal ()
 	}
 
 	switch (GetKind ()) {
+	case Type::XMLLANGUAGE:
 	case Type::STRING:
 		g_free (u.s);
 		break;
@@ -855,6 +857,7 @@ Value::ToString () const
 	case Type::DOUBLE:
 		g_string_append_printf (str, "{ %f }", u.d);
 		break;
+	case Type::XMLLANGUAGE:
 	case Type::STRING:
 		g_string_append (str, u.s);
 		break;
@@ -922,6 +925,7 @@ Value::operator== (const Value &v) const
 	}
 
 	switch (k) {
+	case Type::XMLLANGUAGE:
 	case Type::STRING:
 		if (u.s == NULL){
 			return v.u.s == NULL;
@@ -1091,6 +1095,9 @@ Value::GetName ()
 	switch (k) {
 	case Type::DOUBLE:
 		g_string_append_printf (str, "DOUBLE");
+		break;
+	case Type::XMLLANGUAGE:
+		g_string_append_printf (str, "XMLLANGUAGE");
 		break;
 	case Type::STRING:
 		g_string_append_printf (str, "STRING");

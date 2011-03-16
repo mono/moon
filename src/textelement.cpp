@@ -679,7 +679,7 @@ bool
 Run::CoerceText (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error)
 {
 	if (!value || value->GetIsNull())
-		*coerced = new Value ("");
+		*coerced = new Value ("", Type::STRING);
 	else
 		*coerced = new Value (*value);
 

@@ -314,7 +314,7 @@ variant_to_value (const NPVariant *v, Value **result)
 		break;
 	case NPVariantType_String: {
 		char *value = STRDUP_FROM_VARIANT (*v);
-		*result = new Value (value);
+		*result = new Value (value, Type::STRING);
 		g_free (value);
 		break;
 	}
@@ -3233,7 +3233,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			} else if (prop->GetPropertyType() == Type::STRING) {
 				char *val = NULL;
 				
-				dob->SetValueWithError (prop, Value (val), error);
+				dob->SetValueWithError (prop, Value (val, Type::STRING), error);
 			} else 
 				dob->SetValueWithError (prop, NULL, error);
 			

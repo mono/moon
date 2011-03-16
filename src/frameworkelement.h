@@ -45,7 +45,7 @@ public:
 	const static int DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,GenerateAccessors */
 	const static int HorizontalAlignmentProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=LanguageValidator,GenerateAccessors */
+	/* @PropertyType=XmlLanguage,DefaultValue=\"en-US\",Validator=LanguageValidator,GenerateAccessors */
 	const static int LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),GenerateAccessors */
 	const static int MarginProperty;

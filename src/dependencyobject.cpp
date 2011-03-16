@@ -2060,7 +2060,7 @@ DependencyObject::SetNameOnScope (const char* name, NameScope *scope)
 	if (scope->FindName (name))
 		return false;
 
-	Value v (name);
+	Value v (name, Type::STRING);
 	SetValue (property, &v);
 	scope->RegisterName (name, this);
 

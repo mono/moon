@@ -116,7 +116,7 @@ public:
 	Value (AudioFormat format);
 	Value (GlyphTypeface *typeface);
 	Value (ManagedTypeInfo *type_info);
-	Value (const char *s, bool take = false);
+	Value (const char *s, Type::Kind kind, bool take = false);
 	Value (Type::Kind, void *npobj);
 
 	~Value ();
@@ -178,6 +178,7 @@ public:
 	FontResource*	AsFontResource() const      { checked_get_exact (Type::FONTRESOURCE, NULL, u.fontresource); }
 	PropertyPath*	AsPropertyPath () const	    { checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString () const	    { checked_get_exact (Type::STRING, NULL, u.s); }
+	char*		AsXmlLanguage () const	    { checked_get_exact (Type::XMLLANGUAGE, NULL, u.s); }
 	DependencyProperty* AsDependencyProperty () const { checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }
 	gint64		AsDateTime (Types *types = NULL) const { checked_get_datetime (); }
 	
@@ -279,7 +280,9 @@ public:
 	// and TimeSpan, and the constructor doesn't know which 
 	// of the two types it is.
 	explicit Value (gint64 i) {};
-
+	// This could be a Type::XMLLANGUAGE or a Type::STRING so
+	// use the (const char *s, Type::kind) ctor
+	explicit Value (const char *s) {};
 	void Copy (const Value& other);
 	char *GetName ();
 

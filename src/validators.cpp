@@ -198,7 +198,7 @@ Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *p
 bool
 Validators::LanguageValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	const char *lang = value ? value->AsString () : NULL;
+	const char *lang = value ? value->AsXmlLanguage () : NULL;
 	
 	if (!lang || !IsValidLang (lang)) {
 		// FIXME: is 2203 the correct error number?
@@ -500,7 +500,7 @@ bool
 Validators::AssemblyPartSourceValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ())
-		*value = Value ("");
+		*value = Value ("", Type::STRING);
 	return true;
 }
 

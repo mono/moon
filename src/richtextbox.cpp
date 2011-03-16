@@ -64,7 +64,7 @@ class RichTextBoxProvider : public FrameworkElementProvider {
 			delete xaml_value;
 			GString *str = g_string_new ("");
 			((RichTextBox*)obj)->SerializeXaml(str);
-			xaml_value = new Value (g_string_free (str, FALSE), true);
+			xaml_value = new Value (g_string_free (str, FALSE), Type::STRING, true);
 			return xaml_value;
 		}
 		else if (property->GetId () == RichTextBox::BaselineOffsetProperty) {

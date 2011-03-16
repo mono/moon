@@ -229,15 +229,7 @@ namespace Mono {
 				return NativeDependencyObjectHelper.FromIntPtr (value->u.p);
 
 			case Kind.STRING: {
-				string str = Marshal.PtrToStringAuto (value->u.p);
-				if (type == null)
-					return str;
-				
-				// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
-				if (type == typeof (System.Windows.Markup.XmlLanguage))
-					return XmlLanguage.GetLanguage (str);
-				else
-					return str;
+				return Marshal.PtrToStringAuto (value->u.p);
 			}
 
 			case Kind.URI:
@@ -680,8 +672,7 @@ namespace Mono {
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
 					
-					value.k = Kind.STRING;
-					
+					value.k = Kind.XMLLANGUAGE;
 					value.u.p = StringToIntPtr (lang.IetfLanguageTag);
 				}
 				else if (v is Cursor) {

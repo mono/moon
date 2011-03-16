@@ -121,7 +121,7 @@ TextBlock::DocumentPropertyChanged (TextElement *onElement, PropertyChangedEvent
 		if (args->GetId () == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (GetTextInternal (GetInlines()), true));
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (GetInlines()), Type::STRING, true));
 			setvalue = true;
 			
 			UpdateLayoutAttributes ();
@@ -146,7 +146,7 @@ TextBlock::DocumentCollectionChanged (TextElement *onElement, Collection *col, C
 {
 	// update our TextProperty
 	setvalue = false;
-	SetValue (TextBlock::TextProperty, Value (GetTextInternal (GetInlines()), true));
+	SetValue (TextBlock::TextProperty, Value (GetTextInternal (GetInlines()), Type::STRING, true));
 	setvalue = true;
 			
 	UpdateLayoutAttributes ();
@@ -624,7 +624,7 @@ TextBlock::SetTextInternal (const char *text)
 	} else {
 		// setting text to null results in String.Empty
 		inlines->Clear ();
-		SetValue (TextBlock::TextProperty, Value (""));
+		SetText ("");
 	}
 	
 	setvalue = true;
@@ -701,7 +701,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InlineCollection *inlines = args->GetNewValue() ? args->GetNewValue()->AsInlineCollection () : NULL;
 			
 			setvalue = false;
-			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
+			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), Type::STRING, true));
 			setvalue = true;
 			
 			UpdateLayoutAttributes ();
@@ -797,7 +797,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		providers.inherited->PropagateInheritedPropertiesOnAddingToTree (args->GetNewItem()->AsInline());
 
 	setvalue = false;
-	SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
+	SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), Type::STRING, true));
 	setvalue = true;
 	
 	UpdateLayoutAttributes ();

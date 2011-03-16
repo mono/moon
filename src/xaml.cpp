@@ -1509,7 +1509,7 @@ class ManagedNamespace : public XamlNamespace {
 			return true;
 
 		if (p->loader) {
-			Value v = Value (value);
+			Value v = Value (value, Type::STRING);
 			return p->loader->SetProperty (p, p->GetTopElementPtr (), item->info->xmlns, item->GetAsValue (), item, item->GetParentPointer (), xmlns, attr, &v, NULL);
 		}
 		return false;
@@ -3672,7 +3672,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		// not much more can do here, unless we want to try to
 		// probe str to see if it's actually meant to be a
 		// specific type.  just assume it's a string.
-		*v = new Value (s);
+		*v = new Value (s, Type::STRING);
 		*v_set = true;
 		break;
 	}
@@ -3774,7 +3774,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::STRING: {
-		*v = new Value (str);
+		*v = new Value (str, Type::STRING);
 		*v_set = true;
 		break;
 	}
@@ -4220,7 +4220,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	// and use that code
 
 	if (content && content->GetPropertyType () == Type::STRING && value) {
-		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
+		item->SetValue (content, Value (g_strstrip (p->cdata->str), Type::STRING));
 		return true;
 	} else if (content && content->GetPropertyType () == Type::URI && value) {
 		Uri *uri = Uri::Create (g_strstrip (p->cdata->str));
@@ -4303,7 +4303,7 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 	if (!p->loader)
 		return false;
 
-	Value v = Value (value);
+	Value v = Value (value, Type::STRING);
 	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL);
 }
 
@@ -4725,7 +4725,7 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
-	Value v = Value (value);
+	Value v = Value (value, Type::STRING);
 	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, &v, NULL);
 }
 
@@ -4733,7 +4733,7 @@ void
 XamlElementInstanceManaged::AddChild (XamlParserInfo *p, XamlElementInstance *child)
 {
 	if (element_type == XamlElementInstance::PROPERTY) {
-		Value *prop = new Value (element_name);
+		Value *prop = new Value (element_name, Type::STRING);
 		p->loader->AddChild (p, p->GetTopElementPtr (), GetParentPointer (), true, info->xmlns, prop, this, child->GetAsValue (), child);
 		delete prop;
 		return;
@@ -4770,7 +4770,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 		const char* prop_name = info->GetContentProperty (p);
 		if (!p->cdata_content) 
 			return false;
-		Value v = Value (value);
+		Value v = Value (value, Type::STRING);
 
 		return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, &v, NULL);
 	}
@@ -5335,7 +5335,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (need_managed || is_managed_kind (propKind) || types->Find (prop->GetOwnerType ())->IsCustomType () || (v && (v->GetIsManaged () || is_managed_kind (v->GetKind ())))) {
 				bool str_value = false;
 				if (!v_set) {
-					v = new Value (attr [i + 1]); // Note that we passed the non escaped value, not attr_value
+					v = new Value (attr [i + 1], Type::STRING); // Note that we passed the non escaped value, not attr_value
 					v_set = true;
 					str_value = true;
 				}

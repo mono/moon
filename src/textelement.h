@@ -87,7 +87,7 @@ public:
 	const static int FontWeightProperty;
 	/* @PropertyType=Brush,AutoCreator=CreateBlackBrush,GenerateAccessors */
 	const static int ForegroundProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=LanguageValidator,GenerateAccessors */
+	/* @PropertyType=XmlLanguage,DefaultValue=\"en-US\",Validator=LanguageValidator,GenerateAccessors */
 	const static int LanguageProperty;
 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,HiddenDefaultValue,ManagedFieldAccess=Internal,GenerateManagedAccessors=false,ManagedPropertyType=TextDecorationCollection,GenerateAccessors,Coercer=TextElement::CoerceTextDecorations */
 	const static int TextDecorationsProperty;

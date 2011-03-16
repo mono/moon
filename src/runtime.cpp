@@ -1215,7 +1215,7 @@ Surface::ShowIncompleteSilverlightSupportMessage ()
 
 	
 	char *message_text = g_strdup_printf ("You are running a Silverlight %c application.  You may experience incompatibilities as Moonlight does not have full support for this runtime yet.", GetDeployment()->GetRuntimeVersion()[0]);
-	message_block->SetValue (TextBlock::TextProperty, message_text);
+	message_block->SetText (message_text);
 	g_free (message_text);
 
 	DependencyObject* storyboard_object = incomplete_support_message->FindName ("FadeOut");
@@ -1384,7 +1384,7 @@ Surface::ShowFullScreenMessage ()
 			}
 		}
 		
-		url_block->SetValue (TextBlock::TextProperty, url ? url : (char *) "file://");
+		url_block->SetText (url ? url : (char *) "file://");
 	}
 	
 	DependencyObject* storyboard_object = full_screen_message->FindName ("FadeOut");

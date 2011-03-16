@@ -2550,11 +2550,11 @@ TextBox::SyncSelectedText ()
 		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
 		
 		setvalue = false;
-		SetValue (TextBox::SelectedTextProperty, Value (text, true));
+		SetValue (TextBox::SelectedTextProperty, Value (text, Type::STRING, true));
 		setvalue = true;
 	} else {
 		setvalue = false;
-		SetValue (TextBox::SelectedTextProperty, Value (""));
+		SetSelectedText ("");
 		setvalue = true;
 	}
 }
@@ -2565,7 +2565,7 @@ TextBox::SyncText ()
 	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
 	
 	setvalue = false;
-	SetValue (TextBox::TextProperty, Value (text, true));
+	SetValue (TextBox::TextProperty, Value (text, Type::STRING, true));
 	setvalue = true;
 }
 
@@ -2940,11 +2940,11 @@ PasswordBox::SyncSelectedText ()
 		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
 		
 		setvalue = false;
-		SetValue (PasswordBox::SelectedTextProperty, Value (text, true));
+		SetValue (PasswordBox::SelectedTextProperty, Value (text, Type::STRING, true));
 		setvalue = true;
 	} else {
 		setvalue = false;
-		SetValue (PasswordBox::SelectedTextProperty, Value (""));
+		SetSelectedText ("");
 		setvalue = true;
 	}
 }
@@ -2968,7 +2968,7 @@ PasswordBox::SyncText ()
 	SyncDisplayText ();
 	
 	setvalue = false;
-	SetValue (PasswordBox::PasswordProperty, Value (text, true));
+	SetValue (PasswordBox::PasswordProperty, Value (text, Type::STRING, true));
 	setvalue = true;
 }
 
