@@ -107,9 +107,26 @@ public:
 		cairo_t        *context;
 	};
 
-	Context () {}
+	class Cache {
+	public:
+		Cache () : contexts (NULL) {}
+		~Cache () { Release (); }
+
+		void Release ();
+
+	private:
+		GList *contexts;
+
+		friend class Context;
+	};
+
+	Context ();
 	Context (MoonSurface *surface);
-	virtual ~Context () {}
+	virtual ~Context ();
+
+	void Replace (Cache *key, MoonSurface *surface);
+	MoonSurface *Remove (Cache *key);
+	MoonSurface *Lookup (Cache *key);
 
 	void Push (Transform transform);
 	void Push (AbsoluteTransform transform);
@@ -167,6 +184,9 @@ public:
 				   double      y);
 
 	virtual void Flush ();
+
+private:
+	GHashTable *cache;
 };
 
 };

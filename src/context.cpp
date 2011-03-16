@@ -182,6 +182,21 @@ Context::Node::GetTarget ()
 	return target;
 }
 
+void
+Context::Cache::Release ()
+{
+	for (GList *l = g_list_first (contexts); l; l = l->next)
+		static_cast<Context *> (l->data)->Remove (this)->unref ();
+
+	g_list_free (contexts);
+	contexts = NULL;
+}
+
+Context::Context ()
+{
+	cache = g_hash_table_new (g_direct_hash, g_direct_equal);
+}
+
 Context::Context (MoonSurface *surface)
 {
 	AbsoluteTransform transform = AbsoluteTransform ();
@@ -191,6 +206,57 @@ Context::Context (MoonSurface *surface)
 	target = new Target (surface, r);
 	Stack::Push (new Context::Node (target, &transform.m, NULL));
 	target->unref ();
+
+	cache = g_hash_table_new (g_direct_hash,
+				  g_direct_equal);
+}
+
+Context::~Context ()
+{
+	GHashTableIter iter;
+	gpointer       k, v;
+
+	g_hash_table_iter_init (&iter, cache);
+	while (g_hash_table_iter_next (&iter, &k, &v)) {
+		Cache       *key = static_cast<Cache *> (k);
+		MoonSurface *surface = static_cast<MoonSurface *> (v);
+		
+		key->contexts = g_list_remove (key->contexts, this);
+		surface->unref ();
+	}
+	g_hash_table_destroy (cache);
+}
+
+void
+Context::Replace (Cache *key, MoonSurface *surface)
+{
+	MoonSurface *old = Lookup (key);
+
+	g_hash_table_replace (cache, key, surface);
+
+	if (old)
+		old->unref ();
+	else
+		key->contexts = g_list_append (key->contexts, this);
+}
+
+MoonSurface *
+Context::Remove (Cache *key)
+{
+	MoonSurface *surface = Lookup (key);
+
+	if (surface) {
+		g_hash_table_remove (cache, key);
+		key->contexts = g_list_remove (key->contexts, this);
+	}
+
+	return surface;
+}
+
+MoonSurface *
+Context::Lookup (Cache *key)
+{
+	return static_cast<MoonSurface *> (g_hash_table_lookup (cache, key));
 }
 
 void
