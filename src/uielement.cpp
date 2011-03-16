@@ -77,7 +77,6 @@ UIElement::Init ()
 	Matrix3D::Identity (absolute_projection);
 	Matrix3D::Identity (render_projection);
 	effect_padding = Thickness (0);
-	bitmap_cache = NULL;
 	bitmap_cache_size = 0;
 
 	dirty_flags = DirtyMeasure;
@@ -1140,11 +1139,10 @@ UIElement::InvalidateEffect ()
 void
 UIElement::InvalidateBitmapCache ()
 {
-	if (bitmap_cache) {
+	if (bitmap_cache_size) {
 		if (!GetDeployment ()->IsShuttingDown ())
 			GetDeployment ()->GetSurface ()->RemoveGPUSurface (bitmap_cache_size);
-		bitmap_cache->unref ();
-		bitmap_cache = NULL;
+		bitmap_cache.Release ();
 		bitmap_cache_size = 0;
 	}
 }
@@ -1565,9 +1563,13 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 	}
 
 	if (flags & COMPOSITE_CACHE) {
-		Rect r = GetSubtreeExtents ().Transform (&cache_xform);
+		Rect        r = GetSubtreeExtents ().Transform (&cache_xform);
+		MoonSurface *cache = ctx->Lookup (&bitmap_cache);
 
-		if (!bitmap_cache) {
+		if (cache) {
+			ctx->Push (Context::Group (r), cache);
+		}
+		else {
 			Surface *surface = GetDeployment ()->GetSurface ();
 
 			ctx->Push (Context::Group (r));
@@ -1579,13 +1581,16 @@ UIElement::PreRender (Context *ctx, Region *region, bool skip_children)
 				child->DoRender (ctx, region);
 
 			ctx->Pop ();
-			ctx->Pop (&bitmap_cache);
+			ctx->Pop (&cache);
+
+			ctx->Replace (&bitmap_cache, cache);
 
 			bitmap_cache_size = r.RoundOut ().Area () * 4;
 			surface->AddGPUSurface (bitmap_cache_size);
+
+			ctx->Push (Context::Group (r), cache);
+			cache->unref ();
 		}
- 
-		ctx->Push (Context::Group (r), bitmap_cache);
 
 		// push empty clip to prevent sub-tree rendering
 		ctx->Push (Context::Clip ());

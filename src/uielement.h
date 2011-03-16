@@ -706,7 +706,7 @@ protected:
 
 	Thickness effect_padding;
 
-	MoonSurface *bitmap_cache;
+	Context::Cache bitmap_cache;
 	int bitmap_cache_size;
 
 private:
