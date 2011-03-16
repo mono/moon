@@ -195,6 +195,8 @@ namespace Mono.Xaml {
 		public bool SetBinding (Binding binding, object obj)
 		{
 			DependencyProperty prop = LookupDependencyProperty ();
+			if (prop == Setter.ValueProperty || prop == Setter.PropertyProperty)
+				throw Parser.ParseException ("It is invalid to databind to Setter.Value or Setter.Property");
 
 			if (prop == null) {
 				if (typeof (Binding).IsAssignableFrom (Type)) {
