@@ -90,12 +90,6 @@ MediaElement::MediaElement ()
 		
 	marker_timeout = 0;
 	mplayer = NULL;
-
-	native_buffer = NULL;
-	native = NULL;
-	native_width = 0;
-	native_height = 0;
-	native_ctx = 0;
 	
 	Reinitialize (false);
 	
@@ -452,10 +446,6 @@ MediaElement::OnIsAttachedChanged (bool value)
 		LOG_MEDIAELEMENT ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
 		RequestLog (LogSourceMediaElementShutdown);
 		detached_state = state;
-		if (native_buffer) {
-			native_buffer->unref ();
-			native_buffer = native = NULL;
-		}
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
 		if (playlist)
@@ -481,11 +471,6 @@ MediaElement::Reinitialize (bool is_shutting_down)
 {
 	LOG_MEDIAELEMENT ("MediaElement::Reinitialize ()\n");
 	VERIFY_MAIN_THREAD;
-
-	if (native_buffer) {
-		native_buffer->unref ();
-		native_buffer = native = NULL;
-	}
 
 	if (mplayer) {
 		mplayer->Dispose ();
@@ -756,9 +741,10 @@ MediaElement::GetQualityLevel (int min, int max)
 MoonSurface *
 MediaElement::GetSurface (Context *ctx)
 {
+	MoonSurface     *native;
 	cairo_surface_t *surface;
-	int             width;
-	int             height;
+	double          width;
+	double          height;
 
 	if (!mplayer || !(surface = mplayer->GetCairoSurface ()))
 		return NULL;
@@ -766,39 +752,32 @@ MediaElement::GetSurface (Context *ctx)
 	width = cairo_image_surface_get_width (surface);
 	height = cairo_image_surface_get_height (surface);
 
-	if (width  != native_width  ||
-	    height != native_height ||
-	    ctx    != native_ctx) {
-		if (native_buffer) {
-			native_buffer->unref ();
-			native_buffer = native = NULL;
-		}
-	}
+	native = ctx->Lookup (&cache);
 
-	if (!native) {
-		if (native_buffer)
-			ctx->Push (Context::Group (Rect (0,
-							 0,
-							 width,
-							 height)),
-				   native_buffer);
-		else
-			ctx->Push (Context::Group (Rect (0,
-							 0,
-							 width,
-							 height)));
-
+	if (!native || width != cacheSize.width || height != cacheSize.height) {
+		ctx->Push (Context::Group (Rect (0, 0, width, height)));
 		ctx->Blit (cairo_image_surface_get_data (surface),
 			   cairo_image_surface_get_stride (surface));
 		ctx->Pop (&native);
 
-		native_buffer = native;
-		native_width  = width;
-		native_height = height;
-		native_ctx    = ctx;
+		cacheSize = Size (width, height);
+		cacheDirty = false;
+
+		ctx->Replace (&cache, native);
+
+		return native;
+	}
+	
+	if (cacheDirty) {
+		ctx->Push (Context::Group (Rect (0, 0, width, height)), native);
+		ctx->Blit (cairo_image_surface_get_data (surface),
+			   cairo_image_surface_get_stride (surface));
+		ctx->Pop (&native);
+
+		cacheDirty = false;
 	}
 
-	return native;
+	return native->ref ();
 }
 
 void
@@ -831,6 +810,8 @@ MediaElement::Render (Context *ctx, Region *region)
 	ctx->Push (Context::Transform (matrix));
 	ctx->Blend (src, 1.0, 0, 0);
 	ctx->Pop ();
+
+	src->unref ();
 }
 
 void
@@ -1417,7 +1398,7 @@ MediaElement::MediaInvalidate ()
 {
 	Emit (MediaInvalidatedEvent);
 	Invalidate ();
-	native = NULL;
+	cacheDirty = true;
 }
 
 void

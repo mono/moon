@@ -232,7 +232,7 @@ Context::Replace (Cache *key, MoonSurface *surface)
 {
 	MoonSurface *old = Lookup (key);
 
-	g_hash_table_replace (cache, key, surface);
+	g_hash_table_replace (cache, key, surface->ref ());
 
 	if (old)
 		old->unref ();

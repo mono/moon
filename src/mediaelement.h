@@ -43,11 +43,9 @@ class MediaElement : public FrameworkElement {
 	MediaPlayer *mplayer;
 	Playlist *playlist;
 
-	MoonSurface *native_buffer;
-	MoonSurface *native;
-	gint32 native_width;
-	gint32 native_height;
-	Context *native_ctx;
+	Context::Cache cache;
+	Size cacheSize;
+	bool cacheDirty;
 	
 	// 
 	guint32 marker_timeout;
