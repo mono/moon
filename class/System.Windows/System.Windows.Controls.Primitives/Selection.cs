@@ -383,7 +383,6 @@ namespace System.Windows.Controls.Primitives
 			if (Owner.ItemsSource is ICollectionView) {
 				var icv = (ICollectionView) Owner.ItemsSource;
 				icv.MoveCurrentTo (item);
-				Console.WriteLine ("Moving to: {0}. Am now: {1}", item, icv.CurrentItem);
 				return Helper.AreEqual (item, icv.CurrentItem);
 			}
 			return true;
