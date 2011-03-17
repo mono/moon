@@ -452,9 +452,6 @@ namespace Mono.Xaml {
 
 				name_match = true;
 
-				if (m.ReturnType != typeof (void))
-					continue;
-
 				parameters = m.GetParameters ();
 				if (parameters.Length != event_params.Length)
 					continue;
