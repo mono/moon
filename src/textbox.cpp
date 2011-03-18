@@ -1694,6 +1694,9 @@ TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 	int key = event->GetSilverlightKey ();
 	gunichar c;
 	
+	if (args->GetHandled ())
+		return;
+	
 	// Note: we don't set Handled=true because anything we handle here, we
 	// want to bubble up.
 	if (!is_read_only && im_ctx->FilterKeyPress (event)) {
