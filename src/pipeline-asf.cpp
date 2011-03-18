@@ -191,7 +191,7 @@ ASFDemuxer::EstimatePacketIndexOfPts (guint64 pts)
 void
 ASFDemuxer::RequestMorePayloadData ()
 {
-	Media *media = GetMediaReffed ();
+	Media *media;
 
 	/* We should only have one pending read request at a time */
 	if (pending_packet_index != G_MAXUINT64) {
@@ -199,6 +199,7 @@ ASFDemuxer::RequestMorePayloadData ()
 		return;
 	}
 
+	media = GetMediaReffed ();
 	if (media != NULL) {
 		pending_packet_index = next_packet_index;
 		LOG_ASF ("ASFDemuxer::RequestMorePayloadData (): requesting %u bytes from offset %" G_GUINT64_FORMAT " (packet index: %" G_GUINT64_FORMAT ")\n", GetPacketSize (), GetPacketOffset (next_packet_index), next_packet_index);
