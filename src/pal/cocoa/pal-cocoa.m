@@ -63,6 +63,8 @@ public:
 		return [[event.event characters] characterAtIndex: 0];
 	}
 
+	virtual bool HasModifiers () { return true; }
+
 	virtual MoonModifier GetModifiers ()
 	{
 		// FIXME map modifiers
@@ -118,6 +120,9 @@ public:
 	{
 	}
 
+	// FIXME: this needs to return true...
+	virtual bool HasModifiers () { return false; }
+
 	virtual MoonModifier GetModifiers ()
 	{
 		g_assert_not_reached ();
@@ -169,6 +174,9 @@ public:
 	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
 	{
 	}
+
+	// FIXME: this needs to return true...
+	virtual bool HasModifiers () { return false; }
 
 	virtual MoonModifier GetModifiers ()
 	{
@@ -222,6 +230,9 @@ public:
 	{
 		g_assert_not_reached ();
 	}
+
+	// FIXME: this needs to return true...
+	virtual bool HasModifiers () { return false; }
 
 	virtual MoonModifier GetModifiers ()
 	{
@@ -288,6 +299,9 @@ public:
 	{
 		g_assert_not_reached ();
 	}
+
+	// FIXME: this needs to return true...
+	virtual bool HasModifiers () { return false; }
 
 	virtual MoonModifier GetModifiers ()
 	{

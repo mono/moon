@@ -323,12 +323,13 @@ public:
 		return gdk_keyval_to_unicode (event->keyval);
 	}
 
+	virtual bool HasModifiers () { return true; }
+
 	virtual MoonModifier GetModifiers ()
 	{
 		return (MoonModifier) event->state;
 	}
-
-
+	
 	virtual bool IsModifier ()
 	{
 #if GTK_CHECK_VERSION(2,10,0)
@@ -422,6 +423,8 @@ public:
 		GetStylusInfoFromDevice (event->device, type, is_inverted);
 	}
 
+	virtual bool HasModifiers () { return true; }
+
 	virtual MoonModifier GetModifiers ()
 	{
 		return (MoonModifier) event->state;
@@ -494,6 +497,8 @@ public:
 		GetStylusInfoFromDevice (event->device, type, is_inverted);
 	}
 
+	virtual bool HasModifiers () { return true; }
+
 	virtual MoonModifier GetModifiers ()
 	{
 		return (MoonModifier) event->state;
@@ -539,9 +544,11 @@ public:
 	{
 	}
 
+	virtual bool HasModifiers () { return true; }
+
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return (MoonModifier) event->state;
 	}
 	
 	virtual bool IsEnter ()
@@ -623,6 +630,8 @@ public:
 	{
 		GetStylusInfoFromDevice (event->device, type, is_inverted);
 	}
+
+	virtual bool HasModifiers () { return true; }
 
 	virtual MoonModifier GetModifiers ()
 	{

@@ -117,6 +117,11 @@ public:
 	// returns a platform event so that other
 	// platform interfaces which consume events can get at the actual data.
 	virtual gpointer GetPlatformEvent() = 0;
+	
+	virtual bool HasModifiers () { return false; }
+	
+	// FIXME: should this be separate bool getters instead (like IsShiftDown, IsCtrlDown, IsAltDown)?
+	virtual MoonModifier GetModifiers () { return (MoonModifier) 0; };
 };
 
 class MoonKeyEvent : public MoonEvent {
@@ -128,8 +133,6 @@ public:
 
 	virtual gunichar GetUnicode () = 0;
 
-	virtual MoonModifier GetModifiers () = 0; // FIXME: should this be separate bool getters instead (like IsShiftDown, IsCtrlDown, IsAltDown)?
-
 	virtual bool IsModifier () = 0;
 };
 
@@ -140,8 +143,6 @@ public:
 	virtual double GetPressure () = 0;
 
 	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted) = 0;
-
-	virtual MoonModifier GetModifiers () = 0; // FIXME: should this be separate bool getters instead (like IsShiftDown, IsCtrlDown, IsAltDown)?
 };
 
 class MoonButtonEvent : public MoonMouseEvent {

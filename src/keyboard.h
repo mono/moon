@@ -26,7 +26,7 @@ class Keyboard {
 	/* @GeneratePInvoke */
 	static ModifierKeys GetModifiers ();
 	
-	static void SetModifiers (ModifierKeys m);
+	static void UpdateModifiers (MoonEvent *event);
 	
 	static void OnKeyPress (MoonKeyEvent *key);
 	static void OnKeyRelease (MoonKeyEvent *key);

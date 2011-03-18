@@ -37,43 +37,38 @@ Keyboard::GetModifiers ()
 }
 
 void
-Keyboard::SetModifiers (ModifierKeys m)
+Keyboard::UpdateModifiers (MoonEvent *event)
 {
-	modifiers = m;
+	if (!event->HasModifiers ())
+		return;
+	
+	MoonModifier mods = event->GetModifiers ();
+	
+	modifiers = ModifierKeyNone;
+	for (guint i = 0; i < G_N_ELEMENTS (modifier_map); i++) {
+		if (modifier_map[i].mod & mods)
+			modifiers = (ModifierKeys) (modifiers | modifier_map[i].key);
+	}
 }
 
 void
 Keyboard::OnKeyPress (MoonKeyEvent *key)
 {
-	MoonModifier mods = key->GetModifiers ();
-	
 	if (!pressedKeys)
 		pressedKeys = g_hash_table_new (g_direct_hash, g_direct_equal);
 	
 	g_hash_table_insert (pressedKeys, GINT_TO_POINTER (key->GetSilverlightKey ()), GINT_TO_POINTER (1));
-	
-	modifiers = ModifierKeyNone;
-	for (guint i = 0; i < G_N_ELEMENTS (modifier_map); i++) {
-		if (modifier_map[i].mod & mods)
-			modifiers = (ModifierKeys) (modifiers | modifier_map[i].key);
-	}
+	UpdateModifiers (key);
 }
 
 void
 Keyboard::OnKeyRelease (MoonKeyEvent *key)
 {
-	MoonModifier mods = key->GetModifiers ();
-	
 	if (!pressedKeys)
 		return;
 	
 	g_hash_table_remove (pressedKeys, GINT_TO_POINTER (key->GetSilverlightKey ()));
-	
-	modifiers = ModifierKeyNone;
-	for (guint i = 0; i < G_N_ELEMENTS (modifier_map); i++) {
-		if (modifier_map[i].mod & mods)
-			modifiers = (ModifierKeys) (modifiers | modifier_map[i].key);
-	}
+	UpdateModifiers (key);
 }
 
 bool

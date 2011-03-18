@@ -373,6 +373,9 @@ Surface::Surface (MoonWindow *window)
 	cursor = CursorTypeDefault;
 	mouse_event = NULL;
 	
+	modifiers = ModifierKeyNone;
+	key = KeyKEYNONE;
+	
 	background_color = new Color (1, 1, 1, 0);
 
 	time_manager = MoonUnmanagedFactory::CreateTimeManager ();
@@ -2238,8 +2241,9 @@ Surface::HandleUIFocusIn (MoonFocusEvent *event)
 	if (IsZombie ())
 		return MoonEventNotHandled;
 
-	time_manager->InvokeTickCalls();
+	Keyboard::UpdateModifiers (event);
 
+	time_manager->InvokeTickCalls();
 
 	if (!GetFullScreen ()) {
 		if (GetFocusedElement ()) {
@@ -2251,7 +2255,6 @@ Surface::HandleUIFocusIn (MoonFocusEvent *event)
 		}
 	}
 
-
 	return MoonEventNotHandled;
 }
 
@@ -2260,6 +2263,8 @@ Surface::HandleUIFocusOut (MoonFocusEvent *event)
 {
 	if (IsZombie ())
 		return MoonEventNotHandled;
+
+	Keyboard::UpdateModifiers (event);
 
 	time_manager->InvokeTickCalls();
 
@@ -2277,6 +2282,8 @@ Surface::HandleUIFocusOut (MoonFocusEvent *event)
 MoonEventStatus
 Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 {
+	Keyboard::UpdateModifiers (event);
+	
 	time_manager->InvokeTickCalls();
 
 	if (event->GetButton() != 1 && event->GetButton() != 3)
@@ -2310,6 +2317,8 @@ Surface::HandleUIButtonPress (MoonButtonEvent *event)
 {
 	bool handled;
 	int event_id;
+
+	Keyboard::UpdateModifiers (event);
 	
 	active_window->GrabFocus ();
 
@@ -2360,6 +2369,8 @@ Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 	Deployment *deployment = Deployment::GetCurrent ();
 	const char *rv = deployment->GetRuntimeVersion ();
 	
+	Keyboard::UpdateModifiers (event);
+	
 	time_manager->InvokeTickCalls();
 	
 	if (!strncmp (rv, "1.", 2) || !strncmp (rv, "2.", 2)) {
@@ -2379,6 +2390,8 @@ Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 MoonEventStatus
 Surface::HandleUIMotion (MoonMotionEvent *event)
 {
+	Keyboard::UpdateModifiers (event);
+	
 	time_manager->InvokeTickCalls();
 
 	delete mouse_event;
@@ -2394,6 +2407,8 @@ MoonEventStatus
 Surface::HandleUICrossing (MoonCrossingEvent *event)
 {
 	bool handled;
+
+	Keyboard::UpdateModifiers (event);
 
 	time_manager->InvokeTickCalls();
 
