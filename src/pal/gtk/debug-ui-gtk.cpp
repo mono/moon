@@ -1092,7 +1092,7 @@ struct debug_media_data {
 	
 			char *fmt = fetch_info (element);
 
-			gtk_label_set_markup (GTK_LABEL (labels [i]), fmt);
+			gtk_label_set_text (GTK_LABEL (labels [i]), fmt);
 			if (copy)
 				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt, strlen (fmt) );
 			g_free (fmt);
