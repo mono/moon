@@ -373,9 +373,6 @@ Surface::Surface (MoonWindow *window)
 	cursor = CursorTypeDefault;
 	mouse_event = NULL;
 	
-	modifiers = ModifierKeyNone;
-	key = KeyKEYNONE;
-	
 	background_color = new Color (1, 1, 1, 0);
 
 	time_manager = MoonUnmanagedFactory::CreateTimeManager ();
