@@ -2489,10 +2489,8 @@ MoonEventStatus
 Surface::HandleUIKeyPress (MoonKeyEvent *event)
 {
 	time_manager->InvokeTickCalls();
-
-	Key key = event->GetSilverlightKey ();
-
-	if (Keyboard::IsKeyPressed (key)) {
+	
+	if (Keyboard::IsKeyPressed (event)) {
 		// If we are running an SL 1.0 application, then key repeats are dropped
 		Deployment *deployment = Deployment::GetCurrent ();
 		if (!deployment->IsLoadedFromXap ())
@@ -2503,7 +2501,7 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 	
 #if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;
-	if (Key == KeyD) {
+	if (event->GetSilverlightKey () == KeyD) {
 		if (!debug_marker_key_in)
 			printf ("<--- DEBUG MARKER KEY IN (%f) --->\n", get_now () / 10000000.0);
 		else
@@ -2516,7 +2514,7 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 	SetUserInitiatedEvent (true);
 	bool handled = false;
 
-	Keyboard::OnKeyPress (key);
+	Keyboard::OnKeyPress (event);
 	
 	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
@@ -2529,15 +2527,15 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 		handled = true;
 	}
 
-
-	if (!handled && key == KeyTAB) {
+	if (!handled && event->GetSilverlightKey () == KeyTAB) {
 		// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
 		// we handle it and tab to the next control here.
 		if (GetFocusedElement ())
-			TabNavigationWalker::Focus (GetFocusedElement (), (Keyboard::GetModifiers () & ModifierKeyShift) == ModifierKeyNone);
+			TabNavigationWalker::Focus (GetFocusedElement (), (event->GetModifiers () & ModifierKeyShift) == ModifierKeyNone);
 		else
 			EnsureElementFocused ();
 	}
+	
 	SetUserInitiatedEvent (false);
 	
 	return handled ? MoonEventHandled : MoonEventNotHandled;
@@ -2554,8 +2552,7 @@ Surface::HandleUIKeyRelease (MoonKeyEvent *event)
 	SetUserInitiatedEvent (true);
 	bool handled = false;
 
-	Key key = event->GetSilverlightKey();
-	Keyboard::OnKeyRelease (key);
+	Keyboard::OnKeyRelease (event);
 
 	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);

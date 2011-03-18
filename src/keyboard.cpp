@@ -16,6 +16,16 @@
 
 namespace Moonlight {
 
+struct ModifierMap {
+	MoonModifier mod;
+	ModifierKeys key;
+} modifier_map[] = {
+	{ MoonModifier_Mod1,    ModifierKeyAlt     },
+	{ MoonModifier_Control, ModifierKeyControl },
+	{ MoonModifier_Shift,   ModifierKeyShift   },
+	{ MoonModifier_Meta,    ModifierKeyWindows },
+};
+
 ModifierKeys Keyboard::modifiers = ModifierKeyNone;
 GHashTable  *Keyboard::pressedKeys = NULL;
 
@@ -33,55 +43,43 @@ Keyboard::SetModifiers (ModifierKeys m)
 }
 
 void
-Keyboard::OnKeyPress (Key key)
+Keyboard::OnKeyPress (MoonKeyEvent *key)
 {
+	MoonModifier mods = key->GetModifiers ();
+	
 	if (!pressedKeys)
 		pressedKeys = g_hash_table_new (g_direct_hash, g_direct_equal);
 	
-	g_hash_table_insert (pressedKeys, GINT_TO_POINTER (key), GINT_TO_POINTER (1));
+	g_hash_table_insert (pressedKeys, GINT_TO_POINTER (key->GetSilverlightKey ()), GINT_TO_POINTER (1));
 	
-	switch (key) {
-	case KeyCTRL:
-		modifiers = (ModifierKeys) (modifiers | ModifierKeyControl);
-		break;
-	case KeyALT:
-		modifiers = (ModifierKeys) (modifiers | ModifierKeyAlt);
-		break;
-	case KeySHIFT:
-		modifiers = (ModifierKeys) (modifiers | ModifierKeyShift);
-		break;
-	default:
-		break;
+	modifiers = ModifierKeyNone;
+	for (guint i = 0; i < G_N_ELEMENTS (modifier_map); i++) {
+		if (modifier_map[i].mod & mods)
+			modifiers = (ModifierKeys) (modifiers | modifier_map[i].key);
 	}
 }
 
 void
-Keyboard::OnKeyRelease (Key key)
+Keyboard::OnKeyRelease (MoonKeyEvent *key)
 {
+	MoonModifier mods = key->GetModifiers ();
+	
 	if (!pressedKeys)
 		return;
 	
-	g_hash_table_remove (pressedKeys, GINT_TO_POINTER (key));
+	g_hash_table_remove (pressedKeys, GINT_TO_POINTER (key->GetSilverlightKey ()));
 	
-	switch (key) {
-	case KeyCTRL:
-		modifiers = (ModifierKeys) (modifiers & ~ModifierKeyControl);
-		break;
-	case KeyALT:
-		modifiers = (ModifierKeys) (modifiers & ~ModifierKeyAlt);
-		break;
-	case KeySHIFT:
-		modifiers = (ModifierKeys) (modifiers & ~ModifierKeyShift);
-		break;
-	default:
-		break;
+	modifiers = ModifierKeyNone;
+	for (guint i = 0; i < G_N_ELEMENTS (modifier_map); i++) {
+		if (modifier_map[i].mod & mods)
+			modifiers = (ModifierKeys) (modifiers | modifier_map[i].key);
 	}
 }
 
 bool
-Keyboard::IsKeyPressed (Key key)
+Keyboard::IsKeyPressed (MoonKeyEvent *key)
 {
-	return pressedKeys && (g_hash_table_lookup (pressedKeys, GINT_TO_POINTER (key)) != NULL);
+	return pressedKeys && (g_hash_table_lookup (pressedKeys, GINT_TO_POINTER (key->GetSilverlightKey ())) != NULL);
 }
 
 };

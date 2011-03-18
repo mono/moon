@@ -14,6 +14,7 @@
 #include <glib.h>
 
 #include "enums.h"
+#include "pal.h"
 
 namespace Moonlight {
 
@@ -27,10 +28,10 @@ class Keyboard {
 	
 	static void SetModifiers (ModifierKeys m);
 	
-	static void OnKeyPress (Key key);
-	static void OnKeyRelease (Key key);
+	static void OnKeyPress (MoonKeyEvent *key);
+	static void OnKeyRelease (MoonKeyEvent *key);
 	
-	static bool IsKeyPressed (Key key);
+	static bool IsKeyPressed (MoonKeyEvent *key);
 };
 
 };
