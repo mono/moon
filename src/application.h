@@ -17,11 +17,12 @@
 #include "control.h"
 #include "dependencyobject.h"
 #include "downloader.h"
+#include "provider.h"
 
 namespace Moonlight {
 
 /* @CBindingRequisite */
-typedef void (*GetDefaultStyleCallback)(FrameworkElement *el, Style ***styles);
+typedef void (*GetImplicitStylesCallback)(FrameworkElement *el, ImplicitStylePropertyValueProvider::StyleMask style_mask, Style ***styles);
 /* @CBindingRequisite */
 typedef void (*ConvertSetterValuesCallback)(Style *style);
 /* @CBindingRequisite */
@@ -42,9 +43,9 @@ public:
 	const static int ResourcesProperty;
 
 	/* @GeneratePInvoke */
-	void RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+	void RegisterCallbacks (GetImplicitStylesCallback get_implicit_styles_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
-	Style **GetDefaultStyle (FrameworkElement *el);
+	Style **GetImplicitStyles (FrameworkElement *el, ImplicitStylePropertyValueProvider::StyleMask style_mask);
 	void ConvertSetterValues (Style *style);
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
@@ -96,7 +97,7 @@ protected:
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
 private:
-	GetDefaultStyleCallback get_default_style_cb;
+	GetImplicitStylesCallback get_implicit_styles_cb;
 	ConvertSetterValuesCallback convert_setter_values_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;
 	GetResourceCallback get_resource_cb;

@@ -2164,8 +2164,15 @@ end_element_handler (void *data, const char *el)
 		if (p->current_element->IsDependencyObject () &&
 		    p->current_element->GetAsDependencyObject() &&
 		    p->current_element->GetAsDependencyObject()->Is(Type::CONTROL)) {
+			// FIXME: do we need to limit this to generic.xaml (or possibly appresources + generic.xaml)?
+
+			// see the code in FrameworkElement.cs which
+			// does the same thing (search for
+			// _apply_implicit_styles) and make sure to
+			// keep them in sync.
+
 			Control *control = (Control*)p->current_element->GetAsDependencyObject();
-			control->ApplyDefaultStyle ();
+			control->SetImplicitStyles(ImplicitStylePropertyValueProvider::StyleMaskAll);
 		}
 		break;
 	case XamlElementInstance::PROPERTY: {

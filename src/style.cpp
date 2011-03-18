@@ -16,6 +16,7 @@
 #include "style.h"
 #include "error.h"
 #include "deployment.h"
+#include "provider.h"
 
 namespace Moonlight {
 
@@ -312,7 +313,7 @@ DeepStyleWalker::DeepStyleWalker (Style **styles, Types *types)
 	GHashTable *styles_seen = g_hash_table_new (g_direct_hash, g_direct_equal);
 	GHashTable *dps = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	for (int i = 0; styles[i]; i ++) {
+	for (int i = 0; i < ImplicitStylePropertyValueProvider::StyleIndexCount; i ++) {
 		Style *style = styles[i];
 		while (style != NULL) {
 			if (g_hash_table_lookup (styles_seen, style))

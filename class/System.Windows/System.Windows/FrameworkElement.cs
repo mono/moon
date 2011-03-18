@@ -29,6 +29,7 @@
 using Mono;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -71,6 +72,7 @@ namespace System.Windows {
 		static ArrangeOverrideCallback arrange_cb = InvokeArrangeOverride;
 		static GetDefaultTemplateCallback get_default_template_cb = InvokeGetDefaultTemplate;
 		static LoadedCallback loaded_hook_cb = InvokeLoadedHook;
+		static StyleResourceChangedCallback style_resource_changed_cb = InvokeStyleResourceChanged;
 		List<KeyValuePair <EventHandler, WeakLayoutUpdatedListener>> layoutUpdatedListeners;
 
 		private static bool UseNativeLayoutMethod (Type type)
@@ -124,6 +126,7 @@ namespace System.Windows {
 			ArrangeOverrideCallback arrange = null;
 			GetDefaultTemplateCallback getTemplate = null;
 			LoadedCallback loaded = null;
+			StyleResourceChangedCallback styleResourceChanged = null;
 
 			if (OverridesLayoutMethod ("MeasureOverride"))
 				measure = FrameworkElement.measure_cb;
@@ -132,13 +135,34 @@ namespace System.Windows {
 			if (OverridesGetDefaultTemplate ())
 				getTemplate = FrameworkElement.get_default_template_cb;
 			loaded = FrameworkElement.loaded_hook_cb;
+			styleResourceChanged = FrameworkElement.style_resource_changed_cb;
 
-			NativeMethods.framework_element_register_managed_overrides (native, measure, arrange, getTemplate, loaded);
+			NativeMethods.framework_element_register_managed_overrides (native, measure, arrange, getTemplate, loaded, styleResourceChanged);
 		}
 
-		internal void ApplyDefaultStyle ()
+		internal void SetImplicitStyles ()
 		{
-			NativeMethods.framework_element_apply_default_style (native);
+			// FIXME: do we need to limit this to generic.xaml (or possibly appresources + generic.xaml)?
+
+			// see the code in xaml.cpp which does the
+			// same thing (search for
+			// ->SetImplicitStyles) and make sure to
+			// keep them in sync.
+			NativeMethods.framework_element_set_implicit_styles (native, ImplicitStyleMask.All, IntPtr.Zero);
+		}
+
+		void SetImplicitStyles (ImplicitStyleMask style_mask, Style[] styles)
+		{
+			IntPtr styles_array = Marshal.AllocHGlobal (IntPtr.Size * styles.Length);
+			for (int i = 0; i < styles.Length; i ++)
+				Marshal.WriteIntPtr (styles_array, i * IntPtr.Size, styles[i] == null ? IntPtr.Zero : styles[i].native);
+
+			NativeMethods.framework_element_set_implicit_styles (native, style_mask, styles_array);
+		}
+
+		void ClearImplicitStyles (ImplicitStyleMask style_mask)
+		{
+			NativeMethods.framework_element_clear_implicit_styles (native, style_mask);
 		}
 
 		internal bool ApplyTemplate ()
@@ -207,6 +231,119 @@ namespace System.Windows {
 		internal virtual void InvokeLoaded ()
 		{
 
+		}
+
+		class DeepVisualTreeEnumerator : IEnumerator<FrameworkElement> {
+			FrameworkElement root;
+			Stack<FrameworkElement> stack;
+			bool started;
+			bool skip_subtree;
+
+			public DeepVisualTreeEnumerator (FrameworkElement root) {
+				this.root = root;
+
+				stack = new Stack<FrameworkElement>();
+			}
+
+			public bool MoveNext ()
+			{
+				if (!started) {
+					started = true;
+					stack.Push (root);
+					return true;
+				}
+
+				if (stack.Count == 0)
+					return false;
+
+				FrameworkElement fwe = stack.Pop();
+				if (skip_subtree) {
+					skip_subtree = false;
+				}
+				else {
+					int count = VisualTreeHelper.GetChildrenCount(fwe);
+					for (int i = 0; i < count; i ++)
+						stack.Push ((FrameworkElement)VisualTreeHelper.GetChild (fwe, i));
+				}
+
+				return stack.Count != 0;
+			}
+
+			public void Reset ()
+			{
+				stack = new Stack<FrameworkElement>();
+				started = false;
+			}
+	
+			public void SkipSubtree ()
+			{
+				skip_subtree = true;
+			}
+
+			public FrameworkElement Current {
+				get { return stack.Peek (); }
+			}
+
+			object System.Collections.IEnumerator.Current {
+				get { return Current; }
+			}
+
+			void IDisposable.Dispose ()
+			{
+				stack.Clear();
+				started = false;
+			}
+		}
+
+		static void InvokeStyleResourceChanged (IntPtr fwe_ptr, string styleResource, IntPtr style_ptr)
+		{
+			try {
+				FrameworkElement fe = (FrameworkElement) NativeDependencyObjectHelper.Lookup (fwe_ptr);
+				Style style = (Style) NativeDependencyObjectHelper.Lookup (style_ptr);
+				if (fe == null)
+					return;
+
+				Type t = Type.GetType (styleResource.Substring (ResourceDictionary.INTERNAL_TYPE_KEY_MAGIC_COOKIE.Length));
+				if (t == null) {
+					// Console.WriteLine ("InvokeStyleResourceChanged: this shouldn't happen...");
+					return;
+				}
+
+				// Console.WriteLine ("InvokeStyleResourceChanged (fe={0}/{1}, styleResource={2})", fe.GetType(), fe.Name, styleResource);
+
+				DependencyObject templateOwner = fe.TemplateOwner;
+
+				DeepVisualTreeEnumerator walker = new DeepVisualTreeEnumerator (fe);
+
+				while (walker.MoveNext ()) {
+					FrameworkElement child = walker.Current;
+
+					if (child != fe) {
+						if (child.Resources.Contains (styleResource) || child.Resources.Contains (t) || child.Resources.Contains (t.ToString())) {
+							// Console.WriteLine ("child {0}/{1} contains a resource with the same key, skipping subtree", child.GetType(), child.Name);
+							walker.SkipSubtree();
+							continue;
+						}
+					}
+					if (child.TemplateOwner != templateOwner) {
+						// Console.WriteLine ("skipping child {0}/{1} subtree since there are different template owners", child.GetType(), child.Name);
+						walker.SkipSubtree ();
+						continue;
+					}
+
+
+					if (child.GetType() == t) {
+						// Console.WriteLine ("child {0}/{1} gets the new style!", child.GetType(), child.Name);
+						child.SetImplicitStyles (ImplicitStyleMask.VisualTree, new Style[] { style, null, null });
+					}
+					// else {
+					// 	Console.WriteLine ("child {0}/{1} type doesn't match", child.GetType(), child.Name);
+					// }
+				}
+			}
+			catch (Exception e) {
+				// Console.WriteLine (e);
+			}
 		}
 
 		static Size InvokeMeasureOverride (IntPtr fwe_ptr, Size availableSize, ref MoonError error)

@@ -57,7 +57,7 @@ namespace System.Windows {
 		UIElement root_visual;
 		SilverlightHost host;
 
-		GetDefaultStyleCallback get_default_style;
+		GetImplicitStylesCallback get_implicit_styles;
 		ConvertSetterValuesCallback convert_setter_values;
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
@@ -79,12 +79,12 @@ namespace System.Windows {
 
 			NativeDependencyObjectHelper.SetManagedPeerCallbacks (this);
 
-			get_default_style = new GetDefaultStyleCallback (get_default_style_cb_safe);
+			get_implicit_styles = new GetImplicitStylesCallback (get_implicit_styles_cb_safe);
 			convert_setter_values = new ConvertSetterValuesCallback (convert_setter_values_cb_safe);
 			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, get_default_style, convert_setter_values, get_resource, convert_keyframe_value);
+			NativeMethods.application_register_callbacks (NativeHandle, get_implicit_styles, convert_setter_values, get_resource, convert_keyframe_value);
 
 			if (Current == null) {
 				Current = this;
@@ -263,90 +263,86 @@ namespace System.Windows {
 			converted = Value.FromObject (o);
 		}
 		
-		void get_default_style_cb_safe (IntPtr fwe_ptr, out IntPtr styles_array)
+		void get_implicit_styles_cb_safe (IntPtr fwe_ptr, ImplicitStyleMask style_mask, out IntPtr styles_array)
 		{
 			styles_array = IntPtr.Zero;
 			try {
 				var fwe = NativeDependencyObjectHelper.FromIntPtr (fwe_ptr) as FrameworkElement;
 				if (fwe != null)
-					get_default_style_cb (fwe, out styles_array);
+					get_implicit_styles_cb (fwe, style_mask, out styles_array);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_style_cb_safe: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_implicit_styles_cb_safe: {0}", ex);
 				} catch {
 				}
 			}
 		}
 
-		void get_default_style_cb (FrameworkElement fwe, out IntPtr styles_array)
+		void get_implicit_styles_cb (FrameworkElement fwe, ImplicitStyleMask style_mask, out IntPtr styles_array)
 		{
 			Type fwe_type = fwe.GetType();
 			string fwe_type_string = fwe_type.ToString();
-			List<IntPtr> implicit_styles = new List<IntPtr> ();
 
 			Style generic_xaml_style = null;
 			Style app_resources_style = null;
 			Style visual_tree_style = null;
 
-			// start with the lowest priority, the
-			// generic.xaml style, only valid for
-			// controls, as it requires DefaultStyleKey.
-			Control control = fwe as Control;
-			if (control != null) {
-				Type style_key = control.DefaultStyleKey as Type;
-				if (style_key != null) {
-					generic_xaml_style = GetGenericXamlStyleFor (style_key);
+			if ((style_mask & ImplicitStyleMask.GenericXaml) != 0) {
+				// start with the lowest priority, the
+				// generic.xaml style, only valid for
+				// controls, as it requires DefaultStyleKey.
+				Control control = fwe as Control;
+				if (control != null) {
+					Type style_key = control.DefaultStyleKey as Type;
+					if (style_key != null) {
+						generic_xaml_style = GetGenericXamlStyleFor (style_key);
+					}
 				}
 			}
 
-			// next try the application's resources.
-			// these affect all framework elements,
-			// whether inside templates or out.
-			if (Resources.Contains (fwe_type))
+			if ((style_mask & ImplicitStyleMask.ApplicationResources) != 0) {
+				// next try the application's resources.
+				// these affect all framework elements,
+				// whether inside templates or out.
 				app_resources_style = (Style)Resources[fwe_type];
-			else if (Resources.Contains (fwe_type_string))
-				app_resources_style = (Style)Resources[fwe_type_string];
+				if (app_resources_style == null)
+					app_resources_style = (Style)Resources[fwe_type_string];
+			}
 
-			// highest priority, the visual tree
-			FrameworkElement el = fwe;
-			while (el != null) {
-				// if the frameworkelement was defined outside of a template and we hit a containing
-				// template (e.g. if the FWE is in the Content of a ContentControl) we need to skip
-				// the intervening elements in the visual tree, until we hit more user elements.
-				if (el.TemplateOwner != null && fwe.TemplateOwner == null) {
-					el = VisualTreeHelper.GetParent (el) as FrameworkElement;
-					continue;
-				}
+			if ((style_mask & ImplicitStyleMask.VisualTree) != 0) {
+				// highest priority, the visual tree
+				FrameworkElement el = fwe;
+				bool fwe_is_control = fwe is Control;
+				while (el != null) {
+					// if the frameworkelement was defined outside of a template and we hit a containing
+					// template (e.g. if the FWE is in the Content of a ContentControl) we need to skip
+					// the intervening elements in the visual tree, until we hit more user elements.
+					if (el.TemplateOwner != null && fwe.TemplateOwner == null) {
+						el = el.TemplateOwner as FrameworkElement;
+						continue;
+					}
 
-				// for non-controls, we limit the implicit style scope to that of the template.
-				if (!(fwe is Control) && el == fwe.TemplateOwner)
-					break;
+					// for non-controls, we limit the implicit style scope to that of the template.
+					if (!fwe_is_control && el == fwe.TemplateOwner)
+						break;
 
-				if (el.Resources.Contains (fwe_type)) {
 					visual_tree_style = (Style)el.Resources[fwe_type];
 					if (visual_tree_style != null)
 						break;
-				}
-				else if (el.Resources.Contains (fwe_type_string)) {
 					visual_tree_style = (Style)el.Resources[fwe_type_string];
 					if (visual_tree_style != null)
 						break;
+
+					el = VisualTreeHelper.GetParent (el) as FrameworkElement;
 				}
 
-				el = VisualTreeHelper.GetParent (el) as FrameworkElement;
 			}
 
-			implicit_styles.Insert (0, IntPtr.Zero);
-			if (generic_xaml_style != null)
-				implicit_styles.Insert (0, generic_xaml_style.native);
-			if (visual_tree_style != null)
-				implicit_styles.Insert (0, visual_tree_style.native);
-			else if (app_resources_style != null)
-				implicit_styles.Insert (0, app_resources_style.native);
-			
-			styles_array = Marshal.AllocHGlobal (IntPtr.Size * implicit_styles.Count);
-			for (int i = 0; i < implicit_styles.Count; i ++)
-				Marshal.WriteIntPtr (styles_array, i * IntPtr.Size, implicit_styles[i]);
+			styles_array = Marshal.AllocHGlobal ((int)ImplicitStyleIndex.Count * IntPtr.Size);
+
+			Marshal.WriteIntPtr (styles_array, (int)ImplicitStyleIndex.GenericXaml * IntPtr.Size, (generic_xaml_style != null) ? generic_xaml_style.native : IntPtr.Zero);
+			Marshal.WriteIntPtr (styles_array, (int)ImplicitStyleIndex.ApplicationResources * IntPtr.Size, (app_resources_style != null) ? app_resources_style.native : IntPtr.Zero);
+			Marshal.WriteIntPtr (styles_array, (int)ImplicitStyleIndex.VisualTree * IntPtr.Size, (visual_tree_style != null) ? visual_tree_style.native : IntPtr.Zero);
 		}
 		
 		void convert_setter_values_cb_safe (IntPtr style_ptr)

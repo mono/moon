@@ -1091,7 +1091,7 @@
 +SC-M: System.Void Mono.NativeMethods::application_check_and_download_update_async(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.GetDefaultStyleCallback,Mono.ConvertSetterValuesCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
++SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.GetImplicitStylesCallback,Mono.ConvertSetterValuesCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_set_current(System.IntPtr)
@@ -1229,10 +1229,13 @@
 +SC-M: System.Void Mono.NativeMethods::external_demuxer_set_can_seek(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::framework_element_apply_default_style(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::framework_element_clear_implicit_styles(System.IntPtr,Mono.ImplicitStyleMask)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback,Mono.GetDefaultTemplateCallback,Mono.LoadedCallback)
++SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback,Mono.GetDefaultTemplateCallback,Mono.LoadedCallback,Mono.StyleResourceChangedCallback)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::framework_element_set_implicit_styles(System.IntPtr,Mono.ImplicitStyleMask,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)

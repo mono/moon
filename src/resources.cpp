@@ -261,43 +261,24 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 			if (!p)
 				return result;
 
+			Style *style = v->AsStyle();
+
 			if (p->Is (Type::APPLICATION)) {
 				// we modified the application's resources, so we need to traverse all layers
 
 				CollectionIterator *iterator = p->GetDeployment()->GetSurface()->GetLayers()->GetIterator();
 				while (iterator->Next (NULL)) {
 					Value *v = iterator->GetCurrent(NULL);
-					UIElement *ui = v->AsUIElement();
+					FrameworkElement *fwe = v->AsFrameworkElement();
 
-					DeepTreeWalker walker (ui);
-
-					while (UIElement *el = walker.Step()) {
-						((FrameworkElement*)el)->ApplyDefaultStyle();
-					}
+					fwe->StyleResourceChanged (key, style);
 				}
 
 				delete iterator;
 			}
 			else if (p->Is (Type::FRAMEWORKELEMENT)) {
 				// just traverse down from this frameworkelement
-
-				// FIXME grossly inefficient.  causes
-				// all FWE's under the root to update
-				// their implicit style, regardless of
-				// whether or not it was their type.
-				FrameworkElement *root = (FrameworkElement*)p;
-
-				DependencyObject *owner = root->GetTemplateOwner();
-				DeepTreeWalker walker (root);
-
-				while (UIElement *el = walker.Step()) {
-					if (el->GetTemplateOwner() != owner) {
-						walker.SkipBranch();
-						continue;
-					}
-					((FrameworkElement*)el)->ApplyDefaultStyle();
-				}
-				
+				((FrameworkElement*)p)->StyleResourceChanged (key, style);
 			}
 		}
 

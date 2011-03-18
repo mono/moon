@@ -209,6 +209,7 @@ ImplicitStylePropertyValueProvider::ImplicitStylePropertyValueProvider (Dependen
 	: PropertyValueProvider (obj, precedence, ProviderFlags_RecomputesOnClear)
 {
 	styles = NULL;
+	style_mask = StyleMaskNone;
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
 					    (GDestroyNotify)Value::DeleteValue);
@@ -274,8 +275,42 @@ ImplicitStylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *
 }
 
 void
-ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *error)
+ImplicitStylePropertyValueProvider::ApplyStyles (ImplicitStylePropertyValueProvider::StyleMask style_mask, Style **styles, MoonError *error)
 {
+#if 0 && SANITY
+	printf ("::ApplyStyles (");
+	if (style_mask == ImplicitStylePropertyValueProvider::StyleMaskAll) {
+		printf ("All)\n");
+	}
+	else {
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
+			printf (" generic.xaml");
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
+			printf (" appresources");
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
+			printf (" virusl-tree");
+		printf (" )\n");
+	}
+#endif
+
+	bool changed = this->styles == NULL || style_mask != this->style_mask; // if our styles array is null, it's a given that things have changed
+
+	if (!changed) {
+		for (int i = 0; i < StyleIndexCount; i ++) {
+			if (styles[i] != this->styles[i]) {
+				changed = true;
+				break;
+			}
+		}
+	}
+
+	if (!changed) {
+#if 0 && SANITY
+		printf ("ImplicitStylePropertyValueProvider::ApplyStyles called but there was no change to the Styles\n");
+#endif
+		return;
+	}
+
 	Value *oldValue;
 	Value *newValue;
 
@@ -307,6 +342,7 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 			oldSetter = oldWalker.Step ();
 		} else if (oldProp == newProp) {
 			// This is a property which is in both styles
+			// FIXME we're calling providervaluechanged for properties whose value hasn't changed.  we need to compare ConvertedValues if we can..
 			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
 			if (newValue != NULL) {
@@ -335,8 +371,9 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 		}
 	}
 
+	// FIXME: we need to not RemoveHandler/AddHandler styles that aren't changing
 	if (this->styles) {
-		for (int i = 0; this->styles[i]; i ++) {
+		for (int i = 0; i < StyleIndexCount; i ++) {
 			if (this->styles [i]) {
 				this->styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
 				this->styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
@@ -345,8 +382,9 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 		g_free (this->styles);
 	}
 	this->styles = styles;
+	this->style_mask = style_mask;
 	if (this->styles) {
-		for (int i = 0; this->styles[i]; i ++) {
+		for (int i = 0; i < StyleIndexCount; i ++) {
 			if (this->styles [i]) {
 				this->styles[i]->AddHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
 				this->styles[i]->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
@@ -356,15 +394,111 @@ ImplicitStylePropertyValueProvider::UpdateStyle (Style **styles, MoonError *erro
 }
 
 void
-ImplicitStylePropertyValueProvider::style_detached (EventObject *sender, EventArgs *calldata, gpointer closure)
+ImplicitStylePropertyValueProvider::SetStyles (ImplicitStylePropertyValueProvider::StyleMask style_mask, Style **styles, MoonError *e)
 {
-	((ImplicitStylePropertyValueProvider*)closure)->StyleDetached ();
+#if 0 && SANITY
+	printf ("::SetStyles (");
+	if (style_mask == ImplicitStylePropertyValueProvider::StyleMaskAll) {
+		printf ("All)\n");
+	}
+	else {
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
+			printf (" generic.xaml");
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
+			printf (" appresources");
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
+			printf (" virusl-tree");
+		printf (" )\n");
+	}
+#endif
+
+	if (!styles)
+		return;
+		
+	Style **new_styles = (Style**)g_new0 (Style*, 3);
+	if (this->styles)
+		memmove (new_styles, this->styles, 3 * sizeof (Style*));
+
+	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
+		new_styles[ImplicitStylePropertyValueProvider::StyleIndexGenericXaml] = styles[ImplicitStylePropertyValueProvider::StyleIndexGenericXaml];
+	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
+		new_styles[ImplicitStylePropertyValueProvider::StyleIndexApplicationResources] = styles[ImplicitStylePropertyValueProvider::StyleIndexApplicationResources];
+	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
+		new_styles[ImplicitStylePropertyValueProvider::StyleIndexVisualTree] = styles[ImplicitStylePropertyValueProvider::StyleIndexVisualTree];
+
+	ApplyStyles ((ImplicitStylePropertyValueProvider::StyleMask)(this->style_mask | style_mask),
+		     new_styles,
+		     e);
 }
 
 void
-ImplicitStylePropertyValueProvider::StyleDetached ()
+ImplicitStylePropertyValueProvider::ClearStyles (ImplicitStylePropertyValueProvider::StyleMask style_mask, MoonError *e)
 {
-	((FrameworkElement*)obj)->ApplyDefaultStyle();
+#if 0 && SANITY
+	printf ("::ClearStyles (");
+	if (style_mask == ImplicitStylePropertyValueProvider::StyleMaskAll) {
+		printf ("All)\n");
+	}
+	else {
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
+			printf (" generic.xaml");
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
+			printf (" appresources");
+		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
+			printf (" virusl-tree");
+		printf (" )\n");
+	}
+#endif
+
+	if (!styles)
+		return;
+		
+	Style **new_styles = (Style**)g_new (Style*, 3);
+	memmove (new_styles, styles, 3 * sizeof (Style*));
+
+	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
+		new_styles[ImplicitStylePropertyValueProvider::StyleIndexGenericXaml] = NULL;
+	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
+		new_styles[ImplicitStylePropertyValueProvider::StyleIndexApplicationResources] = NULL;
+	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
+		new_styles[ImplicitStylePropertyValueProvider::StyleIndexVisualTree] = NULL;
+
+	ApplyStyles ((ImplicitStylePropertyValueProvider::StyleMask)(this->style_mask & ~style_mask),
+		     new_styles,
+		     e);
+}
+
+void
+ImplicitStylePropertyValueProvider::style_detached (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((ImplicitStylePropertyValueProvider*)closure)->StyleDetached ((Style*)sender);
+}
+
+void
+ImplicitStylePropertyValueProvider::StyleDetached (Style *style)
+{
+	// printf ("calling ApplyDefaultStyle from ImplicitStylePropertyValueProvider::StyleDetached: \n");
+	StyleMask mask = StyleMaskNone;
+
+	if (styles[StyleIndexVisualTree] == style)
+		mask = StyleMaskVisualTree;
+	else if (styles[StyleIndexGenericXaml] == style)
+		mask = StyleMaskGenericXaml;
+	else if (styles[StyleIndexApplicationResources] == style)
+		mask = StyleMaskApplicationResources;
+		
+	if (mask == StyleMaskNone)
+		g_warning ("style detached that wasn't being used..");
+	else {
+		if (mask == StyleMaskVisualTree) {
+			// in the event that the style was in the visual tree, we need to locate a possible replacement.
+			((FrameworkElement*)obj)->SetImplicitStyles(mask);
+		}
+		else {
+			// otherwise we just clear it.
+			((FrameworkElement*)obj)->ClearImplicitStyles(mask);
+		}
+	}
 }
 
 void

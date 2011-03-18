@@ -2750,8 +2750,8 @@ DependencyObject::OnMentorChanged (DependencyObject *old_mentor, DependencyObjec
 		providers.localvalue->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
 		if (providers.localstyle)
 			providers.localstyle->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
-		if (providers.defaultstyle)
-			providers.defaultstyle->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
+		if (providers.implicitstyle)
+			providers.implicitstyle->ForeachValue ((GHFunc)DependencyObject::propagate_mentor, new_mentor);
 	}
 
 	if (mentorChanged && !GetDeployment ()->IsShuttingDown ()) {

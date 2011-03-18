@@ -217,8 +217,8 @@ class TypeReference {
 			case "FlattenTimelinesCallback":
 				managed_type = "Mono.FlattenTimelinesCallback";
 				break;
-			case "GetDefaultStyleCallback":
-				managed_type = "Mono.GetDefaultStyleCallback";
+			case "GetImplicitStylesCallback":
+				managed_type = "Mono.GetImplicitStylesCallback";
 				break;
 			case "GetDefaultTemplateCallback":
 				managed_type = "Mono.GetDefaultTemplateCallback";
@@ -243,6 +243,9 @@ class TypeReference {
 				break;
 			case "LoadedCallback":
 				managed_type = "Mono.LoadedCallback";
+				break;
+			case "StyleResourceChangedCallback":
+				managed_type = "Mono.StyleResourceChangedCallback";
 				break;
 			case "MeasureOverrideCallback":
 				managed_type = "Mono.MeasureOverrideCallback";
@@ -455,6 +458,9 @@ class TypeReference {
 				break;
 			case "MoonConsentType":
 				managed_type = "int";
+				break;
+			case "ImplicitStylePropertyValueProvider::StyleMask":
+				managed_type = "Mono.ImplicitStyleMask";
 				break;
 			default:
 				if (Value.Contains ("*"))

@@ -27,6 +27,8 @@ typedef Size (*ArrangeOverrideCallback)(FrameworkElement *fwe, Size finalSize, M
 typedef UIElement *(*GetDefaultTemplateCallback)(FrameworkElement *element);
 /* @CBindingRequisite */
 typedef void (*LoadedCallback)(FrameworkElement *element);
+/* @CBindingRequisite */
+typedef void (*StyleResourceChangedCallback)(FrameworkElement *element, const char *key, Style *value);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
@@ -106,7 +108,10 @@ public:
 	virtual void OnLogicalParentChanged (DependencyObject *old_parent, DependencyObject *new_parent);
 
 	/* @GeneratePInvoke */
-	void ApplyDefaultStyle ();
+	void SetImplicitStyles (ImplicitStylePropertyValueProvider::StyleMask style_mask, Style** styles = NULL);
+
+	/* @GeneratePInvoke */
+	void ClearImplicitStyles (ImplicitStylePropertyValueProvider::StyleMask style_mask);
 
 	//
 	// Property Accessors
@@ -120,6 +125,8 @@ public:
 	void SetLanguage (const char *value);
 	const char *GetLanguage ();
 
+	void StyleResourceChanged (const char *key, Style *value);
+
 	//
 	// 2.0 methods
 	//
@@ -129,7 +136,8 @@ public:
 
 	/* @GeneratePInvoke */
 	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
-				       GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
+				       GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb,
+				       StyleResourceChangedCallback style_resource_changed_cb);
 
 	// These two methods call into managed land using the
 	// delegates registered in RegisterManagedOverrides.  If
@@ -215,10 +223,10 @@ private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
 	LoadedCallback loaded_cb;
+	StyleResourceChangedCallback style_resource_changed_cb;
 
 	WeakRef<DependencyObject> logical_parent;
 	WeakRef<UIElement> default_template;
-	bool default_style_applied;
 
 	void Init ();
 };

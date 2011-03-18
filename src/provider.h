@@ -46,7 +46,7 @@ enum PropertyPrecedence {
 	PropertyPrecedence_DynamicValue, // use this level for types that need to compute property values lazily
 
 	PropertyPrecedence_LocalStyle,
-	PropertyPrecedence_DefaultStyle,
+	PropertyPrecedence_ImplicitStyle,
 
 	PropertyPrecedence_Inherited,
 	PropertyPrecedence_InheritedDataContext,
@@ -65,7 +65,7 @@ struct PropertyValueProviderVTable {
 	LocalPropertyValueProvider *localvalue;
 	PropertyValueProvider *dynamicvalue; // base class pointer since DO subclasses will define their own.
 	StylePropertyValueProvider *localstyle;
-	ImplicitStylePropertyValueProvider *defaultstyle;
+	ImplicitStylePropertyValueProvider *implicitstyle;
 	InheritedPropertyValueProvider *inherited;
 	InheritedDataContextValueProvider *inheriteddatacontext;
 	DefaultValueProvider *defaultvalue;
@@ -141,6 +141,24 @@ private:
 
 class ImplicitStylePropertyValueProvider : public PropertyValueProvider {
 public:
+	enum StyleIndex {
+		StyleIndexVisualTree,
+		StyleIndexApplicationResources,
+		StyleIndexGenericXaml,
+
+		StyleIndexCount
+	};
+
+	enum StyleMask {
+		StyleMaskVisualTree = 1 << StyleIndexVisualTree,
+		StyleMaskApplicationResources = 1 << StyleIndexApplicationResources,
+		StyleMaskGenericXaml = 1 << StyleIndexGenericXaml,
+
+		StyleMaskAll = (StyleMaskGenericXaml | StyleMaskVisualTree | StyleMaskApplicationResources),
+		StyleMaskNone = 0
+	};
+
+
 	ImplicitStylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence, GHRFunc dispose_value);
 	virtual ~ImplicitStylePropertyValueProvider ();
 
@@ -150,16 +168,20 @@ public:
 
 	virtual void ForeachValue (GHFunc func, gpointer data);
 
-	void UpdateStyle (Style **styles, MoonError *error);
+	void SetStyles (StyleMask style_mask, Style **styles, MoonError *error);
+	void ClearStyles (StyleMask style_mask, MoonError *error);
 
 private:
 
+	void ApplyStyles (StyleMask style_mask, Style **styles, MoonError *error);
+
 	static void style_detached (EventObject *sender, EventArgs *calldata, gpointer closure);
-	void StyleDetached ();
+	void StyleDetached (Style *style);
 
 	GHashTable *style_hash;
 	GHRFunc dispose_value;
 	Style **styles;
+	StyleMask style_mask;
 };
 
 class InheritedContext;

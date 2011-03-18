@@ -32,7 +32,7 @@ Application::Application ()
 	install_state = InstallStateUnknown;
 	resource_root = NULL;
 	
-	get_default_style_cb = NULL;
+	get_implicit_styles_cb = NULL;
 	convert_setter_values_cb = NULL;
 	convert_keyframe_callback = NULL;
 	get_resource_cb = NULL;
@@ -56,24 +56,24 @@ Application::SetCurrent (Application *application)
 }
 
 void
-Application::RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb,
+Application::RegisterCallbacks (GetImplicitStylesCallback get_implicit_styles_cb,
 				ConvertSetterValuesCallback convert_setter_values_cb,
 				GetResourceCallback get_resource_cb,
 				ConvertKeyframeValueCallback convert_keyframe_callback)
 {
-	this->get_default_style_cb = get_default_style_cb;
+	this->get_implicit_styles_cb = get_implicit_styles_cb;
 	this->convert_setter_values_cb = convert_setter_values_cb;
 	this->convert_keyframe_callback = convert_keyframe_callback;
 	this->get_resource_cb = get_resource_cb;
 }
 
 Style **
-Application::GetDefaultStyle (FrameworkElement *el)
+Application::GetImplicitStyles (FrameworkElement *el, ImplicitStylePropertyValueProvider::StyleMask style_mask)
 {
 	Style** array = NULL;
 
-	if (get_default_style_cb)
-		get_default_style_cb (el, &array);
+	if (get_implicit_styles_cb)
+		get_implicit_styles_cb (el, style_mask, &array);
 
 	return array;
 }

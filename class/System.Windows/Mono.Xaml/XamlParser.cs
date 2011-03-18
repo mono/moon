@@ -486,7 +486,7 @@ namespace Mono.Xaml {
 			if (typeof (System.Windows.FrameworkElement).IsAssignableFrom (reader.ManagedType)) {
 				element.EndElement += delegate (object sender, EventArgs e) {
 					FrameworkElement fwe = element.Object as FrameworkElement;
-					fwe.ApplyDefaultStyle ();
+					fwe.SetImplicitStyles ();
 				};
 			}
 

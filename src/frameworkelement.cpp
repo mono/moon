@@ -90,17 +90,17 @@ FrameworkElement::FrameworkElement (Type::Kind object_type)
 void
 FrameworkElement::Init ()
 {
-	default_style_applied = false;
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
 	loaded_cb = NULL;
+	style_resource_changed_cb = NULL;
 	bounds_with_children = Rect ();
 	global_bounds_with_children = Rect ();
 	surface_bounds_with_children = Rect ();
 
 	providers.localstyle = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle, dispose_value);
-	providers.defaultstyle = new ImplicitStylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle, dispose_value);
+	providers.implicitstyle = new ImplicitStylePropertyValueProvider (this, PropertyPrecedence_ImplicitStyle, dispose_value);
 	providers.dynamicvalue = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
 	providers.inheriteddatacontext = new InheritedDataContextValueProvider (this, PropertyPrecedence_InheritedDataContext);
 }
@@ -1031,12 +1031,14 @@ FrameworkElement::UpdateLayer (LayoutPass *pass, MoonError *error)
 
 void
 FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
-					    GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb)
+					    GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb,
+					    StyleResourceChangedCallback style_resource_changed_cb)
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
 	this->get_default_template_cb = get_default_template_cb;
 	this->loaded_cb = loaded_cb;
+	this->style_resource_changed_cb = style_resource_changed_cb;
 }
 
 void
@@ -1049,7 +1051,10 @@ FrameworkElement::OnIsAttachedChanged (bool attached)
 void
 FrameworkElement::OnIsLoadedChanged (bool loaded)
 {
-	ApplyDefaultStyle ();
+	if (loaded)
+		SetImplicitStyles (ImplicitStylePropertyValueProvider::StyleMaskAll);
+	else
+		ClearImplicitStyles (ImplicitStylePropertyValueProvider::StyleMaskVisualTree);
 
 	UIElement::OnIsLoadedChanged (loaded);
 	if (providers.inheriteddatacontext)
@@ -1122,37 +1127,49 @@ FrameworkElement::GetDefaultTemplate ()
 }
 
 void
-FrameworkElement::ApplyDefaultStyle ()
+FrameworkElement::StyleResourceChanged (const char *key, Style *value)
 {
-	if (!default_style_applied) {
-		Style **styles = NULL;
-		//		default_style_applied = true;
+	if (style_resource_changed_cb)
+		style_resource_changed_cb (this, key, value);
+}
 
-		Application *app = Application::GetCurrent ();
-		if (!app)
-			return;
+void
+FrameworkElement::SetImplicitStyles (ImplicitStylePropertyValueProvider::StyleMask mask, Style **styles)
+{
+	Application *app = Application::GetCurrent ();
+	if (!app)
+		return;
 
-		styles = app->GetDefaultStyle (this);
+	if (styles == NULL)
+		styles = app->GetImplicitStyles (this, mask);
 
-		// verify all the styles
-		MoonError e;
-		DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
+	// verify all the styles
+	MoonError e;
+	DependencyProperty *style_prop = GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::StyleProperty);
 
-		if (styles) {
-			for (int i = 0; styles[i]; i ++) {
-				Style *style = styles[i];
+	if (styles) {
+		for (int i = 0; i < ImplicitStylePropertyValueProvider::StyleIndexCount; i ++) {
+			Style *style = styles[i];
+			if (!style)
+				continue;
 
-				Value val (style);
-				if (!Validators::StyleValidator (this, style_prop, &val, &e)) {
-					printf ("Error in the default style\n");
-					g_free (styles);
-					return;
-				}
+			Value val (style);
+			if (!Validators::StyleValidator (this, style_prop, &val, &e)) {
+				printf ("Error in the implicit style\n");
+				g_free (styles);
+				return;
 			}
 		}
-	
-		providers.defaultstyle->UpdateStyle (styles, &e);
 	}
+	
+	providers.implicitstyle->SetStyles (mask, styles, &e);
+}
+
+void
+FrameworkElement::ClearImplicitStyles (ImplicitStylePropertyValueProvider::StyleMask style_mask)
+{
+	MoonError e;
+	providers.implicitstyle->ClearStyles (style_mask, &e);
 }
 
 

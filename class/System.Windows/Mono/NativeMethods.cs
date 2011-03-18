@@ -37,6 +37,26 @@ using System.Windows.Messaging;
 using System.Runtime.CompilerServices;
 
 namespace Mono {
+
+	// XXX keep this in sync with the enum in provider.h
+	internal enum ImplicitStyleIndex {
+		VisualTree,
+		ApplicationResources,
+		GenericXaml,
+
+		Count
+	};
+
+	// XXX keep this in sync with the enum in provider.h
+	[Flags]
+	internal enum ImplicitStyleMask {
+		VisualTree = 1 << ImplicitStyleIndex.VisualTree,
+		ApplicationResources = 1 << ImplicitStyleIndex.ApplicationResources,
+		GenericXaml = 1 << ImplicitStyleIndex.GenericXaml,
+
+		All = (GenericXaml | VisualTree | ApplicationResources)
+	};
+
 	internal enum HttpRequestOptions {
 		OptionsNone = 0,
 		CustomHeaders = 1,
@@ -68,9 +88,10 @@ namespace Mono {
 	internal delegate Size MeasureOverrideCallback (IntPtr fwe_ptr, Size availableSize, ref MoonError error);
 	internal delegate Size ArrangeOverrideCallback (IntPtr fwe_ptr, Size finalSize, ref MoonError error);
 	internal delegate void LoadedCallback (IntPtr fwe_ptr);
+	internal delegate void StyleResourceChangedCallback (IntPtr fwe_ptr, string resourceKey, IntPtr style_ptr);
 
 	internal delegate void FlattenTimelinesCallback (IntPtr timeline, IntPtr dep_ob, IntPtr dp);
-	internal delegate void GetDefaultStyleCallback (IntPtr fwe_ptr, out IntPtr styles_array);
+	internal delegate void GetImplicitStylesCallback (IntPtr fwe_ptr, ImplicitStyleMask style_mask, out IntPtr styles_array);
 	internal delegate IntPtr GetDefaultTemplateCallback (IntPtr fwe_ptr);
 	internal delegate void ConvertSetterValuesCallback (IntPtr style_ptr);
 	internal delegate void ConvertKeyframeValueCallback (Mono.Kind kind, IntPtr property, IntPtr original, out Value converted);

@@ -72,7 +72,7 @@ namespace System.Windows {
 
 	public partial class ResourceDictionary	: DependencyObject, IDictionary, IDictionary<object, object> {
 
-		const string INTERNAL_TYPE_KEY_MAGIC_COOKIE = "___internal___moonlight___key___do___not__use___it___will___kill__cats__";
+		internal const string INTERNAL_TYPE_KEY_MAGIC_COOKIE = "___internal___moonlight___key___do___not__use___it___will___kill__cats__";
 
 		PresentationFrameworkCollection<ResourceDictionary> mergedDictionaries;
 		Uri source;

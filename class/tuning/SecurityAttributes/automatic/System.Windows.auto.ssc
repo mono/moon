@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 637 methods
+# 639 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -152,7 +152,7 @@
 +SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
 +SSC-M: System.Windows.InstallState System.Windows.Application::get_InstallState()
 +SSC-M: System.Boolean System.Windows.Application::Install()
-+SSC-M: System.Void System.Windows.Application::get_default_style_cb(System.Windows.FrameworkElement,System.IntPtr&)
++SSC-M: System.Void System.Windows.Application::get_implicit_styles_cb(System.Windows.FrameworkElement,Mono.ImplicitStyleMask,System.IntPtr&)
 +SSC-M: System.Void System.Windows.Application::convert_setter_values_cb(System.IntPtr)
 +SSC-M: System.Void System.Windows.Application::CheckAndDownloadUpdateAsync()
 +SSC-M: System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
@@ -210,7 +210,9 @@
 +SSC-M: System.Void System.Windows.ExceptionRoutedEventArgs::.ctor(Mono.MoonError)
 +SSC-M: System.Windows.ExceptionRoutedEventArgs System.Windows.ExceptionRoutedEventArgs::FromErrorEventArgs(System.IntPtr)
 +SSC-M: System.Void System.Windows.FrameworkElement::Initialize()
-+SSC-M: System.Void System.Windows.FrameworkElement::ApplyDefaultStyle()
++SSC-M: System.Void System.Windows.FrameworkElement::SetImplicitStyles()
++SSC-M: System.Void System.Windows.FrameworkElement::SetImplicitStyles(Mono.ImplicitStyleMask,System.Windows.Style[])
++SSC-M: System.Void System.Windows.FrameworkElement::ClearImplicitStyles(Mono.ImplicitStyleMask)
 +SSC-M: System.Boolean System.Windows.FrameworkElement::ApplyTemplate()
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::MeasureOverride(System.Windows.Size)
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::ArrangeOverride(System.Windows.Size)
