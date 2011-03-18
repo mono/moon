@@ -1251,6 +1251,14 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 			return;
 		}
 
+		if (source->GetObjectType () != Type::MMSSOURCE && next_packet_index == G_MAXUINT64) {
+#if SANITY
+			printf ("ASFDemuxer::GetFrameAsyncInternal (): a seek is probably pending.\n");
+#endif
+			ReportGetFrameCompleted (NULL);
+			return;
+		}
+
 		RequestMorePayloadData ();
 		return;
 	}
