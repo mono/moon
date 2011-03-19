@@ -1662,15 +1662,6 @@ Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer cl
 	Deployment *deployment  = (Deployment *) sender;
 	LoadedClosure *lclosure = (LoadedClosure*)closure;
 
-// FIXME: in a perfect world this would be all that was needed, but
-// there are times we don't do the tree walk to add handlers to the
-// deployment at all, so elements won't have their
-// OnLoaded/InvokeLoaded called at all.
-
-// 	if (!lclosure->obj->IsLoaded ())
-// 		lclosure->obj->OnLoaded ();
-
-
 	lclosure->obj->EmitOnly (UIElement::LoadedEvent, lclosure->token);
 	deployment->RemoveHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure);
 }
