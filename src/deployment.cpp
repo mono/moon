@@ -1630,21 +1630,19 @@ public:
 	LoadedClosure (UIElement *obj, int token)
 		: obj (obj), token (token)
 	{
-
+		obj->ref ();
 	}
 
 	~LoadedClosure ()
 	{
-		
+		obj->unref ();
 	}
 };
 
 void
 Deployment::delete_loaded_closure (EventObject *eo, int event_id, int token, gpointer closure)
 {
-	LoadedClosure *c = (LoadedClosure *) closure;
-	c->obj->unref ();
-	delete c;
+	delete (LoadedClosure *) closure;
 }
 
 bool
@@ -1682,9 +1680,6 @@ Deployment::add_loaded_handler (EventObject *obj, int token, gpointer closure)
 {
 	Deployment *deployment = (Deployment*)closure;
 	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj, token);
-
-	// This is unrefed in delete_loaded_closure
-	obj->ref ();
 	deployment->AddHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure, delete_loaded_closure);
 }
 
