@@ -50,21 +50,24 @@ namespace Mono {
 
 	internal static partial class Events {
 
+		public static void SafeAction (Action action)
+		{
+			try {
+				action ();
+			}
+			catch (Exception ex) {
+				try {
+					Application.OnUnhandledException (Application.Current, ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeAction: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
+		}
+
 		public static UnmanagedEventHandler SafeDispatcher (UnmanagedEventHandler handler)
 		{
-			return (sender, calldata, closure) => {
-				try {
-					handler (sender, calldata, closure);
-				}
-				catch (Exception ex) {
-					try {
-						Application.OnUnhandledException (Application.Current, ex);
-					Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeDispatcher: {0}", ex);
-					} catch {
-						// Ignore
-					}
-				}
-			};
+			return (sender, calldata, closure) => SafeAction (() => handler (sender, calldata, closure));
 		}
 
 		public static UnmanagedEventHandler CreateCheckAndDownloadUpdateCompletedEventHandlerDispatcher (object sender, CheckAndDownloadUpdateCompletedEventHandler handler)
