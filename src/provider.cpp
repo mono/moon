@@ -342,7 +342,6 @@ ImplicitStylePropertyValueProvider::ApplyStyles (ImplicitStylePropertyValueProvi
 			oldSetter = oldWalker.Step ();
 		} else if (oldProp == newProp) {
 			// This is a property which is in both styles
-			// FIXME we're calling providervaluechanged for properties whose value hasn't changed.  we need to compare ConvertedValues if we can..
 			oldValue = oldSetter->GetValue (Setter::ConvertedValueProperty);
 			newValue = newSetter->GetValue (Setter::ConvertedValueProperty);
 			if (newValue != NULL) {
@@ -374,10 +373,8 @@ ImplicitStylePropertyValueProvider::ApplyStyles (ImplicitStylePropertyValueProvi
 	// FIXME: we need to not RemoveHandler/AddHandler styles that aren't changing
 	if (this->styles) {
 		for (int i = 0; i < StyleIndexCount; i ++) {
-			if (this->styles [i]) {
+			if (this->styles [i])
 				this->styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
-				this->styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
-			}
 		}
 		g_free (this->styles);
 	}
@@ -385,10 +382,8 @@ ImplicitStylePropertyValueProvider::ApplyStyles (ImplicitStylePropertyValueProvi
 	this->style_mask = style_mask;
 	if (this->styles) {
 		for (int i = 0; i < StyleIndexCount; i ++) {
-			if (this->styles [i]) {
+			if (this->styles [i])
 				this->styles[i]->AddHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
-				this->styles[i]->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
-			}
 		}
 	}
 }
@@ -415,16 +410,16 @@ ImplicitStylePropertyValueProvider::SetStyles (ImplicitStylePropertyValueProvide
 	if (!styles)
 		return;
 		
-	Style **new_styles = (Style**)g_new0 (Style*, 3);
+	Style **new_styles = (Style**)g_new0 (Style*, StyleIndexCount);
 	if (this->styles)
-		memmove (new_styles, this->styles, 3 * sizeof (Style*));
+		memmove (new_styles, this->styles, StyleIndexCount * sizeof (Style*));
 
-	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
-		new_styles[ImplicitStylePropertyValueProvider::StyleIndexGenericXaml] = styles[ImplicitStylePropertyValueProvider::StyleIndexGenericXaml];
-	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
-		new_styles[ImplicitStylePropertyValueProvider::StyleIndexApplicationResources] = styles[ImplicitStylePropertyValueProvider::StyleIndexApplicationResources];
-	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
-		new_styles[ImplicitStylePropertyValueProvider::StyleIndexVisualTree] = styles[ImplicitStylePropertyValueProvider::StyleIndexVisualTree];
+	if (style_mask & StyleMaskGenericXaml)
+		new_styles[StyleIndexGenericXaml] = styles[StyleIndexGenericXaml];
+	if (style_mask & StyleMaskApplicationResources)
+		new_styles[StyleIndexApplicationResources] = styles[StyleIndexApplicationResources];
+	if (style_mask & StyleMaskVisualTree)
+		new_styles[StyleIndexVisualTree] = styles[StyleIndexVisualTree];
 
 	ApplyStyles ((ImplicitStylePropertyValueProvider::StyleMask)(this->style_mask | style_mask),
 		     new_styles,
@@ -440,11 +435,11 @@ ImplicitStylePropertyValueProvider::ClearStyles (ImplicitStylePropertyValueProvi
 		printf ("All)\n");
 	}
 	else {
-		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
+		if (style_mask & StyleMaskGenericXaml)
 			printf (" generic.xaml");
-		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
+		if (style_mask & StyleMaskApplicationResources)
 			printf (" appresources");
-		if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
+		if (style_mask & StyleMaskVisualTree)
 			printf (" virusl-tree");
 		printf (" )\n");
 	}
@@ -453,15 +448,15 @@ ImplicitStylePropertyValueProvider::ClearStyles (ImplicitStylePropertyValueProvi
 	if (!styles)
 		return;
 		
-	Style **new_styles = (Style**)g_new (Style*, 3);
+	Style **new_styles = (Style**)g_new (Style*, StyleIndexCount);
 	memmove (new_styles, styles, 3 * sizeof (Style*));
 
-	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskGenericXaml)
-		new_styles[ImplicitStylePropertyValueProvider::StyleIndexGenericXaml] = NULL;
-	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskApplicationResources)
-		new_styles[ImplicitStylePropertyValueProvider::StyleIndexApplicationResources] = NULL;
-	if (style_mask & ImplicitStylePropertyValueProvider::StyleMaskVisualTree)
-		new_styles[ImplicitStylePropertyValueProvider::StyleIndexVisualTree] = NULL;
+	if (style_mask & StyleMaskGenericXaml)
+		new_styles[StyleIndexGenericXaml] = NULL;
+	if (style_mask & StyleMaskApplicationResources)
+		new_styles[StyleIndexApplicationResources] = NULL;
+	if (style_mask & StyleMaskVisualTree)
+		new_styles[StyleIndexVisualTree] = NULL;
 
 	ApplyStyles ((ImplicitStylePropertyValueProvider::StyleMask)(this->style_mask & ~style_mask),
 		     new_styles,
