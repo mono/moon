@@ -368,7 +368,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("The default template changed in SL3")]
 		public void AfterRender ()
 		{
 			// Fails in Silverlight 3
@@ -407,7 +406,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("The default template changed in SL3")]
 		public void AfterRender2 ()
 		{
 			ListBox c = new ListBox ();
@@ -773,7 +771,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("The default template changed in SL3")]
 		public void VisualTree ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();

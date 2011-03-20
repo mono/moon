@@ -932,7 +932,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("We need the sl3 generic.xaml")]
 		public void ItemTemplateTest ()
 		{
 			ComboBox box = (ComboBox) XamlReader.Load (@"
