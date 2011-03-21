@@ -168,7 +168,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("We should not register the name in this case")]
 		public void BasedOn_FindName_UseTwice()
 		{
 			BasedOn_FindName_Core(true);

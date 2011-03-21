@@ -53,7 +53,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void UseTwice()
 		{
 			string name = "SuperSecretBrush";
@@ -71,7 +70,6 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void UseTwice_ThenOnce()
 		{
 			string name = "SuperSecretBrush";

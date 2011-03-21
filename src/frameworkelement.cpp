@@ -1083,12 +1083,12 @@ FrameworkElement::DoApplyTemplateWithError (MoonError *error)
 {
 	UIElement *e = GetDefaultTemplate ();
 	if (e) {
-		e->SetParent (this, error);
+		e->AddParent (this, error);
 		if (error->number)
 			return false;
 
 		if (default_template) {
-			default_template->SetParent (NULL, NULL);
+			default_template->RemoveParent (this, NULL);
 			default_template = NULL;
 		}
 
@@ -1112,7 +1112,7 @@ FrameworkElement::ElementRemoved (UIElement *obj)
 	UIElement::ElementRemoved (obj);
 	if (GetSubtreeObject () == obj) {
 		MoonError e;
-		obj->SetParent (NULL, &e);
+		obj->RemoveParent (this, &e);
 		obj->SetMentor (NULL);
 		SetSubtreeObject (NULL);
 	}

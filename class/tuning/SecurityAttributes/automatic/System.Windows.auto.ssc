@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 639 methods
+# 640 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -186,6 +186,7 @@
 +SSC-M: Mono.Kind System.Windows.DependencyObject::GetKind()
 +SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::get_Count()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Clear()
++SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Initialize()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::RemoveAt(System.Int32)
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Add(T)
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Insert(System.Int32,T)

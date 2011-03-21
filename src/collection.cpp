@@ -501,43 +501,26 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
-	obj->SetMentor (GetMentor ());
-	DependencyObject *parent = obj->GetParent();
-
 	if (sets_parent) {
-		if (parent) {
-			if (GetIsSecondaryParent ()) {
-				if (obj->GetSecondaryParent ()) {
-					MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
-					return false;
-				} else {
-					obj->SetSecondaryParent (this);
-				}
-			} else if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
-				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
-				return false;
-			}
-		}
-		else {
-			obj->SetParent (this, error);
-			if (GetIsSecondaryParent ())
-				obj->SetSecondaryParent (this);
-
-			if (error->number)
-				return false;
-		}
+		DependencyObject *existing_parent = obj->GetParent ();
+		obj->AddParent (this, error);
+		if (!error->number && !existing_parent && GetIsSecondaryParent ())
+			obj->AddParent (this, error);
+		if (error->number)
+			return false;
 	}
 
 	obj->AddPropertyChangeListener (this);
+	obj->SetMentor (GetMentor ());
 	
 	// Only set the IsAttached state when the object has successfully been
 	// added to the collection.
 	bool rv = Collection::AddedToCollection (value, error);
 	obj->SetIsAttached (rv && IsAttached ());
 	
-	if (sets_parent && !rv && parent == NULL) {
+	if (sets_parent && !rv) {
 		/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
-		obj->SetParent (NULL, error);
+		obj->RemoveParent (this, error);
 	}
 	
 	return rv;
@@ -552,10 +535,10 @@ DependencyObjectCollection::RemovedFromCollection (Value *value, bool is_value_s
 		if (obj) {
 			obj->RemovePropertyChangeListener (this);
 			if (GetIsSecondaryParent ())
-				obj->SetSecondaryParent (NULL);
+				obj->RemoveSecondaryParent (this);
 
 			if (sets_parent && obj->GetParent () == this)
-				obj->SetParent (NULL, NULL);
+				obj->RemoveParent (this, NULL);
 			obj->SetMentor (NULL);
 			obj->SetIsAttached (false);
 		}
@@ -856,22 +839,11 @@ ItemCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	if (value->IsDependencyObject (GetDeployment ())) {
 		DependencyObject *obj = value->AsDependencyObject ();
-	
-		obj->SetMentor (GetMentor ());
-		DependencyObject *parent = obj->GetParent();
-	
-		if (parent) {
-			if (parent != this && parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
-				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "1 Element is already a child of another element.");
-				return false;
-			}
-		}
-		else {
-			obj->SetParent (this, error);
-			if (error->number)
-				return false;
-		}
+		obj->AddParent (this, error);
+		if (error->number)
+			return false;
 
+		obj->SetMentor (GetMentor ());
 		obj->AddPropertyChangeListener (this);
 	
 		// Only set the IsAttached state when the object has successfully been
@@ -879,9 +851,9 @@ ItemCollection::AddedToCollection (Value *value, MoonError *error)
 		bool rv = Collection::AddedToCollection (value, error);
 		obj->SetIsAttached (rv && IsAttached ());
 	
-		if (!rv && parent == NULL) {
+		if (!rv) {
 			/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
-			obj->SetParent (NULL, error);
+			obj->RemoveParent (this, error);
 		}
 		return rv;
 	} else {
@@ -897,7 +869,7 @@ ItemCollection::RemovedFromCollection (Value *value, bool is_value_safe)
 
 		if (obj) {
 			obj->RemovePropertyChangeListener (this);
-			obj->SetParent (NULL, NULL);
+			obj->RemoveParent (this, NULL);
 			obj->SetMentor (NULL);
 			obj->SetIsAttached (false);
 		}

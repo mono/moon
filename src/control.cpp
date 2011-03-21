@@ -155,7 +155,7 @@ Control::DoApplyTemplateWithError (MoonError *error)
 	// No need to ref template_root here as ElementAdded refs it
 	// and it is cleared when ElementRemoved is called.
 	if (template_root != root && template_root != NULL) {
-		template_root->SetParent (NULL, NULL);
+		template_root->RemoveParent (this, NULL);
 		template_root->SetMentor (NULL);
 		template_root = NULL;
 	}
@@ -183,7 +183,7 @@ void
 Control::ElementAdded (UIElement *item)
 {
 	MoonError e;
-	item->SetParent (this, &e);
+	item->AddParent (this, &e);
 	SetSubtreeObject (item);
 	FrameworkElement::ElementAdded (item);
 }
@@ -193,11 +193,11 @@ Control::ElementRemoved (UIElement *item)
 {
 	MoonError e;
 	if (template_root != NULL) {
-		template_root->SetParent (NULL, &e);
+		template_root->RemoveParent (this, &e);
 		template_root->SetMentor (NULL);
 		template_root = NULL;
 	}
-	item->SetParent (NULL, &e);
+	item->RemoveParent (this, &e);
 	FrameworkElement::ElementRemoved (item);
 }
 

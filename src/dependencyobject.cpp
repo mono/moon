@@ -1627,7 +1627,7 @@ unregister_depobj_values (gpointer  key,
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject (this_obj->GetDeployment()->GetTypes());
 		obj->RemovePropertyChangeListener (this_obj);
-		obj->SetParent (NULL, NULL);
+		obj->RemoveParent (this_obj, NULL);
 	}
 }
 
@@ -1951,7 +1951,7 @@ register_depobj_names (gpointer  key,
 void
 DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 {
-	if (error->number || registering_names)
+	if (error->number || registering_names || (PermitsMultipleParents () && HasSecondaryParents ()))
 		return;
 
 	registering_names = true;
@@ -2027,7 +2027,7 @@ unregister_depobj_names (gpointer  key,
 void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
-	if (registering_names)
+	if (registering_names || (PermitsMultipleParents () && HasSecondaryParents ()))
 		return;
 	registering_names = true;
 
@@ -2412,7 +2412,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			old_as_dep->SetIsAttached (false);
 			
 			// unset its parent
-			old_as_dep->SetParent (NULL, NULL);
+			old_as_dep->RemoveParent (this, NULL);
 			
 			// remove ourselves as a target
 			old_as_dep->RemoveTarget (this);
@@ -2429,7 +2429,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		if (new_as_dep && setsParent) {
 			new_as_dep->SetIsAttached (IsAttached ());
 
-			new_as_dep->SetParent (this, merge_names_on_set_parent, error);
+			new_as_dep->AddParent (this, merge_names_on_set_parent, error);
 			if (error->number)
 				return;
 
@@ -2558,7 +2558,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			// as found in the SetValue path)
 			if (dob != NULL && !property->IsCustom ()) {
 				// unset its parent
-				dob->SetParent (NULL, NULL);
+				dob->RemoveParent (this, NULL);
 				
 				// unregister from the existing value
 				dob->RemovePropertyChangeListener (this, property);
@@ -2607,9 +2607,9 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 		DependencyObject *dob = v->AsDependencyObject(types);
 		
 		if (dob != NULL) {
-			if (_this == dob->GetParent()) {
+			if (_this->GetRefCount () > 0 && _this == dob->GetParent()) {
 				// unset its logical parent
-				dob->SetParent (NULL, NULL);
+				dob->RemoveParent (_this, NULL);
 			}
 
 			// unregister from the existing value
@@ -2664,21 +2664,21 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 
 DependencyObject::DependencyObject ()
 	: EventObject (Type::DEPENDENCY_OBJECT),
-	mentor (this), parent (this), template_owner (this), secondary_parent (this)
+	mentor (this), parent (this), template_owner (this)
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
 	: EventObject (deployment, object_type),
-	mentor (this), parent (this), template_owner (this), secondary_parent (this)
+	mentor (this), parent (this), template_owner (this)
 {
 	Initialize ();
 }
 
 DependencyObject::DependencyObject (Type::Kind object_type)
 	: EventObject (object_type),
-	mentor (this), parent (this), template_owner (this), secondary_parent (this)
+	mentor (this), parent (this), template_owner (this)
 {
 	Initialize ();
 }
@@ -2701,12 +2701,51 @@ DependencyObject::Initialize ()
 	property_change_token = 0;
 	resource_base = NULL;
 	registering_names = false;
+	secondary_parents = g_ptr_array_new ();
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	hash_lookups_per_property = g_hash_table_new (g_direct_hash, g_direct_equal);
 	get_values_per_property = g_hash_table_new (g_direct_hash, g_direct_equal);
 #endif
 	provider_bitmasks = g_hash_table_new (g_direct_hash, g_direct_equal);
 	storage_hash = NULL; // Create it on first usage request
+}
+
+
+void
+DependencyObject::clear_secondary_parent (EventObject *sender, EventArgs *callData, gpointer closure)
+{
+	((DependencyObject *)closure)->RemoveSecondaryParent ((DependencyObject *) sender);
+}
+
+void
+DependencyObject::AddSecondaryParent (DependencyObject *value)
+{
+	value->AddHandler (EventObject::DestroyedEvent, clear_secondary_parent, this);
+	g_ptr_array_add (secondary_parents, value);
+}
+
+bool
+DependencyObject::RemoveSecondaryParent (DependencyObject *value)
+{
+	// The destroy func will clear the event handlers when/uf the element
+	// is successfully removed
+	if (!g_ptr_array_remove_fast (secondary_parents, value))
+		return false;
+
+	value->RemoveHandler (EventObject::DestroyedEvent, clear_secondary_parent, this);
+	return true;
+}
+
+bool
+DependencyObject::HasSecondaryParents ()
+{
+	return secondary_parents->len > 0;
+}
+
+GPtrArray *
+DependencyObject::GetSecondaryParents ()
+{
+	return secondary_parents;
 }
 
 void
@@ -2950,6 +2989,11 @@ output_hash_lookups_per_property (DependencyProperty *key, int count, totals *ts
 
 DependencyObject::~DependencyObject ()
 {
+	for (int i = 0; i < (int) secondary_parents->len; i ++) {
+		DependencyObject *p = (DependencyObject *) secondary_parents->pdata [i];
+		p->RemoveHandler (EventObject::DestroyedEvent, clear_secondary_parent, this);
+	}
+	g_ptr_array_unref (secondary_parents);
 	g_hash_table_destroy (provider_bitmasks);
 	delete resource_base;
 
@@ -2982,9 +3026,10 @@ DependencyObject::Dispose ()
 	/* Assert that if we still have a parent, it must be alive */
 	g_assert (GetDeployment()->IsShuttingDown () || parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
 #endif
-	if (parent != NULL) {
-		SetParent (NULL, NULL);
-	}
+// FIXME: Do we really need to do this? The element is dying, why would we null it's parent?
+//	if (parent != NULL) {
+//		SetParent (NULL, NULL);
+//	}
 
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
@@ -3344,24 +3389,21 @@ DependencyObject::OnIsAttachedChanged (bool value)
 }
 
 void
-DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
+DependencyObject::AddParent (DependencyObject *parent, MoonError *error)
 {
-	SetParent (parent, true, error);
+	AddParent (parent, true, error);
 }
 
 void
-DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error)
+DependencyObject::AddParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error)
 {
-	if (parent == this->parent)
-		return;
-
 	if (GetDeployment()->IsShuttingDown ()) {
 		// not much we can do here... @parent should always be
 		// null, but we don't care
 		this->parent = NULL;
 		return;
 	}
-	
+
 	// Check for circular families
 	DependencyObject *current = parent;
 	while (current != NULL) {
@@ -3372,76 +3414,78 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 		current = current->GetParent ();
 	}
 
-	if (!this->parent) {
-		if (parent) {
-			NameScope *this_scope = NameScope::GetNameScope(this);
-			NameScope *parent_scope = parent->FindNameScope();
-			if (this_scope) {
-				if (this_scope->GetTemporary()) {
-					// if we have a temporary name scope, merge it into the
-					// closest one up the hierarchy.
-					if (parent_scope) {
-						parent_scope->MergeTemporaryScope (this_scope, error);
-						ClearValue (NameScope::NameScopeProperty, false);
-					}
-					else {
-						// oddly enough, if
-						// there's no parent
-						// namescope, we don't
-						// do anything
-					}
-				}
-				else {
-					// we have a non-temporary scope.  we still have to register the name
-					// of this element (not the ones in the subtree rooted at this element)
-					// in the new parent scope.  we only register the name in the parent scope
-					// if the element was hydrated, not when it was created from a string.
-					if (IsHydratedFromXaml()) {
-						const char *name = GetName();
-						if (parent_scope && name && *name) {
-							DependencyObject *existing_obj = parent_scope->FindName (name);
-							if (existing_obj != this) {
-								if (existing_obj) {
-									char *error_msg = g_strdup_printf ("name `%s' is already registered in new parent namescope.", name);
-									MoonError::FillIn (error, MoonError::ARGUMENT, error_msg);
-									return;
-								}
-								parent_scope->RegisterName (name, this);
-							}
-						}
-					}
-				}
+	if (this->parent && !PermitsMultipleParents ()) {
+		if (parent->Is (Type::DEPENDENCY_OBJECT_COLLECTION) && (!((DependencyObjectCollection *)parent)->GetIsSecondaryParent () || secondary_parents->len > 0)) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, g_strdup_printf ("Element is already a child of another element.  %s", GetTypeName ()));
+			return;
+		}
+	}
+	
+	if (this->parent || HasSecondaryParents ()) {
+		AddSecondaryParent (parent);
+		if (secondary_parents->len > 1 || !parent->Is (Type::DEPENDENCY_OBJECT_COLLECTION) || !((DependencyObjectCollection *)parent)->GetIsSecondaryParent ())
+			return;
+	}
+
+	NameScope *this_scope = NameScope::GetNameScope(this);
+	NameScope *parent_scope = parent->FindNameScope();
+	if (this_scope) {
+		if (this_scope->GetTemporary()) {
+			// if we have a temporary name scope, merge it into the
+			// closest one up the hierarchy.
+			if (parent_scope) {
+				parent_scope->MergeTemporaryScope (this_scope, error);
+				ClearValue (NameScope::NameScopeProperty, false);
 			}
 			else {
-				// we don't have a namescope at all,
-				// we have to iterate over the subtree
-				// rooted at this object, and merge
-				// the names into the parent
-				// namescope.
-
-				if (parent_scope && merge_names_from_subtree) {
-					NameScope *temp_scope = new NameScope();
-					temp_scope->SetTemporary (true);
-
-					RegisterAllNamesRootedAt (temp_scope, error);
-
-					if (error->number) {
-						temp_scope->unref ();
-						return;
+				// oddly enough, if
+				// there's no parent
+				// namescope, we don't
+				// do anything
+			}
+		}
+		else {
+			// we have a non-temporary scope.  we still have to register the name
+			// of this element (not the ones in the subtree rooted at this element)
+			// in the new parent scope.  we only register the name in the parent scope
+			// if the element was hydrated, not when it was created from a string.
+			if (IsHydratedFromXaml()) {
+				const char *name = GetName();
+				if (parent_scope && name && *name) {
+					DependencyObject *existing_obj = parent_scope->FindName (name);
+					if (existing_obj != this) {
+						if (existing_obj) {
+							char *error_msg = g_strdup_printf ("name `%s' is already registered in new parent namescope.", name);
+							MoonError::FillIn (error, MoonError::ARGUMENT, error_msg);
+							return;
+						}
+						parent_scope->RegisterName (name, this);
 					}
-
-					parent_scope->MergeTemporaryScope (temp_scope, error);
-
-					temp_scope->unref ();
 				}
 			}
 		}
 	}
 	else {
-		if (!parent) {
-			NameScope *parent_scope = this->parent->FindNameScope ();
-			if (parent_scope)
-				UnregisterAllNamesRootedAt (parent_scope);
+		// we don't have a namescope at all,
+		// we have to iterate over the subtree
+		// rooted at this object, and merge
+		// the names into the parent
+		// namescope.
+
+		if (parent_scope && merge_names_from_subtree) {
+			NameScope *temp_scope = new NameScope();
+			temp_scope->SetTemporary (true);
+
+			RegisterAllNamesRootedAt (temp_scope, error);
+
+			if (error->number) {
+				temp_scope->unref ();
+				return;
+			}
+
+			parent_scope->MergeTemporaryScope (temp_scope, error);
+
+			temp_scope->unref ();
 		}
 	}
 
@@ -3449,6 +3493,43 @@ DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_sub
 		this->parent = parent;
 	}
 }
+
+
+void
+DependencyObject::RemoveParent (DependencyObject *parent, MoonError *error)
+{
+	if (RemoveSecondaryParent (parent)) {
+		if (secondary_parents->len > 0 || !parent->Is (Type::DEPENDENCY_OBJECT_COLLECTION) || !((DependencyObjectCollection *)parent)->GetIsSecondaryParent ())
+			return;
+	} else {
+		// THIS IS A HACK FOR NOW
+		// WE SHOULD NEVE HAVE A CASE WHERE WE REMOVEPARENT A VALUE UNLESS WE PREVIOUSLY ADDPARENTED IT
+		if (this->parent == NULL)
+			return;
+		
+		g_return_if_fail (this->parent == parent);
+	}
+
+	if (GetDeployment()->IsShuttingDown ()) {
+		// not much we can do here... @parent should always be
+		// null, but we don't care
+		this->parent = NULL;
+		return;
+	}
+
+	if (!HasSecondaryParents ()) {
+		NameScope *parent_scope = parent->FindNameScope ();
+		if (parent_scope)
+			UnregisterAllNamesRootedAt (parent_scope);
+	}
+
+	if (!error || error->number == 0) {
+		if (this->parent == parent)
+			this->parent = NULL;
+	}
+}
+
+
 
 void
 DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)

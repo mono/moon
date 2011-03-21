@@ -188,7 +188,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod()]
-		[MoonlightBug ("This should work")]
 		public void Custom_Property_CanSetTwice_Collection()
 		{
 			var canvas1 = new CustomCanvas { Collection = new DependencyObjectCollection<DependencyObject>() };

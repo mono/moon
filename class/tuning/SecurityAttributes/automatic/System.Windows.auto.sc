@@ -1,5 +1,9 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
+<<<<<<< HEAD
 # 598 methods needs to be decorated.
+=======
+# 599 methods needs to be decorated.
+>>>>>>> [Parent] Handle namescoping more correctly for elements with multiple parents
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -57,6 +61,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::content_control_get_content_sets_parent(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::dependency_object_collection_get_sets_parent(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_name_on_scope(System.IntPtr,System.String,System.IntPtr)
@@ -1152,6 +1159,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::dependency_object_collection_set_sets_parent(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_remove_property_change_handler(System.IntPtr,System.Int32)

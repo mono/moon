@@ -63,6 +63,361 @@ namespace MoonTest.System.Windows {
 	public class LogicalTreeTest {
 
 		[TestMethod]
+		public void BrushWithTwoParents_TwoSubtrees_SetOneFirst()
+		{
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (Canvas)XamlReader.Load(@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (Canvas)XamlReader.Load(@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Children.Add(new Canvas { Background = brush });
+			second.Children.Add(new Canvas { Background = brush });
+
+			Assert.AreSame(brush, first.FindName("Test"), "#1");
+			Assert.IsNull(second.FindName("Test"), "#2");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_TwoSubtrees_SetBothFirst()
+		{
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (Canvas)XamlReader.Load(@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (Canvas)XamlReader.Load(@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			var subtree1 = new Canvas { Background = brush };
+			var subtree2 = new Canvas { Background = brush };
+
+			first.Children.Add(subtree1);
+			second.Children.Add(subtree2);
+
+			Assert.IsNull (first.FindName("Test"), "#1");
+			Assert.IsNull(second.FindName("Test"), "#2");
+		}
+
+		[TestMethod]
+		public void BrushWithOneParent_Null()
+		{
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			first.Foreground = brush;
+
+			first.Foreground = null;
+			Assert.IsNull (first.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_SecondCannotFindName()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			Assert.AreSame(brush, first.FindName("Test"), "#1");
+			Assert.IsNull(second.FindName("Test"), "#2");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_NullFirst_ThenPutInNewNamescope()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			first.Foreground = null;
+
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			third.Foreground = brush;
+			Assert.IsNull(third.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_NullSecond_ThenPutInNewNamescope()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			second.Foreground = null;
+
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			third.Foreground = brush;
+			Assert.IsNull(third.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_NullBoth()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both
+			// By setting the Foreground properties to null, the brush is still in the namescope
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			first.Foreground = null;
+			second.Foreground = null;
+			Assert.AreSame(brush, first.FindName("Test"), "#1");
+			Assert.IsNull(second.FindName("Test"), "#2");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_NullBoth_NamescopeClash()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both
+			// If we then clear the two Foregrounds by setting them to null, the name is never
+			// unregistered from the first namescope so if we try to reuse the name we blow up.
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			first.Foreground = null;
+			second.Foreground = null;
+
+			brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			Assert.Throws<ArgumentException>(() => first.Foreground = brush, "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_NullBoth_ThenPutInNewNamescope()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both.
+			// Then null the properties and add the brush to a third namescope to see if it
+			// is registered there.
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			first.Foreground = null;
+			second.Foreground = null;
+
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			third.Foreground = brush;
+			Assert.AreSame (brush, third.FindName ("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithThreeParents_NullTwo_ThenPutInNewNamescope()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both.
+			// Then null the properties and add the brush to a third namescope to see if it
+			// is registered there.
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = brush;
+			second.Foreground = brush;
+			third.Foreground = brush;
+
+			first.Foreground = null;
+			second.Foreground = null;
+
+			var fourth = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			fourth.Foreground = brush;
+			Assert.IsNull(fourth.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithThreeParents_NullAll_ThenPutInNewNamescope()
+		{
+			// Create two TextBlocks with unique namescopes and add the same brush to  both.
+			// Then null the properties and add the brush to a third namescope to see if it
+			// is registered there.
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var fourth = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = null;
+			second.Foreground = null;
+			third.Foreground = null;
+			fourth.Foreground = null;
+
+			first.Foreground = brush;
+			second.Foreground = brush;
+			third.Foreground = brush;
+
+			first.Foreground = null;
+			second.Foreground = null;
+			third.Foreground = null;
+
+			fourth.Foreground = brush;
+			Assert.AreSame(brush, fourth.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithThreeParents_NullInParentOrder()
+		{
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = brush;
+			second.Foreground = brush;
+			third.Foreground = brush;
+
+			first.Foreground = null;
+			second.Foreground = null;
+			third.Foreground = null;
+
+			Assert.AreSame(brush, first.FindName("Test"), "#1");
+			Assert.IsNull(second.FindName("Test"), "#1");
+			Assert.IsNull(third.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithThreeParents_NullInReverseOrder()
+		{
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = brush;
+			second.Foreground = brush;
+			third.Foreground = brush;
+
+			third.Foreground = null;
+			second.Foreground = null;
+			first.Foreground = null;
+
+			Assert.IsNull(first.FindName("Test"), "#1");
+			Assert.IsNull(second.FindName("Test"), "#1");
+			Assert.IsNull(third.FindName("Test"), "#1");
+		}
+
+		[TestMethod]
+		public void BrushWithTwoParents_UnregisterWrongObject()
+		{
+			// Create two brushes with the same name. Put one of them in both
+			// textboxes and the other just in the second textbox. See if clearing
+			// the first brush in the second textbox will unregister the name of the
+			// second brush from the second textbox.
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+			
+			var secondBrush = new SolidColorBrush();
+			secondBrush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = brush;
+			second.Foreground = brush;
+
+			second.Background = secondBrush;
+			second.Foreground = null;
+
+			Assert.AreSame(secondBrush, second.FindName("Test"), "#1");
+		}
+
+
+		[TestMethod]
+		public void BrushWithThreeParents_ComplexParenting_AlternateNull()
+		{
+			var brush = new SolidColorBrush();
+			brush.SetValue(FrameworkElement.NameProperty, "Test");
+
+			var first = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var third = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var fourth = (TextBox)XamlReader.Load(@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Foreground = brush;
+			Assert.AreSame(brush, first.FindName("Test"), "#1a");
+			Assert.IsNull(second.FindName("Test"), "#2a");
+			Assert.IsNull(third.FindName("Test"), "#3a");
+			Assert.IsNull(fourth.FindName("Test"), "#4a");
+
+			second.Foreground = brush;
+			first.Foreground = null;
+			Assert.AreSame(brush, first.FindName("Test"), "#1b");
+			Assert.IsNull(second.FindName("Test"), "#2b");
+			Assert.IsNull(third.FindName("Test"), "#3b");
+			Assert.IsNull(fourth.FindName("Test"), "#4b");
+
+			third.Foreground = brush;
+			second.Foreground = null;
+			Assert.AreSame(brush, first.FindName("Test"), "#1c");
+			Assert.IsNull(second.FindName("Test"), "#2c");
+			Assert.IsNull(third.FindName("Test"), "#3c");
+			Assert.IsNull(fourth.FindName("Test"), "#4c");
+
+			fourth.Foreground = brush;
+			third.Foreground = null;
+			Assert.AreSame(brush, first.FindName("Test"), "#5a");
+			Assert.IsNull(second.FindName("Test"), "#5b");
+			Assert.IsNull(third.FindName("Test"), "#5c");
+			Assert.IsNull(fourth.FindName("Test"), "#5d");
+
+			fourth.Foreground = null;
+			Assert.AreSame(brush, first.FindName("Test"), "#6a");
+			Assert.IsNull(second.FindName("Test"), "#6b");
+			Assert.IsNull(third.FindName("Test"), "#6c");
+			Assert.IsNull(fourth.FindName("Test"), "#6d");
+		}
+
+		[TestMethod]
+		public void UIElementWithTwoParents ()
+		{
+			var element = new ContentControl { Name = "Test" };
+
+			var first = (ContentControl) XamlReader.Load (@"<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+			var second = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" />");
+
+			first.Content = element;
+			second.Children.Add (element);
+
+			Assert.AreSame (element, first.FindName ("Test"), "#1");
+			Assert.AreSame (element, second.FindName ("Test"), "#2");
+		}
+
+		[TestMethod]
 		public void LogicalParentTest1 ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();

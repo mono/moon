@@ -109,6 +109,11 @@ namespace System.Windows {
 			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
+		void Initialize ()
+		{
+			NativeMethods.dependency_object_collection_set_sets_parent (native, false);
+		}
+
 		public void RemoveAt (int index)
 		{
 			var oldItem = this [index];

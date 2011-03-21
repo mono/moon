@@ -2473,7 +2473,21 @@ public:
 		delete baseline_offset;
 	}
 	
-	virtual Value *GetPropertyValue (DependencyProperty *property)
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+	
+	void InitializeSelectionBrushes ()
+	{
+		if (!selection_background)
+			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
+		
+		if (!selection_foreground)
+			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
+	}
+};
+
+
+Value *
+TextBoxBaseDynamicPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	{
 		// Check to see if a lower precedence (a style) has the value before
 		// returning the dynamic one.
@@ -2494,16 +2508,6 @@ public:
 		}
 		return v ? v : FrameworkElementProvider::GetPropertyValue (property);
 	}
-	
-	void InitializeSelectionBrushes ()
-	{
-		if (!selection_background)
-			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
-		
-		if (!selection_foreground)
-			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
-	}
-};
 
 class TextBoxDynamicPropertyValueProvider : public TextBoxBaseDynamicPropertyValueProvider {
 public:

@@ -463,20 +463,19 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 	
 	if (value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		obj = value->AsDependencyObject ();
-		DependencyObject *parent = obj ? obj->GetParent () : NULL;
 		// Call SetSurface() /before/ setting the logical parent
 		// because Storyboard::SetSurface() needs to be able to
 		// distinguish between the two cases.
-	
-		if (parent && !can_be_added_twice (GetDeployment (), value)) {
-			MoonError::FillIn (error, MoonError::INVALID_OPERATION, g_strdup_printf ("Element is already a child of another element.  %s", Type::Find (GetDeployment (), value->GetKind ())->GetName ()));
+		if (obj->GetParent () && !can_be_added_twice (GetDeployment (), value)) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, g_strdup_printf ("Element is already a child of another element.  %s", GetTypeName ()));
 			return false;
 		}
-		
-		obj->SetIsAttached (IsAttached ());
-		obj->SetParent (this, error);
+		obj->AddParent (this, error);
 		if (error->number)
 			return false;
+		
+		obj->SetIsAttached (IsAttached ());
+
 
 		obj->AddPropertyChangeListener (this);
 
@@ -513,7 +512,7 @@ cleanup:
 		if (obj) {
 			/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
 			printf ("ResourceDictionary::AddedToCollection (): not added, clearing parent from %p\n", obj);
-			obj->SetParent (NULL, NULL);
+			obj->RemoveParent (this, NULL);
 		}
 	}
 
@@ -540,7 +539,7 @@ ResourceDictionary::RemovedFromCollection (Value *value, bool is_value_safe)
 
 		if (obj) {
 			obj->RemovePropertyChangeListener (this);
-			obj->SetParent (NULL, NULL);
+			obj->RemoveParent (this, NULL);
 			obj->SetIsAttached (false);
 		}
 	}

@@ -70,8 +70,14 @@ namespace System.Windows {
 	}
 
 	partial class DependencyObjectCollection<T> {
-		public DependencyObjectCollection () : base (SafeNativeMethods.dependency_object_collection_new (), true) {}
-		internal DependencyObjectCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public DependencyObjectCollection () : base (SafeNativeMethods.dependency_object_collection_new (), true)
+		{
+			Initialize ();
+		}
+		internal DependencyObjectCollection (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class Deployment {

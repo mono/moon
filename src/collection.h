@@ -121,6 +121,7 @@ private:
 
 /* @Namespace=System.Windows */
 /* @ManagedName=DependencyObjectCollection`1 */
+/* @CallInitialize */
 class DependencyObjectCollection : public Collection {
 public:
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
@@ -133,6 +134,11 @@ public:
 
 	bool GetIsSecondaryParent () { return is_secondary_parent; }
 	void SetIsSecondaryParent (bool value) { is_secondary_parent = value; }
+
+	/* @GeneratePInvoke */
+	bool GetSetsParent () { return sets_parent; }
+	/* @GeneratePInvoke */
+	void SetSetsParent (bool value) { sets_parent = value; }
 
 protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error);

@@ -246,7 +246,8 @@ class Run : public Inline {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual bool Equals (Inline *item);
-	
+	virtual bool PermitsMultipleParents () { return false; }
+
 	//
 	// ITextAttributes Interface Method Overrides
 	//

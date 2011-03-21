@@ -424,12 +424,15 @@ public:
 
 	virtual void OnIsAttachedChanged (bool value);
 
-	void SetParent (DependencyObject *parent, MoonError *error);
-	void SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error);
+	void AddParent (DependencyObject *parent, MoonError *error);
+	void AddParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error);
+	void RemoveParent (DependencyObject *parent, MoonError *error);
 	DependencyObject* GetParent () { return parent; }
 
-	void SetSecondaryParent (DependencyObject *value) { secondary_parent = value; }
-	DependencyObject* GetSecondaryParent () { return secondary_parent; }
+	void AddSecondaryParent (DependencyObject *value);
+	bool RemoveSecondaryParent (DependencyObject *value);
+	bool HasSecondaryParents ();
+	GPtrArray *GetSecondaryParents ();
 
 	virtual bool PermitsMultipleParents () { return true; }
 
@@ -550,6 +553,7 @@ protected:
 
 private:
 	void CallRecomputePropertyValueForProviders (DependencyProperty *property, int providerPrecedence, MoonError *error);
+	static void clear_secondary_parent (EventObject *sender, EventArgs *callData, gpointer closure);
 
 	void DetachTemplateOwnerDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
@@ -578,7 +582,7 @@ private:
 	WeakRef<DependencyObject> mentor;
 	WeakRef<DependencyObject> parent;
 	WeakRef<DependencyObject> template_owner;
-	WeakRef<DependencyObject> secondary_parent;
+	GPtrArray *secondary_parents;
 
 	bool is_frozen;
 	bool is_hydrated;

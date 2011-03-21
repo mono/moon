@@ -706,7 +706,7 @@ StrokeCollection::AddedToCollection (Value *value, MoonError *error)
 	DependencyObject *obj = value->AsDependencyObject ();
 	
 	obj->SetIsAttached (IsAttached ());
-	obj->SetParent (this, error);
+	obj->AddParent (this, error);
 	obj->AddPropertyChangeListener (this);
 	
 	// Bypass DependencyObjectCollection::AddedToCollection(), we
