@@ -96,5 +96,10 @@ namespace System.Windows
 				return new ReadOnlyCollection<GpuInformation>(list);
 			}
 		}
+
+		[MonoTODO ("always return null, just like SL would do if browser privacy is enabled or if protected content is disabled")]
+		public static ReadOnlyCollection<string> ClientInformation {
+			get { return null; }
+		}
 	}
 }
