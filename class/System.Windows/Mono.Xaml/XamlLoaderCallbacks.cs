@@ -282,7 +282,7 @@ namespace Mono.Xaml
 		public abstract object CreateObjectFromFile (string path, bool createNamescope);
 	}
 
-	internal class SL4XamlLoader : XamlLoader {
+	internal sealed class SL4XamlLoader : XamlLoader {
 
 		public SL4XamlLoader (Uri resource_base)
 		{

@@ -37,7 +37,7 @@ using System.Windows.Markup;
 
 namespace Mono.Xaml {
 
-	internal class SL3MarkupExpressionParser : MarkupExpressionParser {
+	internal sealed class SL3MarkupExpressionParser : MarkupExpressionParser {
 
 		private IntPtr parser;
 		private IntPtr target_data;
@@ -95,7 +95,7 @@ namespace Mono.Xaml {
 		}
 	}
 
-	internal class SL4MarkupExpressionParser : MarkupExpressionParser {
+	internal sealed class SL4MarkupExpressionParser : MarkupExpressionParser {
 
 		private XamlParser parser;
 		private XamlObjectElement target_element;
