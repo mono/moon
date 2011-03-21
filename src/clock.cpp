@@ -246,7 +246,6 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// the Duration of the animation is forever.
 	if (GetNaturalDuration().HasTimeSpan()) {
 		TimeSpan natural_duration_timespan = GetNaturalDuration().GetTimeSpan();
-		
 		if (natural_duration_timespan <= 0) {
 			// for clocks with instantaneous begin times/durations, expressable like so:
 			//     <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" BeginTime="00:00:00" Duration="00:00:00" />
@@ -649,6 +648,22 @@ Clock::Completed ()
 		emit_completed = true;
 }
 
+void
+Clock::ResetDuration ()
+{
+	if (parent_clock)
+		parent_clock->ResetDuration ();
+	else
+		ResetDurationCore ();
+}
+
+void
+Clock::ResetDurationCore ()
+{
+	calculated_natural_duration = false;
+	CalculateFillTime ();
+}
+
 ClockGroup::ClockGroup (TimelineGroup *timeline, bool timemanager_clockgroup)
   : Clock (timeline)
 {
@@ -797,6 +812,18 @@ ClockGroup::Reset ()
 
 	for (GList *l = child_clocks; l; l = l->next)
 		((Clock*)l->data)->Reset();
+}
+
+void
+ClockGroup::ResetDurationCore ()
+{
+	if (GetParentClock ())
+		Clock::ResetDurationCore ();
+
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *c = (Clock*)l->data;
+		c->ResetDurationCore ();
+	}
 }
 
 ClockGroup::~ClockGroup ()

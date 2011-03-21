@@ -204,6 +204,16 @@ Timeline::SetClock (Clock *value)
 	clock->ref ();
 }
 
+
+void
+Timeline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetId () == Timeline::DurationProperty && clock)
+		clock->ResetDuration ();
+
+	NotifyListenersOfPropertyChange (args, error);
+}
+
 /* timeline group */
 
 TimelineGroup::TimelineGroup ()
@@ -288,7 +298,6 @@ TimelineGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 		}
 	}
 }
-
 
 TimelineCollection::TimelineCollection ()
 {

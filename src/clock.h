@@ -237,6 +237,10 @@ public:
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 	virtual void Reset ();
 
+	// when a timeline gets its duration changed, the clock needs to recalculate a few things as well
+	virtual void ResetDuration ();
+	virtual void ResetDurationCore ();
+
 	// Events you can AddHandler to
 	const static int CurrentTimeInvalidatedEvent;
 	const static int CurrentStateInvalidatedEvent;
@@ -329,6 +333,8 @@ public:
 	GList *child_clocks;
 
 	virtual void Reset ();
+	// when a timeline gets its duration changed, the clock needs to recalculate a few things as well
+	virtual void ResetDurationCore ();
 
 	virtual void Dispose ();
 

@@ -64,6 +64,8 @@ public:
 	virtual void ClearClock ();
 	virtual bool Validate (MoonError *error);
 
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+
 	Clock* GetClock ();
 
 	enum TimelineStatus {
