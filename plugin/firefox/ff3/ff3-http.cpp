@@ -15,7 +15,12 @@
 // define this here so that protypes.h isn't included (and doesn't
 // muck with our npapi.h)
 #define NO_NSPR_10_SUPPORT
-
+#ifndef NS_WARN_UNUSED_RESULT
+#define NS_WARN_UNUSED_RESULT
+#endif
+#ifndef NS_ATTR_MALLOC
+#define NS_ATTR_MALLOC
+#endif
 #include "plugin.h"
 
 #include "ff3-bridge.h"
