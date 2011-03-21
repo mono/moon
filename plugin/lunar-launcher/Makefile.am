@@ -1,5 +1,5 @@
 bin_PROGRAMS = lunar-launcher
-bindir = $(DESTDIR)$(pkglibdir)/plugin/
+bindir = $(pkglibdir)/plugin/
 
 INCLUDES = $(LUNAR_LAUNCHER_CFLAGS) \
 	-DG_LOG_DOMAIN=\"LunarLauncher\" \
