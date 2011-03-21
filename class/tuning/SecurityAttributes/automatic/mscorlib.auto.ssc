@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 475 methods
+# 477 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -72,6 +72,7 @@
 +SSC-M: System.DateTime System.DateTime::get_Now()
 +SSC-M: System.DateTime System.DateTime::get_UtcNow()
 +SSC-M: System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
++SSC-M: System.Void System.Decimal::.ctor(System.Double)
 +SSC-M: System.Decimal System.Decimal::Add(System.Decimal,System.Decimal)
 +SSC-M: System.Decimal System.Decimal::Subtract(System.Decimal,System.Decimal)
 +SSC-M: System.UInt64 System.Decimal::u64(System.Decimal)
@@ -103,6 +104,7 @@
 +SSC-M: System.Int32 System.Enum::CompareTo(System.Object)
 +SSC-M: System.Int32 System.Enum::GetHashCode()
 +SSC-M: System.Boolean System.Enum::HasFlag(System.Enum)
++SSC-M: System.String System.Environment::get_NewLine()
 +SSC-M: System.OperatingSystem System.Environment::get_OSVersion()
 +SSC-M: System.String System.Environment::GetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SSC-M: System.Boolean System.Environment::get_IsRunningOnWindows()

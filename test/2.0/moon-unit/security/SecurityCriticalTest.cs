@@ -516,12 +516,12 @@ namespace MoonTest.Security {
 			Assert.Throws<TypeLoadException> (delegate {
 				// this transparent ctor calls into the base [SecurityCritical] ctor
 				new ConcreteFileSystemInfo ();
-			}, "ctor");
+			}, "ctor1");
 
 			Assert.Throws<TypeLoadException> (delegate {
 				// this transparent ctor calls into the base [SecurityCritical] ctor
 				new ConcreteFileSystemInfoNoDefaultCtor ("string");
-			}, "ctor");
+			}, "ctor2");
 		}
 
 		[Ignore ("blocking UI")] // comment to test locally
@@ -1076,8 +1076,8 @@ namespace MoonTest.Security {
 		public void System_ResolveEventHandler ()
 		{
 			Assert.Throws<MethodAccessException> (delegate {
-				AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler (CurrentDomain_AssemblyResolve);
-			}, "add_AssemblyResolve");
+				Assert.IsNull (new ResolveEventHandler (CurrentDomain_AssemblyResolve));
+			}, "ResolveEventHandler");
 		}
 
 		[TestMethod]
@@ -1569,7 +1569,7 @@ namespace MoonTest.Security {
 		public void System_UnhandledExceptionEventHandler ()
 		{
 			Assert.Throws<MethodAccessException> (delegate {
-				AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler (CurrentDomain_UnhandledException);
+				Assert.IsNull (new UnhandledExceptionEventHandler (CurrentDomain_UnhandledException));
 			}, "UnhandledExceptionEventHandler");
 		}
 	}
