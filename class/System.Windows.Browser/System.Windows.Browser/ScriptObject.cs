@@ -599,10 +599,11 @@ namespace System.Windows.Browser {
 				if (toggleRefs.ContainsKey (native)) {
 #if DEBUG
 					throw new ExecutionEngineException ("multiple mappings registered for the same NPObject peer");
-#endif
+#else
 					Console.WriteLine ("multiple mappings registered for the same NPObject peer 0x{0:x}, type = {1}", native, obj.GetType());
 					Console.WriteLine (Environment.StackTrace);
 					return false;
+#endif
 				}
 				
 				tref = new ScriptObjectToggleRef (obj);
