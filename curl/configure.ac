@@ -2569,6 +2569,8 @@ if test "x$want_curldebug_assumed" = "xyes" &&
 fi
 
 AC_CONFIG_FILES([Makefile \
+           include/Makefile \
+           include/curl/Makefile \
            src/Makefile \
            lib/Makefile \
            curl-config \
