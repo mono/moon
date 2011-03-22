@@ -373,8 +373,10 @@ ImplicitStylePropertyValueProvider::ApplyStyles (ImplicitStylePropertyValueProvi
 	// FIXME: we need to not RemoveHandler/AddHandler styles that aren't changing
 	if (this->styles) {
 		for (int i = 0; i < StyleIndexCount; i ++) {
-			if (this->styles [i])
+			if (this->styles [i]) {
 				this->styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+				this->styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+			}
 		}
 		g_free (this->styles);
 	}
@@ -382,8 +384,10 @@ ImplicitStylePropertyValueProvider::ApplyStyles (ImplicitStylePropertyValueProvi
 	this->style_mask = style_mask;
 	if (this->styles) {
 		for (int i = 0; i < StyleIndexCount; i ++) {
-			if (this->styles [i])
+			if (this->styles [i]) {
 				this->styles[i]->AddHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
+				this->styles[i]->AddHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &this->styles[i]);
+			}
 		}
 	}
 }
