@@ -46,7 +46,7 @@ debug:
 valgrind:
 	LD_LIBRARY_PATH=.libs valgrind .libs/demo
 
-test-plugin install-test-plugin: libshocker.la
+test-plugin install-test-plugin: libshocker.la install
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libshocker.so
-	cp .libs/libshocker.so ~/.mozilla/plugins
+	cp $(prefix)/lib/libshocker.so ~/.mozilla/plugins
