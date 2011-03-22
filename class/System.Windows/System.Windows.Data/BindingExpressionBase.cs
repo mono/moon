@@ -298,10 +298,13 @@ namespace System.Windows.Data {
 			if (DataContextSource != null)
 				DataContextSource.RemovePropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
 			DataContextSource = fe;
-			if (DataContextSource != null) {
+			if (DataContextSource != null)
 				DataContextSource.AddPropertyChangedHandler (FrameworkElement.DataContextProperty, DataContextChanged);
-				PropertyPathWalker.Update (DataContextSource.DataContext);
-			}
+
+			// If a FrameworkElement binds to its own datacontext and the VisualParent is null, we end
+			// up here with a null DataContextSource. In this scenario we do not want to update.
+			if (DataContextSource != null || IsMentorDataContextBound)
+				PropertyPathWalker.Update (DataContextSource == null ? null : DataContextSource.DataContext);
 		}
 
 		void AttachToNotifyError (INotifyDataErrorInfo element)

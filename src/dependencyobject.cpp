@@ -2405,53 +2405,53 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep) {
-			old_as_dep->SetMentor (NULL);
-		}
+			if (setsParent) {
+				old_as_dep->SetIsAttached (false);
 
-		if (old_as_dep && setsParent) {
-			old_as_dep->SetIsAttached (false);
-			
-			// unset its parent
-			old_as_dep->RemoveParent (this, NULL);
-			
-			// remove ourselves as a target
-			old_as_dep->RemoveTarget (this);
-			
-			// unregister from the existing value
-			old_as_dep->RemovePropertyChangeListener (this, property);
-			
-			if (old_as_dep->Is(Type::COLLECTION)) {
-				old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
-				old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				// unset its parent
+				old_as_dep->RemoveParent (this, NULL);
+
+				// remove ourselves as a target
+				old_as_dep->RemoveTarget (this);
+
+				// unregister from the existing value
+				old_as_dep->RemovePropertyChangeListener (this, property);
+
+				if (old_as_dep->Is(Type::COLLECTION)) {
+					old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+					old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				}
+			} else {
+				old_as_dep->SetMentor (NULL);
 			}
-		}
-
-		if (new_as_dep && setsParent) {
-			new_as_dep->SetIsAttached (IsAttached ());
-
-			new_as_dep->AddParent (this, merge_names_on_set_parent, error);
-			if (error->number)
-				return;
-
-			new_as_dep->SetResourceBase (GetResourceBase());
-			
-			if (new_as_dep->Is(Type::COLLECTION)) {
-				new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
-				new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
-			}
-			
-			// listen for property changes on the new object
-			new_as_dep->AddPropertyChangeListener (this, property);
-			
-			// add ourselves as a target
-			new_as_dep->AddTarget (this);
 		}
 
 		if (new_as_dep) {
-			DependencyObject *e = this;
-			while (e && !e->Is (Type::FRAMEWORKELEMENT))
-				e = e->mentor;
-			new_as_dep->SetMentor (e);
+			if (setsParent) {
+				new_as_dep->SetIsAttached (IsAttached ());
+
+				new_as_dep->AddParent (this, merge_names_on_set_parent, error);
+				if (error->number)
+					return;
+
+				new_as_dep->SetResourceBase (GetResourceBase());
+
+				if (new_as_dep->Is(Type::COLLECTION)) {
+					new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
+					new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				}
+
+				// listen for property changes on the new object
+				new_as_dep->AddPropertyChangeListener (this, property);
+
+				// add ourselves as a target
+				new_as_dep->AddTarget (this);
+			} else {
+				DependencyObject *e = this;
+				while (e && !e->Is (Type::FRAMEWORKELEMENT))
+					e = e->mentor;
+				new_as_dep->SetMentor (e);
+			}
 		}
 
 		// we need to make this optional, as doing it for NameScope
@@ -3423,6 +3423,7 @@ DependencyObject::AddParent (DependencyObject *parent, bool merge_names_from_sub
 	
 	if (this->parent || HasSecondaryParents ()) {
 		AddSecondaryParent (parent);
+		SetMentor (NULL);
 		if (secondary_parents->len > 1 || !parent->Is (Type::DEPENDENCY_OBJECT_COLLECTION) || !((DependencyObjectCollection *)parent)->GetIsSecondaryParent ())
 			return;
 	}
@@ -3491,6 +3492,11 @@ DependencyObject::AddParent (DependencyObject *parent, bool merge_names_from_sub
 
 	if (!error || error->number == 0) {
 		this->parent = parent;
+
+		DependencyObject *e = parent;
+		while (e && !e->Is (Type::FRAMEWORKELEMENT))
+			e = e->mentor;
+		SetMentor (e);
 	}
 }
 
@@ -3521,6 +3527,7 @@ DependencyObject::RemoveParent (DependencyObject *parent, MoonError *error)
 		NameScope *parent_scope = parent->FindNameScope ();
 		if (parent_scope)
 			UnregisterAllNamesRootedAt (parent_scope);
+		SetMentor (NULL);
 	}
 
 	if (!error || error->number == 0) {

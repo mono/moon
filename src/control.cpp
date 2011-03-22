@@ -156,7 +156,6 @@ Control::DoApplyTemplateWithError (MoonError *error)
 	// and it is cleared when ElementRemoved is called.
 	if (template_root != root && template_root != NULL) {
 		template_root->RemoveParent (this, NULL);
-		template_root->SetMentor (NULL);
 		template_root = NULL;
 	}
 
@@ -194,7 +193,6 @@ Control::ElementRemoved (UIElement *item)
 	MoonError e;
 	if (template_root != NULL) {
 		template_root->RemoveParent (this, &e);
-		template_root->SetMentor (NULL);
 		template_root = NULL;
 	}
 	item->RemoveParent (this, &e);

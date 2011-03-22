@@ -1903,7 +1903,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MentorTest_TwoMentors_SetMentorsThenBinding ()
 		{
 			var mentor1 = new Rectangle { DataContext = Colors.Red };
@@ -1917,7 +1916,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MentorTest_TwoMentors_SetBindingThenMentors ()
 		{
 			var mentor1 = new Rectangle { DataContext = Colors.Red };
@@ -1931,7 +1929,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MentorTest_TwoMentors_SetBindingThenMentors_Remove()
 		{
 			var mentor1 = new Rectangle { DataContext = Colors.Red };

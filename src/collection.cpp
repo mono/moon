@@ -508,19 +508,25 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 			obj->AddParent (this, error);
 		if (error->number)
 			return false;
+	} else {
+		obj->SetMentor (GetMentor ());
 	}
 
 	obj->AddPropertyChangeListener (this);
-	obj->SetMentor (GetMentor ());
 	
 	// Only set the IsAttached state when the object has successfully been
 	// added to the collection.
 	bool rv = Collection::AddedToCollection (value, error);
 	obj->SetIsAttached (rv && IsAttached ());
 	
-	if (sets_parent && !rv) {
-		/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
-		obj->RemoveParent (this, error);
+	if (!rv) {
+		if (sets_parent) {
+			/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
+			obj->RemoveParent (this, error);
+			obj->SetMentor (GetMentor ());
+		} else {
+			obj->SetMentor (NULL);
+		}
 	}
 	
 	return rv;
@@ -539,7 +545,6 @@ DependencyObjectCollection::RemovedFromCollection (Value *value, bool is_value_s
 
 			if (sets_parent && obj->GetParent () == this)
 				obj->RemoveParent (this, NULL);
-			obj->SetMentor (NULL);
 			obj->SetIsAttached (false);
 		}
 	}
@@ -843,7 +848,6 @@ ItemCollection::AddedToCollection (Value *value, MoonError *error)
 		if (error->number)
 			return false;
 
-		obj->SetMentor (GetMentor ());
 		obj->AddPropertyChangeListener (this);
 	
 		// Only set the IsAttached state when the object has successfully been
