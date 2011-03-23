@@ -61,8 +61,7 @@ CairoContext::Blit (unsigned char *data,
 		    int           stride)
 {
 	Context::Target *target = Top ()->GetTarget ();
-	MoonSurface     *ms;
-	Rect            r = target->GetData (&ms);
+	Rect            r = target->GetData (NULL);
 	cairo_surface_t *surface =
 		cairo_image_surface_create_for_data (data,
 						     CAIRO_FORMAT_ARGB32, 
@@ -77,8 +76,6 @@ CairoContext::Blit (unsigned char *data,
 	cairo_surface_destroy (surface);
 
 	Pop ();
-
-	ms->unref ();
 }
 
 void
