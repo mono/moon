@@ -116,6 +116,17 @@ namespace System.Windows.Data {
 			get { return Target is TextBox && Property == TextBox.TextProperty && Binding.Mode == BindingMode.TwoWay; }
 		}
 
+		object FindSourceByElementName ()
+		{
+			object source = Target.FindName (Binding.ElementName);
+			if (source == null && Target.Mentor != null)
+				source = Target.Mentor.FindName (Binding.ElementName);
+			if (source == null && Target.TemplateOwner != null)
+				source = Target.TemplateOwner.FindName (Binding.ElementName);
+			
+			return source;
+		}
+
 		// This is the object we're databound to
 		void CalculateDataSource ()
 		{
@@ -129,10 +140,8 @@ namespace System.Windows.Data {
 				// If we 'Target' in a custom DP it's possible
 				// 'Target' won't be able to find the ElementName.
 				// In this case we just use the Mentor and hope.
-				source = Target.FindName (Binding.ElementName);
-				if (source == null && Target.Mentor != null)
-					source = Target.Mentor.FindName (Binding.ElementName);
-
+				source = FindSourceByElementName ();
+				
 				// When doing ElementName bindings we need to know when we've been
 				// added to the live tree in order to invalidate the binding and do
 				// the name lookup again. If we can't find a mentor and Target isn't
@@ -175,14 +184,15 @@ namespace System.Windows.Data {
 			// based binding and the DO initially had no mentor. We now have a mentor so
 			// we can do our name lookup.
 			Target.MentorChanged -= InvalidateAfterMentorChanged;
-			var o = Target.FindName (Binding.ElementName);
-			if (o == null && Target.TemplateOwner != null)
-				o = Target.TemplateOwner.FindName (Binding.ElementName);
-			if (o == null) {
+			
+			object source = FindSourceByElementName ();
+			
+			if (source == null) {
 				Target.Mentor.Loaded += HandleFeTargetLoaded;
 			} else {
-				PropertyPathWalker.Update (o);
+				PropertyPathWalker.Update (source);
 			}
+			
 			Invalidate ();
 			Target.SetValue (Property, this);
 		}
@@ -195,11 +205,11 @@ namespace System.Windows.Data {
 			// so the odds are we should be able to find the named element.
 			FrameworkElement fe = (FrameworkElement) sender;
 			fe.Loaded -= HandleFeTargetLoaded;
-			var o = Target.FindName (Binding.ElementName);
-			if (o == null && Target.TemplateOwner != null)
-				o = Target.TemplateOwner.FindName (Binding.ElementName);
-			if (o != null)
-				PropertyPathWalker.Update (o);
+			
+			object source = FindSourceByElementName ();
+			if (source != null)
+				PropertyPathWalker.Update (source);
+			
 			Invalidate ();
 			Target.SetValue (Property, this);
 		}
