@@ -10,8 +10,12 @@
 
 #include <config.h>
 
+#include <stdlib.h>
+
 #include "context.h"
 #include "projection.h"
+#include "cpu.h"
+#include "yuv-converter.h"
 
 namespace Moonlight {
 
@@ -197,6 +201,10 @@ Context::Cache::Release ()
 Context::Context ()
 {
 	cache = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	g_assert (posix_memalign ((void **)(&rgb_uv), 16, 96) == 0);
+	have_mmx = CPU::HaveMMX ();
+	have_sse2 = CPU::HaveSSE2 ();
 }
 
 Context::Context (MoonSurface *surface)
@@ -209,8 +217,11 @@ Context::Context (MoonSurface *surface)
 	Stack::Push (new Context::Node (target, &transform.m, NULL));
 	target->unref ();
 
-	cache = g_hash_table_new (g_direct_hash,
-				  g_direct_equal);
+	cache = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	g_assert (posix_memalign ((void **)(&rgb_uv), 16, 96) == 0);
+	have_mmx = CPU::HaveMMX ();
+	have_sse2 = CPU::HaveSSE2 ();
 }
 
 Context::~Context ()
@@ -227,6 +238,8 @@ Context::~Context ()
 		surface->unref ();
 	}
 	g_hash_table_destroy (cache);
+
+	free (rgb_uv);
 }
 
 void
@@ -388,6 +401,40 @@ Context::Blit (unsigned char *data,
 	       int           stride)
 {
 	g_warning ("Context::Blit has been called. The derived class should have overridden it.");
+}
+
+void
+Context::BlitYV12 (unsigned char *data[],
+		   int           stride[])
+{
+	Context::Target *target = Top ()->GetTarget ();
+	Rect            r = target->GetData (NULL);
+	guint8          *rgb_buffer;
+	gint32          rgb_stride = r.width * 4;
+
+	if (rgb_stride % 64) {
+		int remain = rgb_stride % 64;
+		rgb_stride += 64 - remain;
+	}
+
+	if (posix_memalign ((void **) (&rgb_buffer), 16, r.height * rgb_stride)) {
+		g_warning ("Could not allocate memory for video RGB buffer");
+		return;
+	}
+
+	YUVConverter::YV12ToBGRA (data,
+				  stride,
+				  (int) r.width,
+				  (int) r.height,
+				  rgb_buffer,
+				  rgb_stride,
+				  rgb_uv,
+				  have_mmx,
+				  have_sse2);
+
+	Blit (rgb_buffer, rgb_stride);
+
+	free (rgb_buffer);
 }
 
 void

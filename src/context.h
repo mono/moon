@@ -148,6 +148,9 @@ public:
 	virtual void Blit (unsigned char *data,
 			   int           stride);
 
+	virtual void BlitYV12 (unsigned char *data[],
+			       int           stride[]);
+
 	virtual void Blend (MoonSurface *src,
 			    double      alpha,
 			    double      x,
@@ -187,6 +190,10 @@ public:
 
 private:
 	GHashTable *cache;
+
+	char *rgb_uv;
+	bool have_mmx;
+	bool have_sse2;
 };
 
 };
