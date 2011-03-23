@@ -16,18 +16,24 @@ namespace Moonlight {
 
 GLSurface::GLSurface ()
 {
-	size[0] = 0;
-	size[1] = 0;
-	texture = 0;
-	data    = NULL;
+	size[0]       = 0;
+	size[1]       = 0;
+	texture       = 0;
+	textureYUV[0] = 0;
+	textureYUV[1] = 0;
+	textureYUV[2] = 0;
+	data          = NULL;
 }
 
 GLSurface::GLSurface (GLsizei width, GLsizei height)
 {
-	size[0] = width;
-	size[1] = height;
-	texture = 0;
-	data    = NULL;
+	size[0]       = width;
+	size[1]       = height;
+	texture       = 0;
+	textureYUV[0] = 0;
+	textureYUV[1] = 0;
+	textureYUV[2] = 0;
+	data          = NULL;
 }
 
 GLSurface::~GLSurface ()
@@ -37,6 +43,9 @@ GLSurface::~GLSurface ()
 
 	if (texture)
 		glDeleteTextures (1, &texture);
+
+	if (textureYUV[0])
+		glDeleteTextures (3, textureYUV);
 }
 
 cairo_surface_t *
@@ -96,6 +105,58 @@ GLSurface::Texture ()
 	}
 
 	return texture;
+}
+
+void
+GLSurface::AllocYUV ()
+{
+	if (!textureYUV[0]) {
+		int i;
+
+		glGenTextures (3, textureYUV);
+
+		glBindTexture (GL_TEXTURE_2D, textureYUV[0]);
+		glTexImage2D (GL_TEXTURE_2D,
+			      0,
+			      GL_LUMINANCE,
+			      size[0],
+			      size[1],
+			      0,
+			      GL_LUMINANCE,
+			      GL_UNSIGNED_BYTE,
+			      NULL);
+		for (i = 1; i < 3; i++) {
+			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
+			glTexImage2D (GL_TEXTURE_2D,
+				      0,
+				      GL_LUMINANCE,
+				      size[0] / 2,
+				      size[1] / 2,
+				      0,
+				      GL_LUMINANCE,
+				      GL_UNSIGNED_BYTE,
+				      NULL);
+		}
+		glBindTexture (GL_TEXTURE_2D, 0);
+	}
+}
+
+GLuint
+GLSurface::TextureY ()
+{
+	return textureYUV[0];
+}
+
+GLuint
+GLSurface::TextureU ()
+{
+	return textureYUV[1];
+}
+
+GLuint
+GLSurface::TextureV ()
+{
+	return textureYUV[2];
 }
 
 GLsizei

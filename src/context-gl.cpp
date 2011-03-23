@@ -20,7 +20,7 @@ namespace Moonlight {
 
 GLContext::GLContext (MoonSurface *surface) : Context (surface)
 {
-	unsigned i;
+	unsigned i, j;
 
 	for (i = 0; i < 4; i++) {
 		texcoords[i][2] = 0.0f; /* r */
@@ -32,7 +32,8 @@ GLContext::GLContext (MoonSurface *surface) : Context (surface)
 
 	/* perspective transform fragment shaders */
 	for (i = 0; i < 2; i++)
-		project_program[i] = 0;
+		for (j = 0; j < 2; j++)
+			project_program[i][j] = 0;
 
 	/* convolve fragment shaders */
 	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
@@ -48,15 +49,16 @@ GLContext::GLContext (MoonSurface *surface) : Context (surface)
 
 GLContext::~GLContext ()
 {
-	unsigned i;
+	unsigned i, j;
 
 	for (i = 0; i <= MAX_CONVOLVE_SIZE; i++)
 		if (convolve_program[i])
 			glDeleteProgram (convolve_program[i]);
 
 	for (i = 0; i < 2; i++)
-		if (project_program[i])
-			glDeleteProgram (project_program[i]);
+		for (j = 0; j < 2; j++)
+			if (project_program[i][j])
+				glDeleteProgram (project_program[i][j]);
 
 	if (framebuffer)
 		glDeleteFramebuffers (1, &framebuffer);
@@ -294,6 +296,59 @@ GLContext::Blit (unsigned char *data,
 	ms->unref ();
 }
 
+void
+GLContext::BlitYV12 (unsigned char *data[],
+		     int           stride[])
+{
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLSurface       *dst = (GLSurface *) ms;
+	GLuint          texture[3];
+	Rect            clip;
+	int             i;
+
+	Top ()->GetClip (&clip);
+
+	// no support for clipping
+	g_assert (r == clip);
+
+	dst->AllocYUV ();
+
+	texture[0] = dst->TextureY ();
+	texture[1] = dst->TextureU ();
+	texture[2] = dst->TextureV ();
+
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, stride[0]);
+	glBindTexture (GL_TEXTURE_2D, texture[0]);
+	glTexSubImage2D (GL_TEXTURE_2D,
+			 0,
+			 0,
+			 0,
+			 dst->Width (),
+			 dst->Height (),
+			 GL_LUMINANCE,
+			 GL_UNSIGNED_BYTE,
+			 data[0]);
+	for (i = 1; i < 3; i++) {
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, stride[i]);
+		glBindTexture (GL_TEXTURE_2D, texture[i]);
+		glTexSubImage2D (GL_TEXTURE_2D,
+				 0,
+				 0,
+				 0,
+				 dst->Width () / 2,
+				 dst->Height () / 2,
+				 GL_LUMINANCE,
+				 GL_UNSIGNED_BYTE,
+				 data[i]);
+	}
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
+
+	ms->unref ();
+}
+
 GLuint
 GLContext::CreateShader (GLenum       shaderType,
 			 GLsizei      count,
@@ -361,48 +416,59 @@ GLContext::Blend (MoonSurface *src,
 }
 
 GLuint
-GLContext::GetProjectProgram (double opacity)
+GLContext::GetProjectProgram (double opacity, unsigned yuv)
 {
-	const GLchar *fShaderNoAlphaStr[] = {
-		"uniform sampler2D sampler0;",
-		"void main()",
-		"{",
-		"  gl_FragColor = texture2D(sampler0, gl_TexCoord[0].xy);",
-		"}"
-	};
-	const GLchar *fShaderAlphaStr[] = {
-		"uniform sampler2D sampler0;",
-		"uniform vec4 alpha;",
-		"void main()",
-		"{",
-		"  gl_FragColor = texture2D(sampler0, gl_TexCoord[0].xy) * alpha;",
-		"}"
-	};
-	unsigned     index = opacity < 1.0 ? 1 : 0;
-	GLuint       fs;
+	unsigned alpha = opacity < 1.0 ? 1 : 0;
+	GString  *s;
+	GLuint   fs;
 
-	if (project_program[index])
-		return project_program[index];
+	if (project_program[alpha][yuv])
+		return project_program[alpha][yuv];
 
-	if (index)
-		fs = CreateShader (GL_FRAGMENT_SHADER,
-				   G_N_ELEMENTS (fShaderAlphaStr),
-				   fShaderAlphaStr);
-	else
-		fs = CreateShader (GL_FRAGMENT_SHADER,
-				   G_N_ELEMENTS (fShaderNoAlphaStr),
-				   fShaderNoAlphaStr);
+	s = g_string_new ("uniform sampler2D sampler0;");
+	if (yuv) {
+		g_string_sprintfa (s, "uniform sampler2D sampler1;");
+		g_string_sprintfa (s, "uniform sampler2D sampler2;");
+	}
+	if (alpha)
+		g_string_sprintfa (s, "uniform vec4 alpha;");
+	g_string_sprintfa (s, "void main()");
+	g_string_sprintfa (s, "{");
+	if (yuv) {
+		g_string_sprintfa (s, "float r, g, b, y, u, v;");
+		g_string_sprintfa (s, "y = texture2D(sampler0, gl_TexCoord[0].xy).r;");
+		g_string_sprintfa (s, "u = texture2D(sampler1, gl_TexCoord[0].xy).r;");
+		g_string_sprintfa (s, "v = texture2D(sampler2, gl_TexCoord[0].xy).r;");
+		g_string_sprintfa (s, "y = 1.1643 * (y - 0.0625);");
+		g_string_sprintfa (s, "u = u - 0.5;");
+		g_string_sprintfa (s, "v = v - 0.5;");
+		g_string_sprintfa (s, "r = y + 1.5958 * v;");
+		g_string_sprintfa (s, "g = y - 0.39173 * u - 0.81290 * v;");
+		g_string_sprintfa (s, "b = y + 2.017 * u;");
+		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
+	}
+	else {
+		g_string_sprintfa (s, "gl_FragColor = texture2D(sampler0, gl_TexCoord[0].xy)");
+	}
+	if (alpha)
+		g_string_sprintfa (s, " * alpha");
+	g_string_sprintfa (s, ";");
+	g_string_sprintfa (s, "}");
 
-	project_program[index] = glCreateProgram ();
-	glAttachShader (project_program[index], GetVertexShader ());
-	glAttachShader (project_program[index], fs);
-	glBindAttribLocation (project_program[index], 0, "InVertex");
-	glBindAttribLocation (project_program[index], 1, "InTexCoord0");
-	glLinkProgram (project_program[index]);
+	fs = CreateShader (GL_FRAGMENT_SHADER, 1, (const GLchar **) &s->str);
+
+	g_string_free (s, 1);
+	
+	project_program[alpha][yuv] = glCreateProgram ();
+	glAttachShader (project_program[alpha][yuv], GetVertexShader ());
+	glAttachShader (project_program[alpha][yuv], fs);
+	glBindAttribLocation (project_program[alpha][yuv], 0, "InVertex");
+	glBindAttribLocation (project_program[alpha][yuv], 1, "InTexCoord0");
+	glLinkProgram (project_program[alpha][yuv]);
 
 	glDeleteShader (fs);
 
-	return project_program[index];
+	return project_program[alpha][yuv];
 }
 
 void
@@ -413,12 +479,28 @@ GLContext::Project (MoonSurface  *src,
 		    double       y)
 {
 	GLSurface *surface = (GLSurface *) src;
-	GLuint    texture0 = surface->Texture ();
-	GLuint    program = GetProjectProgram (alpha);
 	GLsizei   width0 = surface->Width ();
 	GLsizei   height0 = surface->Height ();
+	GLuint    texture[3];
+	int       n_sampler, i;
+	GLuint    program;
 	GLint     alpha_location;
 	double    m[16];
+
+	if (surface->TextureY () &&
+	    surface->TextureU () &&
+	    surface->TextureV ()) {
+		program = GetProjectProgram (alpha, 1);
+		texture[0] = surface->TextureY ();
+		texture[1] = surface->TextureU ();
+		texture[2] = surface->TextureV ();
+		n_sampler = 3;
+	}
+	else {
+		program = GetProjectProgram (alpha, 0);
+		texture[0] = surface->Texture ();
+		n_sampler = 1;
+	}
 
 	GetDeviceMatrix (m);
 	Matrix3D::Multiply (m, matrix, m);
@@ -435,12 +517,30 @@ GLContext::Project (MoonSurface  *src,
 	if (alpha_location >= 0)
 		glUniform4f (alpha_location, alpha, alpha, alpha, alpha);
 
-	glBindTexture (GL_TEXTURE_2D, texture0);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glUniform1i (glGetUniformLocation (program, "sampler0"), 0);
+	for (i = 0; i < n_sampler; i++) {
+		GLint sampler_location;
+		char  name[256];
+
+		sprintf (name, "sampler%d", i);
+		sampler_location = glGetUniformLocation (program, name);
+
+		if (sampler_location < 0)
+			continue;
+
+		glActiveTexture (GL_TEXTURE0 + i);
+		glBindTexture (GL_TEXTURE_2D, texture[i]);
+
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				 GL_LINEAR);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				 GL_LINEAR);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+				 GL_CLAMP_TO_EDGE);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+				 GL_CLAMP_TO_EDGE);
+
+		glUniform1i (sampler_location, i);
+	}
 
 	glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, vertices);
 	glVertexAttribPointer (1, 4, GL_FLOAT, GL_FALSE, 0, texcoords);
@@ -460,6 +560,12 @@ GLContext::Project (MoonSurface  *src,
 	glDisableVertexAttribArray (1);
 	glDisableVertexAttribArray (0);
 
+	for (i = 1; i < n_sampler; i++) {
+		glActiveTexture (GL_TEXTURE0 + i);
+		glBindTexture (GL_TEXTURE_2D, 0);
+	}
+
+	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, 0);
 
 	glUseProgram (0);

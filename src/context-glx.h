@@ -36,6 +36,9 @@ public:
 	void Blit (unsigned char *data,
 		   int           stride);
 
+	void BlitYV12 (unsigned char *data[],
+		       int           stride[]);
+
 	void Blend (MoonSurface *src,
 		    double      alpha,
 		    double      x,

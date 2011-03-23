@@ -31,6 +31,12 @@ public:
 
 	GLuint Texture ();
 
+	// Planar YUV
+	void AllocYUV ();
+	GLuint TextureY ();
+	GLuint TextureU ();
+	GLuint TextureV ();
+
 	GLsizei Width ();
 	GLsizei Height ();
 
@@ -38,6 +44,7 @@ protected:
 	GLsizei size[2];
 
 	GLuint texture;
+	GLuint textureYUV[3];
 
 	unsigned char *data;
 };
