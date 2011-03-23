@@ -83,19 +83,11 @@ namespace System.Windows.Browser
 		
 		public void Navigate (Uri navigateToUri)
 		{
-			if (navigateToUri == null)
-				throw new ArgumentNullException ("navigateToUri");
-
-			Navigate (navigateToUri, "_self");
+			Navigate (navigateToUri, "_self", "");
 		}
 		
 		public HtmlWindow Navigate (Uri navigateToUri, string target)
 		{
-			if (navigateToUri == null)
-				throw new ArgumentNullException ("navigateToUri");
-			if (target == null)
-				throw new ArgumentNullException ("target");
-
 			return Navigate (navigateToUri, target, "");
 		}
 
@@ -107,7 +99,7 @@ namespace System.Windows.Browser
 				throw new ArgumentNullException ("target");
 			if (targetFeatures == null)
 				throw new ArgumentNullException ("targetFeatures");
-
+			
 			if (SameWindowTargets.Contains (target)) {
 				ScriptObject loc = HtmlPage.Document.GetProperty ("location") as ScriptObject;
 				SetPropertyInternal (loc.Handle, "href", navigateToUri.ToString ());
