@@ -162,3 +162,70 @@ def lookup_printer (val):
     return None
 
 gdb.pretty_printers.append (lookup_printer)
+
+class ForeachCommand (gdb.Command):
+    """Foreach on Moonlight::List"""
+
+    def __init__ (self):
+        super (ForeachCommand, self).__init__ ("mforeach",
+                                               gdb.COMMAND_DATA,
+                                               gdb.COMPLETE_SYMBOL)
+
+
+    def valid_name (self, name):
+        if not name[0].isalpha():
+            return False
+        return True
+
+    def parse_args (self, arg):
+        i = arg.find(" ")
+        if i <= 0:
+            raise Exception ("No var specified")
+        var = arg[:i]
+        if not self.valid_name(var):
+            raise Exception ("Invalid variable name")
+
+        while i < len (arg) and arg[i].isspace():
+            i = i + 1
+
+        if arg[i:i+2] != "in":
+            raise Exception ("Invalid syntax, missing in")
+
+        i = i + 2
+
+        while i < len (arg) and arg[i].isspace():
+            i = i + 1
+
+        colon = arg.find (":", i)
+        if colon == -1:
+            raise Exception ("Invalid syntax, missing colon")
+
+        val = arg[i:colon]
+
+        colon = colon + 1
+        while colon < len (arg) and arg[colon].isspace():
+            colon = colon + 1
+
+        command = arg[colon:]
+
+        return (var, val, command)
+
+    def do_iter(self, arg, item, command):
+        item = item.cast (gdb.lookup_type("void").pointer())
+        item = long(item)
+        to_eval = "set $%s = (void *)0x%x\n"%(arg, item)
+        gdb.execute(to_eval)
+        gdb.execute(command)
+
+    def list_iterator (self, arg, container, command):
+        l = container.cast (gdb.lookup_type("Moonlight::List").pointer())['head']
+        while long(l) != 0:
+            self.do_iter (arg, l, command)
+            l = l["next"].cast (gdb.lookup_type("Moonlight::List::Node").pointer())
+
+    def invoke (self, arg, from_tty):
+        (var, container, command) = self.parse_args(arg)
+        container = gdb.parse_and_eval (container) # container is now the list
+        self.list_iterator(var, container, command)
+
+ForeachCommand()
