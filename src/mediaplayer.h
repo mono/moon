@@ -48,6 +48,7 @@ class MediaPlayer : public EventObject {
 		VideoEnded			= (1 << 14),
 		BufferUnderflow     = (1 << 15),
 		IsLive	      = (1 << 16),
+		ConvertedFrame			= (1 << 17),
 	};
 	
  private:
@@ -91,12 +92,14 @@ class MediaPlayer : public EventObject {
 	double rendered_frames_per_second;
 	double dropped_frames_per_second;
 
+	MediaFrame *rendered_frame;
+
 	static void LoadVideoFrameCallback (EventObject *object);
 	void LoadVideoFrame ();
 	void Initialize ();
 	void CheckFinished ();
-	
-	void RenderFrame (MediaFrame *frame);
+
+	MediaFrame *SetRenderedFrame (MediaFrame *frame);
 	
 	EVENTHANDLER (MediaPlayer, SeekCompleted, Media, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaPlayer, FirstFrameEnqueued, EventObject, EventArgs); // Not thread-safe
@@ -163,8 +166,9 @@ class MediaPlayer : public EventObject {
 	void SetCanSeek (bool value);
 	bool GetCanSeek ();
 	void NotifySeek (guint64 pts /* 100-nanosecond units (pts) */);
-	
-	cairo_surface_t *GetCairoSurface () { return surface; }
+
+	MediaFrame *GetRenderedFrame () { return rendered_frame; }
+	cairo_surface_t *GetCairoSurface ();
 	gint32 GetTimeoutInterval ();
 	
 	int GetAudioStreamCount () { return audio_stream_count; }

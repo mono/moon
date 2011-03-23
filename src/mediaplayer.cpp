@@ -49,6 +49,7 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	format = MoonPixelFormatRGB32;
 	advance_frame_timeout_id = 0;
 	seeks = 0;
+	rendered_frame = NULL;
 
 	media = NULL;
 	audio_unlocked = NULL;
@@ -459,6 +460,12 @@ MediaPlayer::Close ()
 	
 	// Reset state back to what it was at instantiation
 
+	if (rendered_frame != NULL) {
+		media->DisposeObject (rendered_frame);
+		rendered_frame->unref ();
+		rendered_frame = NULL;
+	}
+
 	if (rgb_buffer != NULL) {
 		free (rgb_buffer);
 		rgb_buffer = NULL;
@@ -490,9 +497,10 @@ MediaPlayer::Close ()
 // If necessary converts the data from its source format to rgb first.
 //
 
-void
-MediaPlayer::RenderFrame (MediaFrame *frame)
+MediaFrame *
+MediaPlayer::SetRenderedFrame (MediaFrame *frame)
 {
+	MediaFrame *old = rendered_frame;
 	VideoStream *stream = (VideoStream *) frame->stream;
 
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->GetBufLen (), frame->GetBuffer (), frame->IsPlanar ());
@@ -500,7 +508,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	
 	if (!frame->IsDecoded ()) {
 		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
-		return;
+		return frame;
 	}
 	
 	if ((frame->width > 0 && frame->width != width) || (frame->height > 0 && frame->height != height) || (format != stream->GetDecoder ()->GetPixelFormat ())) {
@@ -516,33 +524,14 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 
 		SetVideoBufferSize (width, height);
 	}
-	
+
 	last_rendered_pts = frame->pts;
 	
-	if (!frame->IsPlanar ()) {
-		// Just copy the data
-		guint32 stride = cairo_image_surface_get_stride (surface);
-		for (int i = 0; i < height; i++)
-			memcpy (rgb_buffer + stride * i, frame->GetBuffer () + i * width * 4, width * 4);
-		SetBit (RenderedFrame);
-		element->MediaInvalidate ();
-		return;
-	}
-	
-	if (frame->data_stride == NULL || 
-		frame->data_stride[1] == NULL || 
-		frame->data_stride[2] == NULL) {
-		return;
-	}
-	
-	guint8 *rgb_dest [3] = { rgb_buffer, NULL, NULL };
-	int rgb_stride [3] = { cairo_image_surface_get_stride (surface), 0, 0 };
-	
-	stream->GetImageConverter ()->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
-				    frame->srcSlideH, rgb_dest, rgb_stride);
-	
 	SetBit (RenderedFrame);
+	RemoveBit (ConvertedFrame);
 	element->MediaInvalidate ();
+	rendered_frame = frame;
+	return old;
 }
 
 #define LOG_RS(x)  \
@@ -692,7 +681,7 @@ MediaPlayer::AdvanceFrame ()
 		rendered_frames++;
 		//LOG_RS ("[RENDER]");
 
-		RenderFrame (frame);
+		frame = SetRenderedFrame (frame);
 	}
 	
 	if (frame) {
@@ -767,14 +756,16 @@ MediaPlayer::LoadVideoFrame ()
 	if (frame->pts + frame->GetDuration () >= target_pts) {
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): rendering.\n");
 		RemoveBit (LoadFramePending);
-		RenderFrame (frame);
+		frame = SetRenderedFrame (frame);
 		element->MediaInvalidate ();
 	} else {
 		AddTickCall (LoadVideoFrameCallback);
 	}
-	
-	media->DisposeObject (frame);
-	frame->unref ();
+
+	if (frame) {
+		media->DisposeObject (frame);
+		frame->unref ();
+	}
 	
 	return;
 }
@@ -866,6 +857,49 @@ MediaPlayer::GetTimeoutInterval ()
 	LOG_MEDIAPLAYER ("MediaPlayer::GetTimeoutInterval (): %i ms between frames gives fps: %.1f, pts_per_frame: %" G_GUINT64_FORMAT ", exact fps: %f\n", result, 1000.0 / result, pts_per_frame, TIMESPANTICKS_IN_SECOND / (double) pts_per_frame);
 
 	return result;
+}
+
+cairo_surface_t *
+MediaPlayer::GetCairoSurface ()
+{
+	MediaFrame *frame = rendered_frame;
+	VideoStream *stream;
+
+	if (!frame || !surface)
+		return NULL;
+
+	if (GetBit (ConvertedFrame))
+		return surface;
+
+	if (frame->data_stride[0] == NULL || 
+	    frame->data_stride[1] == NULL || 
+	    frame->data_stride[2] == NULL) {
+		return NULL;
+	}
+
+	stream = (VideoStream *) frame->stream;
+
+	if (!frame->IsPlanar ()) {
+		// Just copy the data
+		guint32 stride = cairo_image_surface_get_stride (surface);
+		for (int i = 0; i < buffer_height; i++)
+			memcpy (rgb_buffer + stride * i, frame->GetBuffer () + i * width * 4, width * 4);
+		SetBit (ConvertedFrame);
+		return surface;
+	}
+	
+	guint8 *rgb_dest [3] = { rgb_buffer, NULL, NULL };
+	int rgb_stride [3] = { cairo_image_surface_get_stride (surface), 0, 0 };
+	
+	stream->GetImageConverter ()->Convert (frame->data_stride,
+					       frame->srcStride,
+					       frame->srcSlideY,
+					       frame->srcSlideH,
+					       rgb_dest,
+					       rgb_stride);
+
+	SetBit (ConvertedFrame);
+	return surface;
 }
 
 void
