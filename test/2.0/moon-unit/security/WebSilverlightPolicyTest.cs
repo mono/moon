@@ -322,6 +322,33 @@ namespace MoonTest.Security {
 			Assert.IsTrue (cap.IsAllowed (new Uri ("https://server/data/file.txt"), "GET", null), "https/granted");
 			Assert.IsFalse (cap.IsAllowed (new Uri ("https://server/file.txt"), "GET", null), "https/not-granted-parent");
 		}
+
+		[TestMethod]
+		public void TextBetweenElements_681699 ()
+		{
+			string policy = @"<access-policy>
+-
+<cross-domain-access>
+-
+<policy>
+-
+<allow-from http-request-headers=""*"">
+<domain uri=""*""/>
+<domain uri=""http://*""/>
+</allow-from>
+-
+<grant-to>
+<resource path=""/"" include-subpaths=""true""/>
+</grant-to>
+</policy>
+</cross-domain-access>
+</access-policy>";
+			// note the '-' on the, otherwise empty, lines
+			ClientAccessPolicy cap = GetPolicy (policy);
+			ClientAccessPolicy.ApplicationUri = http;
+
+			Assert.IsTrue (cap.IsAllowed (new Uri ("http://server/data/file.txt"), "GET", null), "http/granted");
+		}
 	}
 }
 

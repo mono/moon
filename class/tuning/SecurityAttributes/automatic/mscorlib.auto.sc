@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 441 methods needs to be decorated.
+# 442 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -684,6 +684,9 @@
 
 # [VISIBLE] implements 'System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName(System.Boolean)'.
 +SC-M: System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)
+
+# [VISIBLE] overrides 'System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)'.
++SC-M: System.Reflection.AssemblyName System.Reflection.Emit.AssemblyBuilder::GetName(System.Boolean)
 
 # overrides 'System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()'.
 +SC-M: System.Reflection.AssemblyName System.Reflection.Emit.AssemblyBuilder::UnprotectedGetName()
