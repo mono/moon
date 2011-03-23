@@ -787,29 +787,54 @@ MediaElement::GetSurface (Context *ctx)
 void
 MediaElement::Render (Context *ctx, Region *region)
 {
-	Size specified (GetActualWidth (), GetActualHeight ());
-	Size stretched = ApplySizeConstraints (specified);
+	Stretch        stretch = GetStretch ();
+	Size           specified (GetActualWidth (), GetActualHeight ());
+	Size           stretched = ApplySizeConstraints (specified);
+	bool           adjust = specified != GetRenderSize ();
+	cairo_matrix_t matrix;
 
-	if (GetStretch () != StretchFill || specified != GetRenderSize ()) {
-		UIElement::Render (ctx, region);
-		return;
-	}
+	if (stretch != StretchUniformToFill)
+		specified = specified.Min (stretched);
 
-	MoonSurface *src = GetSurface (ctx);
-	if (!src)
-		return;
-
-	specified = specified.Min (stretched);
 	Rect paint = Rect (0, 0, specified.width, specified.height);
 	Rect video = Rect (0,
 			   0,
 			   mplayer->GetVideoWidth (),
 			   mplayer->GetVideoHeight ());
 
-	cairo_matrix_t matrix;
-	cairo_matrix_init_scale (&matrix,
-				 paint.width / video.width,
-				 paint.height / video.height);
+	if (stretch == StretchNone)
+		paint = paint.Union (video);
+
+	Image::ComputeMatrix (&matrix,
+			      paint.width, paint.height,
+			      video.width, video.height,
+			      stretch,
+			      AlignmentXCenter,
+			      AlignmentYCenter);
+
+	if (adjust) {
+		// FIXME: Propagate this properly
+		MoonError error;
+		specified = MeasureOverrideWithError (specified, &error);
+		paint = Rect ((stretched.width - specified.width) * 0.5,
+			      (stretched.height - specified.height) * 0.5,
+			      specified.width,
+			      specified.height);
+	}
+
+	if (stretch == StretchUniformToFill || adjust) {
+		Region bounds = Region (paint.RoundOut ());
+		Rect   box = video.Transform (&matrix).RoundIn ();
+
+		if (bounds.RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
+			UIElement::Render (ctx, region);
+			return;
+		}
+	}
+
+	MoonSurface *src = GetSurface (ctx);
+	if (!src)
+		return;
 
 	ctx->Push (Context::Transform (matrix));
 	ctx->Blend (src, 1.0, 0, 0);
