@@ -539,9 +539,9 @@ MediaPlayer::SetRenderedFrame (MediaFrame *frame)
 			MilliSeconds_FromPts (frame->pts), \
 			MilliSeconds_FromPts (target_pts), \
 			(gint64) MilliSeconds_FromPts (frame->pts) - (gint64) MilliSeconds_FromPts (target_pts), \
-			rendered_frames_per_second, \
-			dropped_frames_per_second, \
-			dropped_frames_per_second + rendered_frames_per_second);
+			this->rendered_frames_per_second, \
+			this->dropped_frames_per_second, \
+			this->dropped_frames_per_second + this->rendered_frames_per_second);
 
 void
 MediaPlayer::AdvanceFrame ()
