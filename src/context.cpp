@@ -185,11 +185,13 @@ Context::Node::GetTarget ()
 void
 Context::Cache::Release ()
 {
+	GList *contexts = this->contexts;
+	this->contexts = NULL;
+
 	for (GList *l = g_list_first (contexts); l; l = l->next)
 		static_cast<Context *> (l->data)->Remove (this)->unref ();
 
 	g_list_free (contexts);
-	contexts = NULL;
 }
 
 Context::Context ()
