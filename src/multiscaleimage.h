@@ -67,6 +67,7 @@ class MultiScaleImage : public MediaBase {
 	static void pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void tile_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void void_handler (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	void DisconnectSubImageEvents (MultiScaleSubImage *subimage);
 	void ConnectSubImageEvents (MultiScaleSubImage *subimage);

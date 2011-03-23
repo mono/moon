@@ -578,6 +578,12 @@ MultiScaleImage::TileOpened (BitmapImageContext *ctx)
 }
 
 void
+MultiScaleImage::void_handler (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	// do nothing at all
+}
+
+void
 MultiScaleImage::tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	BitmapImageContext *ctx = (BitmapImageContext *) closure;
@@ -622,8 +628,18 @@ MultiScaleImage::StopDownloading ()
 		ctx->image->RemoveHandler (ctx->image->ImageFailedEvent,
 					   tile_failed,
 					   ctx);
+		// we need to attach an ImageFailedHandler, otherwise
+		// the abort -> download failed error will end up
+		// in the app unhandled exception handler (or the plugin
+		// error handler). #2004.
+		ctx->image->AddHandler (ctx->image->ImageFailedEvent,
+					   void_handler,
+					   ctx);
 		downloaders.Unlink (ctx);
 		ctx->image->Abort ();
+		ctx->image->RemoveHandler (ctx->image->ImageFailedEvent,
+					   void_handler,
+					   ctx);
 		ctx->image->Dispose ();
 		ctx->image->unref ();
 		delete ctx;
