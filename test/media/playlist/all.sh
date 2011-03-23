@@ -18,10 +18,11 @@ ls *.asx -1 | sort | while read file; do
 	#cat "$G" | sed "s/ASX_FILE/${file}/" > tmpfile
 	#cat tmpfile > "$G"
 	echo -e "\t\t\t<!-- Generated with moon/test/media/playlist/all.sh -->" >> $DRTLIST
-	echo -e "\t\t\t<TestDefinition ID=\"${I}\" >" >> $DRTLIST
+	echo -e "\t\t\t<TestDefinition ID=\"ML${I}\" >" >> $DRTLIST
 	echo -e "\t\t\t\t<Parameter Name=\"Title\" Value=\"$BASENAME\" />" >> $DRTLIST
 	echo -e "\t\t\t\t<Parameter Name=\"HostType\" Value=\"{SupportedHostTypes.Http}\" />" >> $DRTLIST
 	echo -e "\t\t\t\t<Parameter Name=\"InputFile\" Value=\"media/playlist/test.html?$BASENAME.asx\" />" >> $DRTLIST
+	echo -e "\t\t\t\t<Parameter Name=\"TestedFeatureAreas\" Value=\"{SupportedFeatureAreas.Playlist}\" />" >> $DRTLIST
 	if [[ "x$BASENAME" == "xcase-mismatched-asx-tag" ]]; then
 		echo -e "\t\t\t\t<Parameters Name=\"Moonlight\" >" >> $DRTLIST
 		echo -e "\t\t\t\t\t<Parameter Name=\"KnownFailure\" Value=\"expat can't regonize tags case-insensitively\" />" >> $DRTLIST
