@@ -503,16 +503,16 @@ MediaPlayer::SetRenderedFrame (MediaFrame *frame)
 	MediaFrame *old = rendered_frame;
 	VideoStream *stream = (VideoStream *) frame->stream;
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->GetBufLen (), frame->GetBuffer (), frame->IsPlanar ());
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::SetRenderedFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->GetBufLen (), frame->GetBuffer (), frame->IsPlanar ());
 	VERIFY_MAIN_THREAD;
 	
 	if (!frame->IsDecoded ()) {
-		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
+		fprintf (stderr, "MediaPlayer::SetRendererFrame (): Trying to render a frame which hasn't been decoded yet.\n");
 		return frame;
 	}
 	
 	if ((frame->width > 0 && frame->width != width) || (frame->height > 0 && frame->height != height) || (format != stream->GetDecoder ()->GetPixelFormat ())) {
-		LOG_MEDIAPLAYER ("MediaPlayer::RenderFrame () frame width: %i, frame height: %i, stream width: %i, stream height: %i, previous frame width: %i, previous frame height: %i\n",
+		LOG_MEDIAPLAYER ("MediaPlayer::SetRenderedFrame () frame width: %i, frame height: %i, stream width: %i, stream height: %i, previous frame width: %i, previous frame height: %i\n",
 			frame->width, frame->height, video_stream->GetWidth (), video_stream->GetHeight (), width, height);
 
 		if (frame->width > 0)
