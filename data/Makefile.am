@@ -1,5 +1,8 @@
 SDK_ROOT=$(exec_prefix)/lib/moonlight
 
+pluginlibdir=$(pkglibdir)/plugin
+pluginlib_DATA=libmoonplugin.so-gdb.py
+
 desktopdir = $(DESTDIR)$(libdir)/mono/$(PACKAGE)
 webdir = $(DESTDIR)$(SDK_ROOT)/4.0
 
