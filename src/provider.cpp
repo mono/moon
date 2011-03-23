@@ -219,7 +219,7 @@ ImplicitStylePropertyValueProvider::ImplicitStylePropertyValueProvider (Dependen
 ImplicitStylePropertyValueProvider::~ImplicitStylePropertyValueProvider ()
 {
 	if (styles) {
-		for (int i = 0; styles[i]; i ++) {
+		for (int i = 0; i < StyleIndexCount; i ++) {
 			if (styles[i]) {
 				styles[i]->RemoveHandler (Style::DetachedEvent, ImplicitStylePropertyValueProvider::style_detached, this);
 				styles[i]->RemoveHandler (EventObject::DestroyedEvent, EventObject::ClearWeakRef, &styles[i]);
