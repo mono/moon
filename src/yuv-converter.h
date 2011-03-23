@@ -27,6 +27,9 @@ public:
 	
 	virtual bool Open ();
 	virtual MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride []);
+
+	static void YV12ToBGRA (guint8 *src[], int srcStride[], int width, int height, guint8* dest, int dstStride, char *rgb_uv, bool have_mmx, bool have_sse2);
+
 private:
 	char *rgb_uv;
 	bool have_mmx;

@@ -248,6 +248,97 @@ static inline void YUV444ToBGRA(guint8 Y, guint8 U, guint8 V, guint8 *dst)
 	dst[3] = 0xFF;
 }
 
+void
+YUVConverter::YV12ToBGRA (guint8 *src[], int srcStride[], int width, int height, guint8* dest, int dstStride, char *rgb_uv, bool have_mmx, bool have_sse2)
+{
+	guint8 *y_row1 = src[0];
+	guint8 *y_row2 = src[0]+srcStride[0];
+
+	guint8 *u_plane = src[1];
+	guint8 *v_plane = src[2];
+	
+	guint8 *dest_row1 = dest;
+	guint8 *dest_row2 = dest+dstStride;
+
+	int i, j;
+
+	int pad = 0;
+	bool aligned = true;
+	
+	if (width != srcStride[0]) {
+		pad = (srcStride[0] - width);
+		if (pad % 16) {
+			g_warning ("This video has padding that prevents us from doing aligned SIMD operations on it.");
+			aligned = false;
+		}
+	}
+	
+#if HAVE_SSE2
+	if (have_sse2 && aligned) {
+		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride, dest_row2 += dstStride) {
+			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
+				PREFETCH(y_row1);
+				CALC_COLOR_MODIFIERS("movdqa", "xmm", "15", ALIGN_CMP_REG, u_plane, v_plane, rgb_uv);
+			
+				YUV2RGB_SSE(y_row1, dest_row1);
+			
+				PREFETCH(y_row2);
+				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", rgb_uv);
+
+				YUV2RGB_SSE(y_row2, dest_row2);
+			}
+			y_row1 += pad;
+			y_row2 += pad;
+			u_plane += pad >> 1;
+			v_plane += pad >> 1;
+		}
+	} else {
+#endif
+#if HAVE_MMX
+		if (have_mmx && aligned) {
+			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride, dest_row2 += dstStride) {
+				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
+					PREFETCH(y_row1);
+					CALC_COLOR_MODIFIERS("movq", "mm", "7", ALIGN_CMP_REG, u_plane, v_plane, rgb_uv);
+
+					YUV2RGB_MMX(y_row1, dest_row1);
+
+					PREFETCH(y_row2);
+					RESTORE_COLOR_MODIFIERS("movq", "mm", rgb_uv);
+
+					YUV2RGB_MMX(y_row2, dest_row2);
+				}
+				y_row1 += pad;
+				y_row2 += pad;
+				u_plane += pad >> 1;
+				v_plane += pad >> 1;
+			}
+			__asm__ __volatile__ ("emms");
+		} else {
+#endif
+			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride, dest_row2 += dstStride) {
+				for (j = 0; j < width >> 1; j ++, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
+					YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
+					YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
+			
+					YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
+					YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
+				}
+				y_row1 += pad;
+				y_row2 += pad;
+				u_plane += pad >> 1;
+				v_plane += pad >> 1;
+			}
+#if HAVE_MMX
+		}
+#endif
+#if HAVE_SSE2
+	}
+#endif
+
+}
+
+
 /*
  * YUVConverterInfo
  */
@@ -301,97 +392,21 @@ YUVConverter::Open ()
 MediaResult
 YUVConverter::Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride [])
 {
-	guint8 *y_row1 = src[0];
-	guint8 *y_row2 = src[0]+srcStride[0];
-
-	guint8 *u_plane = src[1];
-	guint8 *v_plane = src[2];
-	
-	guint8 *dest_row1 = dest[0];
-	guint8 *dest_row2 = dest[0]+dstStride[0];
-
-	int i, j;
-
-	int width = dstStride[0] >> 2;
-	int height = srcSlideH;
-	int pad = 0;
-	bool aligned = true;
-	
-	if (width != srcStride[0]) {
-		pad = (srcStride[0] - width);
-		if (pad % 16) {
-			g_warning ("This video has padding that prevents us from doing aligned SIMD operations on it.");
-			aligned = false;
-		}
-	}
-	
 	if (rgb_uv == NULL && posix_memalign ((void **)(&rgb_uv), 16, 96) != 0) {
 		ReportErrorOccurred ("Could not allocate memory for YUVConverter");
 		return MEDIA_FAIL;
 	}
+
+	YV12ToBGRA (src,
+		    srcStride,
+		    dstStride[0] >> 2,
+		    srcSlideH,
+		    dest[0],
+		    dstStride[0],
+		    rgb_uv,
+		    have_mmx,
+		    have_sse2);
 	
-#if HAVE_SSE2
-	if (have_sse2 && aligned) {
-		for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-			for (j = 0; j < width >> 4; j ++, y_row1 += 16, y_row2 += 16, u_plane += 8, v_plane += 8, dest_row1 += 64, dest_row2 += 64) {
-				PREFETCH(y_row1);
-				CALC_COLOR_MODIFIERS("movdqa", "xmm", "15", ALIGN_CMP_REG, u_plane, v_plane, rgb_uv);
-			
-				YUV2RGB_SSE(y_row1, dest_row1);
-			
-				PREFETCH(y_row2);
-				RESTORE_COLOR_MODIFIERS("movdqa", "xmm", rgb_uv);
-
-				YUV2RGB_SSE(y_row2, dest_row2);
-			}
-			y_row1 += pad;
-			y_row2 += pad;
-			u_plane += pad >> 1;
-			v_plane += pad >> 1;
-		}
-	} else {
-#endif
-#if HAVE_MMX
-		if (have_mmx && aligned) {
-			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-				for (j = 0; j <  width >> 3; j ++, y_row1 += 8, y_row2 += 8, u_plane += 4, v_plane += 4, dest_row1 += 32, dest_row2 += 32) {
-					PREFETCH(y_row1);
-					CALC_COLOR_MODIFIERS("movq", "mm", "7", ALIGN_CMP_REG, u_plane, v_plane, rgb_uv);
-
-					YUV2RGB_MMX(y_row1, dest_row1);
-
-					PREFETCH(y_row2);
-					RESTORE_COLOR_MODIFIERS("movq", "mm", rgb_uv);
-
-					YUV2RGB_MMX(y_row2, dest_row2);
-				}
-				y_row1 += pad;
-				y_row2 += pad;
-				u_plane += pad >> 1;
-				v_plane += pad >> 1;
-			}
-			__asm__ __volatile__ ("emms");
-		} else {
-#endif
-			for (i = 0; i < height >> 1; i ++, y_row1 += srcStride[0], y_row2 += srcStride[0], dest_row1 += dstStride[0], dest_row2 += dstStride[0]) {
-				for (j = 0; j < width >> 1; j ++, dest_row1 += 8, dest_row2 += 8, y_row1 += 2, y_row2 += 2, u_plane += 1, v_plane += 1) {
-					YUV444ToBGRA (*y_row1, *u_plane, *v_plane, dest_row1);
-					YUV444ToBGRA (y_row1[1], *u_plane, *v_plane, (dest_row1+4));
-			
-					YUV444ToBGRA (*y_row2, *u_plane, *v_plane, dest_row2);
-					YUV444ToBGRA (y_row2[1], *u_plane, *v_plane, (dest_row2+4));
-				}
-				y_row1 += pad;
-				y_row2 += pad;
-				u_plane += pad >> 1;
-				v_plane += pad >> 1;
-			}
-#if HAVE_MMX
-		}
-#endif
-#if HAVE_SSE2
-	}
-#endif
 	return MEDIA_SUCCESS;
 }
 
