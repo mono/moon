@@ -31,6 +31,7 @@ class MediaElement : public FrameworkElement {
 	Mutex mutex;
 	
 	List log_request_queue; // Thread-safe: Accesses to this field needs to use the mutex.
+	List progress_reported_queue; // Thread-safe: Accesses to this field needs to use the mutex.
 	List *streamed_markers_queue; // Thread-safe: Accesses to this field needs to use the mutex.
 	TimelineMarkerCollection *streamed_markers; // Main thread only.
 	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
@@ -106,6 +107,7 @@ class MediaElement : public FrameworkElement {
 	static void EmitStateChanged (EventObject *obj);
 	static void EmitMediaEnded (EventObject *obj);
 	static void ReportErrorOccurredCallback (EventObject *obj);
+	static void ReportGetSampleProgressCallback (EventObject *obj);
 	static void RequestLogAsyncCallback (EventObject *obj);
 	void RequestLog ();
 	
@@ -261,6 +263,8 @@ class MediaElement : public FrameworkElement {
 	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GeneratePInvoke */
 	void ReportErrorOccurred (const char *args); // Thread safe
+	/* @GeneratePInvoke */
+	void ReportGetSampleProgress (double bufferingProgress); // Thread safe
 	
 	// State methods
 	bool IsClosed () { return state == MediaElementStateClosed; }
