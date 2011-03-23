@@ -44,12 +44,7 @@ namespace System.Windows.Data
 		public event EventHandler ValueChanged;
 
 		public IPropertyPathNode FinalNode {
-			get {
-				var n = Node;
-				while (n != null && n.Next != null)
-					n = n.Next;
-				return n;
-			}
+			get; private set;
 		}
 
 		bool IsDataContextBound {
@@ -70,7 +65,7 @@ namespace System.Windows.Data
 				return false;
 			}
 		}
-
+		
 		IPropertyPathNode Node {
 			get; set;
 		}
@@ -106,6 +101,7 @@ namespace System.Windows.Data
 				// An empty path means we always bind directly to the view.
 				Node = new CollectionViewNode (bindDirectlyToSource, bindsToView);
 				lastCVNode = (CollectionViewNode) Node;
+				FinalNode = Node;
 			} else {
 				var parser = new PropertyPathParser (path);
 				while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
@@ -123,10 +119,13 @@ namespace System.Windows.Data
 					default:
 						throw new Exception ("Unsupported node type");
 					}
-					if (Node == null)
-						Node = node;
-					else
+					
+					if (FinalNode != null)
 						FinalNode.Next = node;
+					else
+						Node = node;
+					
+					FinalNode = node.Next;
 				}
 			}
 
