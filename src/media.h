@@ -181,6 +181,15 @@ class Image : public MediaBase {
 	Image ();
 
 	static Value *CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj);
+
+	static void ComputeMatrix (cairo_matrix_t *matrix,
+				   double         width,
+				   double         height,
+				   int            sw,
+				   int            sh, 
+				   Stretch        stretch,
+				   AlignmentX     align_x,
+				   AlignmentY     align_y);
 	
 	virtual void Dispose ();
 	

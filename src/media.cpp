@@ -683,6 +683,84 @@ Image::CreateDefaultImageSource (Type::Kind kind, DependencyProperty *property, 
 	return NULL;
 }
 
+void
+Image::ComputeMatrix (cairo_matrix_t *matrix,
+		      double         width,
+		      double         height,
+		      int            sw,
+		      int            sh, 
+		      Stretch        stretch,
+		      AlignmentX     align_x,
+		      AlignmentY     align_y)
+{
+	// scale required to "fit" for both axes
+	double sx = width / sw;
+	double sy = height / sh;
+
+	if (width == 0)
+		sx = 1.0;
+
+	if (height == 0)
+		sy = 1.0;
+
+	// Fill is the simplest case because AlignementX and AlignmentY don't matter in this case
+	if (stretch == StretchFill) {
+		// fill extents in both axes
+		cairo_matrix_init_scale (matrix, sx, sy);
+	} else {
+		double scale = 1.0;
+		double dx = 0.0;
+		double dy = 0.0;
+
+		switch (stretch) {
+		case StretchUniform:
+			// fill without cuting the image, center the other axes
+			scale = (sx < sy) ? sy : sx;
+			break;
+		case StretchUniformToFill:
+			// fill by, potentially, cuting the image on one axe, center on both axes
+			scale = (sx < sy) ? sx : sy;
+			break;
+		case StretchNone:
+			break;
+		default:
+			g_warning ("Invalid Stretch value (%d).", stretch);
+			break;
+		}
+
+		switch (align_x) {
+		case AlignmentXLeft:
+			dx = 0.0;
+			break;
+		case AlignmentXCenter:
+			dx = (width - (scale * sw)) / 2;
+			break;
+		// Silverlight+Javascript default to AlignmentXRight for (some) invalid values (others results in an alert)
+		case AlignmentXRight:
+		default:
+			dx = (width - (scale * sw));
+			break;
+		}
+
+		switch (align_y) {
+		case AlignmentYTop:
+			dy = 0.0;
+			break;
+		case AlignmentYCenter:
+			dy = (height - (scale * sh)) / 2;
+			break;
+		// Silverlight+Javascript default to AlignmentXBottom for (some) invalid values (others results in an alert)
+		case AlignmentYBottom:
+		default:
+			dy = (height - (scale * sh));
+			break;
+		}
+
+		cairo_matrix_init (matrix, scale, 0, 0, scale, dx, dy);
+	}
+}
+
+
 //
 // MediaAttributeCollection
 //
