@@ -741,23 +741,25 @@ MediaElement::GetQualityLevel (int min, int max)
 MoonSurface *
 MediaElement::GetSurface (Context *ctx)
 {
-	MoonSurface     *native;
-	cairo_surface_t *surface;
-	double          width;
-	double          height;
+	MoonSurface *native;
+	MediaFrame  *frame;
+	double      width;
+	double      height;
 
-	if (!mplayer || !(surface = mplayer->GetCairoSurface ()))
+	if (!mplayer || !(frame = mplayer->GetRenderedFrame ()))
 		return NULL;
 
-	width = cairo_image_surface_get_width (surface);
-	height = cairo_image_surface_get_height (surface);
+	width = frame->width;
+	height = frame->height;
 
 	native = ctx->Lookup (&cache);
 
 	if (!native || width != cacheSize.width || height != cacheSize.height) {
 		ctx->Push (Context::Group (Rect (0, 0, width, height)));
-		ctx->Blit (cairo_image_surface_get_data (surface),
-			   cairo_image_surface_get_stride (surface));
+		if (frame->IsPlanar ())
+			ctx->BlitYV12 (frame->data_stride, frame->srcStride);
+		else
+			ctx->Blit (frame->GetBuffer (), width * 4);
 		ctx->Pop (&native);
 
 		cacheSize = Size (width, height);
@@ -770,8 +772,10 @@ MediaElement::GetSurface (Context *ctx)
 	
 	if (cacheDirty) {
 		ctx->Push (Context::Group (Rect (0, 0, width, height)), native);
-		ctx->Blit (cairo_image_surface_get_data (surface),
-			   cairo_image_surface_get_stride (surface));
+		if (frame->IsPlanar ())
+			ctx->BlitYV12 (frame->data_stride, frame->srcStride);
+		else
+			ctx->Blit (frame->GetBuffer (), width * 4);
 		ctx->Pop (&native);
 
 		cacheDirty = false;
