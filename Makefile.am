@@ -91,10 +91,18 @@ else
 endif
 
 NEEDED_MONO_VERSION:=$(shell grep 'cd mono .*hard' $(PWD)/README | awk -F' ' '{print $$7}')
+NEEDED_MONO_BASIC_VERSION:=$(shell grep 'cd mono-basic .*hard' $(PWD)/README | awk -F' ' '{print $$7}')
+NEEDED_MESA_VERSION:=$(shell grep 'cd mesa.*reset' $(PWD)/README | awk -F' ' '{print $$7}')
 MONO_VERSION=$(shell cd $(MONO_PATH) && git log | head -1 | awk '{print $2}' )
 
 reset-mono:
 	cd $(MONO_PATH) && git fetch && git reset --hard $(NEEDED_MONO_VERSION)
+
+reset-mono-basic:
+	cd $(MONO_BASIC_PATH) && git fetch && git reset --hard $(NEEDED_MONO_BASIC_VERSION)
+
+reset-mesa:
+	cd $(GALLIUM_PATH) && git fetch && git reset --hard $(NEEDED_MESA_VERSION)
 
 check-mono:
 	@(if test `awk "BEGIN { print index (\\"$(MONO_VERSION)\\",\\"$(NEEDED_MONO_VERSION)\\") }"` = "0"; then \
