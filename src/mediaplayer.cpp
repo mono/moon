@@ -703,6 +703,11 @@ MediaPlayer::AdvanceFrame ()
 		this->dropped_frames_per_second = dropped_frames_per_second;
 		this->rendered_frames_per_second = rendered_frames_per_second;
 	}
+
+	gint32 timeout = GetTimeoutInterval () +
+		(MilliSeconds_FromPts (current_pts) -
+		 MilliSeconds_FromPts (target_pts));
+	SetTimeout (MAX (1, timeout));
 	
 	return;
 }
