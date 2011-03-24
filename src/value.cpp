@@ -483,8 +483,7 @@ Value::Value (ManagedTypeInfo *type_info)
 {
 	Init ();
 	k = Type::MANAGEDTYPEINFO;
-	u.type_info = g_new0 (ManagedTypeInfo, 1);
-	*u.type_info = ManagedTypeInfo (*type_info);
+	u.type_info = type_info ? new ManagedTypeInfo (*type_info) : NULL;
 	SetIsNull (false);
 }
 
@@ -723,8 +722,7 @@ Value::Copy (const Value& v)
 		break;
 	case Type::MANAGEDTYPEINFO:
 		if (v.u.type_info) {
-			u.type_info = g_new0 (ManagedTypeInfo, 1);
-			*u.type_info = *v.u.type_info;
+			u.type_info = new ManagedTypeInfo (*v.u.type_info);
 		}
 		break;
 	default:
@@ -831,7 +829,7 @@ Value::FreeValueInternal ()
 		delete u.typeface;
 		break;
 	case Type::MANAGEDTYPEINFO:
-		ManagedTypeInfo::Free (u.type_info);
+		delete u.type_info;
 		break;
 	default: {
 		Deployment *depl = Deployment::GetCurrent();
@@ -994,7 +992,7 @@ Value::operator== (const Value &v) const
 	case Type::VIDEOFORMAT:
 		return *u.videoformat == *v.u.videoformat;
 	case Type::MANAGEDTYPEINFO:
-		return u.type_info->kind == v.u.type_info->kind;
+		return u.type_info == v.u.type_info;
 	case Type::URI:
 		if (!u.uri)
 			return !v.u.uri;

@@ -39,13 +39,13 @@ ManagedTypeInfo::Initialize (Type::Kind kind, const char *full_name)
 }
 
 bool
-ManagedTypeInfo::operator == (const ManagedTypeInfo &v)
+ManagedTypeInfo::operator == (const ManagedTypeInfo &v) const
 {
 	return kind == v.kind && strcmp (full_name, v.full_name) == 0;
 }
 
 bool
-ManagedTypeInfo::operator != (const ManagedTypeInfo &v)
+ManagedTypeInfo::operator != (const ManagedTypeInfo &v) const
 {
 	return !(*this == v);
 }
@@ -60,15 +60,4 @@ ManagedTypeInfo::operator = (const ManagedTypeInfo &v)
 	}
 	return *this;
 }
-
-void
-ManagedTypeInfo::Free (ManagedTypeInfo *mti)
-{
-	if (mti == NULL)
-		return;
-	
-	g_free (mti->full_name);
-	g_free (mti);
-}
-
 };

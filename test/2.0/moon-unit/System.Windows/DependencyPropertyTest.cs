@@ -66,6 +66,17 @@ namespace MoonTest.System.Windows
 		private DependencyPropertyInfo FrameworkElement_Height_double;
 		private DependencyPropertyInfo FrameworkElement_Height_CustomClass;
 
+		[TestMethod]
+		public void Register_PropertyTypeIsType ()
+		{
+			var dp = DependencyProperty.Register ("Typeoftype", typeof (Type), typeof (Canvas), null);
+			var c= new Canvas ();
+			c.SetValue (dp, null);
+			c.SetValue (dp, typeof (int));
+			c.SetValue (dp, typeof (float));
+			c.SetValue (dp, null);
+		}
+
 		[TestMethod ()]
 		public void Register_NullParametersTest ()
 		{

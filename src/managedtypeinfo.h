@@ -27,11 +27,9 @@ class ManagedTypeInfo {
 
 	void Initialize (Type::Kind kind, const char *full_name);
 
-	bool operator == (const ManagedTypeInfo &v);
-	bool operator != (const ManagedTypeInfo &v);
+	bool operator == (const ManagedTypeInfo &v) const;
+	bool operator != (const ManagedTypeInfo &v) const;
 	ManagedTypeInfo& operator = (const ManagedTypeInfo &v);
-	
-	static void Free (ManagedTypeInfo *mti);
 	
 private:
 	ManagedTypeInfo (); // we don't want this one to be called
