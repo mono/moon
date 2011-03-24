@@ -4831,7 +4831,7 @@ get_key_from_child (XamlElementInstance *child)
 		if (Type::IsSubclassOf (c->GetDeployment (), Type::STYLE, child->info->GetKind ())) {
 			Value *v = c->GetValue (Style::TargetTypeProperty);
 			if (!Value::IsNull (v))
-				key = v->AsManagedTypeInfo ()->full_name;
+				key = c->GetDeployment ()->GetTypes ()->Find (v->AsManagedTypeInfo ()->kind)->GetName ();
 
 			if (key)
 				return key;

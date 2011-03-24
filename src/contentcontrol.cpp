@@ -24,7 +24,7 @@ ContentControl::ContentControl ()
 	SetContentSetsParent (true);
 	SetObjectType (Type::CONTENTCONTROL);
 
-	ManagedTypeInfo type_info (GetObjectType (), "System.Windows.Controls.ContentControl");
+	ManagedTypeInfo type_info (GetObjectType ());
 	SetDefaultStyleKey (&type_info);
 }
 

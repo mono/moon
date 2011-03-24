@@ -16,32 +16,20 @@
 
 namespace Moonlight {
 
-ManagedTypeInfo::ManagedTypeInfo (Type::Kind kind, const char *full_name)
+ManagedTypeInfo::ManagedTypeInfo (Type::Kind kind)
 {
-	Initialize (kind, full_name);
+	this->kind = kind;
 }
 
 ManagedTypeInfo::ManagedTypeInfo (const ManagedTypeInfo& v)
 {
-	Initialize (v.kind, v.full_name);
-}
-
-ManagedTypeInfo::~ManagedTypeInfo ()
-{
-	g_free (full_name);
-}
-
-void
-ManagedTypeInfo::Initialize (Type::Kind kind, const char *full_name)
-{
-	this->kind = kind;
-	this->full_name = g_strdup (full_name);
+	this->kind = v.kind;
 }
 
 bool
 ManagedTypeInfo::operator == (const ManagedTypeInfo &v) const
 {
-	return kind == v.kind && strcmp (full_name, v.full_name) == 0;
+	return kind == v.kind;
 }
 
 bool
@@ -54,9 +42,7 @@ ManagedTypeInfo&
 ManagedTypeInfo::operator = (const ManagedTypeInfo &v)
 {
 	if (this != &v) {
-		g_free (this->full_name);
 		this->kind = v.kind;
-		this->full_name = g_strdup (v.full_name);
 	}
 	return *this;
 }

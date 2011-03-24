@@ -1195,7 +1195,7 @@ AutoCreators::CreateBlackBrush (Type::Kind kind, DependencyProperty *property, D
 Value *
 AutoCreators::ControlTypeCreator (Type::Kind kind, DependencyProperty *property, DependencyObject *forObj)
 {
-	ManagedTypeInfo info (Type::CONTROL, "System.Windows.Controls.Control");
+	ManagedTypeInfo info (Type::CONTROL);
 	return new Value (&info);
 }
 
