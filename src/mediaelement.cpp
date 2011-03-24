@@ -749,8 +749,11 @@ MediaElement::GetSurface (Context *ctx)
 	if (!mplayer || !(frame = mplayer->GetRenderedFrame ()))
 		return NULL;
 
-	width = frame->width;
-	height = frame->height;
+	if (frame->GetWidth () <= 0 || frame->GetWidth () <= 0)
+		return NULL;
+
+	width = frame->GetWidth ();
+	height = frame->GetHeight ();
 
 	native = ctx->Lookup (&cache);
 
