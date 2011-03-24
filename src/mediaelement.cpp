@@ -793,6 +793,9 @@ MediaElement::Render (Context *ctx, Region *region)
 	bool           adjust = specified != GetRenderSize ();
 	cairo_matrix_t matrix;
 
+	if (mplayer == NULL)
+		return;
+
 	if (stretch != StretchUniformToFill)
 		specified = specified.Min (stretched);
 
