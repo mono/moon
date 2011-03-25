@@ -1,0 +1,6 @@
+#!/bin/sh
+
+REALPATH=`readlink -f "$0"`
+MOONLIGHT_DIR=`dirname "$REALPATH"`
+export LD_LIBRARY_PATH=$MOONLIGHT_DIR:$LD_LIBRARY_PATH
+exec "$MOONLIGHT_DIR/lunar-launcher.bin" $1

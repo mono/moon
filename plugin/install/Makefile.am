@@ -13,7 +13,8 @@ novell_moonlight_xpi_CONTENTS =		\
 				$(srcdir)/moonlight.xul \
 				$(srcdir)/moonlight.js	\
 				$(srcdir)/application.js \
-				$(top_builddir)/plugin/lunar-launcher/.libs/lunar-launcher \
+				$(srcdir)/lunar-launcher \
+				$(top_builddir)/plugin/lunar-launcher/.libs/lunar-launcher.bin \
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
 				$(top_builddir)/src/.libs/libmoonxpi.so
@@ -82,7 +83,8 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) $(BRIDGES) Makefile
 	cp -L $(srcdir)/moonlight.js .xpinstall/components/
 	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
-	cp -L ../lunar-launcher/.libs/lunar-launcher .xpinstall/plugins/moonlight/
+	cp -L ../lunar-launcher/.libs/lunar-launcher.bin .xpinstall/plugins/moonlight/
+	cp -L $(srcdir)/lunar-launcher .xpinstall/plugins/moonlight/
 
 if HAVE_GECKO_1_8
 # Rename the bridges to the original names

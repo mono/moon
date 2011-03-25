@@ -1,3 +1,4 @@
+noinst_PROGRAMS = lunar-launcher.bin
 bin_PROGRAMS = lunar-launcher
 bindir = $(pkglibdir)/plugin/
 
@@ -14,3 +15,8 @@ lunar_launcher_SOURCES = 	\
 	lunar-launcher.cpp
 
 lunar_launcher_LDADD = $(top_builddir)/plugin/libmoonplugin.la $(LUNAR_LAUNCHER_LIBS)
+
+lunar_launcher_bin_SOURCES = 	\
+	lunar-launcher.cpp
+
+lunar_launcher_bin_LDADD = $(top_builddir)/plugin/libmoonpluginxpi.la $(LUNAR_LAUNCHER_LIBS)

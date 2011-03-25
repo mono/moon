@@ -1,4 +1,6 @@
 .deps
+.libs
 Makefile
 Makefile.in
 lunar-launcher
+lunar-launcher.bin
