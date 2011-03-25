@@ -2993,7 +2993,7 @@ DependencyObject::~DependencyObject ()
 		DependencyObject *p = (DependencyObject *) secondary_parents->pdata [i];
 		p->RemoveHandler (EventObject::DestroyedEvent, clear_secondary_parent, this);
 	}
-	g_ptr_array_unref (secondary_parents);
+	g_ptr_array_free (secondary_parents, true);
 	g_hash_table_destroy (provider_bitmasks);
 	delete resource_base;
 
