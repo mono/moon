@@ -1569,6 +1569,56 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void ElementName_DependencyObjectUsesMentor ()
+		{
+			var c = (ContentControl) XamlReader.Load (@"
+<ContentControl x:Name=""control""
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid>
+				<Rectangle x:Name=""Rect"" Fill=""Red"" Width=""100"" Height=""100"" />
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>");
+			c.ApplyTemplate ();
+			var grid = (Grid) VisualTreeHelper.GetChild (c, 0);
+
+			var b = new SolidColorBrush ();
+			grid.Resources.Add ("b", b);
+			BindingOperations.SetBinding (b, SolidColorBrush.ColorProperty, new Binding ("Fill.Color") { ElementName = "Rect" });
+
+			Assert.AreEqual (Colors.Red, b.Color, "#1");
+		}
+
+		[TestMethod]
+		public void ElementName_FrameworkElementDoesNotUseMentor ()
+		{
+			var c = (ContentControl) XamlReader.Load (@"
+<ContentControl x:Name=""control""
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid>
+				<Rectangle x:Name=""Rect"" Fill=""Red"" Width=""100"" Height=""100"" />
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>");
+			c.ApplyTemplate ();
+			var grid = (Grid) VisualTreeHelper.GetChild (c, 0);
+
+			var tb = new TextBlock ();
+			grid.Resources.Add ("b", tb);
+			tb.SetBinding (TextBlock.TextProperty, new Binding ("Fill.Color") { ElementName = "Rect" });
+
+			Assert.AreEqual ("", tb.Text, "#1");
+		}
+
+		[TestMethod]
 		public void DOBinding_Basic ()
 		{
 			var source = new SolidColorBrush (Colors.Red);
