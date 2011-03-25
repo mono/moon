@@ -1,3 +1,5 @@
 # [SecuritySafeCritical] needed inside System.ServiceModel to call all [SecurityCritical] methods
-# 0 methods
+# 2 methods
 
++SSC-M: System.Runtime.Remoting.Messaging.IMessage System.ServiceModel.ClientRealProxy::DoInvoke(System.Runtime.Remoting.Messaging.IMessage)
++SSC-M: System.Boolean System.ServiceModel.ClientRealProxy/<DoInvoke>c__AnonStoreyF::<>m__C(System.ServiceModel.Description.OperationDescription)

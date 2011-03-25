@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 600 methods needs to be decorated.
+# 604 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -15,6 +15,12 @@
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: Mono.Value Mono.Xaml.XamlParser::HydrateFromString(System.String,Mono.Value*,System.Boolean,System.Boolean)
+
+# overrides 'Mono.Xaml.XamlPropertySetter Mono.Xaml.XamlElement::LookupProperty(Mono.Xaml.IXamlNode)'.
++SC-M: Mono.Xaml.XamlPropertySetter Mono.Xaml.XamlObjectElement::LookupProperty(Mono.Xaml.IXamlNode)
+
+# overrides 'Mono.Xaml.XamlPropertySetter Mono.Xaml.XamlElement::LookupProperty(Mono.Xaml.IXamlNode)'.
++SC-M: Mono.Xaml.XamlPropertySetter Mono.Xaml.XamlPropertyElement::LookupProperty(Mono.Xaml.IXamlNode)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::accessibility_bridge_is_accessibility_enabled(System.IntPtr)
@@ -306,9 +312,6 @@
 
 # overrides 'System.Boolean Mono.Xaml.MarkupExpressionParser::get_ThrowOnNullConverter()'.
 +SC-M: System.Boolean Mono.Xaml.SL4MarkupExpressionParser::get_ThrowOnNullConverter()
-
-# overrides 'System.Boolean Mono.MoonlightTypeConverter::CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)'.
-+SC-M: System.Boolean Mono.Xaml.XamlTypeConverter::CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_height(System.IntPtr)
@@ -1027,9 +1030,6 @@
 # overrides 'System.Object Mono.Xaml.XamlPropertySetter::ConvertTextValue(System.String)'.
 +SC-M: System.Object Mono.Xaml.XamlReflectionEventSetter::ConvertTextValue(System.String)
 
-# overrides 'System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)'.
-+SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
-
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetGetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
 
@@ -1062,6 +1062,12 @@
 
 # overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_Type()'.
 +SC-M: System.Type Mono.Xaml.XamlNamePropertySetter::get_Type()
+
+# overrides 'System.Type Mono.Xaml.XamlElement::get_Type()'.
++SC-M: System.Type Mono.Xaml.XamlObjectElement::get_Type()
+
+# overrides 'System.Type Mono.Xaml.XamlElement::get_Type()'.
++SC-M: System.Type Mono.Xaml.XamlPropertyElement::get_Type()
 
 # overrides 'System.Type Mono.Xaml.XamlPropertySetter::get_DeclaringType()'.
 +SC-M: System.Type Mono.Xaml.XamlReflectionEventSetter::get_DeclaringType()
@@ -1716,6 +1722,12 @@
 
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlNamePropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)
+
+# overrides 'System.Void Mono.Xaml.XamlElement::AddChild(Mono.Xaml.XamlElement)'.
++SC-M: System.Void Mono.Xaml.XamlObjectElement::AddChild(Mono.Xaml.XamlElement)
+
+# overrides 'System.Void Mono.Xaml.XamlElement::AddChild(Mono.Xaml.XamlElement)'.
++SC-M: System.Void Mono.Xaml.XamlPropertyElement::AddChild(Mono.Xaml.XamlElement)
 
 # overrides 'System.Void Mono.Xaml.XamlPropertySetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)'.
 +SC-M: System.Void Mono.Xaml.XamlReflectionEventSetter::SetValue(Mono.Xaml.XamlObjectElement,System.Object)

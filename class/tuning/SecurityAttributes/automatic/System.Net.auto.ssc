@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 26 methods
+# 24 methods
 
 +SSC-M: System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
 +SSC-M: System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvailable()
@@ -20,10 +20,8 @@
 +SSC-M: System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
 +SSC-M: System.Boolean System.Net.Sockets.Socket::ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)
 +SSC-M: System.Boolean System.Net.Sockets.Socket::SendAsync(System.Net.Sockets.SocketAsyncEventArgs)
-+SSC-M: System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
 +SSC-M: System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
 +SSC-M: System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
 +SSC-M: System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
-+SSC-M: System.Void System.Net.Sockets.Socket/Worker::DispatcherCB(System.Net.Sockets.Socket/SocketAsyncResult)
-+SSC-M: System.Void System.Net.Sockets.Socket/Worker::Connect()
++SSC-M: System.Void System.Net.Sockets.Socket/Worker::.cctor()
 +SSC-M: System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()

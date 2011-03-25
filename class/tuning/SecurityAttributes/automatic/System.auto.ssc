@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System to call all [SecurityCritical] methods
-# 8 methods
+# 28 methods
 
 +SSC-M: System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
 +SSC-M: System.Void Mono.Security.Protocol.Ntlm.Type1Message::.ctor()
@@ -8,4 +8,24 @@
 +SSC-M: System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
 +SSC-M: System.Void Mono.Security.Protocol.Tls.SslStreamBase::EndWrite(System.IAsyncResult)
 +SSC-M: System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
++SSC-M: System.Void System.IO.Compression.DeflateStream::Dispose(System.Boolean)
++SSC-M: System.Int32 System.IO.Compression.DeflateStream::Read(System.Byte[],System.Int32,System.Int32)
++SSC-M: System.Void System.IO.Compression.DeflateStream::Write(System.Byte[],System.Int32,System.Int32)
++SSC-M: System.Void System.IO.Compression.DeflateStream::Flush()
++SSC-M: System.IAsyncResult System.IO.Compression.DeflateStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
++SSC-M: System.IAsyncResult System.IO.Compression.DeflateStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
++SSC-M: System.IAsyncResult System.Net.Sockets.NetworkStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
++SSC-M: System.IAsyncResult System.Net.Sockets.NetworkStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
++SSC-M: System.Void System.Net.Sockets.NetworkStream::Dispose(System.Boolean)
++SSC-M: System.Int32 System.Net.Sockets.NetworkStream::EndRead(System.IAsyncResult)
++SSC-M: System.Void System.Net.Sockets.NetworkStream::EndWrite(System.IAsyncResult)
++SSC-M: System.Int32 System.Net.Sockets.NetworkStream::Read(System.Byte[],System.Int32,System.Int32)
++SSC-M: System.Void System.Net.Sockets.NetworkStream::Write(System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void System.Net.Sockets.SocketException::.ctor()
++SSC-M: System.Int32 System.Net.WebConnectionStream::Read(System.Byte[],System.Int32,System.Int32)
++SSC-M: System.IAsyncResult System.Net.WebConnectionStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
++SSC-M: System.Int32 System.Net.WebConnectionStream::EndRead(System.IAsyncResult)
++SSC-M: System.IAsyncResult System.Net.WebConnectionStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
++SSC-M: System.Void System.Net.WebConnectionStream::EndWrite(System.IAsyncResult)
++SSC-M: System.Void System.Net.WebConnectionStream::Write(System.Byte[],System.Int32,System.Int32)
++SSC-M: System.Void System.Net.WebConnectionStream::Close()

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 640 methods
+# 653 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -10,6 +10,9 @@
 +SSC-M: System.Exception Mono.Events::SendCompletedEventArgsGetError(System.IntPtr)
 +SSC-M: System.Boolean Mono.Helper::IsUserInitiated()
 +SSC-M: System.Void Mono.Helper::.cctor()
++SSC-M: System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
++SSC-M: System.Object Mono.MoonlightTypeConverter::ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)
++SSC-M: System.Object Mono.MoonlightValueConverter::Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::AddStrongRef(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::ClearStrongRef(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -25,6 +28,8 @@
 +SSC-M: System.Void Mono.Surface::set_Native(System.IntPtr)
 +SSC-M: System.Void Mono.Surface::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
++SSC-M: System.Void Mono.WeakPropertyChangedListener::Detach()
++SSC-M: System.Void Mono.Xaml.XamlTypeConverter::.cctor()
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::.ctor(System.Net.Browser.BrowserHttpWebRequest,System.Uri)
 +SSC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::Finalize()
 +SSC-M: System.Net.WebResponse System.Net.Browser.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
@@ -236,6 +241,14 @@
 +SSC-M: T System.Windows.PresentationFrameworkCollection`1::GetItemImpl(System.Int32)
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1::SetItemImpl(System.Int32,T,System.Boolean)
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,System.Boolean)
++SSC-M: System.Boolean System.Windows.PresentationFrameworkCollection`1/CollectionIterator::MoveNext()
++SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1/CollectionIterator::Reset()
++SSC-M: System.Object System.Windows.PresentationFrameworkCollection`1/CollectionIterator::get_Current()
++SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1/CollectionIterator::Dispose()
++SSC-M: System.Boolean System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::MoveNext()
++SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Reset()
++SSC-M: T System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::GetCurrent()
++SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Dispose()
 +SSC-M: System.Windows.CollectionChangedAction System.Windows.InternalResourceDictionaryChangedEventArgs::get_ChangedAction()
 +SSC-M: System.Object System.Windows.InternalResourceDictionaryChangedEventArgs::GetNewItem()
 +SSC-M: System.String System.Windows.InternalResourceDictionaryChangedEventArgs::get_Key()

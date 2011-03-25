@@ -1,12 +1,10 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# force *_nocheck methods into SecurityCritical (instead of, automatic, SecuritySafeCritical) so we can deal with/protect the callers
-+SC-M: System.Int32 System.Net.Sockets.Socket::Receive_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
-+SC-M: System.Int32 System.Net.Sockets.Socket::Send_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
-
 # force non-visible Socket methods into SecurityCritical so we can audit the simpler (and visible) callers
 +SC-M: System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
 +SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
++SC-M: System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
++SC-M: System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
 
 +SC-M: System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
 +SC-M: System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags)
@@ -17,10 +15,8 @@
 +SC-M: System.Void System.Net.Sockets.Socket/Worker::ReceiveGeneric()
 +SC-M: System.Void System.Net.Sockets.Socket/Worker::Send()
 +SC-M: System.Void System.Net.Sockets.Socket/Worker::SendGeneric()
-
-+SC-M: System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
-
-+SC-M: System.Net.Sockets.Socket/SocketAsyncCall System.Net.Sockets.Socket/SocketAsyncResult::GetDelegate(System.Net.Sockets.Socket/Worker,System.Net.Sockets.Socket/SocketOperation)
++SC-M: System.Void System.Net.Sockets.Socket/Worker::DispatcherCB(System.Net.Sockets.Socket/SocketAsyncResult)
++SC-M: System.Void System.Net.Sockets.Socket/Worker::Connect()
 
 # we now have two different copies (type name clash) in System.dll and System.Net.dll
 +SC-T: System.Net.Dns
@@ -30,3 +26,4 @@
 
 # makes a pinvoke into libmoon
 +SSC-M: System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
+

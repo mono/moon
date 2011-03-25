@@ -7,25 +7,53 @@
 +SC-T: System.Net.Sockets.Socket
 +SC-T: System.Net.Sockets.SocketAsyncEventArgs
 +SC-T: System.Net.WebRequest
++SC-T: System.Net.WebResponse
 
 # type totally internal to System.dll, not duplicates, but only required for the client http stack
-+SC-T: System.ComponentModel.Win32Exception
-+SC-T: System.IO.Compression.DeflateStream
-+SC-T: System.IO.Compression.GZipStream
 +SC-T: System.Net.AuthenticationManager
 +SC-T: System.Net.BasicClient
 +SC-T: System.Net.DigestClient
 +SC-T: System.Net.DigestSession
 +SC-T: System.Net.GlobalProxySelection
 +SC-T: System.Net.HttpRequestCreator
++SC-T: System.Net.IAuthenticationModule
++SC-T: System.Net.IWebRequestCreate
++SC-T: System.Net.NtlmClient
 +SC-T: System.Net.ServicePoint
 +SC-T: System.Net.ServicePointManager
-+SC-T: System.Net.Sockets.NetworkStream
-+SC-T: System.Net.WebAsyncResult
 +SC-T: System.Net.WebConnection
 +SC-T: System.Net.WebConnectionGroup
-+SC-T: System.Net.WebConnectionStream
++SC-T: Mono.Http.NtlmClient
 
-# internalized types used only by smcs
-+SC-T: System.Diagnostics.Stopwatch
+# Stream overrides cannot be SC, but other methods can be
++SC-M: System.Void System.IO.Compression.DeflateStream::.ctor(System.IO.Stream,System.IO.Compression.CompressionMode)
++SC-M: System.Void System.IO.Compression.DeflateStream::.ctor(System.IO.Stream,System.IO.Compression.CompressionMode,System.Boolean,System.Boolean)
++SC-M: System.Int32 System.IO.Compression.DeflateStream::UnmanagedRead(System.IntPtr,System.Int32,System.IntPtr)
++SC-M: System.Int32 System.IO.Compression.DeflateStream::UnmanagedRead(System.IntPtr,System.Int32)
++SC-M: System.Int32 System.IO.Compression.DeflateStream::UnmanagedWrite(System.IntPtr,System.Int32,System.IntPtr)
++SC-M: System.Int32 System.IO.Compression.DeflateStream::UnmanagedWrite(System.IntPtr,System.Int32)
++SC-M: System.Int32 System.IO.Compression.DeflateStream::ReadInternal(System.Byte[],System.Int32,System.Int32)
++SC-M: System.Void System.IO.Compression.DeflateStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
+
++SC-M: System.Void System.IO.Compression.GZipStream::.ctor(System.IO.Stream,System.IO.Compression.CompressionMode)
++SC-M: System.Void System.IO.Compression.GZipStream::.ctor(System.IO.Stream,System.IO.Compression.CompressionMode,System.Boolean)
+
++SC-M: System.Void System.Net.Sockets.NetworkStream::.ctor(System.Net.Sockets.Socket,System.Boolean)
++SC-M: System.Void System.Net.Sockets.NetworkStream::.ctor(System.Net.Sockets.Socket,System.IO.FileAccess,System.Boolean)
+
++SC-M: System.Void System.Net.WebConnectionStream::.ctor(System.Net.WebConnection)
++SC-M: System.Void System.Net.WebConnectionStream::.ctor(System.Net.WebConnection,System.Net.HttpWebRequest)
++SC-M: System.Void System.Net.WebConnectionStream::CheckResponseInBuffer()
++SC-M: System.Boolean System.Net.WebConnectionStream::IsNtlmAuth()
++SC-M: System.Void System.Net.WebConnectionStream::ForceCompletion()
++SC-M: System.Void System.Net.WebConnectionStream::CheckComplete()
++SC-M: System.Void System.Net.WebConnectionStream::ReadAll()
++SC-M: System.Void System.Net.WebConnectionStream::WriteRequestAsyncCB(System.IAsyncResult)
++SC-M: System.Void System.Net.WebConnectionStream::CheckWriteOverflow(System.Int64,System.Int64,System.Int64)
++SC-M: System.Void System.Net.WebConnectionStream::SetHeaders(System.Byte[])
++SC-M: System.IAsyncResult System.Net.WebConnectionStream::WriteRequestAsync(System.AsyncCallback,System.Object)
++SC-M: System.Void System.Net.WebConnectionStream::WriteHeaders()
++SC-M: System.Void System.Net.WebConnectionStream::WriteRequest()
+
++SC-M: System.Boolean System.Net.WebAsyncResult::WaitUntilComplete(System.Int32,System.Boolean)
 

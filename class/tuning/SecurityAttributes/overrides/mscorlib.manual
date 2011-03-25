@@ -21,9 +21,6 @@
 # use Activator.CreateInstance to create (inaccessible) GenericEqualityComparer<T>
 +SSC-M: System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
 
-# corlib now use (internal)SafeFileHandle which inherits a SC type (SafeHandleZeroOrMinusOneIsInvalid)
-+SC-T: Microsoft.Win32.SafeHandles.SafeFileHandle
-
 # corlib calls System.Windows.Application.OnUnhandledException using reflection
 +SSC-M: System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exception)
 
@@ -43,17 +40,11 @@
 
 # mark as [SecurityCritical] since different validations are done by callers (i.e. they are the safe critical)
 +SC-M: System.Int32 System.Array::DoBinarySearch(System.Array,System.Int32,System.Int32,System.Object,System.Collections.IComparer)
-# remove SSC from unused internal (2.1) overload
-+SC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Int32,System.Int32,System.Object)
 
 # the code under CompareInfo::internal_* does not do all the validations, so we must review the (more numerous) callers
 +SC-M: System.Int32 System.Globalization.CompareInfo::internal_compare_switch(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
 +SC-M: System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.String,System.Int32,System.Int32,System.Char,System.Globalization.CompareOptions,System.Boolean)
 +SC-M: System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.String,System.Int32,System.Int32,System.String,System.Globalization.CompareOptions,System.Boolean)
-
-# validate the (parameter-less) icall instead of its (multiple) callers
--SC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
-+SSC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
 
 # unvalidated (by design) methods - they cannot be made safe, only their callers (which validates their parameters)
 +SC-M: System.Void System.String::CharCopy(System.String,System.Int32,System.Char[],System.Int32,System.Int32)
@@ -65,12 +56,9 @@
 +SC-M: System.String System.String::ReplaceFallback(System.String,System.String,System.Int32)
 
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
-+SC-T: System.Array/SimpleEnumerator
 +SC-T: System.ArgIterator
 +SC-T: System.Runtime.Remoting.Activation.ActivationServices
-+SC-T: System.Runtime.Remoting.Activation.AppDomainLevelActivator
-+SC-T: System.Runtime.Remoting.Activation.ConstructionLevelActivator
-+SC-T: System.Runtime.Remoting.Activation.ContextLevelActivator
++SC-T: System.Runtime.Remoting.Activation.IActivator
 +SC-T: System.Runtime.Remoting.Activation.RemoteActivator
 +SC-T: System.Runtime.Remoting.ChannelInfo
 +SC-T: System.Runtime.Remoting.Channels.CADSerializer
@@ -78,17 +66,25 @@
 +SC-T: System.Runtime.Remoting.Channels.CrossAppDomainChannel
 +SC-T: System.Runtime.Remoting.Channels.CrossAppDomainData
 +SC-T: System.Runtime.Remoting.Channels.CrossAppDomainSink
++SC-T: System.Runtime.Remoting.Channels.IChannel
++SC-T: System.Runtime.Remoting.Channels.IChannelReceiver
++SC-T: System.Runtime.Remoting.Channels.IChannelSender
 +SC-T: System.Runtime.Remoting.ClientActivatedIdentity
 +SC-T: System.Runtime.Remoting.ClientIdentity
 +SC-T: System.Runtime.Remoting.ConfigHandler
 +SC-T: System.Runtime.Remoting.Contexts.Context
 +SC-T: System.Runtime.Remoting.Contexts.ContextAttribute
 +SC-T: System.Runtime.Remoting.Contexts.CrossContextChannel
++SC-T: System.Runtime.Remoting.Contexts.IContextProperty
++SC-T: System.Runtime.Remoting.Contexts.IContributeClientContextSink
++SC-T: System.Runtime.Remoting.Contexts.IContributeServerContextSink
 +SC-T: System.Runtime.Remoting.Contexts.SynchronizationAttribute
 +SC-T: System.Runtime.Remoting.Contexts.SynchronizedClientContextSink
 +SC-T: System.Runtime.Remoting.Contexts.SynchronizedContextReplySink
 +SC-T: System.Runtime.Remoting.Contexts.SynchronizedServerContextSink
 +SC-T: System.Runtime.Remoting.InternalRemotingServices
++SC-T: System.Runtime.Remoting.IChannelInfo
++SC-T: System.Runtime.Remoting.Lifetime.ILease
 +SC-T: System.Runtime.Remoting.Lifetime.Lease
 +SC-T: System.Runtime.Remoting.Lifetime.LeaseManager
 +SC-T: System.Runtime.Remoting.Lifetime.LeaseSink
@@ -101,52 +97,132 @@
 +SC-T: System.Runtime.Remoting.Messaging.ClientContextTerminatorSink
 +SC-T: System.Runtime.Remoting.Messaging.ConstructionResponse
 +SC-T: System.Runtime.Remoting.Messaging.EnvoyTerminatorSink
-+SC-T: System.Runtime.Remoting.Messaging.MethodResponse
++SC-T: System.Runtime.Remoting.Messaging.IRemotingFormatter
 +SC-T: System.Runtime.Remoting.Messaging.ObjRefSurrogate
 +SC-T: System.Runtime.Remoting.Messaging.RemotingSurrogate
 +SC-T: System.Runtime.Remoting.Messaging.RemotingSurrogateSelector
 +SC-T: System.Runtime.Remoting.Messaging.ServerContextTerminatorSink
 +SC-T: System.Runtime.Remoting.Messaging.ServerObjectTerminatorSink
 +SC-T: System.Runtime.Remoting.Messaging.StackBuilderSink
++SC-T: System.Runtime.Remoting.Metadata.SoapAttribute
++SC-T: System.Runtime.Remoting.Metadata.SoapFieldAttribute
 +SC-T: System.Runtime.Remoting.Metadata.SoapMethodAttribute
++SC-T: System.Runtime.Remoting.Metadata.SoapParameterAttribute
 +SC-T: System.Runtime.Remoting.Metadata.SoapTypeAttribute
-+SC-T: System.Runtime.Remoting.ObjRef
 +SC-T: System.Runtime.Remoting.Proxies.ProxyAttribute
-+SC-T: System.Runtime.Remoting.Proxies.RemotingProxy
 +SC-T: System.Runtime.Remoting.RemotingConfiguration
 +SC-T: System.Runtime.Remoting.RemotingServices
++SC-T: System.Runtime.Remoting.Identity
 +SC-T: System.Runtime.Remoting.ServerIdentity
 +SC-T: System.Runtime.Remoting.SingleCallIdentity
 +SC-T: System.Runtime.Remoting.SingletonIdentity
 +SC-T: System.Runtime.Remoting.SoapServices
++SC-T: System.Runtime.Serialization.IFormatter
++SC-T: System.Runtime.Serialization.ISurrogateSelector
++SC-T: System.Runtime.Serialization.ISerializationSurrogate
 +SC-T: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 +SC-T: System.Runtime.Serialization.Formatters.Binary.CodeGenerator
++SC-T: System.Runtime.Serialization.Formatters.Binary.ClrTypeMetadata
 +SC-T: System.Runtime.Serialization.Formatters.Binary.MemberTypeMetadata
 +SC-T: System.Runtime.Serialization.Formatters.Binary.MessageFormatter
 +SC-T: System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata
++SC-T: System.Runtime.Serialization.Formatters.Binary.TypeMetadata
 +SC-T: System.Runtime.Serialization.FormatterServices
 +SC-T: System.Runtime.Serialization.ObjectIDGenerator
-+SC-T: System.Runtime.Serialization.ObjectIDGenerator/InstanceComparer
 +SC-T: System.Threading.Mutex
 
+# avoid marking System.Runtime.Remoting.Messaging.IMessageSink as SC (since types implements other, non-critical, interfaces)
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.AsyncResult::get_NextSink()
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.AsyncResult::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
++SC-M: System.Void System.Runtime.Serialization.ObjectManager::RegisterObjectInternal(System.Object,System.Runtime.Serialization.ObjectRecord)
++SC-M: System.Void System.Runtime.Serialization.ObjectManager::DoFixups()
++SC-M: System.Void System.Runtime.Serialization.ObjectManager::RegisterObject(System.Object,System.Int64,System.Runtime.Serialization.SerializationInfo,System.Int64,System.Reflection.MemberInfo,System.Int32[])
+
++SC-M: System.Boolean System.Runtime.Serialization.ObjectRecord::LoadData(System.Runtime.Serialization.ObjectManager,System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext)
+
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.BinaryCommon::CheckSerializable(System.Type,System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext)
+
++SC-M: System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadTypeMetadata(System.IO.BinaryReader,System.Boolean,System.Boolean)
+
++SC-M: System.Boolean System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadNextObject(System.Runtime.Serialization.Formatters.Binary.BinaryElement,System.IO.BinaryReader)
++SC-M: System.Boolean System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadNextObject(System.IO.BinaryReader)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectInstance(System.IO.BinaryReader,System.Boolean,System.Boolean,System.Int64&,System.Object&,System.Runtime.Serialization.SerializationInfo&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::RegisterObject(System.Int64,System.Object,System.Runtime.Serialization.SerializationInfo,System.Int64,System.Reflection.MemberInfo,System.Int32[])
+
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectGraph(System.Runtime.Serialization.Formatters.Binary.BinaryElement,System.IO.BinaryReader,System.Boolean,System.Object&,System.Runtime.Remoting.Messaging.Header[]&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectGraph(System.IO.BinaryReader,System.Boolean,System.Object&,System.Runtime.Remoting.Messaging.Header[]&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObject(System.Runtime.Serialization.Formatters.Binary.BinaryElement,System.IO.BinaryReader,System.Int64&,System.Object&,System.Runtime.Serialization.SerializationInfo&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadRefTypeObjectInstance(System.IO.BinaryReader,System.Int64&,System.Object&,System.Runtime.Serialization.SerializationInfo&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadValue(System.IO.BinaryReader,System.Object,System.Int64,System.Runtime.Serialization.SerializationInfo,System.Type,System.String,System.Reflection.MemberInfo,System.Int32[])
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadGenericArray(System.IO.BinaryReader,System.Int64&,System.Object&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadSimpleArray(System.IO.BinaryReader,System.Type,System.Int64&,System.Object&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadArrayOfObject(System.IO.BinaryReader,System.Int64&,System.Object&)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadArrayOfString(System.IO.BinaryReader,System.Int64&,System.Object&)
+
++SC-M: System.Void System.Runtime.Remoting.Proxies.RemotingProxy::.ctor(System.Type,System.Runtime.Remoting.ClientIdentity)
++SC-M: System.Void System.Runtime.Remoting.Proxies.RemotingProxy::AttachIdentity(System.Runtime.Remoting.Identity)
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Proxies.RemotingProxy::ActivateRemoteObject(System.Runtime.Remoting.Messaging.IMethodMessage)
+
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::.ctor(System.Runtime.Remoting.Messaging.IMethodCallMessage,System.Runtime.Remoting.Messaging.CADMethodReturnMessage)
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::InitMethodProperty(System.String,System.Object)
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodResponse::get_MethodBase()
+
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Remoting.Messaging.CADMethodCallMessage)
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::InitMethodProperty(System.String,System.Object)
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::ResolveMethod()
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Remoting.Messaging.Header[])
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
++SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::CopyFrom(System.Runtime.Remoting.Messaging.IMethodMessage)
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodCall::get_MethodBase()
+
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.MethodResponse::get_HasVarArgs()
++SC-M: System.Int32 System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgCount()
++SC-M: System.Object[] System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgs()
++SC-M: System.String System.Runtime.Remoting.Messaging.MethodResponse::GetArgName(System.Int32)
++SC-M: System.Object System.Runtime.Remoting.Messaging.MethodResponse::GetOutArg(System.Int32)
++SC-M: System.String System.Runtime.Remoting.Messaging.MethodResponse::GetOutArgName(System.Int32)
+
++SC-M: System.Void System.Runtime.Remoting.Messaging.ReturnMessage::.ctor(System.Object,System.Object[],System.Int32,System.Runtime.Remoting.Messaging.LogicalCallContext,System.Runtime.Remoting.Messaging.IMethodCallMessage)
++SC-M: System.Void System.Runtime.Remoting.Messaging.ReturnMessage::.ctor(System.Exception,System.Runtime.Remoting.Messaging.IMethodCallMessage)
+
++SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::InternalGetTransparentProxy(System.String)
++SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::PrivateInvoke(System.Runtime.Remoting.Proxies.RealProxy,System.Runtime.Remoting.Messaging.IMessage,System.Exception&,System.Object[]&)
+
++SC-M: System.Void System.Runtime.Remoting.ObjRef::.ctor()
++SC-M: System.Object System.Runtime.Remoting.ObjRef::GetRealObject(System.Runtime.Serialization.StreamingContext)
++SC-M: System.Void System.Runtime.Remoting.ObjRef::UpdateChannelInfo()
+
++SC-M: System.Void System.Resources.ResourceReader::.ctor(System.IO.Stream)
++SC-M: System.Void System.Resources.ResourceReader::.ctor(System.String)
++SC-M: System.Object System.Resources.ResourceReader::ReadNonPredefinedValue(System.Type)
++SC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceReader::ResourceValueAsStream(System.String,System.Int32)
++SC-M: System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey6::<>m__3(System.Object,System.EventArgs)
++SC-M: System.Object System.Resources.ResourceReader::ReadValueVer2(System.Int32)
++SC-M: System.Object System.Resources.ResourceReader::ReadValueVer1(System.Type)
++SC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceReader/ResourceEnumerator::get_ValueAsStream()
++SC-M: System.Void System.Resources.ResourceReader::LoadResourceValues(System.Resources.ResourceReader/ResourceCacheItem[])
+
++SC-M: System.Void System.Resources.ResourceReader/ResourceEnumerator::.ctor(System.Resources.ResourceReader)
++SC-M: System.Void System.Resources.ResourceReader/ResourceEnumerator::FillCache()
+
++SC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.IO.UnmanagedMemoryStream)
++SC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.IO.Stream)
++SC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.String)
+
 # needed by smcs/SRE but not available in ML API
-+SC-M: System.Boolean Mono.Security.StrongName::Sign(System.String)
-+SC-T: System.Resources.ResourceReader
-+SC-T: System.Resources.ResourceWriter
-+SC-T: System.Resources.RuntimeResourceSet
-+SC-M: System.Resources.IResourceWriter System.Reflection.Emit.AssemblyBuilder::DefineResource(System.String,System.String,System.String,System.Reflection.ResourceAttributes)
-+SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::DefineUnmanagedResource(System.String)
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::DefineIconResource(System.String)
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::EmbedResourceFile(System.String,System.String,System.Reflection.ResourceAttributes)
 +SC-M: System.Reflection.Module System.Reflection.Emit.AssemblyBuilder::AddModule(System.String)
-+SC-M: System.Resources.IResourceWriter System.Reflection.Emit.AssemblyBuilder::DefineResource(System.String,System.String,System.String)
-+SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::Save(System.String)
-+SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::Save(System.String,System.Reflection.PortableExecutableKinds,System.Reflection.ImageFileMachine)
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::check_name_and_filename(System.String,System.String,System.Boolean)
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::AddResourceFile(System.String,System.String,System.Reflection.ResourceAttributes,System.Boolean)
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::EmbedResourceFile(System.String,System.String)
-+SC-M: System.Resources.IResourceWriter System.Reflection.Emit.ModuleBuilder::DefineResource(System.String,System.String)
-+SC-M: System.Resources.IResourceWriter System.Reflection.Emit.ModuleBuilder::DefineResource(System.String,System.String,System.Reflection.ResourceAttributes)
 +SC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.Emit.SignatureHelper)
 +SC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo)
 +SC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo,System.Boolean)
@@ -157,10 +233,9 @@
 
 # extra, non-safe, non-visible methods
 +SC-M: System.String System.AppDomainSetup::GetAppBase(System.String)
++SC-M: System.String System.AppDomain::GetProcessGuid()
 +SC-M: System.Void System.AppDomain::ProcessMessageInDomain(System.Byte[],System.Runtime.Remoting.Messaging.CADMethodCallMessage,System.Byte[]&,System.Runtime.Remoting.Messaging.CADMethodReturnMessage&)
-+SC-M: System.Runtime.Remoting.Identity System.MarshalByRefObject::GetObjectIdentity(System.MarshalByRefObject,System.Boolean&)
 +SC-M: System.Runtime.Remoting.ObjRef System.MarshalByRefObject::CreateObjRef(System.Type)
-+SC-M: System.Object System.MarshalByRefObject::GetLifetimeService()
 +SC-M: System.Object System.MarshalByRefObject::InitializeLifetimeService()
 +SC-M: System.Boolean System.IO.MonoIO::Exists(System.String,System.IO.MonoIOError&)
 +SC-M: System.Boolean System.IO.MonoIO::ExistsFile(System.String,System.IO.MonoIOError&)
@@ -180,19 +255,10 @@
 +SC-M: System.Int32 System.Runtime.Serialization.Formatters.Binary.ObjectWriter::RegisterAssembly(System.String,System.Boolean&)
 +SC-M: System.IO.DirectoryInfo System.IO.Directory::CreateDirectoriesInternal(System.String)
 +SC-M: System.Void System.IO.Directory::RecursiveDelete(System.String)
-+SC-M: Microsoft.Win32.SafeHandles.SafeFileHandle System.IO.FileStream::get_SafeFileHandle()
 +SC-M: System.Globalization.SortKey System.Globalization.CompareInfo::GetSortKey(System.String,System.Globalization.CompareOptions)
-+SC-M: System.Globalization.SortKey System.Globalization.CompareInfo::GetSortKey(System.String)
-+SC-M: System.Void System.IO.FileStream::Lock(System.Int64,System.Int64)
-+SC-M: System.Void System.IO.FileStream::Unlock(System.Int64,System.Int64)
-+SC-M: System.String System.Environment::get_CommandLine()
 +SC-M: System.String System.Environment::get_UserDomainName()
 +SC-M: System.String System.Environment::GetEnvironmentVariable(System.String)
-+SC-M: System.Collections.Hashtable System.Environment::GetEnvironmentVariablesNoCase()
-+SC-M: System.Collections.IDictionary System.Environment::GetEnvironmentVariables()
-+SC-M: System.String[] System.Environment::GetLogicalDrives()
 +SC-M: System.String System.Environment::ReadXdgUserDir(System.String,System.String,System.String,System.String)
-+SC-M: System.String System.Environment::ExpandEnvironmentVariables(System.String)
 +SC-M: System.String System.Environment::UnixGetFolderPath(System.Environment/SpecialFolder,System.Environment/SpecialFolderOption)
 +SC-M: System.Void System.GC::Collect(System.Int32)
 +SC-M: System.Void System.GC::Collect(System.Int32,System.GCCollectionMode)
@@ -203,19 +269,7 @@
 +SC-M: System.Object System.Activator::CreateInstance(System.Type,System.Boolean)
 +SC-M: System.Object System.Activator::CreateInstance(System.Type,System.Object[],System.Object[])
 +SC-M: System.Object System.Activator::CreateInstance(System.Type,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
-+SC-M: System.Object System.Reflection.Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoadFrom(System.String)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoad(System.Byte[])
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoad(System.String)
 +SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFrom(System.String,System.Security.Policy.Evidence)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadWithPartialName(System.String,System.Security.Policy.Evidence,System.Boolean)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadWithPartialName(System.String,System.Security.Policy.Evidence)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadWithPartialName(System.String)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::Load(System.String,System.Security.Policy.Evidence)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFile(System.String,System.Security.Policy.Evidence)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFile(System.String)
 +SC-M: System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)
 +SC-M: System.Reflection.Assembly System.AppDomain::LoadSatellite(System.Reflection.AssemblyName,System.Boolean)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
@@ -223,79 +277,48 @@
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.String)
-+SC-M: System.Reflection.Assembly System.AppDomain::Load(System.String,System.Security.Policy.Evidence)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[])
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[])
-+SC-M: System.Object System.AppDomain::InvokeInDomain(System.AppDomain,System.Reflection.MethodInfo,System.Object,System.Object[])
 +SC-M: System.Object System.AppDomain::InvokeInDomainByID(System.Int32,System.Reflection.MethodInfo,System.Object,System.Object[])
-+SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.String,System.Security.Policy.Evidence,System.String[])
-+SC-M: System.Int32 System.AppDomain::ExecuteAssemblyInternal(System.Reflection.Assembly,System.String[])
-+SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.String,System.Security.Policy.Evidence)
-+SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.String,System.Security.Policy.Evidence,System.String[],System.Byte[],System.Configuration.Assemblies.AssemblyHashAlgorithm)
-+SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.String)
 +SC-M: System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
 +SC-M: System.String System.Reflection.Assembly::GetCodeBase(System.Boolean)
 +SC-M: System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()
 +SC-M: System.AppDomainSetup System.AppDomain::get_SetupInformationNoCopy()
-+SC-M: System.AppDomainSetup System.AppDomain::get_SetupInformation()
-+SC-M: System.AppDomain System.AppDomain::get_DefaultDomain()
-+SC-M: System.String System.AppDomain::GetProcessGuid()
-+SC-M: System.Boolean System.AppDomain::IsFinalizingForUnload()
-+SC-M: System.Int32 System.AppDomain::getDomainID()
-+SC-M: System.Void System.AppDomain::Unload(System.AppDomain)
 +SC-M: System.Reflection.Assembly System.AppDomain::DoAssemblyResolve(System.String,System.Boolean)
 +SC-M: System.Reflection.Assembly System.AppDomain::DoTypeResolve(System.Object)
 +SC-M: System.Reflection.AssemblyName System.Reflection.Emit.AssemblyBuilder::UnprotectedGetName()
 +SC-M: System.IO.Stream System.Console::Open(System.IntPtr,System.IO.FileAccess,System.Int32)
 +SC-M: System.IO.Stream System.Console::OpenStandardError(System.Int32)
-+SC-M: System.IO.Stream System.Console::OpenStandardError()
 +SC-M: System.IO.Stream System.Console::OpenStandardInput(System.Int32)
-+SC-M: System.IO.Stream System.Console::OpenStandardInput()
 +SC-M: System.IO.Stream System.Console::OpenStandardOutput(System.Int32)
-+SC-M: System.IO.Stream System.Console::OpenStandardOutput()
-+SC-M: System.Boolean System.Globalization.CultureInfo::IsIDNeutralCulture(System.Int32)
 +SC-M: System.String[] System.IO.Directory::GetFileSystemEntries(System.String,System.String,System.IO.FileAttributes,System.IO.FileAttributes)
 +SC-M: System.Void System.IO.FileStream::.ctor(System.IntPtr,System.IO.FileAccess,System.Boolean,System.Int32,System.Boolean,System.Boolean)
-+SC-M: System.Type System.Reflection.Module::MonoDebugger_ResolveType(System.Reflection.Module,System.Int32)
 +SC-M: System.String System.IO.Path::CanonicalizePath(System.String)
 +SC-M: System.String System.IO.Path::WindowsDriveAdjustment(System.String)
 +SC-M: System.String System.IO.Path::InsecureGetFullPath(System.String)
 +SC-M: System.Void System.Globalization.RegionInfo::.ctor(System.Int32)
 +SC-M: System.Boolean System.Globalization.RegionInfo::GetByTerritory(System.Globalization.CultureInfo)
 +SC-M: System.Void System.Diagnostics.StackTrace::init_frames(System.Int32,System.Boolean)
-+SC-M: System.Type System.Type::ReflectionOnlyGetType(System.String,System.Boolean,System.Boolean)
 +SC-M: System.Byte[] System.Security.Cryptography.X509Certificates.X509Certificate::Load(System.String)
-+SC-M: System.IntPtr System.RuntimeMethodHandle::GetFunctionPointer()
 +SC-M: System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()
-+SC-M: System.Type[] System.Reflection.FieldInfo::GetOptionalCustomModifiers()
-+SC-M: System.Type[] System.Reflection.FieldInfo::GetRequiredCustomModifiers()
 +SC-M: System.Object[] System.Reflection.FieldInfo::GetPseudoCustomAttributes()
 +SC-M: System.String System.Environment::get_StackTrace()
 +SC-M: System.Int32 System.Reflection.Module::get_MDStreamVersion()
-+SC-M: System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32)
 +SC-M: System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32,System.Type[],System.Type[])
-+SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32)
 +SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32,System.Type[],System.Type[])
 +SC-M: System.Byte[] System.Reflection.Module::ResolveSignature(System.Int32)
 +SC-M: System.Guid System.Reflection.Module::GetModuleVersionId()
-+SC-M: System.Guid System.Reflection.Module::get_MvId()
 +SC-M: System.Guid System.Reflection.Module::get_ModuleVersionId()
 +SC-M: System.Guid System.Reflection.Module::Mono_GetGuid(System.Reflection.Module)
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::Mono_GetGuid(System.Reflection.Emit.ModuleBuilder)
-+SC-M: System.Void System.Reflection.Emit.ModuleBuilder::Save()
 +SC-M: System.TypeCode System.Reflection.Emit.TypeBuilder::GetTypeCodeInternal()
 
 +SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromLcid(System.Int32)
 +SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.Int32,System.Boolean,System.Boolean)
-+SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromSpecificName(System.Globalization.CultureInfo,System.String)
 +SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.Int32,System.Boolean)
-+SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::CreateSpecificCulture(System.String)
 +SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.Int32)
-+SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::get_InstalledUICulture()
 
-+SC-M: System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32,System.Boolean)
-+SC-M: System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan,System.Boolean)
 +SC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32,System.Boolean)
 +SC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
 +SC-M: System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.Int32,System.Boolean)
@@ -306,11 +329,8 @@
 +SC-M: System.Reflection.MethodBase System.Exception::get_TargetSite()
 +SC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Exception,System.Int32,System.Boolean,System.Boolean)
 
-+SC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.ModuleHandle)
 +SC-M: System.IntPtr System.Threading.WaitHandle::get_Handle()
 +SC-M: System.Void System.Threading.WaitHandle::set_Handle(System.IntPtr)
-+SC-M: System.Void System.Threading.Thread::.ctor(System.Threading.ThreadStart,System.Int32)
-+SC-M: System.Void System.Threading.Thread::.ctor(System.Threading.ParameterizedThreadStart,System.Int32)
 +SC-M: System.Runtime.Remoting.Contexts.Context System.Threading.Thread::get_CurrentContext()
 +SC-M: System.Void System.Threading.Thread::ResetAbort()
 +SC-M: System.Void System.Threading.RegisteredWaitHandle::Wait(System.Object)
@@ -329,7 +349,6 @@
 +SC-M: System.Void System.Array::qsort(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
 +SC-M: System.Void System.Array::swap(System.Array,System.Array,System.Int32,System.Int32)
 +SC-M: System.Array/Swapper System.Array::get_swapper(System.Array)
-+SC-M: System.Array/Swapper System.Array::get_swapper<T>(T[])
 +SC-M: System.Void System.Resources.ResourceSet::.ctor(System.IO.UnmanagedMemoryStream)
 +SC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.String)
 +SC-M: System.String System.IO.IsolatedStorage.IsolatedStorageFile::Verify(System.String)
@@ -343,30 +362,14 @@
 +SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::Remove(System.String)
 
 +SC-M: System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleNoGenericCheck(System.RuntimeMethodHandle)
-+SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody(System.IntPtr)
-+SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody()
-+SC-M: System.Reflection.MethodBody System.Reflection.MonoCMethod::GetMethodBody()
-+SC-M: System.Reflection.MethodBody System.Reflection.MonoMethod::GetMethodBody()
 
-+SC-M: System.Type[] System.Reflection.ParameterInfo::GetOptionalCustomModifiers()
-+SC-M: System.Type[] System.Reflection.ParameterInfo::GetRequiredCustomModifiers()
-+SC-M: System.Type[] System.Reflection.PropertyInfo::GetOptionalCustomModifiers()
-+SC-M: System.Type[] System.Reflection.PropertyInfo::GetRequiredCustomModifiers()
-+SC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
-+SC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
 +SC-M: System.Object[] System.MonoCustomAttrs::GetPseudoCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Type)
 +SC-M: System.AttributeUsageAttribute System.MonoCustomAttrs::RetrieveAttributeUsage(System.Type)
-+SC-M: System.Double System.Math::Round(System.Double,System.Int32,System.MidpointRounding)
-+SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle)
-+SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.Int32,System.Boolean)
-+SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.TimeSpan,System.Boolean)
 +SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.String,System.Boolean)
 +SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.String,System.Boolean,System.Boolean)
 +SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromName(System.String)
 +SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::CreateCulture(System.String,System.Boolean)
 +SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.String)
-+SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.String,System.String)
-+SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfoByIetfLanguageTag(System.String)
 
 +SC-M: System.String System.IO.FileStream::GetSecureFileName(System.String)
 +SC-M: System.String System.IO.FileStream::GetSecureFileName(System.String,System.Boolean)
@@ -397,13 +400,8 @@
 +SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::set_Quota(System.Int64)
 
 # Mono.CompilerServices.SymbolWriter is embedded into mscorlib.dll 2.1
-+SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolFile::CreateSymbolFile(System.Guid,System.IO.FileStream)
-+SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolFile::Write(Mono.CompilerServices.SymbolWriter.MyBinaryWriter,System.Guid)
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolWriter::.ctor(System.String)
-+SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolWriter::WriteSymbolFile(System.Guid)
-+SC-M: System.Void Mono.CompilerServices.SymbolWriter.SourceFileEntry::WriteData(Mono.CompilerServices.SymbolWriter.MyBinaryWriter)
 +SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)
-+SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()
 
 #
 +SC-M: System.String System.IO.Directory::ValidateDirectoryListing(System.String,System.String,System.Boolean&)
@@ -436,4 +434,9 @@
 +SC-M: System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
 # not included by the linker (with current code base) 2nd layer of protection if this ever change
 +SC-M: System.Void System.TimeZoneInfo::set_TimeZoneDirectory(System.String)
+
++SC-T: Mono.Xml.SmallXmlParser/IContentHandler
++SC-M: System.Void Mono.Xml.SmallXmlParser::Parse(System.IO.TextReader,Mono.Xml.SmallXmlParser/IContentHandler)
++SC-M: System.Void Mono.Xml.SmallXmlParser::ReadContent()
++SC-M: System.Void Mono.Xml.SmallXmlParser::HandleBufferedContent()
 

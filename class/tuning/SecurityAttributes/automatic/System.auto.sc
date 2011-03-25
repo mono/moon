@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 63 methods needs to be decorated.
+# 84 methods needs to be decorated.
 
 # internal call
 +SC-M: System.Boolean System.Net.Dns::GetHostByAddr_internal(System.String,System.String&,System.String[]&,System.String[]&)
@@ -15,6 +15,9 @@
 
 # overrides 'System.Boolean System.Net.WebRequest::get_UseDefaultCredentials()'.
 +SC-M: System.Boolean System.Net.HttpWebRequest::get_UseDefaultCredentials()
+
+# overrides 'System.Boolean System.Net.WebResponse::get_IsMutuallyAuthenticated()'.
++SC-M: System.Boolean System.Net.HttpWebResponse::get_IsMutuallyAuthenticated()
 
 # internal call
 +SC-M: System.Boolean System.Net.Sockets.Socket::Poll_internal(System.IntPtr,System.Net.Sockets.SelectMode,System.Int32,System.Int32&)
@@ -73,6 +76,9 @@
 # overrides 'System.Int64 System.Net.WebRequest::get_ContentLength()'.
 +SC-M: System.Int64 System.Net.HttpWebRequest::get_ContentLength()
 
+# overrides 'System.Int64 System.Net.WebResponse::get_ContentLength()'.
++SC-M: System.Int64 System.Net.HttpWebResponse::get_ContentLength()
+
 # p/invoke declaration
 +SC-M: System.IntPtr System.IO.Compression.DeflateStream::CreateZStream(System.IO.Compression.CompressionMode,System.Boolean,System.IO.Compression.DeflateStream/UnmanagedReadOrWrite,System.IntPtr)
 
@@ -87,6 +93,33 @@
 
 # overrides 'System.IO.Stream System.Net.WebRequest::GetRequestStream()'.
 +SC-M: System.IO.Stream System.Net.HttpWebRequest::GetRequestStream()
+
+# overrides 'System.IO.Stream System.Net.WebResponse::GetResponseStream()'.
++SC-M: System.IO.Stream System.Net.HttpWebResponse::GetResponseStream()
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization Mono.Http.NtlmClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization Mono.Http.NtlmClient::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization System.Net.BasicClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization System.Net.BasicClient::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization System.Net.DigestClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization System.Net.DigestClient::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization System.Net.NtlmClient::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
+
+# implements 'System.Net.Authorization System.Net.IAuthenticationModule::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)'.
++SC-M: System.Net.Authorization System.Net.NtlmClient::PreAuthenticate(System.Net.WebRequest,System.Net.ICredentials)
 
 # overrides 'System.Net.ICredentials System.Net.WebRequest::get_Credentials()'.
 +SC-M: System.Net.ICredentials System.Net.HttpWebRequest::get_Credentials()
@@ -103,11 +136,26 @@
 # overrides 'System.Net.WebHeaderCollection System.Net.WebRequest::get_Headers()'.
 +SC-M: System.Net.WebHeaderCollection System.Net.HttpWebRequest::get_Headers()
 
+# overrides 'System.Net.WebHeaderCollection System.Net.WebResponse::get_Headers()'.
++SC-M: System.Net.WebHeaderCollection System.Net.HttpWebResponse::get_Headers()
+
+# implements 'System.Net.WebRequest System.Net.IWebRequestCreate::Create(System.Uri)'.
++SC-M: System.Net.WebRequest System.Net.HttpRequestCreator::Create(System.Uri)
+
 # overrides 'System.Net.WebResponse System.Net.WebRequest::EndGetResponse(System.IAsyncResult)'.
 +SC-M: System.Net.WebResponse System.Net.HttpWebRequest::EndGetResponse(System.IAsyncResult)
 
 # overrides 'System.Net.WebResponse System.Net.WebRequest::GetResponse()'.
 +SC-M: System.Net.WebResponse System.Net.HttpWebRequest::GetResponse()
+
+# implements 'System.String System.Net.IAuthenticationModule::get_AuthenticationType()'.
++SC-M: System.String Mono.Http.NtlmClient::get_AuthenticationType()
+
+# implements 'System.String System.Net.IAuthenticationModule::get_AuthenticationType()'.
++SC-M: System.String System.Net.BasicClient::get_AuthenticationType()
+
+# implements 'System.String System.Net.IAuthenticationModule::get_AuthenticationType()'.
++SC-M: System.String System.Net.DigestClient::get_AuthenticationType()
 
 # overrides 'System.String System.Net.WebRequest::get_ConnectionGroupName()'.
 +SC-M: System.String System.Net.HttpWebRequest::get_ConnectionGroupName()
@@ -118,8 +166,17 @@
 # overrides 'System.String System.Net.WebRequest::get_Method()'.
 +SC-M: System.String System.Net.HttpWebRequest::get_Method()
 
+# overrides 'System.String System.Net.WebResponse::get_ContentType()'.
++SC-M: System.String System.Net.HttpWebResponse::get_ContentType()
+
+# implements 'System.String System.Net.IAuthenticationModule::get_AuthenticationType()'.
++SC-M: System.String System.Net.NtlmClient::get_AuthenticationType()
+
 # overrides 'System.Uri System.Net.WebRequest::get_RequestUri()'.
 +SC-M: System.Uri System.Net.HttpWebRequest::get_RequestUri()
+
+# overrides 'System.Uri System.Net.WebResponse::get_ResponseUri()'.
++SC-M: System.Uri System.Net.HttpWebResponse::get_ResponseUri()
 
 # overrides 'System.Void System.Net.WebRequest::Abort()'.
 +SC-M: System.Void System.Net.HttpWebRequest::Abort()
@@ -153,6 +210,12 @@
 
 # overrides 'System.Void System.Net.WebRequest::set_UseDefaultCredentials(System.Boolean)'.
 +SC-M: System.Void System.Net.HttpWebRequest::set_UseDefaultCredentials(System.Boolean)
+
+# overrides 'System.Void System.Net.WebResponse::Close()'.
++SC-M: System.Void System.Net.HttpWebResponse::Close()
+
+# overrides 'System.Void System.Net.WebResponse::System.IDisposable.Dispose()'.
++SC-M: System.Void System.Net.HttpWebResponse::System.IDisposable.Dispose()
 
 # internal call
 +SC-M: System.Void System.Net.Sockets.Socket::Bind_internal(System.IntPtr,System.Net.SocketAddress,System.Int32&)

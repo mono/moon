@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 442 methods needs to be decorated.
+# 586 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -124,8 +124,41 @@
 # internal call
 +SC-M: System.Boolean System.Runtime.InteropServices.GCHandle::CheckCurrentDomain(System.Int32)
 
+# implements 'System.Boolean System.Runtime.Remoting.Messaging.IMethodMessage::get_HasVarArgs()'.
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.ErrorMessage::get_HasVarArgs()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Boolean System.Runtime.Remoting.Messaging.ErrorMessage::get_HasVarArgs()'.
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.IMethodMessage::get_HasVarArgs()
+
+# implements 'System.Boolean System.Runtime.Remoting.Messaging.IMethodMessage::get_HasVarArgs()'.
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.MethodCall::get_HasVarArgs()
+
+# implements 'System.Boolean System.Runtime.Remoting.Messaging.IMethodMessage::get_HasVarArgs()'.
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.MethodResponse::get_HasVarArgs()
+
+# implements 'System.Boolean System.Runtime.Remoting.Messaging.IMethodMessage::get_HasVarArgs()'.
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.MonoMethodMessage::get_HasVarArgs()
+
+# implements 'System.Boolean System.Runtime.Remoting.Messaging.IMethodMessage::get_HasVarArgs()'.
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.ReturnMessage::get_HasVarArgs()
+
+# overrides 'System.Boolean System.Runtime.Remoting.Metadata.SoapAttribute::get_UseAttribute()'.
++SC-M: System.Boolean System.Runtime.Remoting.Metadata.SoapMethodAttribute::get_UseAttribute()
+
+# overrides 'System.Boolean System.Runtime.Remoting.Metadata.SoapAttribute::get_UseAttribute()'.
++SC-M: System.Boolean System.Runtime.Remoting.Metadata.SoapTypeAttribute::get_UseAttribute()
+
 # internal call
 +SC-M: System.Boolean System.Runtime.Remoting.RemotingServices::IsTransparentProxy(System.Object)
+
+# overrides 'System.Boolean System.Runtime.Serialization.Formatters.Binary.TypeMetadata::get_RequiresTypes()'.
++SC-M: System.Boolean System.Runtime.Serialization.Formatters.Binary.ClrTypeMetadata::get_RequiresTypes()
+
+# overrides 'System.Boolean System.Runtime.Serialization.Formatters.Binary.TypeMetadata::get_RequiresTypes()'.
++SC-M: System.Boolean System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata::get_RequiresTypes()
+
+# overrides 'System.Boolean System.Runtime.Serialization.Formatters.Binary.TypeMetadata::IsCompatible(System.Runtime.Serialization.Formatters.Binary.TypeMetadata)'.
++SC-M: System.Boolean System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata::IsCompatible(System.Runtime.Serialization.Formatters.Binary.TypeMetadata)
 
 # internal call
 +SC-M: System.Boolean System.Security.Cryptography.RNGCryptoServiceProvider::RngOpen()
@@ -415,6 +448,21 @@
 # internal call
 +SC-M: System.Int32 System.Runtime.InteropServices.Marshal::ReleaseInternal(System.IntPtr)
 
+# implements 'System.Int32 System.Runtime.Remoting.Channels.IChannel::get_ChannelPriority()'.
++SC-M: System.Int32 System.Runtime.Remoting.Channels.CrossAppDomainChannel::get_ChannelPriority()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Int32 System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgCount()'.
++SC-M: System.Int32 System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgCount()
+
+# implements 'System.Int32 System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgCount()'.
++SC-M: System.Int32 System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgCount()
+
+# implements 'System.Int32 System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgCount()'.
++SC-M: System.Int32 System.Runtime.Remoting.Messaging.MonoMethodMessage::get_OutArgCount()
+
+# implements 'System.Int32 System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgCount()'.
++SC-M: System.Int32 System.Runtime.Remoting.Messaging.ReturnMessage::get_OutArgCount()
+
 # internal call
 +SC-M: System.Int32 System.String::GetLOSLimit()
 
@@ -625,6 +673,9 @@
 # internal call
 +SC-M: System.Object System.Array::GetValueImpl(System.Int32)
 
+# implements 'System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Object System.DelegateSerializationHolder::GetRealObject(System.Runtime.Serialization.StreamingContext)
+
 # internal call
 +SC-M: System.Object System.Enum::get_value()
 
@@ -636,6 +687,9 @@
 
 # internal call
 +SC-M: System.Object System.Reflection.Assembly::GetFilesInternal(System.String,System.Boolean)
+
+# implements 'System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Object System.Reflection.MemberInfoSerializationHolder::GetRealObject(System.Runtime.Serialization.StreamingContext)
 
 # internal call
 +SC-M: System.Object System.Reflection.MonoCMethod::InternalInvoke(System.Object,System.Object[],System.Exception&)
@@ -658,11 +712,62 @@
 # overrides 'System.Object System.MarshalByRefObject::InitializeLifetimeService()'.
 +SC-M: System.Object System.Runtime.Remoting.Activation.RemoteActivator::InitializeLifetimeService()
 
+# implements 'System.Object System.Runtime.Remoting.Channels.IChannelReceiver::get_ChannelData()'.
++SC-M: System.Object System.Runtime.Remoting.Channels.CrossAppDomainChannel::get_ChannelData()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Object System.Runtime.Remoting.Messaging.MethodResponse::GetOutArg(System.Int32)'.
++SC-M: System.Object System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArg(System.Int32)
+
+# implements 'System.Object System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArg(System.Int32)'.
++SC-M: System.Object System.Runtime.Remoting.Messaging.MethodResponse::GetOutArg(System.Int32)
+
+# implements 'System.Object System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArg(System.Int32)'.
++SC-M: System.Object System.Runtime.Remoting.Messaging.MonoMethodMessage::GetOutArg(System.Int32)
+
+# implements 'System.Object System.Runtime.Serialization.ISerializationSurrogate::SetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.ISurrogateSelector)'.
++SC-M: System.Object System.Runtime.Remoting.Messaging.ObjRefSurrogate::SetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.ISurrogateSelector)
+
+# implements 'System.Object System.Runtime.Serialization.ISerializationSurrogate::SetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.ISurrogateSelector)'.
++SC-M: System.Object System.Runtime.Remoting.Messaging.RemotingSurrogate::SetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.ISurrogateSelector)
+
+# implements 'System.Object System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArg(System.Int32)'.
++SC-M: System.Object System.Runtime.Remoting.Messaging.ReturnMessage::GetOutArg(System.Int32)
+
+# implements 'System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Object System.Runtime.Remoting.ObjRef::GetRealObject(System.Runtime.Serialization.StreamingContext)
+
 # internal call
 +SC-M: System.Object System.Runtime.Remoting.RemotingServices::InternalExecute(System.Reflection.MethodBase,System.Object,System.Object[],System.Object[]&)
 
+# implements 'System.Object System.Runtime.Serialization.IFormatter::Deserialize(System.IO.Stream)'.
++SC-M: System.Object System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::Deserialize(System.IO.Stream)
+
+# implements 'System.Object System.Runtime.Remoting.Messaging.IRemotingFormatter::Deserialize(System.IO.Stream,System.Runtime.Remoting.Messaging.HeaderHandler)'.
++SC-M: System.Object System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::Deserialize(System.IO.Stream,System.Runtime.Remoting.Messaging.HeaderHandler)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Object System.DelegateSerializationHolder::GetRealObject(System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)
+
+# implements 'System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Object System.UnitySerializationHolder::GetRealObject(System.Runtime.Serialization.StreamingContext)
+
 # internal call
 +SC-M: System.Object[] System.MonoCustomAttrs::GetCustomAttributesInternal(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
+
+# implements 'System.Object[] System.Runtime.Remoting.IChannelInfo::get_ChannelData()'.
++SC-M: System.Object[] System.Runtime.Remoting.ChannelInfo::get_ChannelData()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Object[] System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgs()'.
++SC-M: System.Object[] System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgs()
+
+# implements 'System.Object[] System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgs()'.
++SC-M: System.Object[] System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgs()
+
+# implements 'System.Object[] System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgs()'.
++SC-M: System.Object[] System.Runtime.Remoting.Messaging.MonoMethodMessage::get_OutArgs()
+
+# implements 'System.Object[] System.Runtime.Remoting.Messaging.IMethodReturnMessage::get_OutArgs()'.
++SC-M: System.Object[] System.Runtime.Remoting.Messaging.ReturnMessage::get_OutArgs()
 
 # internal call
 +SC-M: System.PlatformID System.Environment::get_Platform()
@@ -769,6 +874,24 @@
 # Promoting interface member to [SecurityCritical] because of 'System.Reflection.MethodBase System.Exception::get_TargetSite()'.
 +SC-M: System.Reflection.MethodBase System.Runtime.InteropServices._Exception::get_TargetSite()
 
+# implements 'System.Reflection.MethodBase System.Runtime.Remoting.Messaging.IMethodMessage::get_MethodBase()'.
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.ErrorMessage::get_MethodBase()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.MethodBase System.Runtime.Remoting.Messaging.ErrorMessage::get_MethodBase()'.
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.IMethodMessage::get_MethodBase()
+
+# implements 'System.Reflection.MethodBase System.Runtime.Remoting.Messaging.IMethodMessage::get_MethodBase()'.
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodCall::get_MethodBase()
+
+# implements 'System.Reflection.MethodBase System.Runtime.Remoting.Messaging.IMethodMessage::get_MethodBase()'.
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodResponse::get_MethodBase()
+
+# implements 'System.Reflection.MethodBase System.Runtime.Remoting.Messaging.IMethodMessage::get_MethodBase()'.
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MonoMethodMessage::get_MethodBase()
+
+# implements 'System.Reflection.MethodBase System.Runtime.Remoting.Messaging.IMethodMessage::get_MethodBase()'.
++SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.ReturnMessage::get_MethodBase()
+
 # internal call
 +SC-M: System.Reflection.MethodBase System.Runtime.Remoting.RemotingServices::GetVirtualMethod(System.Type,System.Reflection.MethodBase)
 
@@ -805,6 +928,9 @@
 # internal call
 +SC-M: System.Runtime.InteropServices.DllImportAttribute System.Reflection.MonoMethod::GetDllImportAttribute(System.IntPtr)
 
+# implements 'System.Runtime.Remoting.Activation.IConstructionReturnMessage System.Runtime.Remoting.Activation.IActivator::Activate(System.Runtime.Remoting.Activation.IConstructionCallMessage)'.
++SC-M: System.Runtime.Remoting.Activation.IConstructionReturnMessage System.Runtime.Remoting.Activation.RemoteActivator::Activate(System.Runtime.Remoting.Activation.IConstructionCallMessage)
+
 # internal call
 +SC-M: System.Runtime.Remoting.Contexts.Context System.AppDomain::InternalGetContext()
 
@@ -814,8 +940,62 @@
 # internal call
 +SC-M: System.Runtime.Remoting.Contexts.Context System.AppDomain::InternalSetContext(System.Runtime.Remoting.Contexts.Context)
 
+# implements 'System.Runtime.Remoting.Lifetime.LeaseState System.Runtime.Remoting.Lifetime.ILease::get_CurrentState()'.
++SC-M: System.Runtime.Remoting.Lifetime.LeaseState System.Runtime.Remoting.Lifetime.Lease::get_CurrentState()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Channels.CrossAppDomainSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
 # overrides 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.ServerIdentity::SyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
 +SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.ClientActivatedIdentity::SyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Contexts.CrossContextChannel/ContextRestoreSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Contexts.CrossContextChannel::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Contexts.SynchronizedClientContextSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Contexts.SynchronizedContextReplySink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Contexts.SynchronizedServerContextSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.DisposerReplySink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Lifetime.LeaseSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.ClientContextReplySink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.ClientContextTerminatorSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.EnvoyTerminatorSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.ServerContextTerminatorSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.ServerObjectReplySink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.ServerObjectTerminatorSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.IMessageSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.StackBuilderSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
 
 # overrides 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.ServerIdentity::SyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
 +SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.SingleCallIdentity::SyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
@@ -823,14 +1003,143 @@
 # overrides 'System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.ServerIdentity::SyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage)'.
 +SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.SingletonIdentity::SyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
 
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Channels.CrossAppDomainSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
 # overrides 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.ServerIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
 +SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.ClientActivatedIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Contexts.CrossContextChannel/ContextRestoreSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Contexts.CrossContextChannel::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Contexts.SynchronizedClientContextSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Contexts.SynchronizedContextReplySink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Contexts.SynchronizedServerContextSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.DisposerReplySink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Lifetime.LeaseSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.AsyncResult::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.ClientContextReplySink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.ClientContextTerminatorSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.EnvoyTerminatorSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.AsyncResult::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.ServerContextTerminatorSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.ServerObjectReplySink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.ServerObjectTerminatorSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.IMessageSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.Messaging.StackBuilderSink::AsyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
 
 # overrides 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.ServerIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
 +SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.SingleCallIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
 
 # overrides 'System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.ServerIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)'.
 +SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.SingletonIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Channels.IChannelSender::CreateMessageSink(System.String,System.Object,System.String&)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Channels.CrossAppDomainChannel::CreateMessageSink(System.String,System.Object,System.String&)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Channels.CrossAppDomainSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.CrossContextChannel/ContextRestoreSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.CrossContextChannel::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.IContributeClientContextSink::GetClientContextSink(System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.SynchronizationAttribute::GetClientContextSink(System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.IContributeServerContextSink::GetServerContextSink(System.Runtime.Remoting.Messaging.IMessageSink)'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.SynchronizationAttribute::GetServerContextSink(System.Runtime.Remoting.Messaging.IMessageSink)
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.SynchronizedClientContextSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.SynchronizedContextReplySink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Contexts.SynchronizedServerContextSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.DisposerReplySink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Lifetime.LeaseSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.AsyncResult::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.ClientContextReplySink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.ClientContextTerminatorSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.EnvoyTerminatorSink::get_NextSink()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.AsyncResult::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.ServerContextTerminatorSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.ServerObjectReplySink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.ServerObjectTerminatorSink::get_NextSink()
+
+# implements 'System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.IMessageSink::get_NextSink()'.
++SC-M: System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.Messaging.StackBuilderSink::get_NextSink()
+
+# overrides 'System.Runtime.Remoting.ObjRef System.Runtime.Remoting.Identity::CreateObjRef(System.Type)'.
++SC-M: System.Runtime.Remoting.ObjRef System.Runtime.Remoting.ClientIdentity::CreateObjRef(System.Type)
+
+# overrides 'System.Runtime.Remoting.ObjRef System.Runtime.Remoting.Identity::CreateObjRef(System.Type)'.
++SC-M: System.Runtime.Remoting.ObjRef System.Runtime.Remoting.ServerIdentity::CreateObjRef(System.Type)
+
+# implements 'System.Runtime.Serialization.ISerializationSurrogate System.Runtime.Serialization.ISurrogateSelector::GetSurrogate(System.Type,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.ISurrogateSelector&)'.
++SC-M: System.Runtime.Serialization.ISerializationSurrogate System.Runtime.Remoting.Messaging.RemotingSurrogateSelector::GetSurrogate(System.Type,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.ISurrogateSelector&)
+
+# implements 'System.Runtime.Serialization.ISurrogateSelector System.Runtime.Serialization.IFormatter::get_SurrogateSelector()'.
++SC-M: System.Runtime.Serialization.ISurrogateSelector System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::get_SurrogateSelector()
+
+# implements 'System.Runtime.Serialization.SerializationBinder System.Runtime.Serialization.IFormatter::get_Binder()'.
++SC-M: System.Runtime.Serialization.SerializationBinder System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::get_Binder()
+
+# implements 'System.Runtime.Serialization.StreamingContext System.Runtime.Serialization.IFormatter::get_Context()'.
++SC-M: System.Runtime.Serialization.StreamingContext System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::get_Context()
 
 # internal call
 +SC-M: System.Single System.Threading.Interlocked::CompareExchange(System.Single&,System.Single,System.Single)
@@ -934,6 +1243,48 @@
 # internal call
 +SC-M: System.String System.Runtime.InteropServices.Marshal::PtrToStringBSTR(System.IntPtr)
 
+# implements 'System.String System.Runtime.Remoting.Channels.IChannel::get_ChannelName()'.
++SC-M: System.String System.Runtime.Remoting.Channels.CrossAppDomainChannel::get_ChannelName()
+
+# implements 'System.String System.Runtime.Remoting.Contexts.IContextProperty::get_Name()'.
++SC-M: System.String System.Runtime.Remoting.Contexts.ContextAttribute::get_Name()
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodMessage::GetArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.ErrorMessage::GetArgName(System.Int32)
+
+# Promoting interface member to [SecurityCritical] because of 'System.String System.Runtime.Remoting.Messaging.ErrorMessage::GetArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.IMethodMessage::GetArgName(System.Int32)
+
+# Promoting interface member to [SecurityCritical] because of 'System.String System.Runtime.Remoting.Messaging.MethodResponse::GetOutArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodMessage::GetArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.MethodCall::GetArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodMessage::GetArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.MethodResponse::GetArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.MethodResponse::GetOutArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodMessage::GetArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.MonoMethodMessage::GetArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.MonoMethodMessage::GetOutArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodMessage::GetArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.ReturnMessage::GetArgName(System.Int32)
+
+# implements 'System.String System.Runtime.Remoting.Messaging.IMethodReturnMessage::GetOutArgName(System.Int32)'.
++SC-M: System.String System.Runtime.Remoting.Messaging.ReturnMessage::GetOutArgName(System.Int32)
+
+# overrides 'System.String System.Runtime.Remoting.Metadata.SoapAttribute::get_XmlNamespace()'.
++SC-M: System.String System.Runtime.Remoting.Metadata.SoapMethodAttribute::get_XmlNamespace()
+
+# overrides 'System.String System.Runtime.Remoting.Metadata.SoapAttribute::get_XmlNamespace()'.
++SC-M: System.String System.Runtime.Remoting.Metadata.SoapTypeAttribute::get_XmlNamespace()
+
 # using 'System.Char*' as a parameter type
 +SC-M: System.String System.String::CreateString(System.Char*)
 
@@ -981,6 +1332,15 @@
 
 # internal call
 +SC-M: System.Threading.ThreadState System.Threading.Thread::GetState(System.Threading.InternalThread)
+
+# implements 'System.TimeSpan System.Runtime.Remoting.Lifetime.ILease::get_CurrentLeaseTime()'.
++SC-M: System.TimeSpan System.Runtime.Remoting.Lifetime.Lease::get_CurrentLeaseTime()
+
+# implements 'System.TimeSpan System.Runtime.Remoting.Lifetime.ILease::get_RenewOnCallTime()'.
++SC-M: System.TimeSpan System.Runtime.Remoting.Lifetime.Lease::get_RenewOnCallTime()
+
+# implements 'System.TimeSpan System.Runtime.Remoting.Lifetime.ILease::Renew(System.TimeSpan)'.
++SC-M: System.TimeSpan System.Runtime.Remoting.Lifetime.Lease::Renew(System.TimeSpan)
 
 # internal call
 +SC-M: System.Type System.Enum::get_underlying_type(System.Type)
@@ -1243,8 +1603,80 @@
 # internal call
 +SC-M: System.Void System.Runtime.Remoting.Activation.ActivationServices::EnableProxyActivation(System.Type,System.Boolean)
 
+# implements 'System.Void System.Runtime.Remoting.Channels.IChannelReceiver::StartListening(System.Object)'.
++SC-M: System.Void System.Runtime.Remoting.Channels.CrossAppDomainChannel::StartListening(System.Object)
+
 # overrides 'System.Void System.Runtime.Remoting.ServerIdentity::OnLifetimeExpired()'.
 +SC-M: System.Void System.Runtime.Remoting.ClientActivatedIdentity::OnLifetimeExpired()
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnChars(System.String)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnChars(System.String)
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnEndElement(System.String)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnEndElement(System.String)
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnEndParsing(Mono.Xml.SmallXmlParser)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnEndParsing(Mono.Xml.SmallXmlParser)
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnIgnorableWhitespace(System.String)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnIgnorableWhitespace(System.String)
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnProcessingInstruction(System.String,System.String)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnProcessingInstruction(System.String,System.String)
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnStartElement(System.String,Mono.Xml.SmallXmlParser/IAttrList)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnStartElement(System.String,Mono.Xml.SmallXmlParser/IAttrList)
+
+# implements 'System.Void Mono.Xml.SmallXmlParser/IContentHandler::OnStartParsing(Mono.Xml.SmallXmlParser)'.
++SC-M: System.Void System.Runtime.Remoting.ConfigHandler::OnStartParsing(Mono.Xml.SmallXmlParser)
+
+# implements 'System.Void System.Runtime.Remoting.Lifetime.ILease::set_InitialLeaseTime(System.TimeSpan)'.
++SC-M: System.Void System.Runtime.Remoting.Lifetime.Lease::set_InitialLeaseTime(System.TimeSpan)
+
+# implements 'System.Void System.Runtime.Remoting.Lifetime.ILease::set_RenewOnCallTime(System.TimeSpan)'.
++SC-M: System.Void System.Runtime.Remoting.Lifetime.Lease::set_RenewOnCallTime(System.TimeSpan)
+
+# implements 'System.Void System.Runtime.Remoting.Lifetime.ILease::set_SponsorshipTimeout(System.TimeSpan)'.
++SC-M: System.Void System.Runtime.Remoting.Lifetime.Lease::set_SponsorshipTimeout(System.TimeSpan)
+
+# implements 'System.Void System.Runtime.Remoting.Lifetime.ILease::Unregister(System.Runtime.Remoting.Lifetime.ISponsor)'.
++SC-M: System.Void System.Runtime.Remoting.Lifetime.Lease::Unregister(System.Runtime.Remoting.Lifetime.ISponsor)
+
+# overrides 'System.Void System.Runtime.Remoting.Messaging.MethodCall::InitMethodProperty(System.String,System.Object)'.
++SC-M: System.Void System.Runtime.Remoting.Messaging.ConstructionCall::InitMethodProperty(System.String,System.Object)
+
+# implements 'System.Void System.Runtime.Serialization.ISerializationSurrogate::GetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Void System.Runtime.Remoting.Messaging.ObjRefSurrogate::GetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+
+# implements 'System.Void System.Runtime.Serialization.ISerializationSurrogate::GetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)'.
++SC-M: System.Void System.Runtime.Remoting.Messaging.RemotingSurrogate::GetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+
+# overrides 'System.Void System.Runtime.Remoting.Metadata.SoapAttribute::SetReflectionObject(System.Object)'.
++SC-M: System.Void System.Runtime.Remoting.Metadata.SoapFieldAttribute::SetReflectionObject(System.Object)
+
+# overrides 'System.Void System.Runtime.Remoting.Metadata.SoapAttribute::SetReflectionObject(System.Object)'.
++SC-M: System.Void System.Runtime.Remoting.Metadata.SoapMethodAttribute::SetReflectionObject(System.Object)
+
+# overrides 'System.Void System.Runtime.Remoting.Metadata.SoapAttribute::SetReflectionObject(System.Object)'.
++SC-M: System.Void System.Runtime.Remoting.Metadata.SoapTypeAttribute::SetReflectionObject(System.Object)
+
+# implements 'System.Void System.Runtime.Serialization.IFormatter::Serialize(System.IO.Stream,System.Object)'.
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::Serialize(System.IO.Stream,System.Object)
+
+# implements 'System.Void System.Runtime.Remoting.Messaging.IRemotingFormatter::Serialize(System.IO.Stream,System.Object,System.Runtime.Remoting.Messaging.Header[])'.
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::Serialize(System.IO.Stream,System.Object,System.Runtime.Remoting.Messaging.Header[])
+
+# implements 'System.Void System.Runtime.Serialization.IFormatter::set_SurrogateSelector(System.Runtime.Serialization.ISurrogateSelector)'.
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.BinaryFormatter::set_SurrogateSelector(System.Runtime.Serialization.ISurrogateSelector)
+
+# overrides 'System.Void System.Runtime.Serialization.Formatters.Binary.TypeMetadata::WriteAssemblies(System.Runtime.Serialization.Formatters.Binary.ObjectWriter,System.IO.BinaryWriter)'.
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata::WriteAssemblies(System.Runtime.Serialization.Formatters.Binary.ObjectWriter,System.IO.BinaryWriter)
+
+# overrides 'System.Void System.Runtime.Serialization.Formatters.Binary.TypeMetadata::WriteObjectData(System.Runtime.Serialization.Formatters.Binary.ObjectWriter,System.IO.BinaryWriter,System.Object)'.
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata::WriteObjectData(System.Runtime.Serialization.Formatters.Binary.ObjectWriter,System.IO.BinaryWriter,System.Object)
+
+# overrides 'System.Void System.Runtime.Serialization.Formatters.Binary.TypeMetadata::WriteTypeData(System.Runtime.Serialization.Formatters.Binary.ObjectWriter,System.IO.BinaryWriter,System.Boolean)'.
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata::WriteTypeData(System.Runtime.Serialization.Formatters.Binary.ObjectWriter,System.IO.BinaryWriter,System.Boolean)
 
 # internal call
 +SC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::RngClose(System.IntPtr)
