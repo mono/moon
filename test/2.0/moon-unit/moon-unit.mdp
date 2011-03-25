@@ -342,7 +342,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Xml/XmlResolverTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Xml/XmlXapResolverTest.cs" />
     <File subtype="Code" buildaction="Compile" name="App.xaml.g.cs" />
-    <File subtype="Code" buildaction="Nothing" name="AppManifest.xaml" />
     <File subtype="Code" buildaction="Compile" name="BindingXaml.xaml.g.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs" />
@@ -392,6 +391,11 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/HyperlinkButtonTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizingStackPanel_MeasureTests.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/XamlParser.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net/IPAddressTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net/WebResponseTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BaseHttpWebRequestTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BrowserHttpWebRequestTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/ClientHttpWebRequestTest.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

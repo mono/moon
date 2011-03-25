@@ -53,8 +53,8 @@ namespace MoonTest.System.Net {
 		{
 			Uri uri = HtmlPage.Document.DocumentUri;
 			RunningFromHttp = (uri.Scheme == "http");
-			IndexHtml = new Uri (uri, "../index4.html");
-			PostAspx = new Uri (uri, "../POST.aspx");
+			IndexHtml = new Uri (uri, "index4.html");
+			PostAspx = new Uri (uri, "POST.aspx");
 			TimecodeLongWmv = new Uri (uri, "timecode-long.wmv");
 		}
 
