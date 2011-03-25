@@ -465,6 +465,12 @@ BitmapImage::DownloaderFailed ()
 	//printf ("\tBitmapImage::DownloaderFailed() for %s\n", uri ? uri->ToString () : "null?");
 	
 	Abort ();
+
+	if (moon_error != NULL) {
+		// We already have an error, don't emit another one. #641.
+		return;
+	}
+
 	ImageErrorEventArgs *args = new ImageErrorEventArgs (this, MoonError (MoonError::EXCEPTION, 4001, "downloader failed"));
 	if (HasHandlers (ImageFailedEvent))
 		Emit (ImageFailedEvent, args);
@@ -603,8 +609,8 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 			loader = Runtime::GetWindowingSystem ()->CreatePixbufLoader ("jpeg");
 		}
 		else {
-			Abort ();
 			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "unsupported image type");
+			Abort ();
 		}
 	} else {
 		loader = Runtime::GetWindowingSystem ()->CreatePixbufLoader (NULL);
