@@ -14,6 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows.Markup;
+using Mono.Moonlight.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -69,6 +70,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("")]
 		public void MoreItemsThanHeight_CheckMeasure()
 		{
 			TestPanel.Children.Add(Control);
@@ -85,6 +87,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("")]
 		public void MoreItemsThanHeight_CheckArrange()
 		{
 			Control.Height = 100;

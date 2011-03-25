@@ -174,6 +174,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion (4)]
 		public void SetIgnorableAfterUse ()
 		{
 			// Set properties, then content, then properties

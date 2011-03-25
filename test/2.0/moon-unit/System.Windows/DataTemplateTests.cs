@@ -47,6 +47,7 @@ namespace MoonTest.System.Windows
     {
         [TestMethod]
         [Asynchronous]
+		[MinRuntimeVersion (4)]
         public void CustomDataTemplate()
         {
             MyControl c = (MyControl)XamlReader.Load(@"
@@ -170,6 +171,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void GridRoot ()
 		{
 			var c = CreateTemplated ("<Grid />");

@@ -1711,6 +1711,7 @@ namespace MoonTest.System.Windows
 #endregion
 
 		[TestMethod]
+		[MinRuntimeVersion (4)]
 		public void StyleProperty_FieldAndDPDoNotExist()
 		{
 			// There is no property of name 'A' and no field called 'AProperty'
@@ -1722,6 +1723,7 @@ namespace MoonTest.System.Windows
 		}
 
         [TestMethod]
+		[MinRuntimeVersion (4)]
 		public void StyleProperty_FieldExistsButDPDoesNot()
 		{
 			// There is no property of name 'B' but there is a field called 'BProperty'
@@ -1744,6 +1746,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion (4)]
 		public void StyleProperty_MatchSolelyOnFieldName()
 		{
 			// There is no property of name 'B' but there is a field called 'BProperty'

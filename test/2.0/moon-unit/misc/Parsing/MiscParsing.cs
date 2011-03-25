@@ -1017,6 +1017,7 @@ Width=""100"" Height=""100"">
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
+		[MoonlightBug ("")]
 		public void QuotedString_EscapedBackslashesAndWhitespace_sl3 ()
 		{
 			// Parse a binding with an escaped quote mark with whitespace inside it

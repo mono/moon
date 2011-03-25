@@ -1068,6 +1068,7 @@ namespace MoonTest.System.Windows.Media
 
 		[Asynchronous]
 		[TestMethod]
+		[MinRuntimeVersion (4)]
 		public void ContentControlHitTest5()
 		{
 			Root.Children.Add(new ContentControl { Content = "Hello", Width = 100, Height = 100 });
@@ -1093,6 +1094,7 @@ namespace MoonTest.System.Windows.Media
 
 		[Asynchronous]
 		[TestMethod]
+		[MinRuntimeVersion (4)]
 		public void ContentControlHitTest7()
 		{
 			Root.Children.Add(new ContentControl {

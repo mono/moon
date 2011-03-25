@@ -67,6 +67,7 @@ namespace Mono.Moonlight.UnitTesting
 
         [TestMethod]
         [Asynchronous]
+		[MinRuntimeVersion (4)]
         public void SelectionForeground()
         {
             var box = new PasswordBox();

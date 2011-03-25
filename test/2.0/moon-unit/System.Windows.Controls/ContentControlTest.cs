@@ -281,6 +281,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug("")]
 		public void ContentTemplateNotUsed ()
 		{
 			ContentControl c = new ContentControl ();
@@ -341,6 +342,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug("")]
 		public void DataTemplateTest ()
 		{
 			ContentControl c = new ContentControl ();
@@ -356,6 +358,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug("")]
 		public void DataTemplateTest2 ()
 		{
 			// Fails in Silverlight 3
@@ -373,6 +376,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug("")]
 		public void DataTemplateTest3 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -396,6 +400,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug("")]
 		public void DataTemplateTest4 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -663,6 +668,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MinRuntimeVersion (4)]
 		public void MultipleTemplatesInsideTemplates ()
 		{
 			var template = (ControlTemplate)XamlReader.Load(@"
@@ -702,6 +708,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void NewTemplateDoesNotApplyInstantly ()
 		{
 			ContentControl c = new ContentControl ();
@@ -744,6 +751,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void MultiplePresenters ()
 		{
 			ControlTemplate template = CreateTemplate (@"
@@ -779,6 +787,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualParentTest ()
 		{
 			Button b = new Button();
@@ -797,6 +806,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualParentTest2 ()
 		{
 			ControlTemplate template = CreateTemplate (@"
@@ -820,6 +830,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualChildTest ()
 		{
 			Button b = new Button ();
@@ -838,6 +849,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualChildTest2 ()
 		{
 			ControlTemplate template = CreateTemplate (@"
@@ -868,6 +880,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualTreeTest ()
 		{
 			ContentControl c = new ContentControl ();
@@ -890,6 +903,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualTreeTest2 ()
 		{
 			ContentControl c = new ContentControl ();
@@ -916,6 +930,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualTreeTest3 ()
 		{
 			ContentControl c = new ContentControl ();
@@ -1039,6 +1054,7 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void VisualTreeTest5 ()
 		{
 			ContentPresenter presenter = null;

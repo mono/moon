@@ -86,6 +86,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("")]
 		public void TestImplicitStyleRectangle_oneStyleInVisualTree_onStyleInAppResources ()
 		{
 			Style rectStyle1 = new Style { TargetType = typeof (Rectangle) };
@@ -114,6 +115,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("")]
 		public void TestImplicitStyleButton_oneStyleInVisualTree_onStyleInAppResources ()
 		{
 			Style style1 = new Style { TargetType = typeof (Button) };

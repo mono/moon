@@ -63,7 +63,6 @@
     <File subtype="Directory" buildaction="Compile" name="Mono.Moonlight.UnitTesting" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/FontStretchesTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/FontStylesTest.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows/FontWeigthsTest.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono.Moonlight.UnitTesting/Tester.cs" />
     <File subtype="Code" buildaction="Nothing" name="site/test.html" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/UIElementTest.cs" />
@@ -364,7 +363,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Security.Cryptography/AesManagedTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Security.Cryptography/HMAC256Test.cs" />
     <File subtype="Code" buildaction="Nothing" name="System.Threading/ChangeLog" />
-    <File subtype="Code" buildaction="Compile" name="System.Threading/SynchronizationContextTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/CalendarAutomationPeerTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/CalendarButtonAutomationPeerTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs" />
@@ -396,6 +394,18 @@
     <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BaseHttpWebRequestTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Net.Browser/BrowserHttpWebRequestTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Net.Browser/ClientHttpWebRequestTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/WindowSettingsTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/StyleTest_Implicit.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/SecuritySettingsTest.cs" />
+    <File subtype="Code" buildaction="Nothing" name="System.Windows/ResourceDictionarySourcePropertyTest_LackingDefaultXmlns.xaml" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/IconTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/OutOfBrowserSettingsTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/FontWeightsTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/DataObjectTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/TextPointerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/TextSelectionTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Threading/DispatcherSynchronizationContextTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Threading/DispatcherTimerTest.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

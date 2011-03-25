@@ -201,6 +201,7 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("")]
 		public void FlowDirectionInsert ()
 		{
 			FlowDirectionInsert_ (FlowDirection.LeftToRight, LogicalDirection.Forward, "Texhit goes here");

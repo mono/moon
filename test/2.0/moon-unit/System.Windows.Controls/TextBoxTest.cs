@@ -261,6 +261,7 @@ namespace Mono.Moonlight.UnitTesting
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void TextBoxScrollable_NoWrap ()
 		{
 			// If we disable wrapping, our ScrollViewer is scrollable.
@@ -280,6 +281,7 @@ namespace Mono.Moonlight.UnitTesting
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void TextBoxScrollable_Wrap_Auto ()
 		{
 			// If we enable wrapping, the ScrollViewer disables horizontal scrolling
@@ -299,6 +301,7 @@ namespace Mono.Moonlight.UnitTesting
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void TextBoxScrollable_Wrap_Visible ()
 		{
 			// If we enable wrapping, the ScrollViewer disables horizontal scrolling even if

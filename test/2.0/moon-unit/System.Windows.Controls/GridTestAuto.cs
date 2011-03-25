@@ -1427,6 +1427,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void ArrangeOverride_Constraints ()
 		{
 			MyContentControl top = new MyContentControl { Width = 100, Height = 100 };
@@ -1616,6 +1617,7 @@ namespace MoonTest.System.Windows.Controls
 		
 		[TestMethod]
 		[Asynchronous]
+		[MinRuntimeVersion (4)]
 		public void StarRows3d ()
 		{
 			var poker = new MyContentControl { Width = 120, Height = 120 };
