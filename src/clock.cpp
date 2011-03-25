@@ -122,7 +122,7 @@ Clock::GetName ()
 Duration
 Clock::GetNaturalDuration ()
 {
-	if (!calculated_natural_duration) {
+	if (!calculated_natural_duration && timeline != NULL) {
 		calculated_natural_duration = true;
 
 		Duration *duration = timeline->GetDuration ();
@@ -495,7 +495,7 @@ Clock::SetRootParentTime (TimeSpan parentTime)
 void
 Clock::CalculateFillTime ()
 {
-	if (GetNaturalDuration().HasTimeSpan()) {
+	if (GetNaturalDuration().HasTimeSpan() && timeline != NULL) {
 		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 		if (repeat->HasDuration ()) {
 			fillTime = (repeat->GetDuration() * timeline->GetSpeedRatio ());
@@ -516,6 +516,13 @@ Clock::Begin (TimeSpan parentTime)
 	emit_completed = false;
 	has_completed = false;
 	was_stopped = false;
+
+	if (timeline == NULL) {
+#if SANITY
+		printf ("Moonlight: %s:Begin (): timeline is null, won't begin\n", GetTypeName ());
+#endif
+		return;
+	}
 
 	/* we're starting.  initialize our current_time field */
 	SetCurrentTime ((parentTime - root_parent_time - timeline->GetBeginTime ()) * timeline->GetSpeedRatio());
@@ -589,6 +596,11 @@ Clock::SeekAlignedToLastTick (TimeSpan timespan)
 void
 Clock::FillOnNextTick ()
 {
+	if (timeline == NULL) {
+		Stop ();
+		return;
+	}
+
 	switch (timeline->GetFillBehavior()) {
 		case FillBehaviorHoldEnd:
 			SetClockState (Clock::Filling);
@@ -718,7 +730,7 @@ ClockGroup::Begin (TimeSpan parentTime)
 		c->ClearHasStarted ();
 
 		/* start any clocks that need starting immediately */
-		if (c->GetTimeline()->GetBeginTime() <= current_time) {
+		if (c->GetTimeline () != NULL && c->GetTimeline()->GetBeginTime() <= current_time) {
 			c->Begin (current_time);
 		}
 	}
