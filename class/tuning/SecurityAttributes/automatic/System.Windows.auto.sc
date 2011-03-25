@@ -1,9 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-<<<<<<< HEAD
-# 598 methods needs to be decorated.
-=======
-# 599 methods needs to be decorated.
->>>>>>> [Parent] Handle namescoping more correctly for elements with multiple parents
+# 600 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
