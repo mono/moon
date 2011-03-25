@@ -281,10 +281,16 @@ TextSelection::SetText (const char *text)
 				run_text = "\0";
 
 			char *new_text = (char*)g_malloc0 (strlen (run_text) + strlen (text) + 1);
-				
-			strncpy (new_text, run_text, anchor.ResolveLocation());
-			strcpy (new_text + anchor.ResolveLocation(), text);
-			strncpy (new_text + anchor.ResolveLocation() + strlen(text), run_text + anchor.ResolveLocation(), strlen (run_text) - anchor.ResolveLocation());
+
+			if (strlen (text) < anchor.ResolveLocation ()){
+				// #339RT enters here
+				g_free (new_text);
+				new_text = g_strdup ("BUGBUGBUG");
+			} else {
+				strncpy (new_text, run_text, anchor.ResolveLocation());
+				strcpy (new_text + anchor.ResolveLocation(), text);
+				strncpy (new_text + anchor.ResolveLocation() + strlen(text), run_text + anchor.ResolveLocation(), strlen (run_text) - anchor.ResolveLocation());
+			}
 
 			((Run*)anchor.GetParent())->SetText (new_text);
 
