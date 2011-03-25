@@ -118,12 +118,19 @@ namespace System.Windows.Data {
 
 		object FindSourceByElementName ()
 		{
-			object source = Target.FindName (Binding.ElementName);
-			if (source == null && Target.Mentor != null)
-				source = Target.Mentor.FindName (Binding.ElementName);
-			if (source == null && Target.TemplateOwner != null)
-				source = Target.TemplateOwner.FindName (Binding.ElementName);
-			
+			object source = null;
+			var fe = Target as FrameworkElement ?? Target.Mentor;
+			if (fe != null) {
+				source = fe.FindName (Binding.ElementName);
+				if (source == null) {
+					if (fe.TemplateOwner == null) {
+						if (fe.VisualParent != null)
+							source = fe.VisualParent.FindName (Binding.ElementName);
+					} else {
+						source = fe.TemplateOwner.FindName (Binding.ElementName);
+					}
+				}
+			}
 			return source;
 		}
 
