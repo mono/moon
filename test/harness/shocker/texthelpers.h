@@ -53,7 +53,7 @@ guint32 TextHelpers_GetContentType (UIElement *pUIElement,
 
 // the below are just stubs to show decent error messages instead of EntryPointNotFound messages.
 void TextHelpers_GetGlyphRuns ();
-void GeneralHelpers_IsRunningCheck ();
+void GeneralHelpers_IsRunningCheck (void *element, bool *isCheck);
 void TextHelpers_GetTextRun ();
 void TextHelpers_SetFontSource ();
 void TextHelpers_CopyFontSource ();

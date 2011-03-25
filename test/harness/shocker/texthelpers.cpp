@@ -62,9 +62,14 @@ TextHelpers_GetGlyphRuns ()
 	Shocker_FailTestFast ("TextHelpers_GetGlyphRuns not implemented\n");
 }
 
-void GeneralHelpers_IsRunningCheck ()
+void GeneralHelpers_IsRunningCheck (void *element, bool *isCheck)
 {
-	Shocker_FailTestFast ("GeneralHelpers_IsRunningCheck not implemented\n");
+#if DEBUG
+	*isCheck = true;
+#else
+	*isCheck = false;
+#endif
+	printf ("GeneralHelpers_IsRunningCheck () The test wanted to know if we're in a debug or release build (we're in a %s build).\n", *isCheck ? "debug" : "release");
 }
 
 void TextHelpers_GetTextRun ()
