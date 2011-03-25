@@ -119,7 +119,7 @@ namespace System.Windows.Data {
 		object FindSourceByElementName ()
 		{
 			object source = Target.FindName (Binding.ElementName);
-			if (source == null && !(Target is FrameworkElement) && Target.Mentor != null)
+			if (source == null && Target.Mentor != null)
 				source = Target.Mentor.FindName (Binding.ElementName);
 			if (source == null && Target.TemplateOwner != null)
 				source = Target.TemplateOwner.FindName (Binding.ElementName);
