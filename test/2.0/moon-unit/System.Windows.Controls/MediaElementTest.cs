@@ -330,6 +330,8 @@ namespace MoonTest.System.Windows.Controls
 		public void SetSource_Stream_Null ()
 		{
 			MediaElement media = new MediaElement ();
+			media.MediaFailed += delegate { /* do nothing */ };
+
 			Assert.IsNull (media.Source, "Source-1");
 
 			Assert.Throws<ArgumentNullException> (delegate {
@@ -350,6 +352,8 @@ namespace MoonTest.System.Windows.Controls
 		public void SetSource_StreamNull ()
 		{
 			MediaElement media = new MediaElement ();
+			media.MediaFailed += delegate { /* do nothing */ };
+
 			Assert.IsNull (media.Source, "Source-1");
 
 			media.SetSource (Stream.Null);
@@ -366,6 +370,8 @@ namespace MoonTest.System.Windows.Controls
 		public void SetSource_MediaStreamSouce_Null ()
 		{
 			MediaElement media = new MediaElement ();
+			media.MediaFailed += delegate { /* do nothing */ };
+
 			Assert.IsNull (media.Source, "Source-1");
 
 			Assert.Throws<ArgumentNullException> (delegate {

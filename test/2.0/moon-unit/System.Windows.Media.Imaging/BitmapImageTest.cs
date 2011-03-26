@@ -37,7 +37,11 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		[TestMethod]
 		public void BadUriInCtor ()
 		{
-			Assert.IsNotNull(new BitmapImage (badUri));
+			BitmapImage bi;
+
+			bi = new BitmapImage (badUri);
+			bi.ImageFailed += delegate { /* do nothing */ };
+			Assert.IsNotNull(bi);
 		}
 
 		[TestMethod]
@@ -61,6 +65,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void BadUriSetUriSource ()
 		{
 			BitmapImage bitmap = new BitmapImage ();
+			bitmap.ImageFailed += delegate { /* do nothing */ };
 			bitmap.UriSource = badUri;
 		}
 
@@ -68,6 +73,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void BadUriSetUriSourceTwice ()
 		{
 			BitmapImage bitmap = new BitmapImage ();
+			bitmap.ImageFailed += delegate { /* do nothing */ };
 			bitmap.UriSource = badUri;
 			// call into BitmapImage::UriSourceChanged twice (leaks)
 			bitmap.UriSource = badUri;
@@ -77,6 +83,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void BadUriSetUriSourceProperty ()
 		{
 			BitmapImage bitmap = new BitmapImage ();
+			bitmap.ImageFailed += delegate { /* do nothing */ };
 			bitmap.SetValue (BitmapImage.UriSourceProperty, badUri);
 		}
 		
@@ -86,13 +93,17 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		[TestMethod]
 		public void CorruptImageInCtor ()
 		{
-			Assert.IsNotNull(new BitmapImage (corruptImage));
+			BitmapImage bitmap;
+			bitmap = new BitmapImage (corruptImage);
+			bitmap.ImageFailed += delegate { /* do nothing */ };
+			Assert.IsNotNull(bitmap);
 		}
 		
 		[TestMethod]
 		public void CorruptImageSetUriSource ()
 		{
 			BitmapImage bitmap = new BitmapImage ();
+			bitmap.ImageFailed += delegate { /* do nothing */ };
 			bitmap.UriSource = corruptImage;
 		}
 		
@@ -100,6 +111,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void CorruptImageSetUriSourceProperty ()
 		{
 			BitmapImage bitmap = new BitmapImage ();
+			bitmap.ImageFailed += delegate { /* do nothing */ };
 			bitmap.SetValue (BitmapImage.UriSourceProperty, corruptImage);
 		}
 
@@ -133,6 +145,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			bool l7 = false;
 			bi = new BitmapImage (new Uri ("/site/ClientBin/images/mono-logo.png", UriKind.RelativeOrAbsolute));
 			image.Source = bi;
+			image.ImageFailed += delegate { /* do nothing */ };
 			bi.ImageFailed += delegate { l7 = true; };
 			EnqueueConditional (() => l7, "#7");
 

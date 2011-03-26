@@ -36,6 +36,7 @@ namespace MoonTest.System.Windows.Media {
 			ImageSourceConverter c = new ImageSourceConverter ();
 			var converted = c.ConvertFrom ("http://example.com/image.jpg");
 			Assert.IsInstanceOfType<BitmapImage> (converted, "#1");
+			((BitmapImage) converted).ImageFailed += delegate { /* do nothing */ };
 
 			Uri uri = ((BitmapImage) converted).UriSource;
 			Assert.AreEqual (new Uri ("http://example.com/image.jpg", UriKind.Absolute), uri, "#2");
@@ -48,6 +49,7 @@ namespace MoonTest.System.Windows.Media {
 			ImageSourceConverter c = new ImageSourceConverter ();
 			var converted = c.ConvertFrom ("string");
 			Assert.IsInstanceOfType<BitmapImage> (converted, "#1");
+			((BitmapImage) converted).ImageFailed += delegate { /* do nothing */ };
 
 			Uri uri = ((BitmapImage) converted).UriSource;
 			Assert.AreEqual (new Uri ("string", UriKind.Relative), uri, "#2");
@@ -60,6 +62,8 @@ namespace MoonTest.System.Windows.Media {
 			Uri uri = new Uri ("tester.com", UriKind.Relative);
 			ImageSourceConverter c = new ImageSourceConverter ();
 			var converted = c.ConvertFrom (uri);
+			((BitmapImage) converted).ImageFailed += delegate { /* do nothing */ };
+		
 			Assert.IsInstanceOfType<BitmapImage> (converted, "#1");
 			Assert.AreEqual (uri, ((BitmapImage) converted).UriSource, "#2");
 		}

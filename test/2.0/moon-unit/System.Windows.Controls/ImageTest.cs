@@ -38,6 +38,7 @@ namespace MoonTest.System.Windows.Controls
 			Image image = new Image ();
 
 			image.Source = new BitmapImage (new Uri ("images/mono.png", UriKind.Relative));
+			image.ImageFailed += delegate { /* do nothing */ };
 
 			image.Measure (new Size (500,500));
 
@@ -54,6 +55,7 @@ namespace MoonTest.System.Windows.Controls
 			image.Width = 50;
 			image.Height = 50;
 			image.Source = new BitmapImage (new Uri ("images/mono.png", UriKind.Relative));
+			image.ImageFailed += delegate { /* do nothing */ };
 			
 			image.Measure (new Size (500,500));
 
