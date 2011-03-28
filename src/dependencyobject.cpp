@@ -3510,10 +3510,8 @@ DependencyObject::RemoveParent (DependencyObject *parent, MoonError *error)
 	} else {
 		// THIS IS A HACK FOR NOW
 		// WE SHOULD NEVE HAVE A CASE WHERE WE REMOVEPARENT A VALUE UNLESS WE PREVIOUSLY ADDPARENTED IT
-		if (this->parent == NULL)
+		if (this->parent != parent)
 			return;
-		
-		g_return_if_fail (this->parent == parent);
 	}
 
 	if (GetDeployment()->IsShuttingDown ()) {
