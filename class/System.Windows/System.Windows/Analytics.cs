@@ -71,6 +71,7 @@ namespace System.Windows
 				float result = provider.AverageProcessLoad * 100;
 				result = Math.Min (result, 100);
 				result = Math.Max (result, 0);
+				result = Math.Min (result, AverageProcessorLoad);
 				return result;
 			}
 		}
