@@ -76,6 +76,16 @@ namespace Mono.Moonlight.UnitTesting
 			}
 		}
 
+		public static void EnablePluginErrors ()
+		{
+			HtmlPage.Window.Eval ("enablePluginErrors ();");
+		}
+
+		public static void DisablePluginErrors ()
+		{
+			HtmlPage.Window.Eval ("disablePluginErrors ();");
+		}
+
 		public static UIElement CreateTestPage (Application app)
 		{
 			settings = new UnitTestSettings ();
@@ -95,6 +105,15 @@ namespace Mono.Moonlight.UnitTesting
 				settings.TagExpression = HtmlPage.Document.DocumentUri.OriginalString.Substring (HtmlPage.Document.DocumentUri.OriginalString.IndexOf ('?') + 1);
 				if (settings.TagExpression.IndexOf ('#') > 0)
 					settings.TagExpression = settings.TagExpression.Remove (settings.TagExpression.IndexOf ('#'));
+				
+				List<string> exps = new List<string> (settings.TagExpression.Split ('&'));
+				for (int i = exps.Count - 1; i >= 0; i--) {
+					if (exps [i].StartsWith ("version=") || exps [i].StartsWith ("bot_mode=")) {
+						exps.RemoveAt (i);
+					}
+				}
+				settings.TagExpression = string.Join ("&", exps.ToArray ());
+
 			}
 			test_page = UnitTestSystem.CreateTestPage (settings);
 			

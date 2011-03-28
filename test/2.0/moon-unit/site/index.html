@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Moonlight Unit Test Harness</title>
+	<style type="text/css">
+		html, body
+		{
+			height: 100%;
+			overflow: auto;
+		}
+		body
+		{
+			padding: 0;
+			margin: 0;
+		}
+		#silverlightControlHost
+		{
+			height: 100%;
+		}
+	</style>
+
+    <script type="text/javascript">
+		var bot_mode = false;
+		var version = "0";
+		var showPluginErrors = true;
+
+		function load_page () {
+			var js;
+
+			bot_mode = get_param ("bot_mode") == "yes";
+			version = get_param ("version");
+
+			if (version == "0" || version == "") {
+				alert ("You need to set the version: index.html?version=#");
+				return;
+			}
+			
+			if (bot_mode) {
+				// We need to load libshocker
+				js = document.createElement ('script');
+				js.setAttribute ("type","text/javascript");
+				js.setAttribute ("src", "../../../js/js/utils.js");
+				document.getElementsByTagName ("head")[0].appendChild (js);
+				js = document.createElement ('script');
+				js.setAttribute ("type","text/javascript");
+				js.setAttribute ("src", "../../../js/js/testplugin.js");
+				document.getElementsByTagName ("head")[0].appendChild (js);
+			}
+			load_silverlight ();
+		}
+
+		function load_silverlight () {
+			var html;
+
+			if (bot_mode && (typeof (TestPluginReady) == "undefined" || TestPluginReady == false)) {
+				setTimeout (load_silverlight, 100);
+				return;
+			}
+
+			html = 
+			'<object id="silverlight" data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="1600" height="1200">' +
+			'	<param name="onerror" value="onSilverlightError" />' +
+			'	<param name="onload" value="onSilverlightLoad" />' +
+			'	<param name="source" value="ClientBin/moon-unit' + version + '.xap" />' + 
+			'	<param name="background" value="white" />' +
+			'</object>';
+			
+			document.getElementById ("slContainer").innerHTML = html;
+		}
+
+		function get_param (name) {
+			name = name.replace (/[\[]/,"\\\[").replace (/[\]]/,"\\\]");
+
+			var regexS = "[\\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp (regexS);
+			var results = regex.exec (window.location.href);
+			
+			if (results == null) {
+				return "";
+			} else {
+				return results [1];
+			}
+		}
+
+		function ShutdownHarness () {
+			if (bot_mode) {
+				TestLogger.LogDebug ("ShutdownHarness.");
+				SignalShutdown();
+			} else {
+				// do nothing
+			}
+		}
+
+		function onSilverlightLoad (sender, args) {
+			if (version == null || version == undefined || version == "")
+				alert ("You need to pass version=#");
+
+			if (bot_mode) {
+				TestLogger.LogDebug("OnPluginLoad");
+			} else {
+			}
+        }
+
+		function disablePluginErrors ()
+		{
+			if (bot_mode)
+				TestLogger.LogDebug ("Plugin errors have been disabled");
+			showPluginErrors = false;
+		}
+		
+		function enablePluginErrors ()
+		{
+			if (bot_mode)
+				TestLogger.LogDebug ("Plugin errors have been enabled");
+			showPluginErrors = true;
+		}
+
+		function onSilverlightError (sender, args) {
+			if (bot_mode) {
+				if (showPluginErrors) {
+					TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+					TestLogger.LogResult (-1);
+					SignalShutdown ();
+				} else {
+					TestLogger.LogDebug ("onSilverlightError was called [expected]");
+				}
+			} else {
+				if (showPluginErrors) {
+					var appSource = "";
+					if (sender != null && sender != 0) {
+						appSource = sender.getHost ().Source;
+					}
+					var errorType = args.ErrorType;
+					var iErrorCode = args.ErrorCode;
+
+					var errMsg = "Unhandled Error in Silverlight Application " + appSource + "\n";
+					errMsg += "This is usually because a test didn't handle an exception/error, and it propagated to the plugin's error handle.\n";
+
+					errMsg += "Code: " + iErrorCode + "    \n";
+					errMsg += "Category: " + errorType + "       \n";
+					errMsg += "Message: " + args.ErrorMessage + "     \n";
+
+					if (errorType == "ParserError") {
+						errMsg += "File: " + args.xamlFile + "     \n";
+						errMsg += "Line: " + args.lineNumber + "     \n";
+						errMsg += "Position: " + args.charPosition + "     \n";
+					} else if (errorType == "RuntimeError") {
+						if (args.lineNumber != 0) {
+							errMsg += "Line: " + args.lineNumber + "     \n";
+							errMsg += "Position: " + args.charPosition + "     \n";
+						}
+						errMsg += "MethodName: " + args.methodName + "     \n";
+					}
+					document.write (errMsg);
+				} else {
+					// not much we can/should do here.
+				}
+			}
+		}
+
+		function ScriptObjectInvokeSelfTest() {
+			return true;
+		}
+	</script>
+</head>
+
+<body onload="load_page ();">
+	<div id='errorLocation' style="font-size: small; color: Gray;"> </div>
+	<div id="silverlightControlHost">
+		<div id="slContainer"> </div>
+		<iframe style='visibility: hidden; height: 0; width: 0; border: 0px'></iframe>
+		<iframe id="_sl_historyFrame" style="visibility:hidden;height:0px;width:0px;border:0px"></iframe>
+	</div>
+</body>
+</html>
