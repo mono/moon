@@ -587,6 +587,7 @@ namespace Mono.Xaml {
 		public static string IgnorableUri = "http://schemas.openxmlformats.org/markup-compatibility/2006";
 		public static string PresentationUri = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 		public static string XamlUri = "http://schemas.microsoft.com/winfx/2006/xaml";
+		public static string LegacyXamlUri = "http://schemas.microsoft.com/client/2007";
 
 		public List<XamlNode> Children;
 		public Dictionary<string, XamlAttribute> Attributes;
