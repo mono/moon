@@ -266,6 +266,7 @@ public:
 
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface () = 0;
+	virtual void ExitApplication () = 0;
 
 	/* @GeneratePInvoke */
 	virtual MoonWindow *CreateWindow (MoonWindowType windowType, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;

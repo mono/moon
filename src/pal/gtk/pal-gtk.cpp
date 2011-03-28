@@ -702,6 +702,12 @@ MoonWindowingSystemGtk::CreateSurface ()
 	g_assert_not_reached ();
 }
 
+void
+MoonWindowingSystemGtk::ExitApplication ()
+{
+	gtk_main_quit ();
+}
+
 MoonWindow *
 MoonWindowingSystemGtk::CreateWindow (MoonWindowType windowType, int width, int height, MoonWindow *parentWindow, Surface *surface)
 {
@@ -1446,6 +1452,11 @@ MoonInstallerServiceGtk::Uninstall (Deployment *deployment)
 	shortcut = install_utils_get_desktop_shortcut (settings);
 	g_unlink (shortcut);
 	g_free (shortcut);
-	
+
+	if (deployment->GetCurrentApplication ()->IsRunningOutOfBrowser ()) {
+		LOG_OOB ("MoonInstallerServiceGtk::Uninstall (): exiting application since we're running OOB\n");
+		Runtime::GetWindowingSystem ()->ExitApplication ();
+	}
+
 	return true;
 }

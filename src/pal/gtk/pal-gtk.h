@@ -18,6 +18,7 @@ public:
 
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface ();
+	virtual void ExitApplication ();
 
 	MoonWindow *CreateWindow (MoonWindowType windowType, int width, int height, MoonWindow *parentWindow, Surface *surface);
 	MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
