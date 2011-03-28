@@ -75,13 +75,13 @@ FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 };
 
 FrameworkElement::FrameworkElement ()
-	: UIElement (Type::FRAMEWORKELEMENT), logical_parent (this, LogicalParentWeakRef), default_template (this, DefaultTemplateWeakRef)
+	: UIElement (Type::FRAMEWORKELEMENT), logical_parent (this, LogicalParentWeakRef)
 {
 	Init ();
 }
 
 FrameworkElement::FrameworkElement (Type::Kind object_type)
-	: UIElement (object_type), logical_parent (this, LogicalParentWeakRef), default_template (this, DefaultTemplateWeakRef)
+	: UIElement (object_type), logical_parent (this, LogicalParentWeakRef)
 {
 	Init ();
 }
@@ -1071,8 +1071,6 @@ FrameworkElement::ApplyTemplateWithError (MoonError *error)
 		return false;
 	
 	bool result = DoApplyTemplateWithError (error);
-	if (GetSubtreeObject ())
-		GetSubtreeObject ()->SetMentor (this);
 	if (result)
 		OnApplyTemplate ();
 	return result;
@@ -1086,13 +1084,6 @@ FrameworkElement::DoApplyTemplateWithError (MoonError *error)
 		e->AddParent (this, error);
 		if (error->number)
 			return false;
-
-		if (default_template) {
-			default_template->RemoveParent (this, NULL);
-			default_template = NULL;
-		}
-
-		this->default_template = e;
 
 		SetSubtreeObject (e);
 		ElementAdded (e);
@@ -1111,9 +1102,6 @@ FrameworkElement::ElementRemoved (UIElement *obj)
 {
 	UIElement::ElementRemoved (obj);
 	if (GetSubtreeObject () == obj) {
-		MoonError e;
-		obj->RemoveParent (this, &e);
-		obj->SetMentor (NULL);
 		SetSubtreeObject (NULL);
 	}
 }

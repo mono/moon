@@ -205,7 +205,6 @@ public:
 	void SetFlowDirection (FlowDirection value);
 
 	const static void *LogicalParentWeakRef;
-	const static void *DefaultTemplateWeakRef;
 
 protected:
 	GetDefaultTemplateCallback get_default_template_cb;
@@ -226,7 +225,6 @@ private:
 	StyleResourceChangedCallback style_resource_changed_cb;
 
 	WeakRef<DependencyObject> logical_parent;
-	WeakRef<UIElement> default_template;
 
 	void Init ();
 };
