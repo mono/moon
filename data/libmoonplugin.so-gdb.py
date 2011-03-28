@@ -194,12 +194,14 @@ class ValuePrinter:
         # FIXME we should also grovel along the parameter list in methods
 
         while frame != None and frame.is_valid():
-          this_var = frame.read_var ("this")
-          if this_var != None and is_eventobject (this_var):
-              deployment = this_var.cast (gdb.lookup_type ("Moonlight::EventObject").pointer())['deployment']
-              return deployment
-          frame = frame.older()
-
+            try:
+                this_var = frame.read_var ("this")
+                if this_var != None and is_eventobject (this_var):
+                    deployment = this_var.cast (gdb.lookup_type ("Moonlight::EventObject").pointer())['deployment']
+                    return deployment
+                frame = frame.older()
+            except:
+                frame = frame.older()
         return None
 
 class DependencyPropertyPrinter:
@@ -231,7 +233,12 @@ class CollectionPrinter(EventObjectPrinter):
             data = self.val['array']['pdata'][self.count].cast(gdb.lookup_type("Moonlight::Value").pointer());
             count = self.count
             self.count = self.count + 1
-            return ('[%d]' % count, ValuePrinter (data, self.val['deployment']).to_string())
+            value_printer = check_printer (ValuePrinter (data, self.val['deployment']));
+            if value_printer == None:
+                val_thing = data
+            else:
+                val_thing = value_printer.to_string()
+            return ('[%d]' % count, val_thing)
 
     def __init__ (self, val):
         # not sure why this isn't working...
@@ -245,6 +252,13 @@ class CollectionPrinter(EventObjectPrinter):
     def display_hint (self):
         return "array"
 
+def check_printer (printer):
+    try:
+       s = printer.to_string()
+       return printer
+    except:
+       return None
+
 def lookup_printer (val):
 
     if val == None:
@@ -257,23 +271,28 @@ def lookup_printer (val):
     type = type.unqualified()
 
 
-    if is_eventobject (val):
-#        try:
-        val_type = val['object_type']
-        if moonlight_is (val['deployment'], find_type ("COLLECTION"), val_type):
-            return CollectionPrinter (val.cast(gdb.lookup_type("Moonlight::Collection").pointer()))
-#        except:
-            # we hit this if val is null
-#            return None
-        str_type = str(val_type)
-	return EventObjectPrinter (val)
+    try:
+        if is_eventobject (val):
+            val_type = val['object_type']
+            if moonlight_is (val['deployment'], find_type ("COLLECTION"), val_type):
+                return CollectionPrinter (val.cast(gdb.lookup_type("Moonlight::Collection").pointer()))
+
+            str_type = str(val_type)
+            # try the printer's to_string method, and if it throws, return None
+            return check_printer (EventObjectPrinter (val));
+    except:
+        # we hit this if val is null
+        return None
+
 
     str_type = str(type)
     if str_type == "Moonlight::Value":
-        return ValuePrinter (val, None)
+        # try the printer's to_string method, and if it throws, return None
+        return check_printer (ValuePrinter (val, None))
 
     if str_type == "Moonlight::DependencyProperty":
-        return DependencyPropertyPrinter (val)
+        # try the printer's to_string method, and if it throws, return None
+        return check_printer (DependencyPropertyPrinter (val))
 
     lookup_tag = val.type.tag
 
@@ -282,7 +301,7 @@ def lookup_printer (val):
 
     regex = re.compile ('^Moonlight::WeakRef<.*>$')
     if regex.match (lookup_tag):
-        return WeakRefPrinter (val)
+        return check_printer (WeakRefPrinter (val))
 
     return None
 
