@@ -542,7 +542,7 @@ TextPointer::ResolveLocation () const
 		return 0;
 
 	if (parent->Is (Type::RUN)) {
-		const char *text = ((Run*)parent)->GetText();
+		const char *text = ((Run*) parent.GetFieldValue ())->GetText();
 		if (text == NULL)
 			return 0;
 

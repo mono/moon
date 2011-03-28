@@ -17,6 +17,7 @@
 #include "enums.h"
 #include "rect.h"
 #include "error.h"
+#include "weakrefmanager.h"
 
 #define CONTENT_START (0)
 #define CONTENT_END ((guint32)-1)
@@ -78,16 +79,20 @@ private:
 class TextPointer {
 public:
 	TextPointer ()
-		: parent (NULL), location (0), direction (LogicalDirectionBackward)
-	{ }
+		: parent (), location (0), direction (LogicalDirectionBackward)
+	{}
 
 	TextPointer (const TextPointer& pointer)
-		: parent (pointer.parent), location (pointer.location), direction (pointer.direction)
-	{ }
+		: parent (), location (pointer.location), direction (pointer.direction)
+	{
+		parent = pointer.parent.GetFieldValue ();
+	}
 
 	TextPointer (DependencyObject *parent, gint32 location, LogicalDirection direction)
-		: parent (parent), location (location), direction (direction)
-	{ }
+		: parent (), location (location), direction (direction)
+	{
+		this->parent = parent;
+	}
 
 	~TextPointer () {}
 
@@ -127,8 +132,18 @@ public:
 
 	RichTextBox *GetRichTextBox () const;
 
+	TextPointer& operator=(const TextPointer& wr) // assignment operator
+	{
+		if (this != &wr) {
+			parent = wr.parent.GetFieldValue ();
+			location = wr.location;
+			direction = wr.direction;
+		}
+		return *this;
+	}
+
 private:
-	DependencyObject *parent; // weakref?
+	WeakRef<DependencyObject> parent;
 	guint32 location;
 	LogicalDirection direction;
 };

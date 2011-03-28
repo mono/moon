@@ -189,6 +189,9 @@ TextSelection::Insert (TextElement *element)
 		IDocumentNode *parent_node = IDocumentNode::CastToIDocumentNode (el_parent);
 		DependencyObjectCollection *parents_children = parent_node ? parent_node->GetDocumentChildren () : NULL;
 
+		if (parents_children == NULL)
+			return; /* #rtx24 */
+
 		DependencyObject *new_el;
 		if (element->Is (el->GetObjectType()) /* a more precise check perhaps?  instead of subclass? */) {
 			// we don't need to split the node.  we just
@@ -282,7 +285,7 @@ TextSelection::SetText (const char *text)
 
 			char *new_text = (char*)g_malloc0 (strlen (run_text) + strlen (text) + 1);
 
-			if (strlen (text) < anchor.ResolveLocation ()){
+			if (strlen (text) < (size_t) anchor.ResolveLocation ()){
 				// #339RT enters here
 				g_free (new_text);
 				new_text = g_strdup ("BUGBUGBUG");
