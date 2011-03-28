@@ -319,6 +319,21 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void NullOldValue ()
+		{
+			Rectangle r = new Rectangle ();
+
+			Style style = new Style (typeof (Rectangle));
+			style.Setters.Add (new Setter (FrameworkElement.WidthProperty, 100));
+			style.Setters.Add (new Setter (FrameworkElement.HeightProperty, "CRASH ME"));
+			r.Style = style;
+			r.Height = 2;
+			r.ClearValue (Rectangle.HeightProperty);
+			r.Height = 2;
+			r.ClearValue (Rectangle.HeightProperty);
+		}
+
+		[TestMethod]
 		[MaxRuntimeVersion(3)]
 		[MoonlightBug ("we're failing #2")]
 		public void ManagedAccessAfterParsing_sl3 ()

@@ -99,7 +99,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Pr
 	if ((reason & ProviderFlags_RecomputesOnClear) == 0)
 		return;
 
-	Value old_value;
+	Value *old_value;
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
 
@@ -115,11 +115,16 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Pr
 			new_value->Weaken (style->GetDeployment ());
 		}
 
-		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
+		old_value = (Value *) g_hash_table_lookup (style_hash, property);
+		if (old_value != NULL)
+			old_value = new Value (*old_value);
 
 		g_hash_table_insert (style_hash, property, new_value);
 
-		obj->ProviderValueChanged (precedence, property, &old_value, new_value, true, true, true, error);
+		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, true, error);
+
+		delete old_value;
+
 		if (error->number)
 			return;
 	}
@@ -248,7 +253,7 @@ ImplicitStylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *
 	if (!styles)
 		return;
 
-	Value old_value;
+	Value *old_value;
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
 
@@ -264,11 +269,16 @@ ImplicitStylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *
 			new_value->Weaken (setter->GetDeployment ());
 		}
 
-		old_value = *(Value *) g_hash_table_lookup (style_hash, property);
+		old_value = (Value *) g_hash_table_lookup (style_hash, property);
+		if (old_value != NULL)
+			old_value = new Value (*old_value);
 
 		g_hash_table_insert (style_hash, property, new_value);
 
-		obj->ProviderValueChanged (precedence, property, &old_value, new_value, true, true, true, error);
+		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, true, error);
+
+		delete old_value;
+
 		if (error->number)
 			return;
 	}
