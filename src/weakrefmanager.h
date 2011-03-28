@@ -51,6 +51,7 @@ public:
 	void operator=(EO *ptr) { Set (ptr); }
 
 	EO* operator->() const { return (EO *) (field); }
+	EO* GetFieldValue () const { return (EO *) field; }
 
 private:
 	// Disallow the following operations
