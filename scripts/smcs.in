@@ -4,7 +4,7 @@ for arg
 do
     case "$arg" in
 	-profile:desktop)
-		profile=2.0
+		profile=4.0
 		shift ;;
 	-profile:plugin)
 		shift ;;
