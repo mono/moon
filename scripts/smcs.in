@@ -13,4 +13,4 @@ do
     esac
 done
 
-mcs -sdk:2.1 -lib:@profile@/lib/moonlight/$profile -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"
+mcs -lib:@prefix@/lib/moonlight/$profile -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"
