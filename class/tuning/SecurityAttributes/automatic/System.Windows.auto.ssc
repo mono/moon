@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 653 methods
+# 647 methods
 
 +SSC-M: System.Boolean MS.Internal.InternalTransform::TryTransform(System.Windows.Point,System.Windows.Point&)
 +SSC-M: System.Windows.Media.Media3D.Matrix3D MS.Internal.InternalTransform::get_Matrix()
@@ -189,18 +189,13 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::FindName(System.String)
 +SSC-M: System.Boolean System.Windows.DependencyObject::SetNameOnScope(System.String,Mono.NameScope)
 +SSC-M: Mono.Kind System.Windows.DependencyObject::GetKind()
-+SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::get_Count()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Clear()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Initialize()
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::RemoveAt(System.Int32)
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Add(T)
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::Insert(System.Int32,T)
 +SSC-M: System.Boolean System.Windows.DependencyObjectCollection`1::Remove(T)
-+SSC-M: T System.Windows.DependencyObjectCollection`1::get_Item(System.Int32)
 +SSC-M: System.Void System.Windows.DependencyObjectCollection`1::set_Item(System.Int32,T)
-+SSC-M: System.Boolean System.Windows.DependencyObjectCollection`1::Contains(T)
-+SSC-M: System.Int32 System.Windows.DependencyObjectCollection`1::IndexOf(T)
-+SSC-M: System.Collections.Generic.IEnumerator`1<T> System.Windows.DependencyObjectCollection`1::GetEnumerator()
 +SSC-M: System.Windows.PropertyMetadata System.Windows.DependencyProperty::GetMetadata(System.Type)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
@@ -231,7 +226,6 @@
 +SSC-M: System.Int32 System.Windows.InternalCollectionChangedEventArgs::get_Index()
 +SSC-M: System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1::Initialize()
-+SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::get_Count()
 +SSC-M: System.Collections.Generic.IEnumerator`1<T> System.Windows.PresentationFrameworkCollection`1::GetEnumerator()
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1::ClearImpl()
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1::AddImpl(T,System.Boolean)
