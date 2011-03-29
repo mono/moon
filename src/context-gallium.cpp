@@ -478,22 +478,25 @@ void
 GalliumContext::Blit (unsigned char *data,
 		      int           stride)
 {
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
-	cairo_surface_t *surface =
-		cairo_image_surface_create_for_data (data,
-						     CAIRO_FORMAT_ARGB32, 
-						     r.width,
-						     r.height,
-						     stride);
-	cairo_t         *cr = Context::Push (Cairo ());
+	Context::Target          *target = Top ()->GetTarget ();
+	MoonSurface              *ms;
+	Rect                     r = target->GetData (&ms);
+	GalliumSurface           *dst = (GalliumSurface *) ms;
+	struct pipe_resource     *texture = dst->Texture ();
+	unsigned char            *bits;
+	GalliumSurface::Transfer *transfer =
+		new GalliumSurface::Transfer (gpipe, texture);
 
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_surface (cr, surface, 0, 0);
-	cairo_paint (cr);
-	cairo_surface_destroy (surface);
+	bits = (unsigned char *) transfer->Map ();
+	for (int i = 0; i < texture->height0; i++)
+		memcpy (bits + texture->width0 * 4 * i,
+			data + stride * i,
+			MIN (stride, texture->width0 * 4));
 
-	Pop ();
+	transfer->Unmap ();
+	delete transfer;
+
+	ms->unref ();
 }
 
 void
