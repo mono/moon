@@ -610,7 +610,10 @@ namespace Mono.Xaml {
 
 		private bool IsStaticResourceElement ()
 		{
-			return reader.LocalName == "StaticResource" && (reader.NamespaceURI == XamlNode.XamlUri || reader.NamespaceURI == XamlNode.LegacyXamlUri);
+			return reader.LocalName == "StaticResource" 
+				&& (reader.NamespaceURI == XamlNode.XamlUri
+				    || reader.NamespaceURI == XamlNode.LegacyXamlUri
+				    || reader.NamespaceURI == XamlNode.PresentationUri);
 		}
 
 		private bool IsTextBlockElement (XamlObjectElement obj)
