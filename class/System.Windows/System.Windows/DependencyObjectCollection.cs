@@ -42,7 +42,7 @@ namespace System.Windows {
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public int Count {
-			get { return Mono.NativeMethods.collection_get_count (native); }
+			get { Items.Count; }
 		}
 
 		public bool IsReadOnly {
