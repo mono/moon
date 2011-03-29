@@ -126,6 +126,34 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void TemplateBindingInDataTemplate ()
+		{
+			// TemplateBindings in DataTemplates are not applied
+			var c = (ContentControl) XamlReader.Load (@"
+<ContentControl Width=""10""
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
+
+	<ContentControl.ContentTemplate>
+		<DataTemplate>
+			<Rectangle x:Name=""Foo"" Width=""{TemplateBinding Control.Width}"" />
+		</DataTemplate>
+	</ContentControl.ContentTemplate>
+</ContentControl>");
+
+			CreateAsyncTest (c,
+				() => {
+					c.UpdateLayout ();
+				}, () => {
+					var rect = c.FindFirstChild<Rectangle> ();
+					Assert.AreEqual ("Foo", rect.Name);
+					Assert.IsUnset (rect, Rectangle.WidthProperty, "#1");
+				}
+			);
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void UseNonUIElementRoot ()
 		{

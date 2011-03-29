@@ -248,9 +248,9 @@ namespace Mono.Xaml {
 			Type property_lookup_type;
 			ControlTemplate template = Parser.Context.Template as ControlTemplate;
 			if (template == null)
-				property_lookup_type = typeof (FrameworkElement);
-			else
-				property_lookup_type = template.TargetType ?? typeof (Control);
+				return; // You can't apply Templatebindings outside of ControlTemplates
+
+			property_lookup_type = template.TargetType ?? typeof (Control);
 
 			DependencyProperty source_prop = LookupDependencyProperty (Deployment.Current.Types.TypeToKind (property_lookup_type), tb.SourcePropertyName);
 			if (source_prop == null)
