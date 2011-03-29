@@ -119,17 +119,14 @@ namespace System.Windows.Data {
 		object FindSourceByElementName ()
 		{
 			object source = null;
-			var fe = Target as FrameworkElement ?? Target.Mentor;
-			if (fe != null) {
+			UIElement fe = Target as FrameworkElement ?? Target.Mentor;
+			while (fe != null && source == null) {
 				source = fe.FindName (Binding.ElementName);
-				if (source == null) {
-					if (fe.TemplateOwner == null) {
-						if (fe.VisualParent != null)
-							source = fe.VisualParent.FindName (Binding.ElementName);
-					} else {
-						source = fe.TemplateOwner.FindName (Binding.ElementName);
-					}
-				}
+				// DRT 233 and a moon-unit test check that this is
+				// how the lookup is done. See comment on the moon-unit
+				// 'ElementName_DataTemplate_DoNotUseVisualParent' test.
+				if (source == null)
+					fe = (UIElement) fe.TemplateOwner;
 			}
 			return source;
 		}

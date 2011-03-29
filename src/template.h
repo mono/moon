@@ -31,7 +31,7 @@ public:
 
 	/* @GeneratePInvoke */
 	/* This method always returns a reffed object */
-	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
+	DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 
 	/* @GeneratePInvoke */
 	void SetXamlBuffer (parse_template_func parse_template, Value *parse_template_data, const char *buffer, bool holdManagedRef);
@@ -82,9 +82,6 @@ protected:
 //
 /* @Namespace=System.Windows */
 class DataTemplate : public FrameworkTemplate {
-public:
-	/* This method always returns a reffed object */
-	virtual DependencyObject *GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error);
 protected:
 	/* @GeneratePInvoke */
 	DataTemplate ();

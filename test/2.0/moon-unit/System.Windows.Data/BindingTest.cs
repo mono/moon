@@ -1465,6 +1465,29 @@ namespace MoonTest.System.Windows.Data
 			});
 			EnqueueTestComplete ();
 		}
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_DataTemplate_DoNotUseVisualParent ()
+		{
+			// ElementName bindings do not search up the visual tree
+			// when searching for the correct element. They only search
+			// up the TemplateParent tree. DRT 233 has more tests to show
+			// that an ElementName binding can find an element by walking
+			// up the TemplateOwner 'tree'. See tests in the following class:
+			// "DependencyObjectLevel.ElementName.DynamicNamescopesTests"
+			var template = (DataTemplate) XamlReader.Load (@"
+<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'>
+	<TextBlock Text=""{Binding Width, ElementName='Foo'}"" />
+</DataTemplate>");
+
+			var tb = (TextBlock) template.LoadContent ();
+			TestPanel.Children.Add (new Rectangle { Name = "Foo" });
+			TestPanel.Children.Add (tb);
+
+			Enqueue (() => TestPanel.UpdateLayout ());
+			Enqueue (() => Assert.AreEqual ("", tb.Text, "#1"));
+			EnqueueTestComplete ();
+		}
 
 		[TestMethod]
 		[Asynchronous]

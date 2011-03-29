@@ -107,11 +107,4 @@ DataTemplate::DataTemplate ()
 	SetObjectType (Type::DATATEMPLATE);
 }
 
-DependencyObject *
-DataTemplate::GetVisualTreeWithError (FrameworkElement *templateBindingSource, MoonError *error)
-{
-	// DataTemplate ignores the source paramater and always uses null
-	return FrameworkTemplate::GetVisualTreeWithError (NULL, error);
-}
-
 };

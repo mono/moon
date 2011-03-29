@@ -66,11 +66,6 @@ namespace System.Windows {
 				base.ClearStrongRef (id, value);
 		}
 
-		internal DependencyObject GetVisualTree ()
-		{
-			return GetVisualTree (null);
-		}
-		
 		internal DependencyObject GetVisualTree (DependencyObject bindingSource)
 		{
 			IntPtr src = bindingSource == null ? IntPtr.Zero : bindingSource.native;

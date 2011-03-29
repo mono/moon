@@ -63,7 +63,7 @@ namespace System.Windows.Controls
 		UIElement FallbackRoot {
 			get {
 				if (_fallbackRoot == null)
-					_fallbackRoot = (UIElement) ContentControl.FallbackTemplate.GetVisualTree (null);
+					_fallbackRoot = (UIElement) ContentControl.FallbackTemplate.GetVisualTree (this);
 				return _fallbackRoot;
 			}
 		}
@@ -120,7 +120,7 @@ namespace System.Windows.Controls
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate;
 			if (template != null) {
-				_contentRoot = template.LoadContent () as UIElement;
+				_contentRoot = template.GetVisualTree (this) as UIElement;
 			} else {
 				var content = Content;
 				_contentRoot = content as UIElement;

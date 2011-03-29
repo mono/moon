@@ -34,7 +34,7 @@ namespace System.Windows {
 
 		public DependencyObject LoadContent ()
 		{
-			return GetVisualTree ();
+			return GetVisualTree (null);
 		}
 	}
 }

@@ -95,7 +95,7 @@ namespace System.Windows.Controls {
 	<Border />
 </ControlTemplate>");
 
-					defaultTemplate = (UIElement) x.GetVisualTree ();
+					defaultTemplate = (UIElement) x.GetVisualTree (this);
 				}
 
 				return defaultTemplate;
