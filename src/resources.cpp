@@ -245,10 +245,6 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	bool result = Collection::AddWithError (v, error) != -1;
 	from_resource_dictionary_api = false;
 	if (result) {
-		DependencyObject *ob = v->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) ? v->AsDependencyObject () : NULL;
-		if (ob && GetMentor ())
-			ob->SetMentor (GetMentor ());
-
 		g_hash_table_insert (hash, g_strdup (key), v);
 
 		v->Weaken (GetDeployment ());

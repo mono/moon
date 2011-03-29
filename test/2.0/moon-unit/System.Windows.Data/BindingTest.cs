@@ -2065,6 +2065,42 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 			Assert.AreEqual("#00000000", brush.Color.ToString(), "#1");
 		}
 
+		[TestMethod]
+		public void MentorTest_TwoMentors_ResourceDictionaryFirst ()
+		{
+			// If the brushes first parent is a ResourceDictionary, the
+			// mentor is not nulled out when the brush gains secondary parents
+			var brush = new SolidColorBrush ();
+			var mentor = new Rectangle ();
+
+			TestPanel.DataContext = Colors.Red;
+			mentor.DataContext = Colors.Green;
+
+			TestPanel.Resources.Add ("foo", brush);
+			mentor.Fill = brush;
+
+			BindingOperations.SetBinding (brush, SolidColorBrush.ColorProperty, new Binding ());
+			Assert.AreEqual (Colors.Red, brush.Color, "#1");
+		}
+
+		[TestMethod]
+		public void MentorTest_TwoMentors_ResourceDictionarySecond ()
+		{
+			// If the brushes first parent is not a ResourceDictionary, the
+			// mentor is nulled as per normal
+			var brush = new SolidColorBrush ();
+			var mentor = new Rectangle ();
+
+			TestPanel.DataContext = Colors.Red;
+			mentor.DataContext = Colors.Green;
+
+			mentor.Fill = brush;
+			TestPanel.Resources.Add ("foo", brush);
+
+			BindingOperations.SetBinding (brush, SolidColorBrush.ColorProperty, new Binding ());
+			Assert.AreEqual ("#00000000", brush.Color.ToString (), "#1");
+		}
+
 		[TestMethod()]
 		public void MentorTest_CustomProperty()
 		{

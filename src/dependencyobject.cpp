@@ -3423,7 +3423,12 @@ DependencyObject::AddParent (DependencyObject *parent, bool merge_names_from_sub
 	
 	if (this->parent || HasSecondaryParents ()) {
 		AddSecondaryParent (parent);
-		SetMentor (NULL);
+		// If the primary parent is a ResourceDictionary then the mentor
+		// is locked and cannot be altered. This allows you to put a brush
+		// in a RD and apply it to a bunch of elements with {StaticResource}
+		// and still allow Brush.Color to be databound to a mentor.
+		if (this->parent && !this->parent->Is (Type::RESOURCE_DICTIONARY))
+			SetMentor (NULL);
 		if (secondary_parents->len > 1 || !parent->Is (Type::DEPENDENCY_OBJECT_COLLECTION) || !((DependencyObjectCollection *)parent)->GetIsSecondaryParent ())
 			return;
 	}
