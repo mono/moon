@@ -42,7 +42,7 @@ namespace System.Windows {
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
 		public int Count {
-			get { Items.Count; }
+			get { return Items.Count; }
 		}
 
 		public bool IsReadOnly {
