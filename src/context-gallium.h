@@ -94,14 +94,13 @@ private:
 	void SetViewport ();
 	void SetConstantBuffer (const void *data, int bytes);
 
-	pipe_resource *SetupVertexData (pipe_resource      *texture,
-					pipe_sampler_state *sampler,
+	pipe_resource *SetupVertexData (pipe_sampler_state *sampler,
 					const double       *matrix,
 					double             x,
-					double             y);
+					double             y,
+					double             width,
+					double             height);
 
-	void InitMatrix (double *out);
-	void TransformMatrix (double *out, const double *matrix);
 	void *GetProjectShader (double alpha);
 	void *GetConvolveShader (unsigned size);
 	void *GetDropShadowShader (unsigned size);

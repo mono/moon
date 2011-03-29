@@ -296,19 +296,24 @@ GalliumContext::SetViewport ()
 {
 	struct pipe_viewport_state viewport;
 	Context::Target            *target = Top ()->GetTarget ();
-	Rect                       r = target->GetData (NULL);
+	MoonSurface                *ms;
+	Rect                       r = target->GetData (&ms);
+	GalliumSurface             *dst = (GalliumSurface *) ms;
+	struct pipe_resource       *texture = dst->Texture ();
 
 	memset (&viewport, 0, sizeof (viewport));
-	viewport.scale[0] = VIEWPORT_SCALE;
-	viewport.scale[1] = VIEWPORT_SCALE;
-	viewport.scale[2] = 1.0f;
+	viewport.scale[0] = texture->width0 * 0.5f;
+	viewport.scale[1] = texture->height0 * 0.5f;
+	viewport.scale[2] = 0.5f;
 	viewport.scale[3] = 1.0f;
-	viewport.translate[0] = -r.x;
-	viewport.translate[1] = -r.y;
-	viewport.translate[2] = 0.0f;
+	viewport.translate[0] = texture->width0 * 0.5f;
+	viewport.translate[1] = texture->height0 * 0.5f;
+	viewport.translate[2] = 0.5f;
 	viewport.translate[3] = 0.0f;
 
 	cso_set_viewport (cso, &viewport);
+
+	ms->unref ();
 }
 
 void
@@ -332,33 +337,41 @@ GalliumContext::SetConstantBuffer (const void *data, int bytes)
 }
 
 struct pipe_resource *
-GalliumContext::SetupVertexData (struct pipe_resource      *texture,
-				 struct pipe_sampler_state *sampler,
+GalliumContext::SetupVertexData (struct pipe_sampler_state *sampler,
 				 const double              *matrix,
 				 double                    x,
-				 double                    y)
+				 double                    y,
+				 double                    width,
+				 double                    height)
 {
-	double p[4][4];
-	float  dt = sampler->normalized_coords ? 0.0f : 1.0f;
-	int    i;
+	Context::Target      *target = Top ()->GetTarget ();
+	MoonSurface          *ms;
+	Rect                 r = target->GetData (&ms);
+	GalliumSurface       *dst = (GalliumSurface *) ms;
+	struct pipe_resource *texture = dst->Texture ();
+	double               dx = 2.0 / texture->width0;
+	double               dy = 2.0 / texture->height0;
+	double               p[4][4];
+	float                dt = sampler->normalized_coords ? 0.0f : 1.0f;
+	int                  i;
 
 	p[0][0] = x;
 	p[0][1] = y;
 	p[0][2] = 0.0;
 	p[0][3] = 1.0;
 
-	p[1][0] = x + texture->width0;
+	p[1][0] = x + width;
 	p[1][1] = y;
 	p[1][2] = 0.0;
 	p[1][3] = 1.0;
 
-	p[2][0] = x + texture->width0;
-	p[2][1] = y + texture->height0;
+	p[2][0] = x + width;
+	p[2][1] = y + height;
 	p[2][2] = 0.0;
 	p[2][3] = 1.0;
 
 	p[3][0] = x;
-	p[3][1] = y + texture->height0;
+	p[3][1] = y + height;
 	p[3][2] = 0.0;
 	p[3][3] = 1.0;
 
@@ -368,56 +381,30 @@ GalliumContext::SetupVertexData (struct pipe_resource      *texture,
 	}
 
 	for (i = 0; i < 4; i++) {
-		vertices[i][0][0] = p[i][0] * VIEWPORT_SCALE_RECIPROCAL;
-		vertices[i][0][1] = p[i][1] * VIEWPORT_SCALE_RECIPROCAL;
-		vertices[i][0][2] = p[i][2];
+		vertices[i][0][0] = p[i][0] * dx - p[i][3];
+		vertices[i][0][1] = p[i][1] * dy - p[i][3];
+		vertices[i][0][2] = -p[i][2];
 		vertices[i][0][3] = p[i][3];
 	}
 
 	vertices[0][1][0] = 0.0f;
 	vertices[0][1][1] = 0.0f;
 
-	vertices[1][1][0] = texture->width0 * dt + (1.0f - dt);
+	vertices[1][1][0] = width * dt + (1.0f - dt);
 	vertices[1][1][1] = 0.0f;
 
-	vertices[2][1][0] = texture->width0 * dt + (1.0f - dt);
-	vertices[2][1][1] = texture->height0 * dt + (1.0f - dt);
+	vertices[2][1][0] = width * dt + (1.0f - dt);
+	vertices[2][1][1] = height * dt + (1.0f - dt);
 
 	vertices[3][1][0] = 0.0f;
-	vertices[3][1][1] = texture->height0 * dt + (1.0f - dt);
+	vertices[3][1][1] = height * dt + (1.0f - dt);
+
+	ms->unref ();
 
 	return pipe_user_buffer_create (pipe->screen,
 					vertices,
 					sizeof (vertices),
 					PIPE_BIND_VERTEX_BUFFER);
-}
-
-void
-GalliumContext::InitMatrix (double *out)
-{
-	cairo_matrix_t ctm;
-
-	Top ()->GetMatrix (&ctm);
-
-	Matrix3D::Affine (out,
-			  ctm.xx, ctm.xy,
-			  ctm.yx, ctm.yy,
-			  ctm.x0, ctm.y0);
-}
-
-void
-GalliumContext::TransformMatrix (double *out, const double *matrix)
-{
-	cairo_matrix_t ctm;
-	double         m[16];
-
-	Top ()->GetMatrix (&ctm);
-
-	Matrix3D::Affine (m,
-			  ctm.xx, ctm.xy,
-			  ctm.yx, ctm.yy,
-			  ctm.x0, ctm.y0);
-	Matrix3D::Multiply (out, matrix, m);
 }
 
 void
@@ -576,11 +563,12 @@ GalliumContext::Project (MoonSurface  *src,
 	float                    cbuf[4] = { alpha, alpha, alpha, alpha };
 	double                   m[16];
 
-	TransformMatrix (m, matrix);
-
 	// software optimization that can hopefully be removed one day
 	if (is_softpipe) {
 		int x0, y0;
+
+		GetMatrix (m);
+		Matrix3D::Multiply (m, matrix, m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
 			cairo_surface_t *cs = src->Cairo ();
@@ -605,6 +593,9 @@ GalliumContext::Project (MoonSurface  *src,
 		}
 	}
 
+	GetDeviceMatrix (m);
+	Matrix3D::Multiply (m, matrix, m);
+
 	cso_save_blend (cso);
 	cso_save_samplers (cso);
 	cso_save_fragment_sampler_views (cso);
@@ -626,7 +617,12 @@ GalliumContext::Project (MoonSurface  *src,
 
 	SetConstantBuffer (cbuf, sizeof (cbuf));
 
-	vbuf = SetupVertexData (view->texture, &project_sampler, m, x, y);
+	vbuf = SetupVertexData (&project_sampler,
+				m,
+				x,
+				y,
+				view->texture->width0,
+				view->texture->height0);
 	if (vbuf) {
 		cso_set_vertex_elements (cso, 2, velems);
 		util_draw_vertex_buffer (pipe, vbuf, 0,
@@ -738,11 +734,11 @@ GalliumContext::Blur (MoonSurface *src,
 		return;
 	}
 
-	InitMatrix (m);
-
 	// software optimization that can hopefully be removed one day
 	if (is_softpipe) {
 		int x0, y0;
+
+		GetMatrix (m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
 			Effect::Blur (this,
@@ -755,6 +751,8 @@ GalliumContext::Blur (MoonSurface *src,
 			return;
 		}
 	}
+
+	GetDeviceMatrix (m);
 
 	intermediate = new GalliumSurface (gpipe, r.width, r.height);
 
@@ -796,7 +794,12 @@ GalliumContext::Blur (MoonSurface *src,
 
 	SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
 
-	vbuf = SetupVertexData (tex, &convolve_sampler, NULL, 0, 0);
+	vbuf = SetupVertexData (&convolve_sampler,
+				NULL,
+				0,
+				0,
+				tex->width0,
+				tex->height0);
 	if (vbuf) {
 		cso_set_vertex_elements (cso, 2, velems);
 		util_draw_vertex_buffer (pipe, vbuf, 0,
@@ -832,7 +835,12 @@ GalliumContext::Blur (MoonSurface *src,
 
 		SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
 
-		vbuf = SetupVertexData (tex, &convolve_sampler, m, x, y);
+		vbuf = SetupVertexData (&convolve_sampler,
+					m,
+					x,
+					y,
+					tex->width0,
+					tex->height0);
 		if (vbuf) {
 			cso_set_vertex_elements (cso, 2, velems);
 			util_draw_vertex_buffer (pipe, vbuf, 0,
@@ -959,11 +967,11 @@ GalliumContext::DropShadow (MoonSurface *src,
 
 	size = Effect::ComputeGaussianSamples (radius, precision, values);
 
-	InitMatrix (m);
-
 	// software optimization that can hopefully be removed one day
 	if (is_softpipe) {
 		int x0, y0;
+
+		GetMatrix (m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
 			Effect::DropShadow (this,
@@ -979,6 +987,8 @@ GalliumContext::DropShadow (MoonSurface *src,
 			return;
 		}
 	}
+
+	GetDeviceMatrix (m);
 
 	intermediate = new GalliumSurface (gpipe, r.width, r.height);
 
@@ -1024,7 +1034,12 @@ GalliumContext::DropShadow (MoonSurface *src,
 
 	SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
 
-	vbuf = SetupVertexData (tex, &convolve_sampler, NULL, 0, 0);
+	vbuf = SetupVertexData (&convolve_sampler,
+				NULL,
+				0,
+				0,
+				tex->width0,
+				tex->height0);
 	if (vbuf) {
 		cso_set_vertex_elements (cso, 2, velems);
 		util_draw_vertex_buffer (pipe, vbuf, 0,
@@ -1069,7 +1084,12 @@ GalliumContext::DropShadow (MoonSurface *src,
 
 		SetConstantBuffer (cbuf, sizeof (cbuf[0]) * (size + 1));
 
-		vbuf = SetupVertexData (tex, &convolve_sampler, m, x, y);
+		vbuf = SetupVertexData (&convolve_sampler,
+					m,
+					x,
+					y,
+					tex->width0,
+					tex->height0);
 		if (vbuf) {
 			cso_set_vertex_elements (cso, 2, velems);
 			util_draw_vertex_buffer (pipe, vbuf, 0,
@@ -1642,7 +1662,7 @@ GalliumContext::ShaderEffect (MoonSurface *src,
 	g_assert (n_constant <= MAX_CONSTANTS);
 	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
 
-	InitMatrix (m);
+	GetDeviceMatrix (m);
 
 	for (i = 0; i < n_sampler; i++) {
 		struct pipe_sampler_view *sampler_view = NULL;
@@ -1735,7 +1755,12 @@ GalliumContext::ShaderEffect (MoonSurface *src,
 
 	SetConstantBuffer (cbuf, sizeof (cbuf[0]) * n_constant);
 
-	vbuf = SetupVertexData (tex, &effect_sampler, m, x, y);
+	vbuf = SetupVertexData (&effect_sampler,
+				m,
+				x,
+				y,
+				tex->width0,
+				tex->height0);
 	if (vbuf) {
 		cso_set_vertex_elements (cso, 2, velems);
 		util_draw_vertex_buffer (pipe, vbuf, 0,
