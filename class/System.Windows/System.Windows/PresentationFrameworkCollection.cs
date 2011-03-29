@@ -131,7 +131,7 @@ namespace System.Windows {
 			// from the unmanaged list if there is
 			// anything in it
 			managedList = new List<T>();
-			int c = Count;
+			int c = NativeMethods.collection_get_count (native);
 			for (int i = 0; i < c; i ++) {
 				managedList.Add (GetItemImpl(i));
 			}
@@ -256,9 +256,7 @@ namespace System.Windows {
 		// ICollection members
 		//
 		public int Count {
-			get {
-				return NativeMethods.collection_get_count (native);
-			}
+			get { return managedList.Count; }
 		}
 		
 		public void CopyTo (Array array, int index)
