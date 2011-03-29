@@ -21,7 +21,7 @@
 
     <script type="text/javascript">
 		var bot_mode = false;
-		var version = "0";
+		var version = "4";
 		var showPluginErrors = true;
 
 		function load_page () {
@@ -30,10 +30,8 @@
 			bot_mode = get_param ("bot_mode") == "yes";
 			version = get_param ("version");
 
-			if (version == "0" || version == "") {
-				alert ("You need to set the version: index.html?version=#");
-				return;
-			}
+			if (version == "0" || version == "")
+				version = "4"; // the latest available
 			
 			if (bot_mode) {
 				// We need to load libshocker
