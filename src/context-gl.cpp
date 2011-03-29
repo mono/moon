@@ -226,20 +226,6 @@ GLContext::SetupVertexData (const double *matrix,
 }
 
 void
-GLContext::GetDeviceMatrix (double *out)
-{
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
-	double          viewport[16];
-	double          m[16];
-
-	GetMatrix (m);
-
-	Matrix3D::Translate (viewport, -r.x, -r.y, 0.0);
-	Matrix3D::Multiply (out, m, viewport);
-}
-
-void
 GLContext::Push (Group extents)
 {
 	g_warning ("GLContext::Push has been called. The derived class should have overridden it.");

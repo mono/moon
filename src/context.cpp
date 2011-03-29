@@ -391,6 +391,20 @@ Context::GetMatrix (double *out)
 }
 
 void
+Context::GetDeviceMatrix (double *out)
+{
+	Context::Target *target = Top ()->GetTarget ();
+	Rect            r = target->GetData (NULL);
+	double          viewport[16];
+	double          m[16];
+
+	GetMatrix (m);
+
+	Matrix3D::Translate (viewport, -r.x, -r.y, 0.0);
+	Matrix3D::Multiply (out, m, viewport);
+}
+
+void
 Context::Clear (Color *color)
 {
 	g_warning ("Context::Clear has been called. The derived class should have overridden it.");

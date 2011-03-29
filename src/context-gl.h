@@ -110,7 +110,6 @@ protected:
 				      double       width,
 				      double       height);
 
-	void GetDeviceMatrix (double *out);
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
 			     const GLchar **str);

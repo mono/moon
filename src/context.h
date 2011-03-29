@@ -137,6 +137,7 @@ public:
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
 	void GetMatrix (double *out);
+	void GetDeviceMatrix (double *out);
 
 	virtual void Push (Group extents);
 	virtual void Push (Group extents, MoonSurface *surface);
