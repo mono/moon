@@ -37,6 +37,7 @@ using System.Collections.ObjectModel;
 
 namespace System.Windows {
 	public partial class DependencyObjectCollection<T> : DependencyObject, IList<T>, IList, INotifyCollectionChanged {
+		List<T> Items;
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -47,7 +48,6 @@ namespace System.Windows {
 		public bool IsReadOnly {
 			get { return false; }
 		}
-
 
 		int IList.Add (object value)
 		{
@@ -109,9 +109,29 @@ namespace System.Windows {
 			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
+		void OnCollectionChanged (object sender, NotifyCollectionChangedEventArgs args)
+		{
+			switch (args.Action) {
+			case NotifyCollectionChangedAction.Add:
+				Items.Add ((T) args.NewItems[0]);
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				Items.RemoveAt (args.OldStartingIndex);
+				break;
+			case NotifyCollectionChangedAction.Replace:
+				Items[args.OldStartingIndex] = (T) args.NewItems[0];
+				break;
+			case NotifyCollectionChangedAction.Reset:
+				Items.Clear ();
+				break;
+			}
+		}
+
 		void Initialize ()
 		{
 			NativeMethods.dependency_object_collection_set_sets_parent (native, false);
+			CollectionChanged += OnCollectionChanged;
+			Items = new List<T> ();
 		}
 
 		public void RemoveAt (int index)
@@ -151,7 +171,7 @@ namespace System.Windows {
 		}
 
 		public T this [int index] {
-			get { return (T) Value.ToObject (typeof (object), Mono.NativeMethods.collection_get_value_at (native, index)); }
+			get { return Items[index]; }
 			set {
 				Value v;
 				using ((v = Value.FromObject (value))) {
@@ -164,27 +184,22 @@ namespace System.Windows {
 
 		public bool Contains (T item)
 		{
-			Value v;
-			using ((v = Value.FromObject (item)))
-				return NativeMethods.collection_contains (native, ref v);
+			return Items.Contains (item);
 		}
 
 		public int IndexOf (T item)
 		{
-			Value v;
-			using ((v = Value.FromObject (item)))
-				return NativeMethods.collection_index_of (native, ref v);
+			return Items.IndexOf (item);
 		}
 
 		public void CopyTo (T [] array, int arrayIndex)
 		{
-			foreach (var v in this)
-				array [arrayIndex ++] = v;
+			Items.CopyTo (array, arrayIndex);
 		}
 
 		public IEnumerator<T> GetEnumerator ()
 		{
-			return new PresentationFrameworkCollection<T>.GenericCollectionIterator (NativeMethods.collection_get_iterator (native));
+			return Items.GetEnumerator ();
 		}
 	}
 }
