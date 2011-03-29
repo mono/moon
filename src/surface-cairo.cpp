@@ -14,35 +14,28 @@
 
 namespace Moonlight {
 
-CairoSurface::CairoSurface (cairo_surface_t *data,
-			    int             width,
-			    int             height)
+CairoSurface::CairoSurface (int width,
+			    int height)
 {
-	surface = cairo_surface_reference (data);
 	size[0] = width;
 	size[1] = height;
+	stride  = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
+	data    = (unsigned char *) g_malloc0 (height * stride);
 }
 
 CairoSurface::~CairoSurface ()
 {
-	cairo_surface_destroy (surface);
-}
-
-void
-CairoSurface::Reshape (int width, int height)
-{
-	size[0] = width;
-	size[1] = height;
+	g_free (data);
 }
 
 cairo_surface_t *
 CairoSurface::Cairo ()
 {
-	return cairo_surface_create_for_rectangle (surface,
-						   0,
-						   0,
-						   size[0],
-						   size[1]);
+	return cairo_image_surface_create_for_data (data,
+						    CAIRO_FORMAT_ARGB32,
+						    size[0],
+						    size[1],
+						    stride);
 }
 
 };

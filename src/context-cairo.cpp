@@ -10,6 +10,8 @@
 
 #include <config.h>
 
+#include <string.h>
+
 #include "context-cairo.h"
 
 namespace Moonlight {
@@ -21,14 +23,8 @@ CairoContext::CairoContext (CairoSurface *surface) : Context (surface)
 void
 CairoContext::Push (Group extents)
 {
-	cairo_surface_t *parent = Top ()->GetTarget ()->Cairo ();
 	Rect            r = extents.r.RoundOut ();
-        cairo_surface_t *data =
-		cairo_surface_create_similar (parent,
-					      CAIRO_CONTENT_COLOR_ALPHA,
-					      r.width,
-					      r.height);
-        MoonSurface     *surface = new CairoSurface (data, r.width, r.height);
+        MoonSurface     *surface = new CairoSurface (r.width, r.height);
         Target          *target = new Target (surface, extents.r);
         cairo_matrix_t  matrix;
 
@@ -38,8 +34,6 @@ CairoContext::Push (Group extents)
 
 	target->unref ();
 	surface->unref ();
-
-	cairo_surface_destroy (data);
 }
 
 void
@@ -60,22 +54,13 @@ void
 CairoContext::Blit (unsigned char *data,
 		    int           stride)
 {
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
-	cairo_surface_t *surface =
-		cairo_image_surface_create_for_data (data,
-						     CAIRO_FORMAT_ARGB32, 
-						     r.width,
-						     r.height,
-						     stride);
-	cairo_t         *cr = Context::Push (Cairo ());
+	cairo_surface_t *dst = cairo_get_target (Top ()->Cairo ());
 
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_surface (cr, surface, 0, 0);
-	cairo_paint (cr);
-	cairo_surface_destroy (surface);
-
-	Pop ();
+	for (int i = 0; i < cairo_image_surface_get_height (dst); i++)
+		memcpy (cairo_image_surface_get_data (dst) +
+			cairo_image_surface_get_stride (dst) * i,
+			data + stride * i,
+			MIN (cairo_image_surface_get_stride (dst), stride));
 }
 
 void

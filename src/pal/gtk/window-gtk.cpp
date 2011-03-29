@@ -1044,19 +1044,13 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 			gctx = ctx;
 		}
 	}
-	ctx->Push (Context::Group (r));
 #else
-	CairoSurface *target = new CairoSurface (native, width, height);
+	CairoSurface *target = new CairoSurface (1, 1);
 	ctx = new CairoContext (target);
 	target->unref ();
-	cairo_surface_t *image = CreateCairoSurface (drawable, visual, false, r.width, r.height);
-	MoonSurface *isurface = new CairoSurface (image, r.width, r.height);
-	cairo_surface_destroy (image);
-
-	ctx->Push (Context::Group (r), isurface);
-	isurface->unref ();
 #endif
 
+	ctx->Push (Context::Group (r));
 	/* if we are redirecting to an image surface clear that first */
 	surface->Paint (ctx, region, transparent, true);
 

@@ -121,14 +121,9 @@ main (int argc, char **argv)
 	}
 
 	if (!e.ctx) {
-		cairo_surface_t *image;
-		CairoSurface    *target;
+		CairoSurface *target;
 
-		image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-						    width,
-						    height);
-		target = new CairoSurface (image, width, height);
-		cairo_surface_destroy (image);
+		target = new CairoSurface (width, height);
 		e.ctx = new CairoContext (target);
 		e.target = target;
 	}
