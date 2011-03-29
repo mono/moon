@@ -689,12 +689,11 @@ MediaElement::GetCoverageBounds ()
 		return bounds;
 
 	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
-	cairo_matrix_t brush_xform = matrix;
+	cairo_matrix_t xform = matrix;
 
-	cairo_matrix_invert (&brush_xform);
-	cairo_matrix_multiply (&brush_xform, &brush_xform, &absolute_xform);
+	cairo_matrix_multiply (&xform, &xform, &absolute_xform);
 
-	video = video.Transform (&brush_xform);
+	video = video.Transform (&xform);
 	video = video.Intersection (bounds);
 
 	return video;
@@ -790,11 +789,10 @@ MediaElement::GetSurface (Context *ctx)
 void
 MediaElement::Render (Context *ctx, Region *region)
 {
-	Stretch        stretch = GetStretch ();
-	Size           specified (GetActualWidth (), GetActualHeight ());
-	Size           stretched = ApplySizeConstraints (specified);
-	bool           adjust = specified != GetRenderSize ();
-	cairo_matrix_t matrix;
+	Stretch stretch = GetStretch ();
+	Size    specified (GetActualWidth (), GetActualHeight ());
+	Size    stretched = ApplySizeConstraints (specified);
+	bool    adjust = specified != GetRenderSize ();
 
 	if (mplayer == NULL)
 		return;
@@ -883,6 +881,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 
 	if (!path_only) {
 		Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+		cairo_matrix_t pattern_matrix;
 
 		if (GetStretch () == StretchNone)
 			paint = paint.Union (video);
@@ -894,13 +893,13 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 
 		pattern = cairo_pattern_create_for_surface (surface);
 
-		image_brush_compute_pattern_matrix (&matrix, 
+		image_brush_compute_pattern_matrix (&pattern_matrix, 
 						    paint.width, paint.height, 
 						    video.width, video.height,
 						    stretch, AlignmentXCenter,
 						    AlignmentYCenter, NULL, NULL);
 
-		cairo_pattern_set_matrix (pattern, &matrix);
+		cairo_pattern_set_matrix (pattern, &pattern_matrix);
 #if MAKE_EVERYTHING_SLOW_AND_BUGGY
 		cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
 #endif
