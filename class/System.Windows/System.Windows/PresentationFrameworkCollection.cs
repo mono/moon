@@ -299,127 +299,14 @@ namespace System.Windows {
 			}
 		}
 		
-		internal sealed class CollectionIterator : IEnumerator, IDisposable {
-			IntPtr native_iter;
-			
-			public CollectionIterator(IntPtr native_iter)
-			{
-				this.native_iter = native_iter;
-			}
-			
-			public bool MoveNext ()
-			{
-				return NativeMethods.collection_iterator_next (native_iter);
-			}
-			
-			public void Reset ()
-			{
-				if (!NativeMethods.collection_iterator_reset (native_iter))
-					throw new InvalidOperationException ("The underlying collection has mutated");
-			}
-
-			public object Current {
-				get {
-					IntPtr val;
-					
-					val = NativeMethods.collection_iterator_get_current (native_iter);
-					
-					if (val == IntPtr.Zero)
-						return null;
-					
-					return Value.ToObject (typeof (T), val);
-				}
-			}
-			
-			public void Dispose ()
-			{
-				if (native_iter != IntPtr.Zero) {
-					// This is safe, as it only does a "delete" in the C++ side
-					NativeMethods.collection_iterator_destroy (native_iter);
-					native_iter = IntPtr.Zero;
-				}
-				
-				GC.SuppressFinalize (this);
-			}
-			
-			~CollectionIterator ()
-			{
-				Dispose ();
-			}
-		}
-		
-		internal sealed class GenericCollectionIterator : IEnumerator<T> {
-			IntPtr native_iter;
-			
-			public GenericCollectionIterator(IntPtr native_iter)
-			{
-				this.native_iter = native_iter;
-			}
-			
-			public bool MoveNext ()
-			{
-				return NativeMethods.collection_iterator_next (native_iter);
-			}
-			
-			public void Reset ()
-			{
-				if (!NativeMethods.collection_iterator_reset (native_iter))
-					throw new InvalidOperationException ("The underlying collection has mutated");
-			}
-
-			T GetCurrent ()
-			{
-				IntPtr val;
-				
-				val = NativeMethods.collection_iterator_get_current (native_iter);
-				
-				if (val == IntPtr.Zero) {
-					// not sure if this is valid,
-					// as _get_current returns a
-					// Value*
-					return default(T);
-				}
-				
-				return (T) Value.ToObject (typeof (T), val);
-			}
-			
-			public T Current {
-				get {
-					return GetCurrent ();
-				}
-			}
-			
-			object System.Collections.IEnumerator.Current {
-				get {
-					return GetCurrent ();
-				}
-			}
-			
-			public void Dispose ()
-			{
-				if (native_iter != IntPtr.Zero) {
-					// This is safe, as it only does a "delete" in the C++ side
-					NativeMethods.collection_iterator_destroy (native_iter);
-					native_iter = IntPtr.Zero;
-				}
-				
-				GC.SuppressFinalize (this);
-			}
-			
-			~GenericCollectionIterator ()
-			{
-				Dispose ();
-			}
-		}
-		
 		public IEnumerator<T> GetEnumerator ()
 		{
-			return new GenericCollectionIterator (NativeMethods.collection_get_iterator (native));
+			return managedList.GetEnumerator ();
 		}
 		
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
-			return new CollectionIterator (NativeMethods.collection_get_iterator (native));
+			return GetEnumerator ();
 		}
 		
 		public bool IsFixedSize {
