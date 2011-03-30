@@ -49,7 +49,11 @@ namespace System.Windows.Browser {
 		public object obj;
 	}
 
-	public class ScriptObject {
+	public class ScriptObject
+#if NET_2_1
+		: System.Dynamic.IDynamicMetaObjectProvider
+#endif
+	{
 		IntPtr _handle;
 		bool free_mapping;
 		bool handleIsScriptableNPObject;
@@ -132,6 +136,13 @@ namespace System.Windows.Browser {
 			lock (cachedObjects)
 				cachedObjects.Remove (_handle);
 		}
+		
+#if NET_2_1
+		System.Dynamic.DynamicMetaObject System.Dynamic.IDynamicMetaObjectProvider.GetMetaObject (System.Linq.Expressions.Expression parameter)
+		{
+			throw new NotImplementedException ();
+		}
+#endif
 
 		public virtual void SetProperty (string name, object value)
 		{

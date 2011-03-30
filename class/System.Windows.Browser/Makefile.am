@@ -14,7 +14,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:AGCLR -unsafe -r:System.Core.dll
 if DEBUG
 CSCFLAGS += -d:DEBUG
 endif
@@ -22,8 +22,8 @@ if SANITY
 CSCFLAGS += -d:SANITY
 endif
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
-SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
+GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -r:System.Core.dll
+SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS) -r:System.Core.dll
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 

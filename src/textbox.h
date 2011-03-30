@@ -373,7 +373,7 @@ class TextBox : public TextBoxBase {
 	const static int FontSourceProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int HorizontalScrollBarVisibilityProperty;
-	/* @PropertyType=InputScope,GenerateAccessors,GenerateManagedAccessors=false,Validator=NullOrInDesignMode */
+	/* @PropertyType=InputScope,GenerateAccessors,GenerateManagedAccessors=false,Validator=NullOrInDesignMode,Browsable=Never */
 	const static int InputScopeProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsReadOnlyProperty;
@@ -397,7 +397,7 @@ class TextBox : public TextBoxBase {
 	const static int TextWrappingProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int VerticalScrollBarVisibilityProperty;
-	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,Validator=NullOrInDesignMode */
+	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,Validator=NullOrInDesignMode,Browsable=Never */
 	const static int WatermarkProperty;
 	
 	//
