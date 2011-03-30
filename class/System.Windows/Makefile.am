@@ -85,6 +85,7 @@ dist_system_windows_sources =							\
 	$(srcdir)/Mono/IListenPropertyChanged.cs			\
 	$(srcdir)/Mono/IListenINPC.cs						\
 	$(srcdir)/Mono/IListExtensions.cs					\
+	$(srcdir)/Mono/INativeCollectionWrapper.cs				\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
 	$(srcdir)/Mono/INativeEventObjectWrapper.cs				\
 	$(srcdir)/Mono/IRefContainer.cs						\

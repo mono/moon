@@ -55,8 +55,8 @@ namespace Mono {
 
 		public static ManagedRefCallback add_strong_ref = new ManagedRefCallback (AddStrongRef);
 		public static ManagedRefCallback clear_strong_ref = new ManagedRefCallback (ClearStrongRef);
-
 		public static MentorChangedCallback mentor_changed = new MentorChangedCallback (MentorChanged);
+		static UnmanagedEventHandlerInvoker native_collection_changed_callback = native_collection_changed;
 
 #if DEBUG_REF
 		internal static string IdToName (IntPtr id)
@@ -127,6 +127,58 @@ namespace Mono {
 									       container == null ? null : NativeDependencyObjectHelper.add_strong_ref,
 									       container == null ? null : NativeDependencyObjectHelper.clear_strong_ref,
 									       NativeDependencyObjectHelper.mentor_changed);
+
+			if (obj is INativeCollectionWrapper)
+				Events.AddHandler (obj, EventIds.Collection_ChangedEvent, native_collection_changed_callback);
+		}
+
+		static void native_collection_changed (IntPtr sender, int event_id, int token, IntPtr calldata, IntPtr closure)
+		{
+			try {
+				var collection = (INativeCollectionWrapper) NativeDependencyObjectHelper.Lookup (sender);
+
+				if (collection != null) {
+					var managedList = collection.ManagedList;
+					var args = (InternalCollectionChangedEventArgs) NativeDependencyObjectHelper.Lookup (calldata);
+
+					switch (args.ChangedAction) {
+					case CollectionChangedAction.Add:
+#if DEBUG_REF
+						Console.WriteLine ("collection {0}/{1} adding ref to {2}/{3}", collection.GetHashCode(), collection, ((T)args.GetNewItem(typeof (T))).GetHashCode(), ((T)args.GetNewItem(typeof (T))));
+#endif
+						managedList.Insert (args.Index, args.GetNewItem(null));
+						break;
+					case CollectionChangedAction.Remove:
+#if DEBUG_REF
+						Console.WriteLine ("collection {0}/{1} removing ref to {2}/{3}", collection.GetHashCode(), collection, managedList[args.Index].GetHashCode(), managedList[args.Index]);
+#endif
+						managedList.RemoveAt (args.Index);
+						break;
+					case CollectionChangedAction.Replace:
+#if DEBUG_REF
+						Console.WriteLine ("collection {0}/{1} replacing ref from {2}/{3} to {4}/{5}", collection.GetHashCode(), collection, managedList[args.Index].GetHashCode(), managedList[args.Index], ((T)args.GetNewItem(typeof (T))), ((T)args.GetNewItem(typeof (T))).GetHashCode());
+#endif
+						managedList[args.Index] = args.GetNewItem(null);
+						break;
+					case CollectionChangedAction.Clearing:
+						// nothing to do
+						break;
+					case CollectionChangedAction.Cleared:
+#if DEBUG_REF
+						foreach (var o in managedList)
+							Console.WriteLine (" collection {0}/{1} removing ref to {2}/{3}", collection.GetHashCode(), collection, o.GetHashCode(), o);
+#endif
+						managedList.Clear();
+						break;
+					}
+				}
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Unhandled Exception in NativeDependencyObjectHelper.native_collection_changed: {0}", ex);
+				} catch {
+
+				}
+			}
 		}
 
 #region "helpers for the INativeDependencyObjectWrapper interface"

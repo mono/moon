@@ -74,72 +74,13 @@ namespace System.Windows {
 	}
 
 
-	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject, IList<T>, IList {
+	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject, INativeCollectionWrapper, IList<T>, IList {
 		const bool BoxValueTypes = false;
 
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (double)); // <- double is not a typo
 
-		List<T> managedList;
-
-		static UnmanagedEventHandlerInvoker collection_changed = (_sender, _eventid, _token, _calldata, _closure) =>
-			Events.SafeDispatcher (
-			 (IntPtr target, IntPtr calldata, IntPtr closure) => {
-				 var args = NativeDependencyObjectHelper.Lookup (calldata) as InternalCollectionChangedEventArgs;
-				 if (args == null)
-					 args = new InternalCollectionChangedEventArgs (calldata);
-				 ((PresentationFrameworkCollection<T>) NativeDependencyObjectHelper.FromIntPtr (closure)).InternalCollectionChanged (args);
-			 }) (_sender, _calldata, _closure);
-
-		void InternalCollectionChanged (InternalCollectionChangedEventArgs args)
-		{
-			switch (args.ChangedAction) {
-			case CollectionChangedAction.Add:
-#if DEBUG_REF
-				Console.WriteLine ("collection {0}/{1} adding ref to {2}/{3}", GetHashCode(), this, ((T)args.GetNewItem(typeof (T))).GetHashCode(), ((T)args.GetNewItem(typeof (T))));
-#endif
-				managedList.Insert (args.Index, (T)args.GetNewItem(typeof (T)));
-				break;
-			case CollectionChangedAction.Remove:
-#if DEBUG_REF
-				Console.WriteLine ("collection {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, managedList[args.Index].GetHashCode(), managedList[args.Index]);
-#endif
-				managedList.RemoveAt (args.Index);
-				break;
-			case CollectionChangedAction.Replace:
-#if DEBUG_REF
-				Console.WriteLine ("collection {0}/{1} replacing ref from {2}/{3} to {4}/{5}", GetHashCode(), this, managedList[args.Index].GetHashCode(), managedList[args.Index], ((T)args.GetNewItem(typeof (T))), ((T)args.GetNewItem(typeof (T))).GetHashCode());
-#endif
-				managedList[args.Index] = ((T)args.GetNewItem(typeof (T)));
-				break;
-			case CollectionChangedAction.Clearing:
-				// nothing to do
-				break;
-			case CollectionChangedAction.Cleared:
-#if DEBUG_REF
-				foreach (var o in managedList)
-					Console.WriteLine (" collection {0}/{1} removing ref to {2}/{3}", GetHashCode(), this, o.GetHashCode(), o);
-#endif
-				managedList.Clear();
-				break;
-			}
-		}
-
-		private new void Initialize ()
-		{
-			// set up our managed list and populate it
-			// from the unmanaged list if there is
-			// anything in it
-			managedList = new List<T>();
-			int c = NativeMethods.collection_get_count (native);
-			for (int i = 0; i < c; i ++) {
-				managedList.Add (GetItemImpl(i));
-			}
-
-			// set up a handler to track changes to the unmanaged list
-			Events.AddHandler (this, EventIds.Collection_ChangedEvent, collection_changed);
-		}
-
+		List<T> managedList = new List<T> ();
 #if HEAPVIZ
 		internal override void AccumulateManagedRefs (List<HeapRef> refs)
 		{
@@ -151,6 +92,9 @@ namespace System.Windows {
 			base.AccumulateManagedRefs (refs);
 		}
 #endif
+		IList INativeCollectionWrapper.ManagedList {
+			get { return managedList; }
+		}
 
 		int IList.Add (object value)
 		{

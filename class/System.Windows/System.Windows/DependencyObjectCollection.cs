@@ -36,8 +36,8 @@ using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 
 namespace System.Windows {
-	public partial class DependencyObjectCollection<T> : DependencyObject, IList<T>, IList, INotifyCollectionChanged {
-		List<T> Items;
+	public partial class DependencyObjectCollection<T> : DependencyObject, INativeCollectionWrapper, IList<T>, IList, INotifyCollectionChanged {
+		List<T> Items = new List<T> ();
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -47,6 +47,10 @@ namespace System.Windows {
 
 		public bool IsReadOnly {
 			get { return false; }
+		}
+
+		IList INativeCollectionWrapper.ManagedList {
+			get { return Items; }
 		}
 
 		int IList.Add (object value)
@@ -109,38 +113,10 @@ namespace System.Windows {
 			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
 		}
 
-		void OnCollectionChanged (object sender, NotifyCollectionChangedEventArgs args)
-		{
-			switch (args.Action) {
-			case NotifyCollectionChangedAction.Add:
-				Items.Add ((T) args.NewItems[0]);
-				break;
-			case NotifyCollectionChangedAction.Remove:
-				Items.RemoveAt (args.OldStartingIndex);
-				break;
-			case NotifyCollectionChangedAction.Replace:
-				Items[args.OldStartingIndex] = (T) args.NewItems[0];
-				break;
-			case NotifyCollectionChangedAction.Reset:
-				Items.Clear ();
-				break;
-			}
-		}
 
 		void Initialize ()
 		{
 			NativeMethods.dependency_object_collection_set_sets_parent (native, false);
-			CollectionChanged += OnCollectionChanged;
-			Items = new List<T> ();
-			
-			// Make sure our managed list of items is synchronized
-			// with the unmanaged list. This might happen if the
-			// unmanaged collection was created w/o using a factory.
-			int count = NativeMethods.collection_get_count (native);
-			for (int i = 0; i < count; i++) {
-				var item = (T) Value.ToObject (typeof (object), NativeMethods.collection_get_value_at (native, i));
-				Items.Add (item);
-			}
 		}
 
 		public void RemoveAt (int index)
