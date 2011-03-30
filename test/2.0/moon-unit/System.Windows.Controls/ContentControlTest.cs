@@ -281,7 +281,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void ContentTemplateNotUsed ()
 		{
 			ContentControl c = new ContentControl ();
@@ -342,7 +341,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void DataTemplateTest ()
 		{
 			ContentControl c = new ContentControl ();
@@ -358,7 +356,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void DataTemplateTest2 ()
 		{
 			// Fails in Silverlight 3
@@ -376,7 +373,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void DataTemplateTest3 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -400,7 +396,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void DataTemplateTest4 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"

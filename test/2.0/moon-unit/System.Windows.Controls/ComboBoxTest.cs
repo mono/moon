@@ -1321,7 +1321,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
-		[MoonlightBug ("this test is identical to the _sl4 variant, but <= runtime version 3 is failing the #1 check - c.SelectedIndex is -1, not 1")]
 		public void XamlSelectedIndex_sl3 ()
 		{
 			var c = (ComboBox)XamlReader.Load (@"

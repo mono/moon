@@ -2957,7 +2957,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
-		[MoonlightBug ("")]
 		public void TemplateBinding_NoDP_WithClrWrapper ()
 		{
 			var c = (ContentControl) XamlReader.Load (@"
@@ -3010,7 +3009,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void TemplateBinding_CanvasTop ()
 		{
 			var control = (ContentControl) XamlReader.Load (
@@ -3097,7 +3095,6 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("")]
 		public void TemplateBinding_IncompatibleSourceAndTargetType ()
 		{
 			// TemplateBinding two DPs which are incompatible
@@ -3538,7 +3535,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[MaxRuntimeVersion(3)]
+		[MoonlightBug]
 		public void XamlBindAfterResources3b_sl3 ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load (@"
