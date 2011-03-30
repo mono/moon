@@ -23,6 +23,7 @@
 namespace Moonlight {
 
 class MediaElement;
+class Context;
 
 /* @Namespace=System.Windows.Media */
 class Brush : public DependencyObject {
@@ -57,6 +58,7 @@ class Brush : public DependencyObject {
 
 	virtual void Fill (cairo_t *cr, bool preserve = FALSE);
 	virtual void Stroke (cairo_t *cr, bool preserve = FALSE);
+	virtual void Paint (Context *ctx, const Rect &area);
 
 	// returns true if OpacityProperty == 1.0.
 	// subclasses override this to deal with their local coloring
@@ -102,6 +104,8 @@ class SolidColorBrush : public Brush {
 	SolidColorBrush (const char *color);
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
+
+	virtual void Paint (Context *ctx, const Rect &area);
 	
 	virtual bool IsOpaque ();
 	

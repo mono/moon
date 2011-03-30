@@ -95,6 +95,17 @@ Brush::Stroke (cairo_t *cr, bool preserve)
 }
 
 void
+Brush::Paint (Context *ctx, const Rect &area)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+
+	SetupBrush (cr, area);
+	cairo_paint (cr);
+
+	ctx->Pop ();
+}
+
+void
 Brush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	// if our transforms change in some fashion, we need to redraw
@@ -155,6 +166,16 @@ SolidColorBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	Color *color = GetColor ();
 
 	cairo_set_source_rgba (cr, color->r, color->g, color->b, opacity * color->a);
+}
+
+void
+SolidColorBrush::Paint (Context *ctx, const Rect &area)
+{
+	double opacity = GetOpacity ();
+	Color  *color = GetColor ();
+	Color  rgba = Color (color->r, color->g, color->b, opacity * color->a);
+
+	ctx->Blend (&rgba);
 }
 
 bool
