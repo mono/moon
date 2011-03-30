@@ -1164,7 +1164,7 @@ void
 debug_media (MoonWindowGtk *window)
 {
 	GtkBox *vbox;
-	Deployment *deployment = window->GetSurface ()->GetDeployment ();
+	Deployment *deployment = window->GetSurface ()->GetUnsafeDeployment ();
 	debug_media_data *data;
 	GHashTableIter iter;
 	gpointer key;
