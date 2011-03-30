@@ -520,8 +520,12 @@ namespace Mono.Xaml
 				IntPtr context = NativeMethods.sl3_xaml_loader_get_context (data->loader);
 				IntPtr source_ptr = NativeMethods.xaml_context_get_template_binding_source (context);
 
-				DependencyObject templateSourceObject = NativeDependencyObjectHelper.FromIntPtr (source_ptr) as DependencyObject;
+				// Silently discard TemplateBindings which are not in ControlTemplates
+				FrameworkTemplate source_template = (FrameworkTemplate) NativeDependencyObjectHelper.Lookup (NativeMethods.xaml_context_get_source_template (context));
+				if (!(source_template is ControlTemplate))
+					return true;
 
+				DependencyObject templateSourceObject = NativeDependencyObjectHelper.FromIntPtr (source_ptr) as DependencyObject;
 				if (templateSourceObject == null)
 					return false;
 

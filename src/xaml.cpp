@@ -321,6 +321,11 @@ class XamlContextInternal {
 		this->source = source;
 	}
 
+	FrameworkTemplate *GetSourceTemplate ()
+	{
+		return template_parent;
+	}
+
 	DependencyObject* GetTemplateBindingSource ()
 	{
 		return source;
@@ -376,6 +381,12 @@ DependencyObject*
 XamlContext::GetTemplateBindingSource ()
 {
 	return internal->GetTemplateBindingSource ();
+}
+
+FrameworkTemplate *
+XamlContext::GetSourceTemplate ()
+{
+	return internal->GetSourceTemplate ();
 }
 
 class XamlElementInfo {

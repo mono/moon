@@ -92,6 +92,8 @@ class XamlContext : public EventObject {
 
 	/* @GeneratePInvoke */
 	DependencyObject* GetTemplateBindingSource ();
+	/* @GeneratePInvoke */
+	FrameworkTemplate* GetSourceTemplate ();
 };
 
 /* @CBindingRequisite */
