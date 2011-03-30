@@ -3,7 +3,20 @@
 	<assembly fullname="System.ServiceModel">
 		<type fullname="System.Runtime.CompilerServices.FriendAccessAllowedAttribute" preserve="all" />
 		<type fullname="System.ServiceModel.ClientRuntimeChannel" preserve="all" />
-		<type fullname="System.ServiceModel.Dispatcher.OperationFormatter" preserve="all" />
+		<type fullname="System.ServiceModel.Description.FaultDescription" preserve="all" />
+		<type fullname="System.ServiceModel.Description.ServiceReflector" preserve="all" />
+		<type fullname="System.ServiceModel.Description.XmlName" preserve="all" />
+		<type fullname="System.ServiceModel.Description.MessagePartDescription" preserve="all" />
+		<type fullname="System.ServiceModel.Description.MessageDescription" preserve="all" />
+		<type fullname="System.ServiceModel.DiagnosticUtility" preserve="all" />
+		<type fullname="System.ServiceModel.DiagnosticUtility/ExceptionUtility" preserve="all" />
+		<type fullname="System.ServiceModel.Dispatcher.FaultContractInfo" preserve="all" />
 		<type fullname="System.ServiceModel.Dispatcher.FaultFormatter" preserve="all" />
+		<type fullname="System.ServiceModel.Dispatcher.OperationFormatter" preserve="all" />
+		<type fullname="System.ServiceModel.EndPointIdentity" preserve="all" />
+		<type fullname="System.ServiceModel.InstanceContext" preserve="all" />
+		<type fullname="System.ServiceModel.OperationFormatStyleHelper" preserve="all" />
+		<type fullname="System.ServiceModel.Dispatcher.ClientOperation" preserve="all" />
+		<type fullname="System.ServiceModel.IDispatchOperation" preserve="all" />
 	</assembly>
 </linker>
