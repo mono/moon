@@ -1321,6 +1321,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[MaxRuntimeVersion(3)]
+		[MoonlightBug]
 		public void XamlSelectedIndex_sl3 ()
 		{
 			var c = (ComboBox)XamlReader.Load (@"

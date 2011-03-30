@@ -2957,6 +2957,7 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TemplateBinding_NoDP_WithClrWrapper ()
 		{
 			var c = (ContentControl) XamlReader.Load (@"
@@ -3009,7 +3010,22 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
-		public void TemplateBinding_CanvasTop ()
+		[MinRuntimeVersion (4)]
+		public void TemplateBinding_CanvasTop_sl4 ()
+		{
+			TemplateBinding_CanvasTop_Core ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		[MaxRuntimeVersion (3)]
+		public void TemplateBinding_CanvasTop_sl3 ()
+		{
+			TemplateBinding_CanvasTop_Core ();
+		}
+
+		public void TemplateBinding_CanvasTop_Core ()
 		{
 			var control = (ContentControl) XamlReader.Load (
 @"
@@ -3095,7 +3111,22 @@ xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 
 		[TestMethod]
 		[Asynchronous]
-		public void TemplateBinding_IncompatibleSourceAndTargetType ()
+		[MinRuntimeVersion (4)]
+		public void TemplateBinding_IncompatibleSourceAndTargetType_sl4 ()
+		{
+			TemplateBinding_IncompatibleSourceAndTargetType_Core ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		[MaxRuntimeVersion (3)]
+		public void TemplateBinding_IncompatibleSourceAndTargetType_sl3 ()
+		{
+			TemplateBinding_IncompatibleSourceAndTargetType_Core ();
+		}
+
+		public void TemplateBinding_IncompatibleSourceAndTargetType_Core ()
 		{
 			// TemplateBinding two DPs which are incompatible
 			// results in the binding being silently discarded.
