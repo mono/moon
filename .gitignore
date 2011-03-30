@@ -48,4 +48,3 @@ xdb.*
 /src/factory.h
 /src/type-generated.cpp
 /config.cache
-*.pidb

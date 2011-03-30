@@ -242,7 +242,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	// Initialization/Destruction
 	//
-	void Initialize (Type::Kind type);
+	void Initialize (Type::Kind type, const char *type_name);
 	virtual ~TextBoxBase ();
 	
  public:

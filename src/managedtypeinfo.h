@@ -18,12 +18,14 @@ namespace Moonlight {
 /* @IncludeInKinds */
 class ManagedTypeInfo {
  public:
+	char *full_name;
 	Type::Kind kind;
 
-	/* @GeneratePInvoke */
-	ManagedTypeInfo (Type::Kind kind);
+	ManagedTypeInfo (Type::Kind kind, const char *full_name);
 	ManagedTypeInfo (const ManagedTypeInfo& v);
-	~ManagedTypeInfo () { }
+	~ManagedTypeInfo ();
+
+	void Initialize (Type::Kind kind, const char *full_name);
 
 	bool operator == (const ManagedTypeInfo &v) const;
 	bool operator != (const ManagedTypeInfo &v) const;

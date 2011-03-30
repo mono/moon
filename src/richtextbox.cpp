@@ -576,7 +576,7 @@ RichTextBox::RichTextBox ()
 {
 	SetObjectType (Type::RICHTEXTBOX);
 	
-	ManagedTypeInfo type_info (GetObjectType ());
+	ManagedTypeInfo type_info (GetObjectType (), "System.Windows.Controls.RichTextBox");
 	SetDefaultStyleKey (&type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, RichTextBox::mouse_left_button_multi_click, this);

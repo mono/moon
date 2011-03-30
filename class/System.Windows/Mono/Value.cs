@@ -125,6 +125,7 @@ namespace Mono {
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct ManagedTypeInfo {
+		public IntPtr full_name;
 		public Kind Kind;
 	}
 	
@@ -710,8 +711,13 @@ namespace Mono {
 				}
 				else if (v is Type) {
 					Type t = v as Type;
+					ManagedTypeInfo mti = new ManagedTypeInfo ();
+					mti.full_name = StringToIntPtr (t.FullName);
+					mti.Kind = Deployment.Current.Types.TypeToKind (t);
+
 					value.k = Kind.MANAGEDTYPEINFO;
-					value.u.p = NativeMethods.managed_type_info_new (Deployment.Current.Types.TypeToKind (t));
+					value.u.p = Marshal.AllocHGlobal (sizeof (ManagedTypeInfo));
+					Marshal.StructureToPtr (mti, value.u.p, false);
 				} else if (v is Value) {
 					throw new InvalidOperationException ("You can not create a Mono.Value from a Mono.Value.");
 				}
