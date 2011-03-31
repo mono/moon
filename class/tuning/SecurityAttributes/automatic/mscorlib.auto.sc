@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 586 methods needs to be decorated.
+# 611 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -664,11 +664,14 @@
 # internal call
 +SC-M: System.IO.MonoFileType System.IO.MonoIO::GetFileType(System.IntPtr,System.IO.MonoIOError&)
 
+# Promoting interface member to [SecurityCritical] because of 'System.Object System.AppDomain::GetData(System.String)'.
++SC-M: System.Object System._AppDomain::GetData(System.String)
+
 # internal call
 +SC-M: System.Object System.Activator::CreateInstanceInternal(System.Type)
 
-# overrides 'System.Object System.MarshalByRefObject::InitializeLifetimeService()'.
-+SC-M: System.Object System.AppDomain::InitializeLifetimeService()
+# [VISIBLE] implements 'System.Object System._AppDomain::GetData(System.String)'.
++SC-M: System.Object System.AppDomain::GetData(System.String)
 
 # internal call
 +SC-M: System.Object System.Array::GetValueImpl(System.Int32)
@@ -772,6 +775,42 @@
 # internal call
 +SC-M: System.PlatformID System.Environment::get_Platform()
 
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly System.AppDomain::Load(System.Byte[])'.
++SC-M: System.Reflection.Assembly System._AppDomain::Load(System.Byte[])
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[])'.
++SC-M: System.Reflection.Assembly System._AppDomain::Load(System.Byte[],System.Byte[])
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence)'.
++SC-M: System.Reflection.Assembly System._AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName)'.
++SC-M: System.Reflection.Assembly System._AppDomain::Load(System.Reflection.AssemblyName)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)'.
++SC-M: System.Reflection.Assembly System._AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly System.AppDomain::Load(System.String)'.
++SC-M: System.Reflection.Assembly System._AppDomain::Load(System.String)
+
+# implements 'System.Reflection.Assembly System._AppDomain::Load(System.Byte[])'.
++SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[])
+
+# implements 'System.Reflection.Assembly System._AppDomain::Load(System.Byte[],System.Byte[])'.
++SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[])
+
+# implements 'System.Reflection.Assembly System._AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence)'.
++SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence)
+
+# implements 'System.Reflection.Assembly System._AppDomain::Load(System.Reflection.AssemblyName)'.
++SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName)
+
+# implements 'System.Reflection.Assembly System._AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)'.
++SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
+
+# implements 'System.Reflection.Assembly System._AppDomain::Load(System.String)'.
++SC-M: System.Reflection.Assembly System.AppDomain::Load(System.String)
+
 # internal call
 +SC-M: System.Reflection.Assembly System.AppDomain::LoadAssembly(System.String,System.Security.Policy.Evidence,System.Boolean)
 
@@ -780,6 +819,12 @@
 
 # internal call
 +SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFrom(System.String,System.Boolean)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.Assembly[] System.AppDomain::GetAssemblies()'.
++SC-M: System.Reflection.Assembly[] System._AppDomain::GetAssemblies()
+
+# implements 'System.Reflection.Assembly[] System._AppDomain::GetAssemblies()'.
++SC-M: System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
 
 # internal call
 +SC-M: System.Reflection.Assembly[] System.AppDomain::GetAssemblies(System.Boolean)
@@ -1426,11 +1471,41 @@
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void Mono.Security.BitConverterLE::UShortFromBytes(System.Byte*,System.Byte[],System.Int32)
 
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::add_AssemblyResolve(System.ResolveEventHandler)'.
++SC-M: System.Void System._AppDomain::add_AssemblyResolve(System.ResolveEventHandler)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)'.
++SC-M: System.Void System._AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)'.
++SC-M: System.Void System._AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)'.
++SC-M: System.Void System._AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::SetData(System.String,System.Object)'.
++SC-M: System.Void System._AppDomain::SetData(System.String,System.Object)
+
+# [VISIBLE] implements 'System.Void System._AppDomain::add_AssemblyResolve(System.ResolveEventHandler)'.
++SC-M: System.Void System.AppDomain::add_AssemblyResolve(System.ResolveEventHandler)
+
+# [VISIBLE] implements 'System.Void System._AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)'.
++SC-M: System.Void System.AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)
+
 # internal call
 +SC-M: System.Void System.AppDomain::InternalPopDomainRef()
 
 # internal call
 +SC-M: System.Void System.AppDomain::InternalPushDomainRefByID(System.Int32)
+
+# [VISIBLE] implements 'System.Void System._AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)'.
++SC-M: System.Void System.AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)
+
+# [VISIBLE] implements 'System.Void System._AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)'.
++SC-M: System.Void System.AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)
+
+# [VISIBLE] implements 'System.Void System._AppDomain::SetData(System.String,System.Object)'.
++SC-M: System.Void System.AppDomain::SetData(System.String,System.Object)
 
 # using 'System.Void*' as a parameter type
 +SC-M: System.Void System.ArgIterator::.ctor(System.RuntimeArgumentHandle,System.Void*)
