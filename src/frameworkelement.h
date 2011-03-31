@@ -94,6 +94,7 @@ public:
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	bool InsideLayoutClip (double x, double y);
+	bool HasLayoutClip ();
 	void RenderLayoutClip (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);

@@ -115,6 +115,25 @@ FrameworkElement::Dispose ()
 	UIElement::Dispose ();
 }
 
+bool
+FrameworkElement::HasLayoutClip ()
+{
+	FrameworkElement *element = this;
+
+	while (element) {
+		if (LayoutInformation::GetLayoutClip (element))
+			return true;
+
+		if (element->Is (Type::CANVAS) ||
+		    element->Is (Type::USERCONTROL))
+			break;
+
+		element = (FrameworkElement *) element->GetVisualParent ();
+	}
+
+	return false;
+}
+
 void
 FrameworkElement::RenderLayoutClip (cairo_t *cr)
 {
