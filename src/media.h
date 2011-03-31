@@ -192,7 +192,8 @@ class Image : public MediaBase {
 				   AlignmentY     align_y);
 	
 	virtual void Dispose ();
-	
+
+	virtual void Render (Context *ctx, Region *region);
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);

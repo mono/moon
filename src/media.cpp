@@ -363,6 +363,14 @@ Image::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
+Image::Render (Context *ctx, Region *region)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+	Render (cr, region);
+	ctx->Pop ();
+}
+
+void
 Image::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	ImageSource *source = GetSource ();
