@@ -121,12 +121,29 @@ void
 Panel::Render (Context *ctx, Region *region)
 {
 	Brush *background = GetBackground ();
+	double m[16];
+	int    x0, y0;
 
 	Size framework (GetActualWidth (), GetActualHeight ());
 	framework = ApplySizeConstraints (framework);
 	Rect area = Rect (0.0, 0.0, framework.width, framework.height);
 	
-	if (background && area.width > 0 && area.height > 0) {
+	if (!background || area.width <= 0 || area.height <= 0)
+		return;
+
+	ctx->GetMatrix (m);
+
+	if (!HasLayoutClip () && Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+		Rect r = Rect (area.x + x0,
+			       area.y + y0,
+			       area.width,
+			       area.height);
+
+		ctx->Push (Context::Clip (r));
+		background->Paint (ctx, area);
+		ctx->Pop ();
+	}
+	else {
 		cairo_t *cr = ctx->Push (Context::Cairo ());
 
 		RenderLayoutClip (cr);
