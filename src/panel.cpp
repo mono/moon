@@ -120,37 +120,25 @@ Panel::ShiftPosition (Point p)
 void
 Panel::Render (Context *ctx, Region *region)
 {
-	cairo_t *cr = ctx->Push (Context::Cairo ());
-	Render (cr, region);
-	ctx->Pop ();
-}
-
-void
-Panel::Render (cairo_t *cr, Region *region, bool path_only)
-{
 	Brush *background = GetBackground ();
-	
+
 	Size framework (GetActualWidth (), GetActualHeight ());
 	framework = ApplySizeConstraints (framework);
 	Rect area = Rect (0.0, 0.0, framework.width, framework.height);
 	
-	cairo_save (cr);
-	if (!path_only) 
+	if (background && area.width > 0 && area.height > 0) {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+
 		RenderLayoutClip (cr);
 
-	cairo_new_path (cr);
-	area.Draw (cr);
+		cairo_new_path (cr);
+		area.Draw (cr);
 
-	if (background && area.width > 0 && area.height > 0 && !path_only) {
 		background->SetupBrush (cr, area);
 		background->Fill (cr);
+
+		ctx->Pop ();
 	}
-
-	// make sure we don't leave a stray path in the context
-	if (!path_only)
-		cairo_new_path (cr);
-
-	cairo_restore (cr);
 }
 
 Rect
