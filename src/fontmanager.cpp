@@ -21,6 +21,7 @@
 #include "debug.h"
 #include "utils.h"
 #include "list.h"
+#include "factory.h"
 
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
@@ -2015,7 +2016,7 @@ FontManager::GetSystemGlyphTypefaces ()
 	if (typefaces)
 		return typefaces;
 	
-	typefaces = new GlyphTypefaceCollection ();
+	typefaces = MoonUnmanagedFactory::CreateGlyphTypefaceCollection ();
 	typefaces->SetIsAttached (true);
 	
 	objects = FcObjectSetBuild (FC_FILE, FC_INDEX, NULL);

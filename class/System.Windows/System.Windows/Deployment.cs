@@ -160,12 +160,7 @@ namespace System.Windows {
 
 		internal GlyphTypefaceCollection SystemTypefaces {
 			get {
-				if (typefaces == null) {
-					IntPtr retval = NativeMethods.deployment_get_system_typefaces (native);
-					typefaces = new GlyphTypefaceCollection (retval, false);
-				}
-				
-				return typefaces;
+				return (GlyphTypefaceCollection) NativeDependencyObjectHelper.Lookup (NativeMethods.deployment_get_system_typefaces (native));
 			}
 		}
 

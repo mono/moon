@@ -396,6 +396,7 @@ namespace Mono {
 			case Kind.GEOMETRY_COLLECTION: return new GeometryCollection (raw, false);
 			case Kind.GEOMETRYGROUP: return new GeometryGroup (raw, false);
 			case Kind.GLYPHS: return new Glyphs (raw, false);
+			case Kind.GLYPHTYPEFACE_COLLECTION: return new GlyphTypefaceCollection (raw, false);
 			case Kind.GRADIENTSTOP_COLLECTION: return new GradientStopCollection (raw, false);
 			case Kind.GRADIENTSTOP: return new GradientStop (raw, false);
 			case Kind.GRID: return new Grid (raw, false);
