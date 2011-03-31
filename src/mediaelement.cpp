@@ -831,7 +831,9 @@ MediaElement::Render (Context *ctx, Region *region)
 		Rect   box = video.Transform (&matrix).RoundIn ();
 
 		if (bounds.RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
-			UIElement::Render (ctx, region);
+			cairo_t *cr = ctx->Push (Context::Cairo ());
+			Render (cr, region);
+			ctx->Pop ();
 			return;
 		}
 	}
