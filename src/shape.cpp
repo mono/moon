@@ -548,6 +548,14 @@ cleanpath:
 }
 
 void
+Shape::Render (Context *ctx, Region *region)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+	Render (cr, region);
+	ctx->Pop ();
+}	
+
+void
 Shape::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	cairo_save (cr);
