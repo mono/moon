@@ -550,9 +550,11 @@ cleanpath:
 void
 Shape::Render (Context *ctx, Region *region)
 {
-	cairo_t *cr = ctx->Push (Context::Cairo ());
-	Render (cr, region);
-	ctx->Pop ();
+	if (!IsEmpty ()) {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		Render (cr, region);
+		ctx->Pop ();
+        }
 }	
 
 void
