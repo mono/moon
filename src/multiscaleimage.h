@@ -131,7 +131,6 @@ class MultiScaleImage : public MediaBase {
 	// Overrides
 	//
 	virtual void Render (Context *ctx, Region *region);
-	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
