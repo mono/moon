@@ -118,6 +118,14 @@ Panel::ShiftPosition (Point p)
 //#define DEBUG_INVALIDATE 1
 
 void
+Panel::Render (Context *ctx, Region *region)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+	Render (cr, region);
+	ctx->Pop ();
+}
+
+void
 Panel::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Brush *background = GetBackground ();

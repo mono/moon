@@ -46,6 +46,7 @@ class Panel : public FrameworkElement {
 	virtual Size MeasureOverrideWithError (Size availableSize, MoonError *error);
 
 	virtual Rect GetCoverageBounds ();
+	virtual void Render (Context *ctx, Region *region);
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
