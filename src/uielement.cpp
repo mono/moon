@@ -1817,15 +1817,13 @@ UIElement::CallPostRender (Context *ctx, UIElement *element, Region *region, boo
 void
 UIElement::Render (Context *ctx, Region *region)
 {
-	cairo_t *cr = ctx->Push (Context::Cairo ());
-	Render (cr, region);
-	ctx->Pop ();
+	/* do nothing by default */
 }
 
 void
 UIElement::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	/* do nothing by default */
+	g_warning ("UIElement:Render has been called. The derived class %s should have overridden it.", GetTypeName ());
 }
 
 void
