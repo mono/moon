@@ -1325,12 +1325,8 @@ UIElement::DoRender (Context *ctx, Region *parent_region)
 
 	PreRender (ctx, region, false);
 
-	if (ctx->IsMutable ()) {
-		cairo_t *cr = ctx->Push (Context::Cairo ());
-
-		Render (cr, region);
-		ctx->Pop ();
-	}
+	if (ctx->IsMutable ())
+		Render (ctx, region);
 
 	PostRender (ctx, region, false);
 
