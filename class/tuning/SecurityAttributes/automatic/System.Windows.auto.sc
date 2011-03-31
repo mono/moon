@@ -638,6 +638,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::log_ready_routed_event_args_get_log_(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::managed_type_info_new(Mono.Kind)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix_get_matrix_values(System.IntPtr)
 
 # p/invoke declaration

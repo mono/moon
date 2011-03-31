@@ -2849,9 +2849,9 @@ class Generator {
 		text.AppendLine ("Types::RegisterNativeTypes ()");
 		text.AppendLine ("{");
 		text.AppendLine ("\tDeployment *deployment = Deployment::GetCurrent ();");
-		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
-		text.AppendLine ("\ttypes [(int) Type::ENUM] = new Type (deployment, Type::ENUM, Type::OBJECT, false, false, false, \"Enum\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
-		text.AppendLine ("\ttypes [(int) Type::DATETIME] = new Type (deployment, Type::DATETIME, Type::OBJECT, false, false, false, \"DateTime\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, false, NULL, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::ENUM] = new Type (deployment, Type::ENUM, Type::OBJECT, false, false, false, \"Enum\", \"System.Enum\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::DATETIME] = new Type (deployment, Type::DATETIME, Type::OBJECT, false, false, false, \"DateTime\", \"System.DateTime\", 0, 0, NULL, 0, NULL, false, NULL, NULL );");
 
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
@@ -2883,13 +2883,14 @@ class Generator {
 					parentKind = "OBJECT";
 			}
 
-			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13});",
+			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14});",
 							"Type::" + type.KindName,
 							"Type::" + parentKind,
 							type.IsEnum ? "true" : "false",
 							IsValueType (type) ? "true" : "false",
 							type.IsInterface ? "true" : "false",
 							"\"" + type.Name + "\"",
+							"\"" + type.ManagedFullName + "\"",
 							type.GetEventCount (),
 							type.GetTotalEventCount (),
 							events,
@@ -2906,7 +2907,7 @@ class Generator {
 					 );
 		}
 
-		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
+		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, false, NULL, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
 
 		text.AppendLine ("}");
 

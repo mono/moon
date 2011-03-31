@@ -556,11 +556,11 @@ GetClipboard (TextBoxBase *textbox, MoonClipboardType clipboardType)
 }
 
 void
-TextBoxBase::Initialize (Type::Kind type, const char *type_name)
+TextBoxBase::Initialize (Type::Kind type)
 {
 	SetObjectType (type);
 
-	ManagedTypeInfo type_info (GetObjectType (), type_name);
+	ManagedTypeInfo type_info (GetObjectType ());
 	SetDefaultStyleKey (&type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
@@ -2529,7 +2529,7 @@ TextBox::TextBox ()
 	delete providers.dynamicvalue;
 	providers.dynamicvalue = new TextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
-	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
+	Initialize (Type::TEXTBOX);
 	events_mask = TEXT_CHANGED | SELECTION_CHANGED;
 	multiline = true;
 }
@@ -2882,7 +2882,7 @@ PasswordBox::PasswordBox ()
 	delete providers.dynamicvalue;
 	providers.dynamicvalue = new PasswordBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
-	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+	Initialize (Type::PASSWORDBOX);
 	events_mask = TEXT_CHANGED;
 	secret = true;
 	

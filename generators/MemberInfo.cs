@@ -155,7 +155,7 @@ class MemberInfo {
 			if (managed_fullname == null) {
 				if (Parent != null && !string.IsNullOrEmpty (Parent.ManagedFullName)) {
 					managed_fullname = Parent.ManagedFullName + "." + Name;
-				} else if (Namespace != null) {
+				} else if (Namespace != null && Namespace != "None") {
 					managed_fullname = Namespace + "." + FullName;
 				} else {
 					managed_fullname = FullName;

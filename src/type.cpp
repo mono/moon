@@ -26,7 +26,7 @@ namespace Moonlight {
  * Type implementation
  */
 Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface,
-	    const char *name, 
+	    const char *name, const char *full_name,
 	    int event_count, int total_event_count, const char **events, 
 	    int interface_count, const Type::Kind *interfaces, bool ctor_visible,
 	    create_inst_func *create_inst, const char *content_property)
@@ -37,6 +37,7 @@ Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_
 	this->is_value_type = is_value_type;
 	this->is_interface = is_interface;
 	this->name = g_strdup (name);
+	this->full_name = g_strdup (full_name);
 	this->event_count = event_count;
 	this->total_event_count = total_event_count;
 	this->events = events;
@@ -73,6 +74,7 @@ Types::SetFastPaths ()
 Type::~Type ()
 {
 	g_free (name);
+	g_free (full_name);
 	g_free (content_property);
 
 	if (properties) {
@@ -521,9 +523,9 @@ Types::Find (const char *name, bool ignore_case)
 }
 
 Type::Kind
-Types::RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface, bool ctor_visible, Type::Kind* interfaces, int interface_count)
+Types::RegisterType (const char *name, const char *full_name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface, bool ctor_visible, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, is_enum, is_value_type, is_interface, name, 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, content_property);
+	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, is_enum, is_value_type, is_interface, name, full_name, 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, content_property);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	

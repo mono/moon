@@ -73,6 +73,7 @@ public:
 	bool IsInterface () { return is_interface; }
 	bool IsCustomType () { return type > LASTTYPE; }
 	const char *GetName () { return name; }
+	const char *GetFullName () { return full_name; }
 	int GetEventCount () { return total_event_count; }
 	int GetInterfaceCount () { return interface_count; }
 	Type::Kind GetInterface (int i) { return i >= 0 && i < interface_count ? interfaces[i] : Type::INVALID; }
@@ -81,7 +82,7 @@ public:
 
 	~Type ();
 	Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface,
-	      const char *name, 
+	      const char *name, const char *full_name,
 	      int event_count, int total_event_count, const char **events,
 	      int interface_count, const Type::Kind *interfaces, bool ctor_visible,
 	      create_inst_func *create_inst, const char *content_property);
@@ -109,6 +110,7 @@ private:
 	bool is_dependencyobject; // if this type is a value type
 
 	char *name; // The name as it appears in code.
+	char *full_name; // The namespace prefixed typename.
 
 	int interface_count;
 	Type::Kind *interfaces;
@@ -145,7 +147,7 @@ public:
 	~Types ();
 
 	/* @GeneratePInvoke */
-	Type::Kind RegisterType (const char *name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface, bool ctor_visible, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
+	Type::Kind RegisterType (const char *name, const char *full_name, const char *content_property, void *gc_handle, Type::Kind parent, bool is_enum, bool is_value_type, bool is_interface, bool ctor_visible, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
 
 	/* @GeneratePInvoke */	
 	void RegisterInterfaces (Type::Kind type, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);

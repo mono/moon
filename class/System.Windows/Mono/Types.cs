@@ -147,7 +147,12 @@ namespace Mono
 				else {
 					string cp = GetContentPropertyName (type);
 
-					info.native_handle = NativeMethods.types_register_type (native, type.FullName, cp,
+					// We explicitly use type.FullName instead of type.Name for the second parameter there. This is
+					// because only built-in types can register type.Name as their 'name'. This allows builtins to be
+					// accessed in xaml by writing stuff like "Control.Width" whereas custom types must be explicitly
+					// namespaced and prefixed so you have to write: clrMyNs:MyControl.Foo in xaml instead of just
+					// MyControl.Foo.
+					info.native_handle = NativeMethods.types_register_type (native, type.FullName, type.FullName, cp,
 						GCHandle.ToIntPtr (info.gc_handle), 
 						(parent != null ? parent.native_handle : Kind.INVALID), 
 						type.IsEnum,
