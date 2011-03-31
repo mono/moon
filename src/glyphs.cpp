@@ -395,14 +395,6 @@ Glyphs::GetOriginPoint ()
 void
 Glyphs::Render (Context *ctx, Region *region)
 {
-	cairo_t *cr = ctx->Push (Context::Cairo ());
-	Render (cr, region);
-	ctx->Pop ();
-}
-
-void
-Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
-{
 	if (fill == NULL || (width == 0.0 && height == 0.0))
 		return;
 	
@@ -412,11 +404,17 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	}
 	
-	if (path == NULL || path->cairo.num_data == 0) {
-		// No glyphs to render
-		return;
+	if (path && path->cairo.num_data != 0) {
+		// Glyphs to render
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		Render (cr, region);
+		ctx->Pop ();
 	}
-	
+}
+
+void
+Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
+{
 	cairo_save (cr);
 	
 	if (!path_only)
