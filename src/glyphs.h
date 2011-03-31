@@ -92,6 +92,7 @@ class Glyphs : public FrameworkElement {
 	Glyphs ();
 	
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual void Render (Context *ctx, Region *region);
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Size ComputeActualSize ();
 	virtual bool CanFindElement () { return true; }
