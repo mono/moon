@@ -150,17 +150,15 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	pipe_resource_reference (&texture, NULL);
 	ctx = new GalliumContext (target);
 	target->unref ();
-
-	ctx->Push (Context::Group (bounds));
 #else
 	CairoSurface *target;
 
-	target = new CairoSurface (surface, bounds.width, bounds.height);
+	target = new CairoSurface (1, 1);
 	ctx = new CairoContext (target);
 	target->unref ();
-
-	ctx->Push (Context::Clip (bounds));
 #endif
+
+	ctx->Push (Context::Group (bounds));
 
 	cairo_matrix_t xform;
 	cairo_matrix_init_identity (&xform);
