@@ -642,6 +642,7 @@ class TextBoxView : public FrameworkElement {
 	//
 	// Overrides
 	//
+	virtual void Render (Context *ctx, Region *region);
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Size ComputeActualSize ();

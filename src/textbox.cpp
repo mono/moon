@@ -3552,6 +3552,14 @@ TextBoxView::Paint (cairo_t *cr)
 }
 
 void
+TextBoxView::Render (Context *ctx, Region *region)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+	Render (cr, region);
+	ctx->Pop ();
+}
+
+void
 TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Size renderSize = GetRenderSize ();
