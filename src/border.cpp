@@ -72,9 +72,14 @@ Border::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 void 
 Border::Render (Context *ctx, Region *region)
 {
-	cairo_t *cr = ctx->Push (Context::Cairo ());
-	Render (cr, region);
-	ctx->Pop ();
+	Brush *background = GetBackground ();
+	Brush *border_brush = GetBorderBrush ();
+
+	if (background || border_brush) {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		Render (cr, region);
+		ctx->Pop ();
+	}
 }
 
 void 
