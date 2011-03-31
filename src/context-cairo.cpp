@@ -64,6 +64,17 @@ CairoContext::Blit (unsigned char *data,
 }
 
 void
+CairoContext::Blend (Color *color)
+{
+	cairo_t *cr = Context::Push (Cairo ());
+
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
+	cairo_paint (cr);
+
+	Pop ();
+}
+
+void
 CairoContext::Blend (MoonSurface *src,
 		     double      alpha,
 		     double      x,

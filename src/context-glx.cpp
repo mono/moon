@@ -559,6 +559,27 @@ GLXContext::BlitYV12 (unsigned char *data[],
 	ms->unref ();
 }
 
+void
+GLXContext::Blend (Color *color)
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	Rect        clip;
+
+	Top ()->GetClip (&clip);
+
+	if (!target->GetInit () && r == clip) {
+		// mark target as initialized
+		target->SetInit (ms);
+	}
+
+	ForceCurrent ();
+
+	GLContext::Blend (color);
+
+	ms->unref ();
+}
 
 void
 GLXContext::Blend (MoonSurface *src,

@@ -50,6 +50,8 @@ public:
 	void Blit (unsigned char *data,
 		   int           stride);
 
+	void Blend (Color *color);
+
 	void Blend (MoonSurface *src,
 		    double      alpha,
 		    double      x,
@@ -94,6 +96,7 @@ private:
 	void SetViewport ();
 	void SetConstantBuffer (const void *data, int bytes);
 
+	pipe_resource *SetupVertexData (Color *color);
 	pipe_resource *SetupVertexData (pipe_sampler_state *sampler,
 					const double       *matrix,
 					double             x,
@@ -101,6 +104,7 @@ private:
 					double             width,
 					double             height);
 
+	void *GetBlendShader ();
 	void *GetProjectShader (double alpha);
 	void *GetConvolveShader (unsigned size);
 	void *GetDropShadowShader (unsigned size);
@@ -111,7 +115,8 @@ private:
 
 	cso_context *cso;
 
-	void *default_vs;
+	void *color_vs;
+	void *tex_vs;
 	void *default_fs;
 
 	pipe_vertex_element velems[2];
@@ -125,6 +130,8 @@ private:
 
 	pipe_blend_state blend_over;
 	pipe_blend_state blend_src;
+
+	void *blend_fs;
 
 	pipe_sampler_state project_sampler;
 	void *project_fs[2];

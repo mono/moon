@@ -452,6 +452,12 @@ Context::BlitYV12 (unsigned char *data[],
 }
 
 void
+Context::Blend (Color *color)
+{
+	g_warning ("Context::Blend has been called. The derived class should have overridden it.");
+}
+
+void
 Context::Blend (MoonSurface *src,
 		double      alpha,
 		double      x,

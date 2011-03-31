@@ -34,6 +34,8 @@ public:
 	void BlitYV12 (unsigned char *data[],
 		       int           stride[]);
 
+	void Blend (Color *color);
+
 	void Blend (MoonSurface *src,
 		    double      alpha,
 		    double      x,
@@ -114,6 +116,7 @@ protected:
 			     GLsizei      count,
 			     const GLchar **str);
 	GLuint GetVertexShader ();
+	GLuint GetBlendProgram ();
 	GLuint GetProjectProgram (double alpha, unsigned yuv);
 	GLuint GetConvolveProgram (unsigned size);
 	GLuint GetDropShadowProgram (unsigned size);
@@ -126,6 +129,7 @@ protected:
 	GLuint framebuffer;
 
 	GLuint vs;
+	GLuint blend_program;
 	GLuint project_program[2][2];
 	GLuint convolve_program[MAX_CONVOLVE_SIZE + 1];
 	GLuint dropshadow_program[MAX_CONVOLVE_SIZE + 1];

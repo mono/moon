@@ -63,9 +63,6 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	struct pipe_resource *tex = surface->Texture ();
 	struct pipe_screen   *screen = tex->screen;
 	Rect                 r = Rect (0, 0, 32768, 32768);
-	const uint           semantic_names[] = { TGSI_SEMANTIC_POSITION,
-						  TGSI_SEMANTIC_GENERIC };
-	const uint           semantic_indexes[] = { 0, 0 };
 	Target               *target;
 	unsigned             i;
 
@@ -102,12 +99,29 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 		cso_single_sampler (cso, i, &default_sampler);
 	cso_single_sampler_done (cso);
 
-	/* default vertex shader */
-	default_vs = util_make_vertex_passthrough_shader (pipe,
-							  2,
-							  semantic_names,
-							  semantic_indexes);
-	cso_set_vertex_shader_handle (cso, default_vs);
+	/* vertex shaders */
+	{
+		const uint semantic_names[] = { TGSI_SEMANTIC_POSITION,
+						TGSI_SEMANTIC_COLOR };
+		const uint semantic_indices[] = { 0, 0 };
+
+		color_vs =
+			util_make_vertex_passthrough_shader (pipe,
+							     2,
+							     semantic_names,
+							     semantic_indices);
+	}
+	{
+		const uint semantic_names[] = { TGSI_SEMANTIC_POSITION,
+						TGSI_SEMANTIC_GENERIC };
+		const uint semantic_indices[] = { 0, 0 };
+
+		tex_vs = util_make_vertex_passthrough_shader (pipe,
+							      2,
+							      semantic_names,
+							      semantic_indices);
+	}
+	cso_set_vertex_shader_handle (cso, tex_vs);
 
 	/* default fragment shader */
 	default_fs = util_make_fragment_tex_shader (pipe,
@@ -121,11 +135,6 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 		velems[i].instance_divisor = 0;
 		velems[i].vertex_buffer_index = 0;
 		velems[i].src_format = PIPE_FORMAT_R32G32B32A32_FLOAT;
-	}
-
-	for (i = 0; i < 4; i++) {
-		vertices[i][1][2] = 0.0f; /* r */
-		vertices[i][1][3] = 1.0f; /* q */
 	}
 
 	/* blend src */
@@ -147,6 +156,9 @@ GalliumContext::GalliumContext (GalliumSurface *surface)
 	blend_over.rt[0].blend_enable = 1;
 	blend_over.rt[0].rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 	blend_over.rt[0].alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+
+	/* blend fragment shader */
+	blend_fs = NULL;
 
 	/* perspective transform sampler */
 	memset (&project_sampler, 0, sizeof (struct pipe_sampler_state));
@@ -220,8 +232,12 @@ GalliumContext::~GalliumContext ()
 		if (project_fs[i])
 			cso_delete_fragment_shader (cso, project_fs[i]);
 
+	if (blend_fs)
+		cso_delete_fragment_shader (cso, blend_fs);
+
 	cso_delete_fragment_shader (cso, default_fs);
-	cso_delete_vertex_shader (cso, default_vs);
+	cso_delete_vertex_shader (cso, tex_vs);
+	cso_delete_vertex_shader (cso, color_vs);
 
 	cso_release_all (cso);
 	cso_destroy_context (cso);
@@ -337,6 +353,46 @@ GalliumContext::SetConstantBuffer (const void *data, int bytes)
 }
 
 struct pipe_resource *
+GalliumContext::SetupVertexData (Color *color)
+{
+	float rgba[4];
+
+	vertices[0][0][0] = -1.0f;
+	vertices[0][0][1] = -1.0f;
+	vertices[0][0][2] = 0.0f;
+	vertices[0][0][3] = 1.0f;
+
+	vertices[1][0][0] = 1.0f;
+	vertices[1][0][1] = -1.0f;
+	vertices[1][0][2] = 0.0f;
+	vertices[1][0][3] = 1.0f;
+
+	vertices[2][0][0] = 1.0f;
+	vertices[2][0][1] = 1.0f;
+	vertices[2][0][2] = 0.0f;
+	vertices[2][0][3] = 1.0f;
+
+	vertices[3][0][0] = -1.0f;
+	vertices[3][0][1] = 1.0f;
+	vertices[3][0][2] = 0.0f;
+	vertices[3][0][3] = 1.0f;
+
+	rgba[0] = color->r * color->a;
+	rgba[1] = color->g * color->a;
+	rgba[2] = color->b * color->a;
+	rgba[3] = color->a;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			vertices[i][1][j] = rgba[j];
+
+	return pipe_user_buffer_create (pipe->screen,
+					vertices,
+					sizeof (vertices),
+					PIPE_BIND_VERTEX_BUFFER);
+}
+
+struct pipe_resource *
 GalliumContext::SetupVertexData (struct pipe_sampler_state *sampler,
 				 const double              *matrix,
 				 double                    x,
@@ -389,15 +445,23 @@ GalliumContext::SetupVertexData (struct pipe_sampler_state *sampler,
 
 	vertices[0][1][0] = 0.0f;
 	vertices[0][1][1] = 0.0f;
+	vertices[0][1][2] = 0.0f;
+	vertices[0][1][3] = 1.0f;
 
 	vertices[1][1][0] = width * dt + (1.0f - dt);
 	vertices[1][1][1] = 0.0f;
+	vertices[1][1][2] = 0.0f;
+	vertices[1][1][3] = 1.0f;
 
 	vertices[2][1][0] = width * dt + (1.0f - dt);
 	vertices[2][1][1] = height * dt + (1.0f - dt);
+	vertices[2][1][2] = 0.0f;
+	vertices[2][1][3] = 1.0f;
 
 	vertices[3][1][0] = 0.0f;
 	vertices[3][1][1] = height * dt + (1.0f - dt);
+	vertices[3][1][2] = 0.0f;
+	vertices[3][1][3] = 1.0f;
 
 	ms->unref ();
 
@@ -497,6 +561,55 @@ GalliumContext::Blit (unsigned char *data,
 	delete transfer;
 
 	ms->unref ();
+}
+
+void *
+GalliumContext::GetBlendShader ()
+{
+	if (!blend_fs)
+		blend_fs = util_make_fragment_passthrough_shader (pipe);
+
+	return blend_fs;
+}
+
+void
+GalliumContext::Blend (Color *color)
+{
+	struct pipe_resource *vbuf;
+
+	cso_save_blend (cso);
+	cso_save_vertex_shader (cso);
+	cso_save_fragment_shader (cso);
+	cso_save_framebuffer (cso);
+	cso_save_viewport (cso);
+	cso_save_rasterizer (cso);
+
+	cso_set_blend (cso, &blend_over);
+	cso_set_vertex_shader_handle (cso, color_vs);
+	cso_set_fragment_shader_handle (cso, GetBlendShader ());
+
+	SetViewport ();
+	SetFramebuffer ();
+	SetScissor ();
+	SetRasterizer ();
+
+	vbuf = SetupVertexData (color);
+	if (vbuf) {
+		cso_set_vertex_elements (cso, 2, velems);
+		util_draw_vertex_buffer (pipe, vbuf, 0,
+					 PIPE_PRIM_TRIANGLE_FAN,
+					 4,
+					 2);
+
+		pipe_resource_reference (&vbuf, NULL);
+	}
+
+	cso_restore_blend (cso);
+	cso_restore_vertex_shader (cso);
+	cso_restore_fragment_shader (cso);
+	cso_restore_framebuffer (cso);
+	cso_restore_viewport (cso);
+	cso_restore_rasterizer (cso);
 }
 
 void
@@ -602,6 +715,7 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_save_blend (cso);
 	cso_save_samplers (cso);
 	cso_save_fragment_sampler_views (cso);
+	cso_save_vertex_shader (cso);
 	cso_save_fragment_shader (cso);
 	cso_save_framebuffer (cso);
 	cso_save_viewport (cso);
@@ -611,6 +725,7 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_single_sampler (cso, 0, &project_sampler);
 	cso_single_sampler_done (cso);
 	cso_set_fragment_sampler_views (cso, 1, &view);
+	cso_set_vertex_shader_handle (cso, tex_vs);
 	cso_set_fragment_shader_handle (cso, GetProjectShader (alpha));
 
 	SetViewport ();
@@ -639,6 +754,7 @@ GalliumContext::Project (MoonSurface  *src,
 	cso_restore_blend (cso);
 	cso_restore_samplers (cso);
 	cso_restore_fragment_sampler_views (cso);
+	cso_restore_vertex_shader (cso);
 	cso_restore_fragment_shader (cso);
 	cso_restore_framebuffer (cso);
 	cso_restore_viewport (cso);
@@ -769,11 +885,13 @@ GalliumContext::Blur (MoonSurface *src,
 	cso_save_blend (cso);
 	cso_save_samplers (cso);
 	cso_save_fragment_sampler_views (cso);
+	cso_save_vertex_shader (cso);
 	cso_save_fragment_shader (cso);
 	cso_save_framebuffer (cso);
 	cso_save_viewport (cso);
 	cso_save_rasterizer (cso);
 
+	cso_set_vertex_shader_handle (cso, tex_vs);
 	cso_set_fragment_shader_handle (cso, GetConvolveShader (size));
 
 	Context::Push (Group (r), intermediate);
@@ -860,6 +978,7 @@ GalliumContext::Blur (MoonSurface *src,
 	cso_restore_blend (cso);
 	cso_restore_samplers (cso);
 	cso_restore_fragment_sampler_views (cso);
+	cso_restore_vertex_shader (cso);
 	cso_restore_fragment_shader (cso);
 	cso_restore_framebuffer (cso);
 	cso_restore_viewport (cso);
@@ -1005,6 +1124,7 @@ GalliumContext::DropShadow (MoonSurface *src,
 	cso_save_blend (cso);
 	cso_save_samplers (cso);
 	cso_save_fragment_sampler_views (cso);
+	cso_save_vertex_shader (cso);
 	cso_save_fragment_shader (cso);
 	cso_save_framebuffer (cso);
 	cso_save_viewport (cso);
@@ -1016,6 +1136,7 @@ GalliumContext::DropShadow (MoonSurface *src,
 	cso_single_sampler (cso, 0, &convolve_sampler);
 	cso_single_sampler_done (cso);
 	cso_set_fragment_sampler_views (cso, 1, &img_view);
+	cso_set_vertex_shader_handle (cso, tex_vs);
 	cso_set_fragment_shader_handle (cso, GetConvolveShader (size));
 
 	SetViewport ();
@@ -1065,6 +1186,7 @@ GalliumContext::DropShadow (MoonSurface *src,
 		cso_single_sampler (cso, 1, &convolve_sampler);
 		cso_single_sampler_done (cso);
 		cso_set_fragment_sampler_views (cso, 2, views);
+		cso_set_vertex_shader_handle (cso, tex_vs);
 		cso_set_fragment_shader_handle (cso,
 						GetDropShadowShader (size));
 
@@ -1109,6 +1231,7 @@ GalliumContext::DropShadow (MoonSurface *src,
 	cso_restore_blend (cso);
 	cso_restore_samplers (cso);
 	cso_restore_fragment_sampler_views (cso);
+	cso_restore_vertex_shader (cso);
 	cso_restore_fragment_shader (cso);
 	cso_restore_framebuffer (cso);
 	cso_restore_viewport (cso);
@@ -1735,6 +1858,7 @@ GalliumContext::ShaderEffect (MoonSurface *src,
 	}
 	cso_single_sampler_done (cso);
 	cso_set_fragment_sampler_views (cso, n_sampler, sampler_views);
+	cso_set_vertex_shader_handle (cso, tex_vs);
 	cso_set_fragment_shader_handle (cso, GetEffectShader (shader));
 
 	SetViewport ();

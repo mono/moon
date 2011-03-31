@@ -30,6 +30,9 @@ GLContext::GLContext (MoonSurface *surface) : Context (surface)
 	framebuffer = 0;
 	vs = 0;
 
+	/* blend fragment shader */
+	blend_program = 0;
+
 	/* perspective transform fragment shaders */
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 2; j++)
@@ -59,6 +62,9 @@ GLContext::~GLContext ()
 		for (j = 0; j < 2; j++)
 			if (project_program[i][j])
 				glDeleteProgram (project_program[i][j]);
+
+	if (blend_program)
+		glDeleteProgram (blend_program);
 
 	if (framebuffer)
 		glDeleteFramebuffers (1, &framebuffer);
@@ -386,6 +392,78 @@ GLContext::GetVertexShader ()
 			   vShaderStr);
 
 	return vs;
+}
+
+GLuint
+GLContext::GetBlendProgram ()
+{
+	GString *s;
+	GLuint  fs;
+
+	if (blend_program)
+		return blend_program;
+
+	s = g_string_new ("uniform vec4 color;");
+	g_string_sprintfa (s, "void main()");
+	g_string_sprintfa (s, "{");
+	g_string_sprintfa (s, "gl_FragColor = color;");
+	g_string_sprintfa (s, "}");
+
+	fs = CreateShader (GL_FRAGMENT_SHADER, 1, (const GLchar **) &s->str);
+
+	g_string_free (s, 1);
+
+	blend_program = glCreateProgram ();
+	glAttachShader (blend_program, GetVertexShader ());
+	glAttachShader (blend_program, fs);
+	glBindAttribLocation (blend_program, 0, "InVertex");
+	glLinkProgram (blend_program);
+
+	glDeleteShader (fs);
+
+	return blend_program;
+}
+
+void
+GLContext::Blend (Color *color)
+{
+	GLuint program = GetBlendProgram ();
+	GLint  color_location;
+
+	SetFramebuffer ();
+	SetViewport ();
+	SetScissor ();
+
+	SetupVertexData ();
+
+	glUseProgram (program);
+
+	color_location = glGetUniformLocation (program, "color");
+	if (color_location >= 0)
+		glUniform4f (color_location,
+			     color->r * color->a,
+			     color->g * color->a,
+			     color->b * color->a,
+			     color->a);
+
+	glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, vertices);
+
+	glEnableVertexAttribArray (0);
+
+	glEnable (GL_SCISSOR_TEST);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+	glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
+
+	glDisable (GL_BLEND);
+	glDisable (GL_SCISSOR_TEST);
+
+	glDisableVertexAttribArray (0);
+
+	glUseProgram (0);
+
+	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
 void

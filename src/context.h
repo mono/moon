@@ -152,6 +152,8 @@ public:
 	virtual void BlitYV12 (unsigned char *data[],
 			       int           stride[]);
 
+	virtual void Blend (Color *color);
+
 	virtual void Blend (MoonSurface *src,
 			    double      alpha,
 			    double      x,
