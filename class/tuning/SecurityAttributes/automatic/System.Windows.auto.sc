@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 604 methods needs to be decorated.
+# 605 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -11,7 +11,7 @@
 +SC-M: Mono.Kind Mono.NativeMethods::event_object_get_object_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.String,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: Mono.Value Mono.Xaml.XamlParser::HydrateFromString(System.String,Mono.Value*,System.Boolean,System.Boolean)
