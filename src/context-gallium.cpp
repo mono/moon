@@ -552,7 +552,7 @@ GalliumContext::Blit (unsigned char *data,
 		new GalliumSurface::Transfer (gpipe, texture);
 
 	bits = (unsigned char *) transfer->Map ();
-	for (int i = 0; i < texture->height0; i++)
+	for (unsigned int i = 0; i < texture->height0; i++)
 		memcpy (bits + texture->width0 * 4 * i,
 			data + stride * i,
 			MIN (stride, texture->width0 * 4));
