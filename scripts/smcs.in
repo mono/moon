@@ -1,10 +1,12 @@
 #!/bin/sh
-profile=plugin
+profile=web
+libdir=moonlight/4.0
 for arg
 do
     case "$arg" in
 	-profile:desktop)
-		profile=4.0
+		profile=desktop
+		libdir=mono/moonlight
 		shift ;;
 	-profile:plugin)
 		shift ;;
@@ -13,4 +15,9 @@ do
     esac
 done
 
-mcs -lib:@prefix@/lib/moonlight/$profile -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"
+if [ x$profile = xdesktop ] ; then
+mcs -lib:@prefix@/lib/$libdir -r:mscorlib.dll -r:System.dll -r:System.Core.dll "$@"
+else
+mcs -lib:@prefix@/lib/$libdir -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"
+fi
+
