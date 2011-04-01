@@ -50,9 +50,6 @@ private:
 	NPWindow *window;
 	AutoCapture* auto_capture;
 	guint32 x, y;
-	
-	static bool main_thread_inited;
-	static pthread_t main_thread;
 
 	ShockerScriptableControlObject* shocker_control;
 	ShockerScriptableControlObject* GetShockerControl ();
