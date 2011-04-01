@@ -438,7 +438,7 @@ Context::BlitYV12 (unsigned char *data[],
 
 	YUVConverter::YV12ToBGRA (data,
 				  stride,
-				  (int) r.width,
+				  rgb_stride >> 2,
 				  (int) r.height,
 				  rgb_buffer,
 				  rgb_stride,
