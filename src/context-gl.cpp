@@ -656,12 +656,14 @@ GLContext::GetConvolveProgram (unsigned size)
 	g_string_sprintfa (s, "vec4 tex, sum, off;");
 	g_string_sprintfa (s, "tex = gl_TexCoord[0] + InFilter[0];");
 
-	g_string_sprintfa (s, "off = tex + InFilter[2];");
-	g_string_sprintfa (s, "sum = texture2D(sampler0, off.xy) * "
-			   "InFilter[3];");
-	g_string_sprintfa (s, "off = tex - InFilter[2];");
-	g_string_sprintfa (s, "sum = sum + texture2D(sampler0, off.xy) * "
-			   "InFilter[3];");
+	if (size) {
+		g_string_sprintfa (s, "off = tex + InFilter[2];");
+		g_string_sprintfa (s, "sum = texture2D(sampler0, off.xy) * "
+				   "InFilter[3];");
+		g_string_sprintfa (s, "off = tex - InFilter[2];");
+		g_string_sprintfa (s, "sum = sum + texture2D(sampler0, off.xy) * "
+				   "InFilter[3];");
+	}
 
 	for (i = 2; i <= size; i++) {
 		g_string_sprintfa (s, "off = tex + InFilter[%d];", i * 2);
@@ -851,12 +853,14 @@ GLContext::GetDropShadowProgram (unsigned size)
 	g_string_sprintfa (s, "img = texture2D(sampler0, gl_TexCoord[0].xy);");
 	g_string_sprintfa (s, "tex = gl_TexCoord[0];");
 
-	g_string_sprintfa (s, "off = tex + InFilter[2];");
-	g_string_sprintfa (s, "sum = texture2D(sampler1, off.xy) * "
-			   "InFilter[3];");
-	g_string_sprintfa (s, "off = tex - InFilter[2];");
-	g_string_sprintfa (s, "sum = sum + texture2D(sampler1, off.xy) * "
-			   "InFilter[3];");
+	if (size > 0) { 
+		g_string_sprintfa (s, "off = tex + InFilter[2];");
+		g_string_sprintfa (s, "sum = texture2D(sampler1, off.xy) * "
+				   "InFilter[3];");
+		g_string_sprintfa (s, "off = tex - InFilter[2];");
+		g_string_sprintfa (s, "sum = sum + texture2D(sampler1, off.xy) * "
+				   "InFilter[3];");
+	}
 
 	for (i = 2; i <= size; i++) {
 		g_string_sprintfa (s, "off = tex + InFilter[%d];", i * 2);
