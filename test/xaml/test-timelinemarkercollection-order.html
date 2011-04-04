@@ -445,17 +445,27 @@
 
 		function OnMediaOpened (sender, args)
 		{
-			TestLogger.LogDebug ("OnMediaOpened");
-			DumpCollection (sender.Markers, "Initial collection");
-	
-			AddTest (sender.Markers);
-			InsertTest (sender.Markers);
-			RemoveTest (sender.Markers);
-			RemoveAtTest (sender.Markers);
-			ClearTest (sender.Markers);
+			try {
+				if (plugin == null) {
+					setTimeout (function () { OnMediaOpened (sender, args); }, 50);
+					return;
+				}
+				TestLogger.LogDebug ("OnMediaOpened");
+				DumpCollection (sender.Markers, "Initial collection");
+		
+				AddTest (sender.Markers);
+				InsertTest (sender.Markers);
+				RemoveTest (sender.Markers);
+				RemoveAtTest (sender.Markers);
+				ClearTest (sender.Markers);
 
-			DumpCollection (sender.Markers, "Final collection");
-			SignalShutdown ();
+				DumpCollection (sender.Markers, "Final collection");
+				SignalShutdown ();
+			} catch (e) {
+				TestLogger.LogError ("Javascript exception: " + e);
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			}
 		}
 
 		function OnMediaFailed (sender, args)
