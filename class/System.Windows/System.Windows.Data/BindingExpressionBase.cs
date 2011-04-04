@@ -73,8 +73,7 @@ namespace System.Windows.Data {
 		bool IsBoundToAnyDataContext {
 			get {
 				return string.IsNullOrEmpty (Binding.ElementName)
-					&& Binding.Source == null
-					&& Binding.RelativeSource == null;
+					&& Binding.Source == null;
 			}
 		}
 
@@ -139,7 +138,7 @@ namespace System.Windows.Data {
 			// Binding.Source, Binding.ElementName, Binding.RelativeSource and finally the fallback to DataContext.
 			// Only one of the first three will be non-null
 			if (Binding.Source != null) {
-				source = Binding.Source;
+				PropertyPathWalker.Update (Binding.Source);
 			} else if (Binding.ElementName != null) {
 				// If we 'Target' in a custom DP it's possible
 				// 'Target' won't be able to find the ElementName.
@@ -157,29 +156,31 @@ namespace System.Windows.Data {
 				} else {
 					feTarget.Loaded += HandleFeTargetLoaded;
 				}
-			} else if (Binding.RelativeSource != null) {
-				if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
-					source = Target;
-				} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
-					source = Target.TemplateOwner;
-				}
+				PropertyPathWalker.Update (source);
+			} else if (Binding.RelativeSource != null && Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
+				PropertyPathWalker.Update (Target);
 			} else {
 				// If we've bound to a FrameworkElements own DataContext property or the ContentProperty, we need
 				// to read the datacontext of the parent element.
 				var fe = Target as FrameworkElement;
-				if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty))
+				if (fe != null && (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty)) {
+					fe.VisualParentChanged += ParentChanged;
 					fe = (FrameworkElement) fe.VisualParent;
 
-				// If the FE's parent is null or if the Target is not an FE, we should take the datacontext from the mentor.
-				// Note that we use the mentor here for the first time because we don't want to accidentally select the mentors
-				// parent in the previous block of code.
-				fe = fe ?? Target.Mentor;
-				if (fe != null)
-					source = fe.DataContext;
-			}
+					SetDataContextSource (fe);
+				} else {
+					if (fe == null) {
+						Target.MentorChanged += MentorChanged;
+						fe = Target.Mentor;
+					}
 
-			if (PropertyPathWalker != null)
-				PropertyPathWalker.Update (source);
+					if (fe != null && Binding.RelativeSource != null && Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
+						PropertyPathWalker.Update (fe.TemplateOwner);
+					} else {
+						SetDataContextSource (fe);
+					}
+				}
+			}
 		}
 
 		void InvalidateAfterMentorChanged (object sender, EventArgs e)
@@ -242,16 +243,6 @@ namespace System.Windows.Data {
 				((TextBox) Target).LostFocus += TextBoxLostFocus;
 
 			var targetFE = element as FrameworkElement;
-			if (IsMentorDataContextBound) {
-				Target.MentorChanged += MentorChanged;
-				SetDataContextSource (Target.Mentor);
-			} else if (IsParentDataContextBound) {
-				targetFE.VisualParentChanged += ParentChanged;
-				SetDataContextSource ((FrameworkElement) targetFE.VisualParent);
-			} else if (IsSelfDataContextBound) {
-				SetDataContextSource (targetFE);
-			}
-
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
 				updateDataSourceCallback = delegate {
 					try {
@@ -363,7 +354,22 @@ namespace System.Windows.Data {
 		void MentorChanged (object sender, EventArgs e)
 		{
 			try {
-				SetDataContextSource (Target.Mentor);
+				var mentor = Target.Mentor;
+				if (Binding.RelativeSource != null && Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
+					// If we're using a RelativeSource binding and listening to the mentor, it means we should use the
+					// Templateparent itself as the source object. For the case of OneTime bindings we need to refresh
+					// the binding explictly as we won't be listening to the change notification on PropertyPathWalker.
+					if (mentor == null)
+						PropertyPathWalker.Update (null);
+					else
+						PropertyPathWalker.Update (mentor.TemplateOwner);
+
+					Refresh ();
+				} else {
+					// If we hit here it means we're databound to the DataContext on our mentor and so we should
+					// be listening for DataContextChanged events on it.
+					SetDataContextSource (mentor);
+				}
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in BindingExpressionBase.MentorChanged: {0}", ex);
