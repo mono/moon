@@ -968,9 +968,9 @@ Value::operator== (const Value &v) const
 			return true;
 		if (u.color == NULL || v.u.color == NULL)
 			return false;
-		return *u.color == *v.u.color;
+		return u.color == v.u.color;
 	case Type::POINT:
-		return *u.point == *v.u.point;
+		return u.point == v.u.point;
 	case Type::RECT:
 		return *u.rect == *v.u.rect;
 	case Type::SIZE:
