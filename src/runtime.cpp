@@ -2543,7 +2543,7 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 		// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
 		// we handle it and tab to the next control here.
 		if (GetFocusedElement ())
-			TabNavigationWalker::Focus (GetFocusedElement (), (event->GetModifiers () & ModifierKeyShift) == ModifierKeyNone);
+			TabNavigationWalker::Focus (GetFocusedElement (), (Keyboard::GetModifiers () & ModifierKeyShift) == ModifierKeyNone);
 		else
 			EnsureElementFocused ();
 	}
