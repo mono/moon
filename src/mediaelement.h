@@ -35,7 +35,6 @@ class MediaElement : public FrameworkElement {
 	TimelineMarkerCollection *streamed_markers; // Main thread only.
 	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
 	MediaMarkerFoundClosure *marker_closure;
-	cairo_matrix_t matrix;
 	int quality_level; // higher number = better quality, starts out at 0.
 	guint64 last_quality_level_change_position; // the pts of the position the last time the quality changed. Used to not change quality too often.
 	MediaElementState detached_state;

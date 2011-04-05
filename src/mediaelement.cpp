@@ -529,8 +529,6 @@ MediaElement::Reinitialize (bool is_shutting_down)
 		if (v && v->AsMediaAttributeCollection())
 			v->AsMediaAttributeCollection()->Clear();
 	}
-
-	cairo_matrix_init_identity (&matrix);
 }
 
 bool
@@ -680,7 +678,9 @@ Rect
 MediaElement::GetCoverageBounds ()
 {
 	MediaPlayer *mplayer = GetMediaPlayer ();
-	Stretch stretch = GetStretch ();
+	Stretch     stretch = GetStretch ();
+	Size        specified (GetActualWidth (), GetActualHeight ());
+	Size        stretched = ApplySizeConstraints (specified);
 
 	if  (IsClosed () || !mplayer || !mplayer->HasRenderedFrame ())
 		return Rect ();
@@ -688,12 +688,29 @@ MediaElement::GetCoverageBounds ()
 	if (stretch == StretchFill || stretch == StretchUniformToFill)
 		return bounds;
 
-	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
-	cairo_matrix_t xform = matrix;
+	specified = specified.Min (stretched);
 
-	cairo_matrix_multiply (&xform, &xform, &absolute_xform);
+	Rect paint = Rect (0, 0, specified.width, specified.height);
+	Rect video = Rect (0,
+			   0,
+			   mplayer->GetVideoWidth (),
+			   mplayer->GetVideoHeight ());
 
-	video = video.Transform (&xform);
+	if (stretch == StretchNone)
+		paint = paint.Union (video);
+
+	cairo_matrix_t brush_xform;
+
+	image_brush_compute_pattern_matrix (&brush_xform, 
+					    paint.width, paint.height, 
+					    video.width, video.height,
+					    stretch, AlignmentXCenter,
+					    AlignmentYCenter, NULL, NULL);
+
+	cairo_matrix_invert (&brush_xform);
+	cairo_matrix_multiply (&brush_xform, &brush_xform, &absolute_xform);
+
+	video = video.Transform (&brush_xform);
 	video = video.Intersection (bounds);
 
 	return video;
@@ -789,10 +806,11 @@ MediaElement::GetSurface (Context *ctx)
 void
 MediaElement::Render (Context *ctx, Region *region)
 {
-	Stretch stretch = GetStretch ();
-	Size    specified (GetActualWidth (), GetActualHeight ());
-	Size    stretched = ApplySizeConstraints (specified);
-	bool    adjust = specified != GetRenderSize ();
+	Stretch        stretch = GetStretch ();
+	Size           specified (GetActualWidth (), GetActualHeight ());
+	Size           stretched = ApplySizeConstraints (specified);
+	bool           adjust = specified != GetRenderSize ();
+	cairo_matrix_t matrix;
 
 	if (mplayer == NULL)
 		return;
@@ -883,7 +901,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 
 	if (!path_only) {
 		Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
-		cairo_matrix_t pattern_matrix;
+		cairo_matrix_t matrix;
 
 		if (GetStretch () == StretchNone)
 			paint = paint.Union (video);
@@ -895,13 +913,13 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 
 		pattern = cairo_pattern_create_for_surface (surface);
 
-		image_brush_compute_pattern_matrix (&pattern_matrix, 
+		image_brush_compute_pattern_matrix (&matrix, 
 						    paint.width, paint.height, 
 						    video.width, video.height,
 						    stretch, AlignmentXCenter,
 						    AlignmentYCenter, NULL, NULL);
 
-		cairo_pattern_set_matrix (pattern, &pattern_matrix);
+		cairo_pattern_set_matrix (pattern, &matrix);
 #if MAKE_EVERYTHING_SLOW_AND_BUGGY
 		cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
 #endif
