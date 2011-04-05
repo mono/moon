@@ -778,6 +778,11 @@ GlyphTypeface::operator== (const GlyphTypeface &v) const
 	return !strcmp (v.resource, resource);
 }
 
+bool
+GlyphTypeface::operator!= (const GlyphTypeface &v) const
+{
+	return !(*this == v);
+}
 
 //
 // GlyphTypefaceCollection
@@ -1312,6 +1317,11 @@ FontResource::operator== (const FontResource &v) const
 	}
 }
 
+bool
+FontResource::operator!= (const FontResource &v) const
+{
+	return !(*this == v);
+}
 
 //
 // FontManager

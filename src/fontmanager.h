@@ -124,6 +124,7 @@ class GlyphTypeface {
 	const char *GetFontUri () const;
 	
 	bool operator== (const GlyphTypeface &v) const;
+	bool operator!= (const GlyphTypeface &v) const;
 };
 
 /* @IncludeInKinds */
@@ -169,6 +170,7 @@ struct FontResource {
 	const char *GetId () const { return resource.id; }
 	
 	bool operator== (const FontResource &v) const;
+	bool operator!= (const FontResource &v) const;
 };
 
 class FontManager {
