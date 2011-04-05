@@ -187,7 +187,6 @@ private:
 	~InputProvider ();
 
 	static InputProvider *instance;
-	Display *display;
 	Window root_window;
 	bool xtest_available;
 	unsigned int keyboard_speed; // input speed from 1 (slow) to 10 (fast), default is 10
@@ -196,6 +195,7 @@ private:
 
 	void GetCursorPos (int &x, int &y);
 	int MapToKeysym (int key);
+	Display *GetDisplay ();
 };
 
 G_BEGIN_DECLS

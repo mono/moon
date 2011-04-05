@@ -52,8 +52,10 @@ static void sleep_ms (guint32 ms)
 
 InputProvider *InputProvider::instance = NULL;
 
-InputProvider::InputProvider () : display (NULL), root_window (0), xtest_available (false), down_keys (NULL)
+InputProvider::InputProvider () : root_window (0), xtest_available (false), down_keys (NULL)
 {
+	Display *display;
+
 	display = XOpenDisplay (NULL);
 	
 	if (!display) {
@@ -66,13 +68,13 @@ InputProvider::InputProvider () : display (NULL), root_window (0), xtest_availab
 
 	if (root_window <= 0) {
 		printf ("Unable to get the root window, some of the input tests will not run.\n");
-		return;
+		goto cleanup;
 	}
 
 	int event_base, error_base, majorp, minorp;
 	if (!XTestQueryExtension (display, &event_base, &error_base, &majorp, &minorp)) {
 		printf ("XTEST Extension unavailable, input tests will not run.\n");
-		return;
+		goto cleanup;
 	}
 
 	xtest_available = true;
@@ -81,6 +83,9 @@ InputProvider::InputProvider () : display (NULL), root_window (0), xtest_availab
 	SendKeyInput (VK_NUMLOCK, true, false, false);
 
 	MoveMouse (0,0);
+
+cleanup:
+	XCloseDisplay (display);
 }
 
 InputProvider::~InputProvider ()
@@ -90,6 +95,12 @@ InputProvider::~InputProvider ()
 
 	SendKeyInput (VK_NUMLOCK, false, false, false);
 	g_slist_free (down_keys);
+}
+
+Display *
+InputProvider::GetDisplay ()
+{
+	return XOpenDisplay (NULL);
 }
 
 InputProvider *
@@ -103,6 +114,8 @@ InputProvider::GetInstance ()
 void
 InputProvider::MoveMouseDirect (int x, int y)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MoveMouseDirect (%i, %i)\n", getpid (), x, y);
 
 	g_assert (xtest_available);
@@ -110,11 +123,14 @@ InputProvider::MoveMouseDirect (int x, int y)
 
 	XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, x, y, CurrentTime);
 	XFlush (display);
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MoveMouse (int x, int y)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MoveMouse (%i, %i)\n", getpid (), x, y);
 	
 	g_assert (xtest_available);
@@ -137,11 +153,15 @@ InputProvider::MoveMouse (int x, int y)
 	XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, x, y, CurrentTime);
 	XFlush (display);
 #endif 
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MoveMouseLogarithmic (int x, int y)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MoveMouseLogarithmic (%i, %i)\n", getpid (), x, y);
 	
 	g_assert (xtest_available);
@@ -175,6 +195,8 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 
 		usleep (MOVE_MOUSE_LOGARITHMIC_INTERVAL);
 	}
+
+	XCloseDisplay (display);
 }
 
 bool
@@ -197,6 +219,8 @@ InputProvider::MouseIsAtPosition (int x, int y)
 void
 InputProvider::MouseDoubleClick (unsigned int delay)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MouseDoubleClick (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
@@ -216,11 +240,15 @@ InputProvider::MouseDoubleClick (unsigned int delay)
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
 	sleep_ms (delay);
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MouseLeftClick (unsigned int delay)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MouseLeftClick (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
@@ -232,11 +260,15 @@ InputProvider::MouseLeftClick (unsigned int delay)
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
 	sleep_ms (delay);
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MouseRightClick (unsigned int delay)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MouseRightClick (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
@@ -248,11 +280,15 @@ InputProvider::MouseRightClick (unsigned int delay)
 	XTestFakeButtonEvent (display, 3, false, CurrentTime);
 	XFlush (display);
 	sleep_ms (delay);
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MouseLeftButtonDown (unsigned int delay)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MouseLeftButtonDown (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
@@ -260,11 +296,15 @@ InputProvider::MouseLeftButtonDown (unsigned int delay)
 	XTestFakeButtonEvent (display, 1, true, CurrentTime);
 	XFlush (display);
 	sleep_ms (delay);
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MouseLeftButtonUp (unsigned int delay)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::MouseLeftButtonUp (%u)\n", getpid (), delay);
 	g_assert (xtest_available);
 	g_assert (display);
@@ -272,11 +312,15 @@ InputProvider::MouseLeftButtonUp (unsigned int delay)
 	XTestFakeButtonEvent (display, 1, false, CurrentTime);
 	XFlush (display);
 	sleep_ms (delay);
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::SendKeyInput (guint32 keysym, bool key_down, bool extended, bool unicode)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::SendKeyInput (%i, %i, %i, %i)\n", getpid (), keysym, key_down, extended, unicode);
 
 	// MS' mac plugin ignores the extended and unicode arguments, so we'll do the same
@@ -289,7 +333,7 @@ InputProvider::SendKeyInput (guint32 keysym, bool key_down, bool extended, bool 
 
 	if (keycode == 0) {
 		printf ("Moonlight harness: InputProvider could not map key. keysym: %u, mapped: %i, keycode: %i\n", keysym, mapped, keycode);
-		return;
+		goto cleanup;
 	}
 
 	XTestFakeKeyEvent (display, keycode, key_down, CurrentTime);
@@ -301,11 +345,16 @@ InputProvider::SendKeyInput (guint32 keysym, bool key_down, bool extended, bool 
 			down_keys = g_slist_append (down_keys, GUINT_TO_POINTER (keysym));
 	} else
 		down_keys = g_slist_remove (down_keys, GUINT_TO_POINTER (keysym));
+
+cleanup:
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::GetCursorPos (int &x, int &y)
 {
+	Display *display = GetDisplay ();
+
 	LOG_INPUT ("[%i shocker] InputProvider::GetCursorPos ()\n", getpid ());
 
 	g_assert (display);
@@ -316,11 +365,15 @@ InputProvider::GetCursorPos (int &x, int &y)
 	unsigned int mask;
 
 	XQueryPointer (display, root_window, &root_return, &child_return, &x, &y, &x_win, &y_win, &mask);
+
+	XCloseDisplay (display);
 }
 
 void
 InputProvider::MouseWheel (gint16 clicks)
 {
+	Display *display = GetDisplay ();
+
 	int button;
 	
 	LOG_INPUT ("[%i shocker] InputProvider::MouseWheel (%u)\n", getpid (), clicks);
@@ -338,6 +391,7 @@ InputProvider::MouseWheel (gint16 clicks)
 		XTestFakeButtonEvent (display, button, true, CurrentTime);
 		XTestFakeButtonEvent (display, button, false, CurrentTime);
 	}
+	XCloseDisplay (display);
 }
 
 void
