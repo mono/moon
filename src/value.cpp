@@ -1064,8 +1064,10 @@ Value::AreEqual (const Value *v1, const Value *v2)
 Value&
 Value::operator= (const Value& other)
 {
-	if (this != &other)
+	if (this != &other) {
+		FreeValueInternal ();
 		Copy (other);
+	}
 	return *this;
 }
 
