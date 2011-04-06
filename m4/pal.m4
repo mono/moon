@@ -1,12 +1,8 @@
 AC_DEFUN([MOONLIGHT_CHECK_PAL],
 [
-	AC_ARG_WITH([pal],[  --with-pal=gtk|cocoa   Specify which PAL to build (defaults to gtk)], [], [with_pal=gtk])
+	AC_ARG_WITH([pal],[  --with-pal=gtk|cocoa|android   Specify which PAL to build (defaults to gtk)], [], [with_pal=gtk])
 
-if test "x$with_pal" = "x"; then
-
-	AC_MSG_ERROR([unknown PAL specified])
-
-elif test "x$with_pal" = "xgtk"; then
+if test "x$with_pal" = "xgtk"; then
 
 	AC_DEFINE([PAL_GTK_WINDOWING],1,[Hack in support for the pal-gtk so we can start using it.])
 	pal_windowing="gtk"
@@ -62,9 +58,33 @@ elif test "x$with_pal" = "xcocoa"; then
 	PKG_CHECK_MODULES(GLIB, glib-2.0)
 
 	PAL=cocoa
+
+elif test "x$with_pal" = "xandroid"; then
+
+	AC_DEFINE([PAL_ANDROID_WINDOWING],1,[Hack in support for the pal-android so we can start using it.])
+	pal_windowing=android"
+
+	AC_DEFINE([PAL_ANDROID_MESSAGING],1,[Hack in support for the pal-android so we can start using it.])
+	pal_messaging=android"
+
+	pal_networking="none"
+	pal_capture="none"
+	pal_video_capture="none"
+	pal_audio_capture="none"
+
+	dnl We need to flesh out eglib enough to drop this dep
+	PKG_CHECK_MODULES(GLIB, glib-2.0)
+
+	PAL=android
+
+else
+
+	AC_MSG_ERROR([unknown PAL specified])
+
 fi
 
 AM_CONDITIONAL(GTK_PAL, test x$with_pal = xgtk)
 AM_CONDITIONAL(COCOA_PAL, test x$with_pal = xcocoa)
+AM_CONDITIONAL(ANDROID, test x$with_pal = xandroid)
 AC_SUBST([PAL])
 ])
