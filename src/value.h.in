@@ -94,12 +94,13 @@ public:
 	Value (Color c);
 	Value (EventObject *obj);
 	Value (FontFamily family);
+	Value (const FontFamily *family);
 	Value (FontSource source);
 	Value (FontWeight weight);
 	Value (FontStyle style);
 	Value (FontStretch stretch);
 	Value (FontResource source);
-	Value (PropertyPath propertypath);
+	Value (const PropertyPath *propertypath);
 	Value (Point pt);
 	Value (Rect rect);
 	Value (Size size);
@@ -170,13 +171,11 @@ public:
 	const Uri*	AsUri () const	            { checked_get_exact (Type::URI, NULL, u.uri); }
 	Rect*		AsRect () const	            { checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize () const	            { checked_get_exact (Type::SIZE, NULL, u.size); }
-	FontFamily*	AsFontFamily () const	    { checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
 	FontWeight*	AsFontWeight ()	const       { checked_get_exact (Type::FONTWEIGHT, NULL, u.fontweight); }
 	FontStyle*	AsFontStyle () const	    { checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
 	FontStretch*	AsFontStretch() const       { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }
 	FontSource*	AsFontSource ()	const       { checked_get_exact (Type::FONTSOURCE, NULL, u.fontsource); }
 	FontResource*	AsFontResource() const      { checked_get_exact (Type::FONTRESOURCE, NULL, u.fontresource); }
-	PropertyPath*	AsPropertyPath () const	    { checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString () const	    { checked_get_exact (Type::STRING, NULL, u.s); }
 	char*		AsXmlLanguage () const	    { checked_get_exact (Type::XMLLANGUAGE, NULL, u.s); }
 	DependencyProperty* AsDependencyProperty () const { checked_get_exact (Type::DEPENDENCYPROPERTY, NULL, u.dp); }

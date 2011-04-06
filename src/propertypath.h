@@ -19,7 +19,7 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
-struct PropertyPath {
+class PropertyPath {
 public:
 	PropertyPath (DependencyProperty *property)
 	{
@@ -40,6 +40,18 @@ public:
 		this->path = g_strdup (path.path);
 		this->expanded_path = g_strdup (path.expanded_path);
 		this->property = path.property;
+	}
+
+	PropertyPath& operator= (const PropertyPath& other)
+	{
+		if (this != &other) {
+			g_free (this->path);
+			g_free (this->expanded_path);
+
+			this->path = g_strdup (other.path);
+			this->expanded_path = g_strdup (other.expanded_path);
+		}
+		return *this;
 	}
 
 	~PropertyPath ()

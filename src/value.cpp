@@ -263,6 +263,17 @@ Value::Value (FontFamily family)
 	SetIsNull (false);
 }
 
+Value::Value (const FontFamily *family)
+{
+	Init ();
+	k = Type::FONTFAMILY;
+	if (family) {
+		u.fontfamily = g_new (FontFamily, 1);
+		u.fontfamily->source = g_strdup (family->source);
+	}
+	SetIsNull (family == NULL);
+}
+
 Value::Value (FontWeight weight)
 {
 	Init ();
@@ -318,15 +329,15 @@ Value::Value (FontResource resource)
 	SetIsNull (false);
 }
 
-Value::Value (PropertyPath propertypath)
+Value::Value (const PropertyPath *propertypath)
 {
 	Init ();
 	k = Type::PROPERTYPATH;
-	u.propertypath = g_new (PropertyPath, 1);
-	u.propertypath->path = g_strdup (propertypath.path);
-	u.propertypath->expanded_path = g_strdup (propertypath.expanded_path);
-	u.propertypath->property = propertypath.property;
-	SetIsNull (false);
+	if (propertypath) {
+		u.propertypath = g_new0 (PropertyPath, 1);
+		*u.propertypath = *propertypath;
+	}
+	SetIsNull (propertypath == NULL);
 }
 
 Value::Value (Type::Kind kind, void *npobj)
