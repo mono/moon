@@ -1,3 +1,2 @@
 # manual override file for [SecurityCritical] and [SecuritySafeCritical] attributes
-+SSC-M: System.Void System.Runtime.Serialization.SerializationMap::SerializeNonReference(System.Object,System.Runtime.Serialization.XmlFormatterSerializer)
 

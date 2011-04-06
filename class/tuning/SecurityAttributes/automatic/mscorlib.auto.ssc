@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 483 methods
+# 484 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -311,6 +311,7 @@
 +SSC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
 +SSC-M: System.Resources.MissingManifestResourceException System.Resources.ResourceManager::AssemblyResourceMissing(System.String)
 +SSC-M: System.Collections.IDictionaryEnumerator System.Resources.ResourceReader::GetEnumerator()
++SSC-M: System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey7::<>m__4(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::.ctor()
 +SSC-M: System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::Rehash()
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)

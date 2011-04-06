@@ -1,4 +1,5 @@
 # [SecuritySafeCritical] needed inside System.ServiceModel.Web to call all [SecurityCritical] methods
-# 1 methods
+# 2 methods
 
-+SSC-M: System.Object System.Runtime.Serialization.Json.TypeMap::Deserialize(System.Runtime.Serialization.Json.JsonSerializationReader)
++SSC-M: System.Type System.Runtime.Serialization.Json.JsonSerializationReader::GetRuntimeType(System.String)
++SSC-M: System.Object System.Runtime.Serialization.Json.TypeMap::CreateInstance(System.Type)

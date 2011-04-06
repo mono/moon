@@ -440,3 +440,6 @@
 +SC-M: System.Void Mono.Xml.SmallXmlParser::ReadContent()
 +SC-M: System.Void Mono.Xml.SmallXmlParser::HandleBufferedContent()
 
+# helper (to avoid SSC) for System.ServiceModel.dll
++SSC-M: System.Void Mono.MoonlightHelper::RunOnMainThread(System.Threading.SendOrPostCallback,System.EventArgs)
+
