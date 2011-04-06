@@ -15,7 +15,7 @@ EXTRA_DIST = mono.pub winfx3.pub mono.snk silverlight.pub
 #
 all-local: make-lib-directories
 	@echo Bootstrapping circular build;
-	cp $(MONO_PATH)/mcs/class/lib/moonlight/* lib/2.1_raw/
+	cp /home/poupou/git/mono/mcs/class/lib/moonlight/* lib/2.1_raw/
 	$(MAKE) -C System.Windows bootstrap
 
 make-lib-directories:
