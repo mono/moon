@@ -50,6 +50,7 @@ public:
 
 			this->path = g_strdup (other.path);
 			this->expanded_path = g_strdup (other.expanded_path);
+			this->property = other.property;
 		}
 		return *this;
 	}
