@@ -3,16 +3,12 @@ assembly = System.Windows
 NET_2_1_ASSEMBLY_DEPS=-r:System.Runtime.Serialization.dll
 NET_3_0_ASSEMBLY_DEPS=
 
-sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
-
 if INCLUDE_BROWSER_MANAGED_CODE
-assemblysl = ../lib/2.1/$(assembly).dll
-assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
+assemblysl = ../lib/2.1_raw/$(assembly).dll
 
 bootstrap_assemblysl = ../lib/2.1-bootstrap/$(assembly).dll
-bootstrap_assemblysl_raw = ../lib/2.1_raw-bootstrap/$(assembly).dll
 
-NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll
+NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1_raw/System.Windows.Browser.dll
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
@@ -41,7 +37,7 @@ CSCFLAGS += -d:HEAPVIZ
 endif
 
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
-SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
+SMCS = mcs -nostdlib -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
@@ -851,23 +847,10 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	$(AM_V_GEN)resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-LINKER = monolinker
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
-
-$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(AM_V_GEN)$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
+$(assemblysl): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(AM_V_GEN)$(SMCS) -lib:../lib/2.1_raw $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
-
-$(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
@@ -880,14 +863,9 @@ $(assemblydesktop).config: Makefile $(assembly).dll.config
 
 bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
 
-$(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(AM_V_GEN)$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
+$(bootstrap_assemblysl): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(AM_V_GEN)$(SMCS) -lib:../lib/2.1_raw -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
 		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
-
-$(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
-		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources

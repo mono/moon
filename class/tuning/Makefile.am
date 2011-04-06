@@ -1,7 +1,6 @@
 SUBDIRS=SecurityAttributes
 
 LINKER = monolinker
-#GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
 
 TUNER_DESCS =	\
 	$(srcdir)/Descriptors/mscorlib.xml	\
@@ -37,6 +36,10 @@ MCS_ASSEMBLIES = \
 	System.ServiceModel	\
 	System.ServiceModel.Web
 
+MOON_ASSEMBLIES = \
+	System.Windows	\
+	System.Windows.Browser
+
 MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/moonlight_raw/%.dll)
 
 if HAVE_MONO_BASIC
@@ -57,7 +60,7 @@ WORKING_DIR = ../lib/2.1_raw
 OUTPUT_DIR = ../lib/2.1
 MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/moonlight
 
-DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll)
+DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll) $(MOON_ASSEMBLIES:%=%.dll)
 
 FILES = $(DLLFILES)
 WORKING_FILES = $(FILES:%=$(WORKING_DIR)/%)
@@ -103,6 +106,13 @@ $(MONO_BASIC_DLLFILES):
 	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune
 endif
 
+LINKER_STEPS =	\
+	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
+
+LINKER_FLAGS =	\
+	-b true	\
+	-m secattrs ../tuning/SecurityAttributes
+
 working.stamp: $(INPUT_FILES)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
@@ -111,6 +121,8 @@ working.stamp: $(INPUT_FILES)
 
 output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO) $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll
 	MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a ../lib/2.1_raw/System.Windows.dll $(LINKER_FLAGS) $(LINKER_STEPS)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a ../lib/2.1_raw/System.Windows.Browser.dll $(LINKER_FLAGS) $(LINKER_STEPS)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i $(srcdir)/../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)
 	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR); done
