@@ -22,12 +22,9 @@ class ManagedTypeInfo {
 
 	/* @GeneratePInvoke */
 	ManagedTypeInfo (Type::Kind kind);
-	ManagedTypeInfo (const ManagedTypeInfo& v);
-	~ManagedTypeInfo () { }
 
 	bool operator == (const ManagedTypeInfo &v) const;
 	bool operator != (const ManagedTypeInfo &v) const;
-	ManagedTypeInfo& operator = (const ManagedTypeInfo &v);
 	
 private:
 	ManagedTypeInfo (); // we don't want this one to be called
