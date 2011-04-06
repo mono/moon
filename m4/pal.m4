@@ -31,7 +31,10 @@ if test "x$with_pal" = "xgtk"; then
 		AC_DEFINE([USE_RANDR], [1], 
 			[Include support for the XRANDR extension for querying a monitor's refresh rate])
 	], [xrandr_present=no])
-	PKG_CHECK_MODULES(FREETYPE2, freetype2)
+	PKG_CHECK_MODULES(FREETYPE2, freetype2, [
+		AC_DEFINE([HAVE_FREETYPE2], [1], 
+			[Include support for freetype2 in the font manager])
+        ])
 	PKG_CHECK_MODULES(FONTCONFIG, fontconfig)
 	PKG_CHECK_MODULES(GLIB, glib-2.0)
 
