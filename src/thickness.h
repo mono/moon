@@ -52,14 +52,6 @@ struct Thickness {
 		this->left = left;
 		this->top = top;
 	}
-	
-	Thickness (const Thickness &thickness)
-	{
-		bottom = thickness.bottom;
-		right = thickness.right;
-		left = thickness.left;
-		top = thickness.top;
-	}
 
 	Thickness operator- ()
 	{
