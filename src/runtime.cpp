@@ -506,6 +506,7 @@ Surface::Zombify ()
 		toplevel->Dispose ();
 	}
 	input_list->Clear (true);
+	focus_changed_events->Clear (true);
 }
 
 guint32
