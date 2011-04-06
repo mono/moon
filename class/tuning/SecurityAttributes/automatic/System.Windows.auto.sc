@@ -1226,9 +1226,6 @@
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_remove_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_managed_handle(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration

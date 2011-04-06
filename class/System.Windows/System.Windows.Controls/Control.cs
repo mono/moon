@@ -67,8 +67,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  KeyEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnKeyDown (args);
-				  control.OnKeyDown (args);
+				  if (!args.Handled) {
+					  control.PreOnKeyDown (args);
+					  control.OnKeyDown (args);
+				  }
 				  control.PostOnKeyDown (args);
 			  });
 
@@ -76,8 +78,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  KeyEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnKeyUp (args);
-				  control.OnKeyUp (args);
+				  if (!args.Handled) {
+				      control.PreOnKeyUp (args);
+					  control.OnKeyUp (args);
+				  }
 				  control.PostOnKeyUp (args);
 			  });
 
@@ -112,8 +116,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnMouseLeftButtonDown (args);
-				  control.OnMouseLeftButtonDown (args);
+				  if (!args.Handled) {
+				      control.PreOnMouseLeftButtonDown (args);
+				      control.OnMouseLeftButtonDown (args);
+			      }
 				  control.PostOnMouseLeftButtonDown (args);
 			  });
 
@@ -121,8 +127,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnMouseLeftButtonUp (args);
-				  control.OnMouseLeftButtonUp (args);
+				  if (!args.Handled) {
+				      control.PreOnMouseLeftButtonUp (args);
+				      control.OnMouseLeftButtonUp (args);
+			      }
 				  control.PostOnMouseLeftButtonUp (args);
 			  });
 
@@ -130,8 +138,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnMouseRightButtonDown (args);
-				  control.OnMouseRightButtonDown (args);
+				  if (!args.Handled) {
+				      control.PreOnMouseRightButtonDown (args);
+				      control.OnMouseRightButtonDown (args);
+			      }
 				  control.PostOnMouseRightButtonDown (args);
 			  });
 
@@ -139,8 +149,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnMouseRightButtonUp (args);
-				  control.OnMouseRightButtonUp (args);
+				  if (!args.Handled) {
+				      control.PreOnMouseRightButtonUp (args);
+				      control.OnMouseRightButtonUp (args);
+			      }
 				  control.PostOnMouseRightButtonUp (args);
 			  });
 
@@ -148,8 +160,10 @@ namespace System.Windows.Controls {
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  MouseWheelEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata);
 				  Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-				  control.PreOnMouseWheel (args);
-				  control.OnMouseWheel (args);
+				  if (!args.Handled) {
+				      control.PreOnMouseWheel (args);
+				      control.OnMouseWheel (args);
+			      }
 				  control.PostOnMouseWheel (args);
 			  });
 

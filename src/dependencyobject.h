@@ -157,8 +157,6 @@ public:
 
 	/* @GeneratePInvoke */
 	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor = NULL, bool managed_data_dtor = false, bool handledEventsToo = false);
-	/* @GeneratePInvoke */
- 	void RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data);
 
 	// called from the managed layer (Control.cs).
 	/* @GeneratePInvoke */

@@ -39,6 +39,7 @@ using Microsoft.Silverlight.Testing.UnitTesting.UI;
 using Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Shapes;
+using System.Windows.Input;
 
 using MoonTest.System.Windows.Media;
 
@@ -54,6 +55,62 @@ namespace MoonTest.System.Windows {
 			{
 				return base.OnCreateAutomationPeer ();
 			}
+		}
+
+		[TestMethod]
+		public void AddRemoveHandler ()
+		{
+			Delegate eh = new EventHandler ((object sender, EventArgs ea) => { });
+			Delegate keh = new KeyEventHandler ((object sender, KeyEventArgs ea) => { });
+			Delegate meh = new MouseButtonEventHandler ((object sender, MouseButtonEventArgs ea) => { });
+			Delegate weh = new MouseWheelEventHandler ((object sender, MouseWheelEventArgs ea) => { });
+			Delegate teh = new TextCompositionEventHandler ((object sender, TextCompositionEventArgs ea) => { });
+
+			// OK
+			RoutedEvent [] events1 = new RoutedEvent [] { UIElement.KeyDownEvent, UIElement.KeyUpEvent, UIElement.MouseLeftButtonDownEvent, UIElement.MouseLeftButtonUpEvent, UIElement.MouseWheelEvent, UIElement.TextInputEvent, UIElement.TextInputStartEvent, UIElement.TextInputUpdateEvent };
+			Delegate [] handlers1 = new Delegate [] { keh, keh, meh, meh, weh, teh, teh, teh };
+
+			// ArgumentNullException
+			RoutedEvent [] events2 = new RoutedEvent [] { null, UIElement.KeyUpEvent };
+			Delegate [] handlers2 = new Delegate [] { keh, null };
+
+			// ArgumentException
+			RoutedEvent [] events3 = new RoutedEvent [] { FrameworkElement.LoadedEvent, UIElement.KeyUpEvent, UIElement.MouseLeftButtonUpEvent, UIElement.MouseLeftButtonUpEvent, UIElement.TextInputUpdateEvent, UIElement.MouseWheelEvent };
+			Delegate [] handlers3 = new Delegate [] { eh, meh, keh, teh, eh , meh};
+
+			// NotImplementedException
+			RoutedEvent [] events4 = new RoutedEvent [] { UIElement.ManipulationCompletedEvent, UIElement.ManipulationDeltaEvent, UIElement.ManipulationStartedEvent };
+			Delegate [] handlers4 = new Delegate [] { eh, eh, eh };
+
+			UIElement ctrl = new MediaElement ();
+
+			// AddHandler
+			for (int i = 0; i < events1.Length; i++) {
+				ctrl.AddHandler (events1 [i], handlers1 [i], false);
+			}
+			for (int i = 0; i < events2.Length; i++) {
+				Assert.Throws<ArgumentNullException> (() => ctrl.AddHandler (events2 [i], handlers2 [i], false));
+			}
+			for (int i = 0; i < events3.Length; i++) {
+				Assert.Throws<ArgumentException> (() => ctrl.AddHandler (events3 [i], handlers3 [i], false));
+			}
+			for (int i = 0; i < events4.Length; i++) {
+				Assert.Throws<NotImplementedException> (() => ctrl.AddHandler (events4 [i], handlers4 [i], false));
+			}
+			// RemoveHandler
+			for (int i = 0; i < events1.Length; i++) {
+				ctrl.RemoveHandler (events1 [i], handlers1 [i]);
+			}
+			for (int i = 0; i < events2.Length; i++) {
+				Assert.Throws<ArgumentNullException> (() => ctrl.RemoveHandler (events2 [i], handlers2 [i]));
+			}
+			for (int i = 0; i < events3.Length; i++) {
+				Assert.Throws<ArgumentException> (() => ctrl.RemoveHandler (events3 [i], handlers3 [i]));
+			}
+			for (int i = 0; i < events4.Length; i++) {
+				Assert.Throws<NotImplementedException> (() => ctrl.RemoveHandler (events4 [i], handlers4 [i]));
+			}
+
 		}
 
 		[TestMethod]

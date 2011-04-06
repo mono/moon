@@ -746,28 +746,6 @@ EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer dat
 	events->lists [event_id].onevent = new EventClosure (this, event_id, handler, NULL, data, handledEventsToo, data_dtor, managed_data_dtor, 0);
 }
 
-void
-EventObject::RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data)
-{
-	if (events == NULL) {
-#if SANITY
-		fprintf (stderr, "EventObject::RemoveOnEventHandler (%i): no event handlers have been registered.\n", event_id);
-#endif
-		return;
-	}
-
-	if (GetType()->GetEventCount() <= event_id) {
-		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
-		return;
-	}
-
-	if (events->lists [event_id].onevent) {
-		// FIXME check handler + data
-		delete events->lists [event_id].onevent;
-		events->lists [event_id].onevent = NULL;
-	}
-}
-
 int
 EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, DestroyUnmanagedEvent data_dtor, bool managed_data_dtor, bool handledEventsToo)
 {
@@ -1332,8 +1310,7 @@ EventObject::DoEmit (int event_id, EventArgs *calldata)
 
 	if (events->lists [event_id].onevent) {
 		EventClosure *closure = events->lists [event_id].onevent;
-		if (!calldata || closure->handledEventsToo || !calldata->Is (Type::ROUTEDEVENTARGS) || !((RoutedEventArgs *) calldata)->GetHandled ())
-			closure->func (this, calldata, closure->data);
+		closure->func (this, calldata, closure->data);
 	}
 	else {
 		DoEmitCurrentContext (event_id, calldata);

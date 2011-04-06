@@ -372,12 +372,6 @@ namespace Mono {
 			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, null, false, handledEventsToo);
 		}
 
-		public static void RemoveOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
-		{
-			NativeMethods.event_object_remove_on_event_handler (obj.native, eventId, handler, obj.native);
-		}
-
-
 		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandlerInvoker handler)
 		{
 			return AddHandler (obj, eventId, handler, false);

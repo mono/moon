@@ -158,18 +158,43 @@ namespace System.Windows {
 				return NativeMethods.uielement_get_render_size (native);
 			}
 		}
-		
+
+		private void ValidateHandlerArguments (RoutedEvent routedEvent, Delegate handler)
+		{
+			if (routedEvent == null)
+				throw new ArgumentNullException ("routedEvent");
+
+			if (handler == null)
+				throw new ArgumentNullException ("handler");
+
+			if (IsManipulation (routedEvent)) {
+				EnsureDesignMode ();
+			} else if (routedEvent == KeyDownEvent || routedEvent == KeyUpEvent) {
+				if (!(handler is KeyEventHandler))
+					throw new ArgumentException ("handler");
+			} else if (routedEvent == MouseLeftButtonDownEvent || routedEvent == MouseLeftButtonUpEvent) {
+				if (!(handler is MouseButtonEventHandler))
+					throw new ArgumentException ("handler");
+			} else if (routedEvent == MouseWheelEvent) {
+				if (!(handler is MouseWheelEventHandler))
+					throw new ArgumentException ("handler");
+			} else if (routedEvent == TextInputStartEvent || routedEvent == TextInputUpdateEvent || routedEvent == TextInputEvent) {
+				if (!(handler is TextCompositionEventHandler))
+					throw new ArgumentException ("handler");
+			} else {
+				throw new ArgumentException ("routedEvent");
+			}
+		}
+
 		public void AddHandler (RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
 		{
-			if (IsManipulation (routedEvent))
-				EnsureDesignMode ();
+			ValidateHandlerArguments (routedEvent, handler);
 			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler), handledEventsToo);
 		}
 		
 		public void RemoveHandler (RoutedEvent routedEvent, Delegate handler)
 		{
-			if (IsManipulation (routedEvent))
-				EnsureDesignMode ();
+			ValidateHandlerArguments (routedEvent, handler);
 			UnregisterEvent (routedEvent.EventId, handler);
 		}
 
