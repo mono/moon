@@ -1,7 +1,9 @@
 assembly = System.Windows.Browser
 
 if INCLUDE_BROWSER_MANAGED_CODE
-assemblysl = ../lib/2.1_raw/$(assembly).dll
+assemblysl = ../lib/2.1/$(assembly).dll
+assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
+sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
@@ -20,9 +22,11 @@ if SANITY
 CSCFLAGS += -d:SANITY
 endif
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
-SMCS = mcs -nostdlib -lib:../lib/2.1_raw -r:mscorlib.dll $(CSCFLAGS)
+GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -r:System.Core.dll
+SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS) -r:System.Core.dll
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
+monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
+nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 
 
 system_windows_browser_sources =					\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
@@ -71,10 +75,26 @@ CLEANFILES =			\
 $(assembly).g.resources: $(JS_RESOURCES_DEPS)
 	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(JS_RESOURCES)
 
-$(assemblysl): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll $(assembly).g.resources
+$(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll $(assembly).g.resources
 	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -r:System.ServiceModel.Web \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(assembly).g.resources
+	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
+
+LINKER = monolinker
+
+LINKER_STEPS =	\
+	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
+
+LINKER_FLAGS =	\
+	-o ../lib/2.1/	\
+	-d ../lib/2.1/ -d ../lib/2.1-bootstrap \
+	-a $(assemblysl_raw)	\
+	-b true	\
+	-m secattrs ../tuning/SecurityAttributes
+
+$(assemblysl): $(assemblysl_raw) $(sl_secattr)
+	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources

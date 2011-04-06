@@ -1,13 +1,13 @@
 .NOTPARALLEL:
 
-SUBDIRS = . System.Windows.Browser System.Windows 
-if INCLUDE_DESKTOP_MANAGED_CODE
-SUBDIRS += Moon.Windows.Desktop
-endif
+SUBDIRS = .
 if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += tuning
 endif
-SUBDIRS += System.Windows.Controls System.Windows.Controls.Data
+SUBDIRS += System.Windows.Browser System.Windows System.Windows.Controls System.Windows.Controls.Data
+if INCLUDE_DESKTOP_MANAGED_CODE
+SUBDIRS += Moon.Windows.Desktop
+endif
 
 EXTRA_DIST = mono.pub winfx3.pub mono.snk silverlight.pub
 
@@ -15,7 +15,9 @@ EXTRA_DIST = mono.pub winfx3.pub mono.snk silverlight.pub
 #
 all-local: make-lib-directories
 	@echo Bootstrapping circular build;
-	cp /home/poupou/git/mono/mcs/class/lib/moonlight/* lib/2.1_raw/
+if INCLUDE_BROWSER_MANAGED_CODE
+	$(MAKE) -C tuning
+endif
 	$(MAKE) -C System.Windows bootstrap
 
 make-lib-directories:
