@@ -526,8 +526,7 @@ namespace Mono {
 				else if (v is Rect) {
 					Rect rect = (Rect) v;
 					value.k = Kind.RECT;
-					value.u.p = Marshal.AllocHGlobal (sizeof (Rect));
-					Marshal.StructureToPtr (rect, value.u.p, false); // Unmanaged and managed structure layout is equal.
+					value.u.p = NativeMethods.rect_new (rect.X, rect.Y, rect.Width, rect.Height);
 				}
 				else if (v is Size) {
 					Size size = (Size) v;

@@ -89,6 +89,7 @@ public:
 	const char *GetHttpRequestString () const;
 
 	bool operator== (const Uri &v) const;
+	bool operator!= (const Uri &v) const;
 
 	static bool Equals (const Uri *left, const Uri *right);
 	static bool IsNullOrEmpty (const Uri *uri);

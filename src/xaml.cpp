@@ -4136,7 +4136,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::PROPERTYPATH: {
 		PropertyPath path (s);
 		path.expanded_path = expand_property_path (p, &path);
-		*v = new Value (path);
+		*v = new Value (&path);
 		*v_set = true;
 		break;
 	}

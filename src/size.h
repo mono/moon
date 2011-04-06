@@ -24,7 +24,8 @@ struct Size {
 	Size () : width(0), height(0) {}
 	
 	Size (int zero) : width(0), height(0) {}
-	
+
+	/* @GeneratePInvoke */
 	Size (double w, double h)
 	{
 		this->width = w;
@@ -69,12 +70,12 @@ struct Size {
 		return GrowBy (t.left + t.right, t.top + t.bottom);
 	}
 
-	bool operator == (const Size &size)
+	bool operator == (const Size &size) const
 	{
 		return fabs (size.width-width) < DBL_EPSILON && fabs (size.height-height) < DBL_EPSILON;
 	}
 
-	bool operator != (const Size &size)
+	bool operator != (const Size &size) const
 	{
 		return !(*this == size);
 	}

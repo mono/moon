@@ -52,14 +52,6 @@ struct Thickness {
 		this->left = left;
 		this->top = top;
 	}
-	
-	Thickness (const Thickness &thickness)
-	{
-		bottom = thickness.bottom;
-		right = thickness.right;
-		left = thickness.left;
-		top = thickness.top;
-	}
 
 	Thickness operator- ()
 	{
@@ -76,12 +68,12 @@ struct Thickness {
 		return Thickness (left - th.left, top - th.top, right - th.right, bottom - th.bottom);
 	}
 
-	bool operator == (const Thickness &v)
+	bool operator == (const Thickness &v) const
 	{
 		return fabs (bottom - v.bottom) < DBL_EPSILON && fabs(right - v.right) < DBL_EPSILON && fabs (left - v.left) < DBL_EPSILON && fabs (top - v.top) < DBL_EPSILON;
 	}
 
-	bool operator != (const Thickness &v)
+	bool operator != (const Thickness &v) const
 	{
 		return !(*this == v);
 	}

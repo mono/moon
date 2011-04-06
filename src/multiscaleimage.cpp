@@ -421,7 +421,7 @@ MultiScaleImage::DownloadTile (Uri *tile, void *user_data)
 	// Check that we aren't already downloading this tile
 	for (ctx = static_cast<BitmapImageContext *> (downloaders.First ());
 	     ctx; ctx = static_cast<BitmapImageContext *> (ctx->next)) {
-		if (ctx->image->GetUriSource ()->operator==(*tile)) {
+		if (*ctx->image->GetUriSource () == *tile) {
 			//LOG_MSI ("Tile %s is already being downloaded\n", tile->ToString ());
 			return;
 		}
