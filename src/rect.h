@@ -36,7 +36,6 @@ struct Rect {
 	// to please the current generator when used for a return value
 	Rect (int zero) : x (0), y (0), width (0), height (0) {}
 
-	/* @GeneratePInvoke */
 	Rect (double x, double y, double width, double height)
 	{
 		this->x = x;
@@ -205,12 +204,12 @@ struct Rect {
 		return cairo;
 	}
 
-	bool operator == (const Rect &rect) const
+	bool operator == (const Rect &rect)
 	{
 		return fabs(x-rect.x) < DBL_EPSILON && fabs(y-rect.y) < DBL_EPSILON && fabs(width-rect.width) < DBL_EPSILON && fabs(height-rect.height) < DBL_EPSILON;
 	}
 
-	bool operator != (const Rect &rect) const
+	bool operator != (const Rect &rect)
 	{
 		return !(*this == rect);
 	}

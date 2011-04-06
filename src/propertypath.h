@@ -19,7 +19,7 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
-class PropertyPath {
+struct PropertyPath {
 public:
 	PropertyPath (DependencyProperty *property)
 	{

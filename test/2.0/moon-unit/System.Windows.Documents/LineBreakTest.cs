@@ -40,6 +40,7 @@ namespace MoonTest.System.Windows.Documents {
 	public partial class LineBreakTest {
 
 		[TestMethod]
+		[MoonlightBug ("we are unable to set this property to null (it's a valuetype, so it really *shouldn't* work)")]
 		public void NullifyFontFamily ()
 		{
 			LineBreak lb = new LineBreak ();

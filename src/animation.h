@@ -81,6 +81,14 @@ struct KeyTime {
 		PACED
 	};
 
+	KeyTime (const KeyTime &keytime)
+	{
+		k = keytime.k;
+		percent = keytime.percent;
+		timespan = keytime.timespan;
+		padding = keytime.padding;
+	}
+
 	KeyTime (double percent)
 		: k (PERCENT),
 		  padding(1),

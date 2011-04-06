@@ -24,11 +24,6 @@ struct FontStretch {
 		this->stretch = stretch;
 	}
 
-	FontStretch (const FontStretch& fontstretch)
-	{
-		this->stretch = fontstretch.stretch;
-	}
-
 	bool operator== (const FontStretch &v) const
 	{
 		return v.stretch == stretch;

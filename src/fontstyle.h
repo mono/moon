@@ -24,11 +24,6 @@ struct FontStyle {
 		this->style = style;
 	}
 
-	FontStyle (const FontStyle& fontstyle)
-	{
-		this->style = fontstyle.style;
-	}
-
 	bool operator== (const FontStyle &v) const
 	{
 		return v.style == style;

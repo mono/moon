@@ -38,8 +38,6 @@
 #include "deployment.h"
 #include "managedtypeinfo.h"
 
-#define EQUALS(left, right) (left == right ? true : (left == NULL || right == NULL) ? false : *right == *left);
-
 namespace Moonlight {
 
 /**
@@ -228,7 +226,8 @@ Value::Value (Color c)
 {
 	Init ();
 	k = Type::COLOR;
-	u.color = new Color (c);
+	u.color = g_new (Color, 1);
+	*u.color = Color (c);
 	SetIsNull (false);
 }
 
@@ -259,15 +258,8 @@ Value::Value (FontFamily family)
 {
 	Init ();
 	k = Type::FONTFAMILY;
-	u.fontfamily = new FontFamily (family);
-	SetIsNull (false);
-}
-
-Value::Value (const FontFamily *family)
-{
-	Init ();
-	k = Type::FONTFAMILY;
-	u.fontfamily = family ? new FontFamily (*family) : NULL;
+	u.fontfamily = g_new (FontFamily, 1);
+	u.fontfamily->source = g_strdup (family.source);
 	SetIsNull (false);
 }
 
@@ -275,7 +267,8 @@ Value::Value (FontWeight weight)
 {
 	Init ();
 	k = Type::FONTWEIGHT;
-	u.fontweight = new FontWeight (weight);
+	u.fontweight = g_new (FontWeight, 1);
+	u.fontweight->weight = weight.weight;
 	SetIsNull (false);
 }
 
@@ -283,7 +276,8 @@ Value::Value (FontStretch stretch)
 {
 	Init ();
 	k = Type::FONTSTRETCH;
-	u.fontstretch = new FontStretch (stretch);
+	u.fontstretch = g_new (FontStretch, 1);
+	u.fontstretch->stretch = stretch.stretch;
 	SetIsNull (false);
 }
 
@@ -291,7 +285,8 @@ Value::Value (FontStyle style)
 {
 	Init ();
 	k = Type::FONTSTYLE;
-	u.fontstyle = new FontStyle (style);
+	u.fontstyle = g_new (FontStyle, 1);
+	u.fontstyle->style = style.style;
 	SetIsNull (false);
 }
 
@@ -323,11 +318,14 @@ Value::Value (FontResource resource)
 	SetIsNull (false);
 }
 
-Value::Value (const PropertyPath *propertypath)
+Value::Value (PropertyPath propertypath)
 {
 	Init ();
 	k = Type::PROPERTYPATH;
-	u.propertypath = propertypath ? new PropertyPath (*propertypath) : NULL;
+	u.propertypath = g_new (PropertyPath, 1);
+	u.propertypath->path = g_strdup (propertypath.path);
+	u.propertypath->expanded_path = g_strdup (propertypath.expanded_path);
+	u.propertypath->property = propertypath.property;
 	SetIsNull (false);
 }
 
@@ -360,7 +358,8 @@ Value::Value (Rect rect)
 {
 	Init ();
 	k = Type::RECT;
-	u.rect = new Rect (rect);
+	u.rect = g_new (Rect, 1);
+	*u.rect = Rect (rect);
 	SetIsNull (false);
 }
 
@@ -368,7 +367,8 @@ Value::Value (Size size)
 {
 	Init ();
 	k = Type::SIZE;
-	u.size = new Size (size);
+	u.size = g_new (Size, 1);
+	*u.size = Size (size);
 	SetIsNull (false);
 }
 
@@ -376,7 +376,8 @@ Value::Value (RepeatBehavior repeat)
 {
 	Init();
 	k = Type::REPEATBEHAVIOR;
-	u.repeat = new RepeatBehavior (repeat);
+	u.repeat = g_new (RepeatBehavior, 1);
+	*u.repeat = RepeatBehavior (repeat);
 	SetIsNull (false);
 }
 
@@ -384,7 +385,8 @@ Value::Value (Duration duration)
 {
 	Init();
 	k = Type::DURATION;
-	u.duration = new Duration (duration);
+	u.duration = g_new (Duration, 1);
+	*u.duration = Duration (duration);
 	SetIsNull (false);
 }
 
@@ -392,7 +394,8 @@ Value::Value (KeyTime keytime)
 {
 	Init ();
 	k = Type::KEYTIME;
-	u.keytime = new KeyTime (keytime);
+	u.keytime = g_new (KeyTime, 1);
+	*u.keytime = KeyTime (keytime);
 	SetIsNull (false);
 }
 
@@ -409,7 +412,8 @@ Value::Value (GridLength grid_length)
 {
 	Init ();
 	k = Type::GRIDLENGTH;
-	u.grid_length = new GridLength (grid_length);
+	u.grid_length = g_new (GridLength, 1);
+	*u.grid_length = GridLength (grid_length);
 	SetIsNull (false);
 }
 
@@ -417,7 +421,8 @@ Value::Value (Thickness thickness)
 {
 	Init ();
 	k = Type::THICKNESS;
-	u.thickness = new Thickness (thickness);
+	u.thickness = g_new (Thickness, 1);
+	*u.thickness = Thickness (thickness);
 	SetIsNull (false);
 }
 
@@ -425,7 +430,8 @@ Value::Value (CornerRadius corner)
 {
 	Init ();
 	k = Type::CORNERRADIUS;
-	u.corner = new CornerRadius (corner);
+	u.corner = g_new (CornerRadius, 1);
+	*u.corner = CornerRadius (corner);
 	SetIsNull (false);
 }
 
@@ -433,7 +439,8 @@ Value::Value (AudioFormat format)
 {
 	Init ();
 	k = Type::AUDIOFORMAT;
-	u.audioformat = new AudioFormat (format);
+	u.audioformat = g_new (AudioFormat, 1);
+	*u.audioformat = AudioFormat (format);
 	SetIsNull (false);
 }
 
@@ -441,7 +448,8 @@ Value::Value (VideoFormat format)
 {
 	Init ();
 	k = Type::VIDEOFORMAT;
-	u.videoformat = new VideoFormat (format);
+	u.videoformat = g_new (VideoFormat, 1);
+	*u.videoformat = VideoFormat (format);
 	SetIsNull (false);
 }
 
@@ -449,7 +457,8 @@ Value::Value (AudioFormat *format)
 {
 	Init ();
 	k = Type::AUDIOFORMAT;
-	u.audioformat = new AudioFormat (*format);
+	u.audioformat = g_new (AudioFormat, 1);
+	*u.audioformat = AudioFormat (*format);
 	SetIsNull (false);
 }
 
@@ -457,7 +466,8 @@ Value::Value (VideoFormat *format)
 {
 	Init ();
 	k = Type::VIDEOFORMAT;
-	u.videoformat = new VideoFormat (*format);
+	u.videoformat = g_new (VideoFormat, 1);
+	*u.videoformat = VideoFormat (*format);
 	SetIsNull (false);
 }
 
@@ -574,7 +584,8 @@ Value::Copy (const Value& v)
 		break;
 	case Type::FONTFAMILY:
 		if (v.u.fontfamily) {
-			u.fontfamily = new FontFamily (*v.u.fontfamily);
+			u.fontfamily = g_new (FontFamily, 1);
+			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
 		}
 		break;
 	case Type::FONTSOURCE:
@@ -600,27 +611,34 @@ Value::Copy (const Value& v)
 		break;
 	case Type::FONTWEIGHT:
 		if (v.u.fontweight) {
-			u.fontweight = new FontWeight (*v.u.fontweight);
+			u.fontweight = g_new (FontWeight, 1);
+			*u.fontweight = *v.u.fontweight;
 		}
 		break;
 	case Type::FONTSTRETCH:
 		if (v.u.fontstretch) {
-			u.fontstretch = new FontStretch (*v.u.fontstretch);
+			u.fontstretch = g_new (FontStretch, 1);
+			*u.fontstretch = *v.u.fontstretch;
 		}
 		break;
 	case Type::FONTSTYLE:
 		if (v.u.fontstyle) {
-			u.fontstyle = new FontStyle (*v.u.fontstyle);
+			u.fontstyle = g_new (FontStyle, 1);
+			*u.fontstyle = *v.u.fontstyle;
 		}
 		break;
 	case Type::PROPERTYPATH:
 		if (v.u.propertypath) {
-			u.propertypath = new PropertyPath (*v.u.propertypath);
+			u.propertypath = g_new (PropertyPath, 1);
+			u.propertypath->path = g_strdup (v.u.propertypath->path);
+			u.propertypath->expanded_path = g_strdup (v.u.propertypath->expanded_path);
+			u.propertypath->property = v.u.propertypath->property;
 		}
 		break;
 	case Type::COLOR:
 		if (v.u.color) {
-			u.color = new Color (*v.u.color);
+			u.color = g_new (Color, 1);
+			*u.color = *v.u.color;
 		}
 		break;
 	case Type::POINT:
@@ -631,12 +649,14 @@ Value::Copy (const Value& v)
 		break;
 	case Type::RECT:
 		if (v.u.rect) {
-			u.rect = new Rect (*v.u.rect);
+			u.rect = g_new (Rect, 1);
+			*u.rect = *v.u.rect;
 		}
 		break;
 	case Type::SIZE:
 		if (v.u.size) {
-			u.size = new Size (*v.u.size);
+			u.size = g_new (Size, 1);
+			*u.size = *v.u.size;
 		}
 		break;
 	case Type::URI:
@@ -648,42 +668,50 @@ Value::Copy (const Value& v)
 		break;
 	case Type::REPEATBEHAVIOR:
 		if (v.u.repeat) {
-			u.repeat = new RepeatBehavior (*v.u.repeat);
+			u.repeat = g_new (RepeatBehavior, 1);
+			*u.repeat = *v.u.repeat;
 		}
 		break;
 	case Type::DURATION:
 		if (v.u.duration) {
-			u.duration = new Duration (*v.u.duration);
+			u.duration = g_new (Duration, 1);
+			*u.duration = *v.u.duration;
 		}
 		break;
 	case Type::KEYTIME:
 		if (v.u.keytime) {
-			u.keytime = new KeyTime (*v.u.keytime);
+			u.keytime = g_new (KeyTime, 1);
+			*u.keytime = *v.u.keytime;
 		}
 		break;
 	case Type::GRIDLENGTH:
 		if (v.u.grid_length) {
-			u.grid_length = new GridLength (*v.u.grid_length);
+			u.grid_length = g_new (GridLength, 1);
+			*u.grid_length = *v.u.grid_length;
 		}
 		break;
 	case Type::THICKNESS:
 		if (v.u.thickness) {
-			u.thickness = new Thickness (*v.u.thickness);
+			u.thickness = g_new (Thickness, 1);
+			*u.thickness = *v.u.thickness;
 		}
 		break;
 	case Type::CORNERRADIUS:
 		if (v.u.corner) {
-			u.corner = new CornerRadius (*v.u.corner);
+			u.corner = g_new (CornerRadius, 1);
+			*u.corner = *v.u.corner;
 		}
 		break;
 	case Type::AUDIOFORMAT:
 		if (v.u.audioformat) {
-			u.audioformat = new AudioFormat (*v.u.audioformat);
+			u.audioformat = g_new (AudioFormat, 1);
+			*u.audioformat = *v.u.audioformat;
 		}
 		break;
 	case Type::VIDEOFORMAT:
 		if (v.u.videoformat) {
-			u.videoformat = new VideoFormat (*v.u.videoformat);
+			u.videoformat = g_new (VideoFormat, 1);
+			*u.videoformat = *v.u.videoformat;
 		}
 		break;
 	case Type::GLYPHTYPEFACE:
@@ -721,19 +749,22 @@ Value::FreeValueInternal ()
 		g_free (u.s);
 		break;
 	case Type::COLOR:
-		delete u.color;
+		g_free (u.color);
 		break;
 	case Type::FONTFAMILY:
-		delete u.fontfamily;
+		if (u.fontfamily) {
+			g_free (u.fontfamily->source);
+			g_free (u.fontfamily);
+		}
 		break;
 	case Type::FONTWEIGHT:
-		delete u.fontweight;
+		g_free (u.fontweight);
 		break;
 	case Type::FONTSTYLE:
-		delete u.fontstyle;
+		g_free (u.fontstyle);
 		break;
 	case Type::FONTSTRETCH:
-		delete u.fontstretch;
+		g_free (u.fontstretch);
 		break;
 	case Type::FONTSOURCE:
 		if (u.fontsource) {
@@ -752,43 +783,47 @@ Value::FreeValueInternal ()
 		delete u.fontresource;
 		break;
 	case Type::PROPERTYPATH:
-		delete u.propertypath;
+		if (u.propertypath) {
+			g_free (u.propertypath->path);
+			g_free (u.propertypath->expanded_path);
+			g_free (u.propertypath);
+		}
 		break;
 	case Type::POINT:
 		g_free (u.point);
 		break;
 	case Type::RECT:
-		delete u.rect;
+		g_free (u.rect);
 		break;
 	case Type::SIZE:
-		delete u.size;
+		g_free (u.size);
 		break;
 	case Type::URI:
 		delete u.uri;
 		break;
 	case Type::REPEATBEHAVIOR:
-		delete u.repeat;
+		g_free (u.repeat);
 		break;
 	case Type::DURATION:
-		delete u.duration;
+		g_free (u.duration);
 		break;
 	case Type::KEYTIME:
-		delete u.keytime;
+		g_free (u.keytime);
 		break;
 	case Type::GRIDLENGTH:
-		delete u.grid_length;
+		g_free (u.grid_length);
 		break;
 	case Type::THICKNESS:
-		delete u.thickness;
+		g_free (u.thickness);
 		break;
 	case Type::CORNERRADIUS:
-		delete u.corner;
+		g_free (u.corner);
 		break;
 	case Type::AUDIOFORMAT:
-		delete u.audioformat;
+		g_free (u.audioformat);
 		break;
 	case Type::VIDEOFORMAT:
-		delete u.videoformat;
+		g_free (u.videoformat);
 		break;
 	case Type::GLYPHTYPEFACE:
 		delete u.typeface;
@@ -899,49 +934,77 @@ Value::operator== (const Value &v) const
 	/* don't use memcmp for comparing structures, structures may have uninitialized padding,
 	 * which would cause random behaviour */
 	case Type::FONTFAMILY:
-		return EQUALS(u.fontfamily, v.u.fontfamily);
+		return *u.fontfamily == *v.u.fontfamily;
 	case Type::FONTWEIGHT:
-		return EQUALS(u.fontweight, v.u.fontweight);
+		return *u.fontweight == *v.u.fontweight;
 	case Type::FONTSTYLE:
-		return EQUALS(u.fontstyle, v.u.fontstyle);
+		return *u.fontstyle == *v.u.fontstyle;
 	case Type::FONTSTRETCH:
-		return EQUALS(u.fontstretch, v.u.fontstretch);
+		return *u.fontstretch == *v.u.fontstretch;
 	case Type::FONTSOURCE:
-		return EQUALS(u.fontsource, v.u.fontsource);
+		if (u.fontsource && v.u.fontsource) {
+			if (u.fontsource->type != v.u.fontsource->type)
+				return false;
+			
+			switch (u.fontsource->type) {
+			case FontSourceTypeManagedStream:
+				return u.fontsource->source.stream->handle == v.u.fontsource->source.stream->handle;
+			case FontSourceTypeGlyphTypeface:
+				return u.fontsource->source.typeface == v.u.fontsource->source.typeface;
+			}
+		}
+		
+		return u.fontsource == v.u.fontsource;
 	case Type::FONTRESOURCE:
-		return EQUALS(u.fontresource, v.u.fontresource);
+		if (u.fontresource && v.u.fontresource)
+			return *u.fontresource == *v.u.fontresource;
+		else
+			return u.fontresource == v.u.fontresource;
+
 	case Type::PROPERTYPATH:
-		return EQUALS(u.propertypath, v.u.propertypath);
+		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
-		return EQUALS(u.color, v.u.color);
+		if (u.color == v.u.color)
+			return true;
+		if (u.color == NULL || v.u.color == NULL)
+			return false;
+		return *u.color == *v.u.color;
 	case Type::POINT:
-		return EQUALS(u.point, v.u.point);
+		return *u.point == *v.u.point;
 	case Type::RECT:
-		return EQUALS(u.rect, v.u.rect);
+		return *u.rect == *v.u.rect;
 	case Type::SIZE:
-		return EQUALS(u.size, v.u.size);
+		return *u.size == *v.u.size;
 	case Type::REPEATBEHAVIOR:
-		return EQUALS(u.repeat, v.u.repeat);
+		return *u.repeat == *v.u.repeat;
 	case Type::DURATION:
-		return EQUALS(u.duration, v.u.duration);
+		return *u.duration == *v.u.duration;
 	case Type::KEYTIME:
-		return EQUALS(u.keytime, v.u.keytime);
+		return *u.keytime == *v.u.keytime;
 	case Type::GRIDLENGTH:
-		return EQUALS(u.grid_length, v.u.grid_length);
+		return *u.grid_length == *v.u.grid_length;
 	case Type::THICKNESS:
-		return EQUALS(u.thickness, v.u.thickness);
+		return *u.thickness == *v.u.thickness;
 	case Type::CORNERRADIUS:
-		return EQUALS(u.corner, v.u.corner);
+		return *u.corner == *v.u.corner;
 	case Type::AUDIOFORMAT:
-		return EQUALS(u.audioformat, v.u.audioformat);
+		return *u.audioformat == *v.u.audioformat;
 	case Type::VIDEOFORMAT:
-		return EQUALS(u.videoformat, v.u.videoformat);
+		return *u.videoformat == *v.u.videoformat;
 	case Type::MANAGEDTYPEINFO:
-		return EQUALS(u.type_info, v.u.type_info);
+		return u.type_info == v.u.type_info;
 	case Type::URI:
-		return EQUALS(u.uri, v.u.uri);
+		if (!u.uri)
+			return !v.u.uri;
+		if (!v.u.uri)
+			return false;
+		return *u.uri == *v.u.uri;
 	case Type::GLYPHTYPEFACE:
-		return EQUALS(u.typeface, v.u.typeface);
+		if (!u.typeface)
+			return !v.u.typeface;
+		if (!v.u.typeface)
+			return false;
+		return u.typeface == v.u.typeface;
 	case Type::DOUBLE:
 		if (isnan (u.d) && isnan (v.u.d))
 			return true;

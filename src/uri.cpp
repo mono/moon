@@ -327,12 +327,6 @@ Uri::operator== (const Uri &v) const
 }
 
 bool
-Uri::operator!= (const Uri &v) const
-{
-	return !(*this == v);
-}
-
-bool
 Uri::Equals (const Uri *left, const Uri *right)
 {
 	if (!left && !right)

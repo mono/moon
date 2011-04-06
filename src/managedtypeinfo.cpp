@@ -21,6 +21,11 @@ ManagedTypeInfo::ManagedTypeInfo (Type::Kind kind)
 	this->kind = kind;
 }
 
+ManagedTypeInfo::ManagedTypeInfo (const ManagedTypeInfo& v)
+{
+	this->kind = v.kind;
+}
+
 bool
 ManagedTypeInfo::operator == (const ManagedTypeInfo &v) const
 {
@@ -33,4 +38,12 @@ ManagedTypeInfo::operator != (const ManagedTypeInfo &v) const
 	return !(*this == v);
 }
 
+ManagedTypeInfo&
+ManagedTypeInfo::operator = (const ManagedTypeInfo &v)
+{
+	if (this != &v) {
+		this->kind = v.kind;
+	}
+	return *this;
+}
 };

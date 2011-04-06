@@ -24,11 +24,6 @@ struct FontWeight {
 		this->weight = weight;
 	}
 
-	FontWeight (const FontWeight& fontweight)
-	{
-		this->weight = fontweight.weight;
-	}
-
 	bool operator== (const FontWeight &v) const
 	{
 		return v.weight == weight;

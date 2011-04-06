@@ -41,12 +41,12 @@ struct CornerRadius {
 	{
 	}
 
-	bool operator == (const CornerRadius &corner) const
+	bool operator == (const CornerRadius &corner)
 	{
 		return fabs (topLeft-corner.topLeft) < DBL_EPSILON && fabs (bottomLeft-corner.bottomLeft) < DBL_EPSILON && fabs(topRight-corner.topRight) < DBL_EPSILON && fabs(bottomRight-corner.bottomRight) < DBL_EPSILON; 
 	}
 
-	bool operator != (const CornerRadius &corner) const
+	bool operator != (const CornerRadius &corner)
 	{
 		return !(*this == corner);
 	}

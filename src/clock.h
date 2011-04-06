@@ -59,6 +59,12 @@ struct Duration {
 	  : k (TIMESPAN),
 	    timespan (duration) { }
 
+	Duration (const Duration &duration)
+	{
+		k = duration.k;
+		timespan = duration.timespan;
+	}
+
 	Duration (DurationKind kind) : k(kind) { };
 
 	bool HasTimeSpan () { return k == TIMESPAN; }
@@ -110,6 +116,13 @@ struct RepeatBehavior {
 		DURATION,
 		FOREVER
 	};
+
+	RepeatBehavior (const RepeatBehavior &repeat)
+	{
+		k = repeat.k;
+		duration = repeat.duration;
+		count = repeat.count;
+	}
 
 	RepeatBehavior (double count)
 	  : k (COUNT),

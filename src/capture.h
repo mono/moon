@@ -34,12 +34,12 @@ public:
 	int stride;
 	MoonPixelFormat pixelFormat;
 
-	bool operator == (const VideoFormat &format) const
+	bool operator == (const VideoFormat &format)
 	{
 		return format.framesPerSecond == framesPerSecond && format.height == height && format.width == width && format.stride == stride && format.pixelFormat == pixelFormat;
 	}
 
-	bool operator != (const VideoFormat &format) const
+	bool operator != (const VideoFormat &format)
 	{
 		return !(*this == format);
 	}
@@ -56,12 +56,12 @@ public:
 	int samplesPerSecond;
 	MoonWaveFormatType waveFormat;
 
-	bool operator == (const AudioFormat &format) const
+	bool operator == (const AudioFormat &format)
 	{
 		return format.bitsPerSample == bitsPerSample && format.channels == channels && format.samplesPerSecond == samplesPerSecond && format.waveFormat == waveFormat;
 	}
 
-	bool operator != (const AudioFormat &format) const
+	bool operator != (const AudioFormat &format)
 	{
 		return !(*this == format);
 	}
