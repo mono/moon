@@ -19,12 +19,27 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
-struct FontFamily {
+class FontFamily {
+ public:
 	char *source;
 	
 	FontFamily (const char *source)
 	{
 		this->source = g_strdup (source);
+	}
+
+	FontFamily (const FontFamily& family)
+	{
+		this->source = g_strdup (family.source);
+	}
+
+	FontFamily& operator= (const FontFamily& other)
+	{
+		if (this != &other) {
+			g_free (this->source);
+			this->source = g_strdup (other.source);
+		}
+		return *this;
 	}
 
 	~FontFamily ()
