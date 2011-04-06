@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <ctype.h>
 
+#if HAVE_FREETYPE2
+
 #include "fontmanager.h"
 #include "zip/unzip.h"
 #include "debug.h"
@@ -2071,3 +2073,5 @@ FontManager::GetSystemGlyphTypefaces ()
 }
 
 };
+
+#endif

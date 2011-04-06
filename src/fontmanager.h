@@ -14,9 +14,10 @@
 #define __FONT_MANAGER_H__
 
 #include <glib.h>
+#if HAVE_FREETYPE2
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
+#endif
 #include "moon-path.h"
 #include "collection.h"
 #include "enums.h"
@@ -59,11 +60,15 @@ class FontFace {
 	FontManager *manager;
 	double cur_size;
 	int ref_count;
+#if HAVE_FREETYPE2
 	FT_Face face;
+#endif
 	char *key;
 	
  public:
+#if HAVE_FREETYPE2
 	FontFace (FontManager *manager, FT_Face face, char *key);
+#endif
 	~FontFace ();
 	
 	void ref ();
@@ -178,7 +183,9 @@ class FontManager {
 	GHashTable *system_faces;
 	GHashTable *resources;
 	GHashTable *faces;
+#if HAVE_FREETYPE2
 	FT_Library libft2;
+#endif
 	char *root;
 	double dpi;
 	
@@ -202,4 +209,5 @@ class FontManager {
 };
 
 };
+
 #endif /* __FONT_MANAGER_H__ */
