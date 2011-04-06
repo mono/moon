@@ -27,12 +27,33 @@ enum FontSourceType {
 
 /* @IncludeInKinds */
 struct FontSource {
+	FontSourceType type;
+
 	union {
 		ManagedStreamCallbacks *stream;
 		GlyphTypeface *typeface;
 	} source;
-	
-	FontSourceType type;
+
+	bool operator== (const FontSource& f) const
+	{
+		if (type != f.type)
+			return false;
+
+		switch (type) {
+		case FontSourceTypeManagedStream:
+			return source.stream->handle == f.source.stream->handle;
+		case FontSourceTypeGlyphTypeface:
+			return source.typeface == f.source.typeface;
+		}
+
+		// Should never be reached.
+		return false;
+	}
+
+	bool operator!= (const FontSource& f) const
+	{
+		return !(*this == f);
+	}
 };
 
 };
