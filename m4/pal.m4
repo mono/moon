@@ -62,10 +62,10 @@ elif test "x$with_pal" = "xcocoa"; then
 elif test "x$with_pal" = "xandroid"; then
 
 	AC_DEFINE([PAL_ANDROID_WINDOWING],1,[Hack in support for the pal-android so we can start using it.])
-	pal_windowing=android"
+	pal_windowing="android"
 
 	AC_DEFINE([PAL_ANDROID_MESSAGING],1,[Hack in support for the pal-android so we can start using it.])
-	pal_messaging=android"
+	pal_messaging="android"
 
 	pal_networking="none"
 	pal_capture="none"
@@ -85,6 +85,6 @@ fi
 
 AM_CONDITIONAL(GTK_PAL, test x$with_pal = xgtk)
 AM_CONDITIONAL(COCOA_PAL, test x$with_pal = xcocoa)
-AM_CONDITIONAL(ANDROID, test x$with_pal = xandroid)
+AM_CONDITIONAL(ANDROID_PAL, test x$with_pal = xandroid)
 AC_SUBST([PAL])
 ])
