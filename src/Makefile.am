@@ -114,6 +114,10 @@ libmoon_include_headers = 	\
 	pal/cocoa/pixbuf-cocoa.h	\
 	pal/cocoa/window-cocoa.h	\
 	pal/cocoa/debug-ui-cocoa.h	\
+	pal/android/clipboard-android.h	\
+	pal/android/pal-android.h	\
+	pal/android/pixbuf-android.h	\
+	pal/android/window-android.h	\
 	pal/messaging/glib/pal-glib-msg.h	\
 	pal/network/dbus/pal-dbus-network.h	\
 	pal/network/pal-linux-network.h	\
@@ -335,6 +339,12 @@ libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/window-cocoa.m	\
 	pal/cocoa/debug-ui-cocoa.m
 
+libmoon_la_SOURCES_PAL_ANDROID = \
+	pal/android/clipboard-android.cpp	\
+	pal/android/pal-android.cpp	\
+	pal/android/pixbuf-android.cpp	\
+	pal/android/window-android.cpp
+
 libmoon_la_SOURCES_FFMPEG = 	\
 	pipeline-ffmpeg.cpp	\
 	pipeline-ffmpeg.h
@@ -381,6 +391,10 @@ if COCOA_PAL
 libmoon_la_OBJCFLAGS = $(AM_OBJCFLAGS)
 libmoon_la_OBJCXXFLAGS = $(AM_OBJCXXFLAGS)
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PAL_COCOA)
+endif
+
+if ANDROID_PAL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PAL_ANDROID)
 endif
 
 if CODECS_SUPPORTED

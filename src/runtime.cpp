@@ -56,6 +56,8 @@
 #include "gtk/gtk.h"
 #elif PAL_COCOA_WINDOWING
 #include "pal-cocoa.h"
+#elif PAL_ANDROID_WINDOWING
+#include "pal-android.h"
 #endif
 #if PAL_GLIB_MESSAGING
 #include "pal/messaging/glib/pal-glib-msg.h"
@@ -2870,6 +2872,8 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 #elif PAL_COCOA_WINDOWING
 	windowing_system = new MoonWindowingSystemCocoa (out_of_browser);
 	installer_service = new MoonInstallerServiceCocoa ();
+#elif PAL_ANDROID_WINDOWING
+	windowing_system = new MoonWindowingSystemAndroid (out_of_browser);
 #else
 #error "no PAL windowing system defined"
 #endif
