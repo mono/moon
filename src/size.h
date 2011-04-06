@@ -69,12 +69,12 @@ struct Size {
 		return GrowBy (t.left + t.right, t.top + t.bottom);
 	}
 
-	bool operator == (const Size &size)
+	bool operator == (const Size &size) const
 	{
 		return fabs (size.width-width) < DBL_EPSILON && fabs (size.height-height) < DBL_EPSILON;
 	}
 
-	bool operator != (const Size &size)
+	bool operator != (const Size &size) const
 	{
 		return !(*this == size);
 	}
