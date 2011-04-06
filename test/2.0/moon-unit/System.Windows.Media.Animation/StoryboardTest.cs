@@ -130,7 +130,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("Expected 'System.Exception', got 'System.ArgumentException'. 2")]
 		public void InvalidValues_NonTimeline ()
 		{
 			Rectangle r = new Rectangle ();
@@ -149,7 +148,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Can not set a non-nullable scalar type to NULL (property: TargetProperty)")]
 		public void ValidValues_Timeline ()
 		{
 			Timeline t = (Timeline) new ColorAnimation ();

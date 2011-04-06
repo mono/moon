@@ -587,6 +587,10 @@ Value::Copy (const Value& v)
 		return;
 	}
 
+	// if we're null the u = v.u assignment above took care of everything we need
+	if (GetIsNull ())
+		return;
+
 	/* make a copy of the string instead of just the pointer */
 	switch (k) {
 	case Type::XMLLANGUAGE:
@@ -927,6 +931,11 @@ Value::operator== (const Value &v) const
 	
 	if ((padding & EqualityMask) != (v.padding & EqualityMask))
 		return false;
+
+	// If both values are equal and this is null, then both are null.
+	// We can bail out early.
+	if (GetIsNull ())
+		return true;
 
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
 		Deployment *deployment = Deployment::GetCurrent ();

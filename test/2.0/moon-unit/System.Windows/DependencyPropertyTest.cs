@@ -66,6 +66,127 @@ namespace MoonTest.System.Windows
 		private DependencyPropertyInfo FrameworkElement_Height_double;
 		private DependencyPropertyInfo FrameworkElement_Height_CustomClass;
 
+		static int ChangeCount;
+		static void ChangeFunc(DependencyObject d, DependencyPropertyChangedEventArgs args)
+		{
+			ChangeCount++;
+		}
+
+		[TestMethod]
+		public void NullablePropertyPath()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(PropertyPath), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), new PropertyPath("foo"));
+		}
+
+		[TestMethod]
+		public void NullableFontweight()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(FontWeight?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), FontWeights.Bold);
+		}
+
+		[TestMethod]
+		public void NullableFontFamily()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(FontFamily), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), new FontFamily("ted"));
+		}
+
+		[TestMethod]
+		public void NullableFontStyle()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(FontStyle?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), FontStyles.Italic);
+		}
+
+		[TestMethod]
+		public void NullableFontStretch()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(FontStretch?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), FontStretches.ExtraCondensed);
+		}
+
+		[TestMethod]
+		public void NullableRect()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(Rect?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), Rect.Empty);
+		}
+
+		[TestMethod]
+		public void NullableSize()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(Size?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), Size.Empty);
+		}
+
+		[TestMethod]
+		public void NullableRepeatBehaviour()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(RepeatBehavior?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), RepeatBehavior.Forever);
+		}
+
+		[TestMethod]
+		public void NullableDuration()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(Duration?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), Duration.Automatic);
+		}
+
+		[TestMethod]
+		public void NullableKeyTime()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(KeyTime?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), KeyTime.Uniform);
+		}
+
+		[TestMethod]
+		public void NullableGridLength()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(GridLength?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), GridLength.Auto);
+		}
+
+		[TestMethod]
+		public void NullableThickness()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(Thickness?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), new Thickness(1));
+		}
+
+		[TestMethod]
+		public void NullableCornerRadius()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(CornerRadius?), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), new CornerRadius(1));
+		}
+
+		[TestMethod]
+		public void NullableUri()
+		{
+			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(Uri), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), new Uri("/test", UriKind.Relative));
+		}
+
+		void SetValueToNull(DependencyProperty property, object value)
+		{
+			SetValueToNull(property, value, 2);
+		}
+
+		void SetValueToNull(DependencyProperty property, object value, int expectedChangeCount)
+		{
+			ChangeCount = 0;
+			var r = new Rectangle();
+
+			// orig -> value
+			r.SetValue(property, value);
+
+			// value-> value
+			r.SetValue(property, value);
+
+			// value -> null
+			r.SetValue(property, null);
+
+			// null -> null
+			r.SetValue(property, null);
+
+			// null -> clear
+			r.ClearValue(property);
+
+			// clear -> clear
+			r.ClearValue(property);
+
+			Assert.AreEqual(expectedChangeCount, ChangeCount, "#1");
+		}
+
 		[TestMethod]
 		public void Register_PropertyTypeIsType ()
 		{
@@ -169,7 +290,7 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue(changed, "#1");
 
 			// Going from NaN -> NaN is not counted as a change.
-            changed = false;
+			changed = false;
 			target.SetValue(prop, double.NaN);
 			Assert.IsFalse(changed, "#2");
 		}
