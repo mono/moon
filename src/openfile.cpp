@@ -27,7 +27,7 @@
  * no one comes
  */
 // FIXME: PAL THIS
-#if !defined (__APPLE__)
+#if PAL_GTK_WINDOWING
 #include <gtk/gtk.h>
 
 namespace Moonlight {
