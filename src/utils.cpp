@@ -12,10 +12,11 @@
 
 #include <config.h>
 
-#include <glib/gstdio.h>
+#include <glib.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "utils.h"
 #include "application.h"
@@ -611,6 +612,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		path = g_build_filename (dir, canonicalized_filename, NULL);
 		
 		dirname = g_path_get_dirname (path);
+#if PLUMB_ME
 		if (g_mkdir_with_parents (dirname, 0700) == -1 && errno != EEXIST) {
 			g_free (filename);
 			g_free (dirname);
@@ -618,6 +620,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 			g_free (path);
 			return false;
 		}
+#endif
 		
 		g_free (dirname);
 		
