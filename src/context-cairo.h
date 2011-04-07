@@ -25,13 +25,6 @@ public:
 	void Blit (unsigned char *data,
 		   int           stride);
 
-	void Blend (Color *color);
-
-	void Blend (MoonSurface *src,
-		    double      alpha,
-		    double      x,
-		    double      y);
-
 	void Flush ();
 };
 

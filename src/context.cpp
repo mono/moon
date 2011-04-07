@@ -462,7 +462,12 @@ Context::BlitYV12 (unsigned char *data[],
 void
 Context::Blend (Color *color)
 {
-	g_warning ("Context::Blend has been called. The derived class should have overridden it.");
+	cairo_t *cr = Context::Push (Cairo ());
+
+	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
+	cairo_paint (cr);
+
+	Pop ();
 }
 
 void
@@ -471,7 +476,14 @@ Context::Blend (MoonSurface *src,
 		double      x,
 		double      y)
 {
-	g_warning ("Context::Blend has been called. The derived class should have overridden it.");
+	cairo_surface_t *surface = src->Cairo ();
+	cairo_t         *cr = Context::Push (Cairo ());
+
+	cairo_set_source_surface (cr, surface, x, y);
+	cairo_paint_with_alpha (cr, alpha);
+	cairo_surface_destroy (surface);
+
+	Pop ();
 }
 
 void

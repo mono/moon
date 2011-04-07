@@ -50,33 +50,6 @@ CairoContext::Blit (unsigned char *data,
 }
 
 void
-CairoContext::Blend (Color *color)
-{
-	cairo_t *cr = Context::Push (Cairo ());
-
-	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
-	cairo_paint (cr);
-
-	Pop ();
-}
-
-void
-CairoContext::Blend (MoonSurface *src,
-		     double      alpha,
-		     double      x,
-		     double      y)
-{
-	cairo_surface_t *surface = src->Cairo ();
-	cairo_t         *cr = Context::Push (Cairo ());
-
-	cairo_set_source_surface (cr, surface, x, y);
-	cairo_paint_with_alpha (cr, alpha);
-	cairo_surface_destroy (surface);
-
-	Pop ();
-}
-
-void
 CairoContext::Flush ()
 {
 	cairo_surface_flush (cairo_get_target (Top ()->Cairo ()));
