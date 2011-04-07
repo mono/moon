@@ -76,7 +76,7 @@ public:
 #endif
 
 	// FIXME: This shouldn't be public
-	void Paint (struct android_app* app);
+	void Paint (gpointer app);
 private:
 	void CreateCairoContext ();
 

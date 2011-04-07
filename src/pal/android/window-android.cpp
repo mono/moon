@@ -249,11 +249,12 @@ MoonWindowAndroid::CreateCairoContext ()
 }
 
 void
-MoonWindowAndroid::Paint (struct android_app* app)
+MoonWindowAndroid::Paint (gpointer data)
 {
 	ANativeWindow_Buffer buffer;
 	unsigned char *pixels;
 	cairo_t *cr;
+	struct android_app *app = (struct android_app *) data;
 
 	g_warning ("Painting");
 	SetCurrentDeployment ();
