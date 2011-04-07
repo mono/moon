@@ -49,6 +49,8 @@
 #endif
 
 #if defined(PLATFORM_ANDROID)
+#define GLchar char
+
 int posix_memalign (void **ptr, size_t alignment, size_t size)
 {
 	*ptr = (void *) malloc (size);
