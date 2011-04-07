@@ -683,25 +683,13 @@ GalliumContext::Project (MoonSurface  *src,
 	if (is_softpipe) {
 		int x0, y0;
 
-		GetMatrix (m);
-		Matrix3D::Multiply (m, matrix, m);
-
-		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
 			cairo_surface_t *cs = src->Cairo ();
 			cairo_t         *cr = Context::Push (Cairo ());
-			Rect            r = Rect (x,
-						  y,
-						  view->texture->width0,
-						  view->texture->height0);
 
-			cairo_save (cr);
-			cairo_identity_matrix (cr);
-			r.Transform (m).RoundOut ().Draw (cr);
-			cairo_clip (cr);
 			cairo_translate (cr, x0, y0);
-			cairo_set_source_surface (cr, cs, r.x, r.y);
+			cairo_set_source_surface (cr, cs, x, y);
 			cairo_paint_with_alpha (cr, alpha);
-			cairo_restore (cr);
 			cairo_surface_destroy (cs);
 
 			Pop ();
