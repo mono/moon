@@ -111,16 +111,7 @@ namespace Moonlight.SecurityModel {
 			return (self.DeclaringType as TypeDefinition).IsVisible ();
 		}
 
-		public static string GetFullName (this MemberReference self)
-		{
-			TypeReference t = (self as TypeReference);
-			if (t != null)
-				return t.FullName;
-			else
-				return GetMethodFullName (self as MethodReference);
-		}
-
-		public static string GetMethodFullName (this MethodReference self)
+		public static string GetFullName (this MethodReference self)
 		{
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (self.ReturnType.FullName);

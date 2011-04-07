@@ -8,6 +8,30 @@ MONO_PLATFORM_CODE=$(MCS_PATH)/class/lib/net_2_1/
 MOONLIGHT_PLATFORM_CODE=$(pkglibdir)/plugin
 SILVERLIGHT_PLATFORM_CODE="/cygdrive/c/Program\ Files/Microsoft\ Silverlight/2.0.31005.0/"
 
+SECURITY_ATTRIBUTES_AUTOMATIC_INFO= \
+	automatic/mscorlib.auto.sc \
+	automatic/mscorlib.auto.ssc \
+	automatic/System.auto.sc \
+	automatic/System.auto.ssc \
+	automatic/System.Core.auto.sc \
+	automatic/System.Core.auto.ssc \
+	automatic/System.Net.auto.sc \
+	automatic/System.Net.auto.ssc \
+	automatic/System.Runtime.Serialization.auto.sc \
+	automatic/System.Runtime.Serialization.auto.ssc \
+	automatic/System.ServiceModel.auto.sc \
+	automatic/System.ServiceModel.auto.ssc \
+	automatic/System.ServiceModel.Web.auto.sc \
+	automatic/System.ServiceModel.Web.auto.ssc \
+	automatic/System.Windows.Browser.auto.sc \
+	automatic/System.Windows.Browser.auto.ssc \
+	automatic/System.Windows.auto.sc \
+	automatic/System.Windows.auto.ssc \
+	automatic/System.Xml.auto.sc \
+	automatic/System.Xml.auto.ssc \
+	automatic/Microsoft.VisualBasic.auto.sc \
+	automatic/Microsoft.VisualBasic.auto.ssc
+
 SECURITY_ATTRIBUTES_MANUAL_INFO= \
 	overrides/mscorlib.manual \
 	overrides/System.manual \
@@ -34,7 +58,7 @@ SECURITY_ATTRIBUTES_COMPATIBILITY_INFO= \
 	compatibility/System.Xml.compat.sc \
 	compatibility/Microsoft.VisualBasic.compat.sc
 
-SECATTRS = $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
+SECATTRS = $(SECURITY_ATTRIBUTES_AUTOMATIC_INFO) $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
 
 EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs ivt-check.cs ivt-detect.cs ivt-compat.cs
 
@@ -51,23 +75,34 @@ MERGED_SECURITY_ATTRIBUTES_INFO = \
 	System.Xml.secattr \
 	Microsoft.VisualBasic.secattr
 
-all: $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe ivt-check.exe ivt-detect.exe ivt-compat.exe
+all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe ivt-check.exe ivt-detect.exe ivt-compat.exe
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
-	mcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
+	gmcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
 
 find-sc.exe: find-sc.cs Moonlight.SecurityModel.dll
-	mcs find-sc.cs -debug -out:$@ $(LIBS)
+	gmcs find-sc.cs -debug -out:$@ $(LIBS)
 
 compat: find-sc.exe
 	mkdir -p compatibility
 	mono find-sc.exe $(SILVERLIGHT_PLATFORM_CODE) compatibility
 
-detect.exe: detect.cs Moonlight.SecurityModel.dll
-	mcs detect.cs -debug -out:$@ $(LIBS)
+detect-sc.exe: detect-sc.cs Moonlight.SecurityModel.dll
+	gmcs detect-sc.cs -debug -out:$@ $(LIBS)
 
-$(MERGED_SECURITY_ATTRIBUTES_INFO): detect.exe $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
-	mono --debug detect.exe $(MOONLIGHT_PLATFORM_CODE) .
+detect-ssc.exe: detect-ssc.cs Moonlight.SecurityModel.dll
+	gmcs detect-ssc.cs -debug -out:$@ $(LIBS)
+
+detect: detect-sc.exe detect-ssc.exe
+	mkdir -p automatic
+	mono detect-sc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
+	mono detect-ssc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
+
+merge.exe: $(srcdir)/merge.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/merge.cs -debug -out:$@ $(LIBS)
+
+%.secattr: automatic/%.auto.sc automatic/%.auto.ssc overrides/%.manual compatibility/%.compat.sc merge.exe
+	mono merge.exe "$(srcdir)" . $@
 
 validate: find-sc.exe
 	mkdir -p moonlight
@@ -75,16 +110,16 @@ validate: find-sc.exe
 	diff -u compatibility moonlight
 
 audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
+	gmcs $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
 
 ivt-check.exe: $(srcdir)/ivt-check.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
+	gmcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
 
 ivt-detect.exe: $(srcdir)/ivt-detect.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/ivt-detect.cs -debug -out:$@ $(LIBS)
+	gmcs $(srcdir)/ivt-detect.cs -debug -out:$@ $(LIBS)
 
 ivt-compat.exe: $(srcdir)/ivt-compat.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/ivt-compat.cs -debug -out:$@ $(LIBS)
+	gmcs $(srcdir)/ivt-compat.cs -debug -out:$@ $(LIBS)
 
 # everything that we install in the plugin directory is (somewhat) trusted - even non-platform assemblies
 TRUSTED_ASSEMBLIES= \
@@ -105,10 +140,10 @@ TRUSTED_ASSEMBLIES += ../../lib/2.1/Microsoft.VisualBasic.dll
 endif
 
 ivt-check: ivt-check.exe
-	mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
+	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
 
 ivt-compat: ivt-compat.exe
-	mono --debug ivt-compat.exe $(MOONLIGHT_PLATFORM_CODE) sl-4-sdk.internals
+	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono --debug ivt-compat.exe $(MOONLIGHT_PLATFORM_CODE) sl-3-sdk.internals
 
 install: ivt-check
 
@@ -116,4 +151,4 @@ clean-data:
 	rm -f *.secattr
 
 clean: clean-data
-	rm -f find-sc.exe detect.exe audit.exe ivt-check.exe Moonlight.SecurityModel.dll *.mdb
+	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe audit.exe ivt-check.exe Moonlight.SecurityModel.dll *.mdb
