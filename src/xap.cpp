@@ -34,19 +34,19 @@ Xap::Unpack (const char *fname)
 	char *xap_dir;
 	
 	if (!(xap_dir = CreateTempDir (fname))) {
-		fprintf (stderr, "Moonlight: Could not create a temporary directory for unzipping xap contents.\n");
+		g_warning ("Moonlight: Could not create a temporary directory for unzipping xap contents.\n");
 		return NULL;
 	}
 	
 	if (!(zipfile = unzOpen (fname))) {
-		fprintf (stderr, "Moonlight: Failed to open %s as zip file.\n", fname);
+		g_warning ("Moonlight: Failed to open %s as zip file.\n", fname);
 		RemoveDir (xap_dir);
 		g_free (xap_dir);
 		return NULL;
 	}
 	
 	if (!ExtractAll (zipfile, xap_dir, CanonModeXap)) {
-		fprintf (stderr, "Moonlight: Failed to extract zip contents from %s.\n", fname);
+		g_warning ("Moonlight: Failed to extract zip contents from %s.\n", fname);
 		RemoveDir (xap_dir);
 		unzClose (zipfile);
 		g_free (xap_dir);
