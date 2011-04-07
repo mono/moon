@@ -37,20 +37,6 @@ CairoContext::Push (Group extents)
 }
 
 void
-CairoContext::Clear (Color *color)
-{
-	cairo_t *cr = Context::Push (Cairo ());
-
-	cairo_save (cr);
-	cairo_set_operator (cr , CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
-	cairo_paint (cr);
-	cairo_restore (cr);
-
-	Pop ();
-}
-
-void
 CairoContext::Blit (unsigned char *data,
 		    int           stride)
 {

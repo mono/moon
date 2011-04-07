@@ -22,8 +22,6 @@ public:
 
 	void Push (Group extents);
 
-	void Clear (Color *color);
-
 	void Blit (unsigned char *data,
 		   int           stride);
 
