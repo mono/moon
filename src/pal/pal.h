@@ -51,14 +51,7 @@
 #if defined(PLATFORM_ANDROID)
 #define GLchar char
 
-int posix_memalign (void **ptr, size_t alignment, size_t size)
-{
-	*ptr = (void *) malloc (size);
-	if (!*ptr)
-		return errno;
-
-	return 0;
-}
+extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size);
 #endif
 
 
@@ -109,6 +102,12 @@ enum MoonModifier {
 	MoonModifier_Hyper    = 1 << 27,
 	MoonModifier_Meta     = 1 << 28,
 };
+
+
+#define MOON_PRIORITY_HIGH         -100
+#define MOON_PRIORITY_DEFAULT      0
+#define MOON_PRIORITY_HIGH_IDLE    100
+#define MOON_PRIORITY_DEFAULT_IDLE 200
 
 enum MoonWindowType {
 	MoonWindowType_FullScreen,

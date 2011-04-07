@@ -26,6 +26,15 @@
 
 namespace Moonlight {
 
+extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
+{
+	*ptr = (void *) malloc (size);
+	if (!*ptr)
+		return errno;
+
+	return 0;
+}
+
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
 {

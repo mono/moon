@@ -62,9 +62,9 @@ swrast_screen_create (struct sw_winsys *ws)
 using namespace Moonlight;
 
 static Key
-MapKeyvalToKey (guint keyval)
+MapKeyCodeToKey (guint keycode)
 {
-	switch (keyval) {
+	switch (keycode) {
 	case AKEYCODE_TAB:		return KeyTAB;
 	case AKEYCODE_ENTER:		return KeyENTER;
 	case AKEYCODE_SHIFT_LEFT: case AKEYCODE_SHIFT_RIGHT:		return KeySHIFT;
@@ -151,7 +151,7 @@ MapKeyvalToKey (guint keyval)
 }
 
 static int
-MapGdkToVKey (int32_t keycode, int32_t scancode)
+MapAndroidToVKey (int32_t keycode, int32_t scancode)
 {
 	if (keycode >= AKEYCODE_A && keycode <= AKEYCODE_Z)
 		return keycode;
@@ -235,14 +235,14 @@ class MoonKeyEventAndroid : public MoonKeyEvent {
 public:
 	MoonKeyEventAndroid (AInputEvent *event)
 	{
-		down = AInputEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN;
+		down = AKeyEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN;
 
 		android_keycode = AKeyEvent_getKeyCode (event);
 		android_scancode = AKeyEvent_getScanCode (event);
 		android_metastate = AKeyEvent_getMetaState (event);
 
 		key = MapKeyCodeToKey (android_keycode);
-		keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapAndroidToVKey (event) : android_scancode;
+		keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapAndroidToVKey (android_keycode, android_scancode) : android_scancode;
 	}
 
 	MoonKeyEventAndroid (bool down, int32_t keycode, int32_t scancode, int32_t metastate)
@@ -253,7 +253,7 @@ public:
 		android_metastate = metastate;
 
 		key = MapKeyCodeToKey (android_keycode);
-		this->keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapAndroidToVKey (event) : android_code;
+		this->keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapAndroidToVKey (android_keycode, android_scancode) : android_scancode;
 	}
 
 	virtual ~MoonKeyEventAndroid ()
@@ -262,7 +262,7 @@ public:
 
 	virtual MoonEvent* Clone ()
 	{
-		return new MoonKeyEventAndroid (down, android_code, android_scancode);
+		return new MoonKeyEventAndroid (down, android_keycode, android_scancode, android_metastate);
 	}
 
 	virtual gpointer GetPlatformEvent ()
@@ -281,17 +281,18 @@ public:
 
 	virtual int GetPlatformKeycode ()
 	{
-		return keycode;
+		return android_scancode;
 	}
 
 	virtual int GetPlatformKeyval ()
 	{
-		return event->keyval;
+		return android_keycode;
 	}
 
 	virtual gunichar GetUnicode ()
 	{
 		// FIXME dunno what to do here..
+		return (gunichar)-1;
 	}
 
 	virtual bool HasModifiers () { return true; }
@@ -327,7 +328,13 @@ public:
 		}
 	}
 
+	bool IsRelease ()
+	{
+		return !down;
+	}
+
 private:
+	bool down;
 	Key key;
 	int32_t keycode;
 	int32_t android_keycode;
@@ -487,24 +494,19 @@ MoonWindowingSystemAndroid::ExitApplication ()
 MoonWindow *
 MoonWindowingSystemAndroid::CreateWindow (MoonWindowType windowType, int width, int height, MoonWindow *parentWindow, Surface *surface)
 {
-	MoonWindowAndroid *gtkwindow = new MoonWindowAndroid (windowType, width, height, parentWindow, surface);
-	RegisterWindow (gtkwindow);
+	MoonWindowAndroid *window = new MoonWindowAndroid (windowType, width, height, parentWindow, surface);
+	RegisterWindow (window);
 #ifdef USE_GALLIUM
-	gtkwindow->SetGalliumScreen (gscreen);
+	gtwindow->SetGalliumScreen (gscreen);
 #endif
-	return gtkwindow;
+	return window;
 }
 
 MoonWindow *
 MoonWindowingSystemAndroid::CreateWindowless (int width, int height, PluginInstance *forPlugin)
 {
-	MoonWindowAndroid *gtkwindow = (MoonWindowAndroid*)MoonWindowingSystem::CreateWindowless (width, height, forPlugin);
-	if (gtkwindow)
-		RegisterWindow (gtkwindow);
-#ifdef USE_GALLIUM
-	gtkwindow->SetGalliumScreen (gscreen);
-#endif
-	return gtkwindow;
+	g_warning ("no windowless support on android");
+	return NULL;
 }
 
 MoonMessageBoxResult
@@ -677,7 +679,9 @@ public:
 		if (result != 0)
 			return result;
 
-		return source1->priority - source2->priority;
+		// reverse source1 and source2 here from above, since lower
+		// priority values represent higher priorities
+		return source2->priority - source1->priority;
 	}
 
 	bool skip;
@@ -725,7 +729,7 @@ MoonWindowingSystemAndroid::RemoveTimeout (guint timeoutId)
 guint
 MoonWindowingSystemAndroid::AddIdle (MoonSourceFunc idle, gpointer data)
 {
-	AndroidSource *new_source = new AndroidSource (source_id, MOON_PRIORITY_LOW, 0, idle, data, emitting_sources);
+	AndroidSource *new_source = new AndroidSource (source_id, MOON_PRIORITY_DEFAULT_IDLE, 0, idle, data, emitting_sources);
 	sources = g_list_insert_sorted (sources, new_source, AndroidSource::Compare);
 	return source_id++;
 }
@@ -750,7 +754,7 @@ MoonWindowingSystemAndroid::CreateEventFromPlatformEvent (gpointer platformEvent
 
 	switch (AInputEvent_getType(aevent)) {
 	case AINPUT_EVENT_TYPE_KEY: {
-		switch (AInputEvent_getAction(event)) {
+		switch (AKeyEvent_getAction(aevent)) {
 		case AKEY_EVENT_ACTION_DOWN:
 		case AKEY_EVENT_ACTION_UP:
 			return new MoonKeyEventAndroid (aevent);
@@ -808,26 +812,27 @@ MoonWindowingSystemAndroid::CreatePixbufLoader (const char *imageType)
 }
 
 void
-MoonWindowingSystemAndroid::OnAppCommand (struct android_app* app, int32_t cmd)
+MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 {
 }
 
-void
-MoonWindowingSystemAndroid::OnInputEvent (struct android_app* app, AInputEvent* event)
+int32_t
+MoonWindowingSystemAndroid::OnInputEvent (android_app* app, AInputEvent* aevent)
 {
-	MoonEvent *event = CreateEventFromPlatformEvent (event);
+	MoonEvent *event = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (aevent);
 	if (!event)
-		return;
+		return -1;
 
 	MoonWindow *window = (MoonWindow*)app->userData;
 	window->HandleEvent (event);
+
+	return 0;
 }
 
 gint32
 get_now_in_millis (void)
 {
         struct timeval tv;
-        TimeSpan res;
 #ifdef CLOCK_MONOTONIC
 	struct timespec tspec;
 	if (clock_gettime (CLOCK_MONOTONIC, &tspec) == 0) {
@@ -846,7 +851,7 @@ get_now_in_millis (void)
 void
 MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window_close)
 {
-	struct android_app* state;
+	extern android_app* state;
 
 	state->userData = window;
 	state->onAppCmd = MoonWindowingSystemAndroid::OnAppCommand;
