@@ -1619,7 +1619,9 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Push (Context::AbsoluteTransform ());
 
 		if (!r.IsEmpty ()) {
+			ctx->Push (Context::Clip (r));
 			ctx->Blend (src, 1.0, r.x, r.y);
+			ctx->Pop ();
 
 			src->unref ();
 		}
@@ -1668,7 +1670,9 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		ctx->Push (Context::AbsoluteTransform ());
 
 		if (!r.IsEmpty ()) {
+			ctx->Push (Context::Clip (r));
 			ctx->Blend (src, GetOpacity (), r.x, r.y);
+			ctx->Pop ();
 
 			src->unref ();
 		}
@@ -1682,7 +1686,9 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		Rect        r = ctx->Pop (&src);
 
 		if (!r.IsEmpty () && (effect = GetRenderEffect ())) {
+			ctx->Push (Context::Clip (r));
 			effect->Render (ctx, src, r.x, r.y);
+			ctx->Pop ();
 
 			src->unref ();
 		}
@@ -1717,10 +1723,14 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		r = ctx->Pop (&src);
 
 		if (!r.IsEmpty ()) {
+			Rect box = r.Transform (render_projection).Transform (ctx);
+
+			ctx->Push (Context::Clip (box.RoundOut ()));
 			ctx->Project (src,
 				      render_projection,
 				      GetOpacity (),
 				      r.x, r.y);
+			ctx->Pop ();
 
 			src->unref ();
 		}
