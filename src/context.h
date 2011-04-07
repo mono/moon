@@ -196,9 +196,7 @@ protected:
 				    double precision,
 				    double *row);
 
-	void UpdateFilterValues (double radius,
-				 double *values,
-				 int    ***table,
+	int **CreateFilterTable (double radius,
 				 int    *size);
 
 private:

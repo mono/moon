@@ -898,65 +898,62 @@ Context::ComputeGaussianSamples (double radius,
 	return width;
 }
 
-void
-Context::UpdateFilterValues (double radius,
-			     double *values,
-			     int    ***table,
-			     int    *size)
+int **
+Context::CreateFilterTable (double radius,
+			    int    *size)
 {
-	int n;
+	int    **table;
+	double values[MAX_BLUR_RADIUS + 1];
+	int    n;
 
 	n = ComputeGaussianSamples (radius, 1.0 / 256.0, values);
-	if (n != *size) {
+	if (n) {
+		int  entries = n * 2 + 1;
+		int  ptr_size = sizeof (int *) * entries;
+		int  value_size = sizeof (int) * 256;
+		int  data_size = value_size * entries;
+		char *bytes;
+
+		bytes = (char *) g_malloc (ptr_size + data_size);
+		table = (int **) bytes;
+
+		for (int i = 0; i < entries; i++)
+			table[i] = (int *) (bytes + ptr_size + i * value_size);
+	}
+	else {
+		int  ptr_size = sizeof (int *);
+		int  data_size = sizeof (int) * 256;
+		char *bytes;
+
+		bytes = (char *) g_malloc (ptr_size + data_size);
+		table = (int **) bytes;
+
+		table[0] = (int *) (bytes + ptr_size);
+
+		for (int i = 0; i < 256; i++)
+			table[0][i] = i << 16;
+
 		*size = n;
-		g_free (*table);
-
-		if (n) {
-			int  entries = n * 2 + 1;
-			int  ptr_size = sizeof (int *) * entries;
-			int  value_size = sizeof (int) * 256;
-			int  data_size = value_size * entries;
-			char *bytes;
-
-			bytes = (char *) g_malloc (ptr_size + data_size);
-			*table = (int **) bytes;
-
-			for (int i = 0; i < entries; i++)
-				(*table)[i] = (int *)
-					(bytes + ptr_size + i * value_size);
-		}
-		else {
-			int  ptr_size = sizeof (int *);
-			int  data_size = sizeof (int) * 256;
-			char *bytes;
-			
-			bytes = (char *) g_malloc (ptr_size + data_size);
-			*table = (int **) bytes;
-
-			(*table)[0] = (int *) (bytes + ptr_size);
-
-			for (int i = 0; i < 256; i++)
-				(*table)[0][i] = i << 16;
-		}
+		return table;
 	}
 
-	if (!n)
-		return;
-
 	for (int j = 0; j < 256; j++) {
-		int *center = (*table)[n];
+		int *center = table[n];
 
 		center[j] = (int) (values[0] * (double) (j << 16));
 	}
 
 	for (int i = 1; i <= n; i++) {
-		int *left  = (*table)[n - i];
-		int *right = (*table)[n + i];
+		int *left  = table[n - i];
+		int *right = table[n + i];
 
 		for (int j = 0; j < 256; j++)
 			left[j] = right[j] = (int)
 				(values[i] * (double) (j << 16));
 	}
+
+	*size = n;
+	return table;
 }
 
 void
@@ -1061,14 +1058,13 @@ Context::Blur (MoonSurface *src,
 	cairo_surface_t      *surface = src->Cairo ();
 	cairo_t              *cr = Push (Context::Cairo ());
 	unsigned char        *data;
-	int                  width, height, stride, n = -1;
-	double               values[MAX_BLUR_RADIUS + 1];
-	int                  **table = NULL;
+	int                  width, height, stride, n;
+	int                  **table;
 
 	g_assert (cairo_surface_get_type (surface) ==
 		  CAIRO_SURFACE_TYPE_IMAGE);
 
-	UpdateFilterValues (radius, values, &table, &n);
+	table = CreateFilterTable (radius, &n);
 
 	width  = cairo_image_surface_get_width (surface);
 	height = cairo_image_surface_get_height (surface);
@@ -1122,15 +1118,14 @@ Context::DropShadow (MoonSurface *src,
 	cairo_surface_t      *image;
 	cairo_t              *cr = Push (Context::Cairo ());
 	unsigned char        *data;
-	int                  width, height, stride, n = -1;
-	double               values[MAX_BLUR_RADIUS + 1];
-	int                  **table = NULL;
+	int                  width, height, stride, n;
+	int                  **table;
 	int                  rgba[4];
 
 	g_assert (cairo_surface_get_type (surface) ==
 		  CAIRO_SURFACE_TYPE_IMAGE);
 
-	UpdateFilterValues (radius, values, &table, &n);
+	table = CreateFilterTable (radius, &n);
 
 	width  = cairo_image_surface_get_width (surface);
 	height = cairo_image_surface_get_height (surface);
