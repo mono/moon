@@ -22,11 +22,6 @@ GLContext::GLContext (MoonSurface *surface) : Context (surface)
 {
 	unsigned i, j;
 
-	for (i = 0; i < 4; i++) {
-		texcoords[i][2] = 0.0f; /* r */
-		texcoords[i][3] = 1.0f; /* q */
-	}
-
 	framebuffer = 0;
 	vs = 0;
 
@@ -154,18 +149,6 @@ GLContext::SetupVertexData ()
 	vertices[3][1] = 1.0f;
 	vertices[3][2] = 0.0f;
 	vertices[3][3] = 1.0f;
-
-	texcoords[0][0] = 0.0f;
-	texcoords[0][1] = 0.0f;
-
-	texcoords[1][0] = 1.0f;
-	texcoords[1][1] = 0.0f;
-
-	texcoords[2][0] = 1.0f;
-	texcoords[2][1] = 1.0f;
-
-	texcoords[3][0] = 0.0f;
-	texcoords[3][1] = 1.0f;
 }
 
 void
@@ -216,19 +199,31 @@ GLContext::SetupVertexData (const double *matrix,
 		vertices[i][3] = p[i][3];
 	}
 
+	ms->unref ();
+}
+
+void
+GLContext::SetupTexCoordData ()
+{
 	texcoords[0][0] = 0.0f;
 	texcoords[0][1] = 0.0f;
+	texcoords[0][2] = 0.0f;
+	texcoords[0][3] = 1.0f;
 
 	texcoords[1][0] = 1.0f;
 	texcoords[1][1] = 0.0f;
+	texcoords[1][2] = 0.0f;
+	texcoords[1][3] = 1.0f;
 
 	texcoords[2][0] = 1.0f;
 	texcoords[2][1] = 1.0f;
+	texcoords[2][2] = 0.0f;
+	texcoords[2][3] = 1.0f;
 
 	texcoords[3][0] = 0.0f;
 	texcoords[3][1] = 1.0f;
-
-	ms->unref ();
+	texcoords[3][2] = 0.0f;
+	texcoords[3][3] = 1.0f;
 }
 
 void
@@ -574,6 +569,7 @@ GLContext::Project (MoonSurface  *src,
 	SetScissor ();
 
 	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData ();
 
 	glUseProgram (program);
 
@@ -748,6 +744,7 @@ GLContext::Blur (MoonSurface *src,
 	glViewport (0, 0, width0, height0);
 
 	SetupVertexData ();
+	SetupTexCoordData ();
 
 	glUseProgram (program);
 
@@ -789,6 +786,7 @@ GLContext::Blur (MoonSurface *src,
 	SetScissor ();
 
 	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData ();
 
 	for (i = 0; i <= size; i++) {
 		cbuf[i][0][0] = 0.0f;
@@ -945,6 +943,7 @@ GLContext::DropShadow (MoonSurface *src,
 	glViewport (0, 0, width0, height0);
 
 	SetupVertexData ();
+	SetupTexCoordData ();
 
 	glUseProgram (program);
 
@@ -993,6 +992,7 @@ GLContext::DropShadow (MoonSurface *src,
 	SetScissor ();
 
 	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData ();
 
 	glUseProgram (program);
 
@@ -1652,6 +1652,7 @@ GLContext::ShaderEffect (MoonSurface *src,
 	}
 
 	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData ();
 
 	glUseProgram (program);
 

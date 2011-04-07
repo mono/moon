@@ -112,6 +112,8 @@ protected:
 				      double       width,
 				      double       height);
 
+	void SetupTexCoordData ();
+
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
 			     const GLchar **str);

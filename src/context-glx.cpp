@@ -239,6 +239,7 @@ GLXContext::SyncDrawable ()
 		glUseProgram (program);
 
 		SetupVertexData (NULL, 0, 0, width0, height0);
+		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -298,6 +299,7 @@ GLXContext::SyncDrawable ()
 				 rSrc.y - r.y,
 				 width0,
 				 height0);
+		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
