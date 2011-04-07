@@ -425,7 +425,7 @@ GLContext::GetBlendProgram ()
 }
 
 void
-GLContext::Blend (Color *color)
+GLContext::Paint (Color *color)
 {
 	GLuint program = GetBlendProgram ();
 	GLint  color_location;
@@ -467,7 +467,7 @@ GLContext::Blend (Color *color)
 }
 
 void
-GLContext::Blend (MoonSurface *src,
+GLContext::Paint (MoonSurface *src,
 		  double      alpha,
 		  double      x,
 		  double      y)

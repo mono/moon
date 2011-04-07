@@ -1012,7 +1012,7 @@ Context::BlitYV12 (unsigned char *data[],
 }
 
 void
-Context::Blend (Color *color)
+Context::Paint (Color *color)
 {
 	cairo_t *cr = Context::Push (Cairo ());
 
@@ -1023,7 +1023,7 @@ Context::Blend (Color *color)
 }
 
 void
-Context::Blend (MoonSurface *src,
+Context::Paint (MoonSurface *src,
 		double      alpha,
 		double      x,
 		double      y)

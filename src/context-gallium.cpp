@@ -573,7 +573,7 @@ GalliumContext::GetBlendShader ()
 }
 
 void
-GalliumContext::Blend (Color *color)
+GalliumContext::Paint (Color *color)
 {
 	struct pipe_resource *vbuf;
 
@@ -613,7 +613,7 @@ GalliumContext::Blend (Color *color)
 }
 
 void
-GalliumContext::Blend (MoonSurface *src,
+GalliumContext::Paint (MoonSurface *src,
 		       double      alpha,
 		       double      x,
 		       double      y)
@@ -689,7 +689,7 @@ GalliumContext::Project (MoonSurface  *src,
 			cairo_matrix_init_translate (&m, x0, y0);
 
 			Context::Push (Context::Transform (m));
-			Context::Blend (src, alpha, x, y);
+			Context::Paint (src, alpha, x, y);
 			Context::Pop ();
 			return;
 		}

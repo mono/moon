@@ -1620,7 +1620,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 		if (!r.IsEmpty ()) {
 			ctx->Push (Context::Clip (r));
-			ctx->Blend (src, 1.0, r.x, r.y);
+			ctx->Paint (src, 1.0, r.x, r.y);
 			ctx->Pop ();
 
 			src->unref ();
@@ -1671,7 +1671,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 
 		if (!r.IsEmpty ()) {
 			ctx->Push (Context::Clip (r));
-			ctx->Blend (src, GetOpacity (), r.x, r.y);
+			ctx->Paint (src, GetOpacity (), r.x, r.y);
 			ctx->Pop ();
 
 			src->unref ();

@@ -175,7 +175,7 @@ SolidColorBrush::Paint (Context *ctx, const Rect &area)
 	Color  *color = GetColor ();
 	Color  rgba = Color (color->r, color->g, color->b, opacity * color->a);
 
-	ctx->Blend (&rgba);
+	ctx->Paint (&rgba);
 }
 
 bool

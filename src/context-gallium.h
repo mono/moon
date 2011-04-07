@@ -50,9 +50,9 @@ public:
 	void Blit (unsigned char *data,
 		   int           stride);
 
-	void Blend (Color *color);
+	void Paint (Color *color);
 
-	void Blend (MoonSurface *src,
+	void Paint (MoonSurface *src,
 		    double      alpha,
 		    double      x,
 		    double      y);

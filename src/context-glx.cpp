@@ -560,7 +560,7 @@ GLXContext::BlitYV12 (unsigned char *data[],
 }
 
 void
-GLXContext::Blend (Color *color)
+GLXContext::Paint (Color *color)
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
@@ -576,13 +576,13 @@ GLXContext::Blend (Color *color)
 
 	ForceCurrent ();
 
-	GLContext::Blend (color);
+	GLContext::Paint (color);
 
 	ms->unref ();
 }
 
 void
-GLXContext::Blend (MoonSurface *src,
+GLXContext::Paint (MoonSurface *src,
 		   double      alpha,
 		   double      x,
 		   double      y)
@@ -618,7 +618,7 @@ GLXContext::Blend (MoonSurface *src,
 
 	ForceCurrent ();
 
-	GLContext::Blend (src, alpha, x, y);
+	GLContext::Paint (src, alpha, x, y);
 }
 
 void

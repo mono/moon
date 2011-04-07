@@ -861,7 +861,7 @@ MediaElement::Render (Context *ctx, Region *region)
 		return;
 
 	ctx->Push (Context::Transform (matrix));
-	ctx->Blend (src, 1.0, 0, 0);
+	ctx->Paint (src, 1.0, 0, 0);
 	ctx->Pop ();
 
 	src->unref ();
