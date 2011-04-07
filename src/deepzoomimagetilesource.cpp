@@ -549,7 +549,6 @@ FloatTryParse (const char *str, double *val)
 	}
 	
 	/* integral part of the decimal number */
-#if PLUMB_ME
 	while (g_ascii_isdigit (*vptr))
 		vptr++;
 	
@@ -601,7 +600,6 @@ FloatTryParse (const char *str, double *val)
 		if ((vptr - exponent) > (2 + sign))
 			return false;
 	}
-#endif
 	
 	/* keep track of the length of the decimal number */
 	len = vptr - inptr;
