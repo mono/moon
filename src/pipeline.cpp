@@ -4482,12 +4482,10 @@ MediaFrame::AllocateBuffer (guint32 size, guint32 alignment)
 		buffer = (guint8 *) g_try_malloc (buflen + stream->GetMinPadding ());
 		RemoveState (MediaFramePosixAlloc);
 	} else {
-#if PLUMB_ME
 		if (posix_memalign ((void **) &buffer, alignment, size) != 0) {
 			stream->ReportErrorOccurred ("Moonlight: could not allcoate memory for next frame");
 			return false;
 		}
-#endif
 		AddState (MediaFramePosixAlloc);
 	}
 	if (buffer == NULL) {

@@ -27,7 +27,6 @@
 #define MOON_LOCAL
 #endif
 
-
 #include <glib.h>
 #include <time.h>
 #include <stdio.h>
@@ -43,6 +42,17 @@
 #endif
 #ifdef FocusOut
 #undef FocusOut
+#endif
+
+#if defined(PLATFORM_ANDROID)
+int posix_memalign (void **ptr, size_t alignment, size_t size)
+{
+	*ptr = (void *) malloc (size);
+	if (!*ptr)
+		return errno;
+
+	return 0;
+}
 #endif
 
 
