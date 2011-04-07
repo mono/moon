@@ -26,6 +26,9 @@ extern "C" {
 
 #include <glib.h>
 
+#include "android_native_app_glue.h"
+#include "android/input.h"
+
 #include <sys/stat.h>
 
 #ifdef USE_GALLIUM
@@ -58,6 +61,380 @@ swrast_screen_create (struct sw_winsys *ws)
 
 using namespace Moonlight;
 
+static Key
+MapKeyvalToKey (guint keyval)
+{
+	switch (keyval) {
+	case AKEYCODE_TAB:		return KeyTAB;
+	case AKEYCODE_ENTER:		return KeyENTER;
+	case AKEYCODE_SHIFT_LEFT: case AKEYCODE_SHIFT_RIGHT:		return KeySHIFT;
+	case AKEYCODE_ALT_LEFT: case AKEYCODE_ALT_RIGHT:			return KeyALT;
+	case AKEYCODE_SPACE:		return KeySPACE;
+	case AKEYCODE_PAGE_UP:		return KeyPAGEUP;
+	case AKEYCODE_PAGE_DOWN:	return KeyPAGEDOWN;
+	case AKEYCODE_DPAD_LEFT:		return KeyLEFT;
+	case AKEYCODE_DPAD_UP:			return KeyUP;
+	case AKEYCODE_DPAD_RIGHT:		return KeyRIGHT;
+	case AKEYCODE_DPAD_DOWN:		return KeyDOWN;
+	case AKEYCODE_DEL:		return KeyDELETE;
+	case AKEYCODE_0:	return KeyDIGIT0;
+	case AKEYCODE_1:	return KeyDIGIT1;
+	case AKEYCODE_2:	return KeyDIGIT2;
+	case AKEYCODE_3:	return KeyDIGIT3;
+	case AKEYCODE_4:	return KeyDIGIT4;
+	case AKEYCODE_5:	return KeyDIGIT5;
+	case AKEYCODE_6:	return KeyDIGIT6;
+	case AKEYCODE_7:	return KeyDIGIT7;
+	case AKEYCODE_8:	return KeyDIGIT8;
+	case AKEYCODE_9:	return KeyDIGIT9;
+	case AKEYCODE_A:				return KeyA;
+	case AKEYCODE_B:				return KeyB;
+	case AKEYCODE_C:				return KeyC;
+	case AKEYCODE_D:				return KeyD;
+	case AKEYCODE_E:				return KeyE;
+	case AKEYCODE_F:				return KeyF;
+	case AKEYCODE_G:				return KeyG;
+	case AKEYCODE_H:				return KeyH;
+	case AKEYCODE_I:				return KeyI;
+	case AKEYCODE_J:				return KeyJ;
+	case AKEYCODE_K:				return KeyK;
+	case AKEYCODE_L:				return KeyL;
+	case AKEYCODE_M:				return KeyM;
+	case AKEYCODE_N:				return KeyN;
+	case AKEYCODE_O:				return KeyO;
+	case AKEYCODE_P:				return KeyP;
+	case AKEYCODE_Q:				return KeyQ;
+	case AKEYCODE_R:				return KeyR;
+	case AKEYCODE_S:				return KeyS;
+	case AKEYCODE_T:				return KeyT;
+	case AKEYCODE_U:				return KeyU;
+	case AKEYCODE_V:				return KeyV;
+	case AKEYCODE_W:				return KeyW;
+	case AKEYCODE_X:				return KeyX;
+	case AKEYCODE_Y:				return KeyY;
+	case AKEYCODE_Z:				return KeyZ;
+		
+#if notyet
+	case GDK_F1: case GDK_KP_F1:			return KeyF1;
+	case GDK_F2: case GDK_KP_F2:			return KeyF2;
+	case GDK_F3: case GDK_KP_F3:			return KeyF3;
+	case GDK_F4: case GDK_KP_F4:			return KeyF4;
+	case GDK_F5:					return KeyF5;
+	case GDK_F6:					return KeyF6;
+	case GDK_F7:					return KeyF7;
+	case GDK_F8:					return KeyF8;
+	case GDK_F9:					return KeyF9;
+	case GDK_F10:					return KeyF10;
+	case GDK_F11:					return KeyF11;
+	case GDK_F12:					return KeyF12;
+		
+	case GDK_KP_0:					return KeyNUMPAD0;
+	case GDK_KP_1:					return KeyNUMPAD1;
+	case GDK_KP_2:					return KeyNUMPAD2;
+	case GDK_KP_3:					return KeyNUMPAD3;
+	case GDK_KP_4:					return KeyNUMPAD4;
+	case GDK_KP_5:					return KeyNUMPAD5;
+	case GDK_KP_6:					return KeyNUMPAD6;
+	case GDK_KP_7:					return KeyNUMPAD7;
+	case GDK_KP_8:					return KeyNUMPAD8;
+	case GDK_KP_9:					return KeyNUMPAD9;
+		
+	case GDK_KP_Multiply:				return KeyMULTIPLY;
+	case GDK_KP_Add:				return KeyADD;
+	case GDK_KP_Subtract:				return KeySUBTRACT;
+	case GDK_KP_Decimal:				return KeyDECIMAL;
+	case GDK_KP_Divide:				return KeyDIVIDE;
+#endif	
+	default:
+		return KeyUNKNOWN;
+	}
+}
+
+static int
+MapGdkToVKey (int32_t keycode, int32_t scancode)
+{
+	if (keycode >= AKEYCODE_A && keycode <= AKEYCODE_Z)
+		return keycode;
+
+	switch (keycode) {
+	case AKEYCODE_DEL:
+		return 0x2e;
+
+	case AKEYCODE_0:
+		return 0x30;
+
+	case AKEYCODE_1:
+		return 0x31;
+
+	case AKEYCODE_2:
+	case AKEYCODE_AT:
+		return 0x32;
+
+	case AKEYCODE_3:
+		return 0x33;
+
+	case AKEYCODE_4:
+		return 0x34;
+
+	case AKEYCODE_5:
+		return 0x35;
+
+	case AKEYCODE_6:
+		return 0x36;
+
+	case AKEYCODE_7:
+		return 0x37;
+
+	case AKEYCODE_8:
+		return 0x38;
+
+	case AKEYCODE_9:
+		return 0x39;
+
+	case AKEYCODE_SEMICOLON:
+		return 0xba;
+
+	case AKEYCODE_EQUALS:
+	case AKEYCODE_PLUS:
+		return 0xbb;
+
+	case AKEYCODE_COMMA:
+		return 0xbc;
+
+	case AKEYCODE_MINUS:
+		return 0xbd;
+
+	case AKEYCODE_PERIOD:
+		return 0xbe;
+
+	case AKEYCODE_SLASH:
+		return 0xbf;
+
+	case AKEYCODE_GRAVE:
+		return 0xc0;
+
+	case AKEYCODE_LEFT_BRACKET:
+		return 0xdb;
+
+	case AKEYCODE_BACKSLASH:
+		return 0xdc;
+
+	case AKEYCODE_RIGHT_BRACKET:
+		return 0xdd;
+
+	case AKEYCODE_APOSTROPHE:
+		return 0xde;
+
+	default:
+		printf ("default case for keycode 0x%0x scancode %d\n", keycode, scancode);
+		return scancode;
+	}
+}
+
+class MoonKeyEventAndroid : public MoonKeyEvent {
+public:
+	MoonKeyEventAndroid (AInputEvent *event)
+	{
+		down = AInputEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN;
+
+		android_keycode = AKeyEvent_getKeyCode (event);
+		android_scancode = AKeyEvent_getScanCode (event);
+		android_metastate = AKeyEvent_getMetaState (event);
+
+		key = MapKeyCodeToKey (android_keycode);
+		keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapAndroidToVKey (event) : android_scancode;
+	}
+
+	MoonKeyEventAndroid (bool down, int32_t keycode, int32_t scancode, int32_t metastate)
+	{
+		this->down = down;
+		android_keycode = keycode;
+		android_scancode = scancode;
+		android_metastate = metastate;
+
+		key = MapKeyCodeToKey (android_keycode);
+		this->keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapAndroidToVKey (event) : android_code;
+	}
+
+	virtual ~MoonKeyEventAndroid ()
+	{
+	}
+
+	virtual MoonEvent* Clone ()
+	{
+		return new MoonKeyEventAndroid (down, android_code, android_scancode);
+	}
+
+	virtual gpointer GetPlatformEvent ()
+	{
+		// FIXME we can't cache the native event in this
+		// wrapper class. this is used by gtk to deal with the
+		// input method support.  is this necessary on
+		// android?
+		return NULL;
+	}
+
+	virtual Key GetSilverlightKey ()
+	{
+		return key;
+	}
+
+	virtual int GetPlatformKeycode ()
+	{
+		return keycode;
+	}
+
+	virtual int GetPlatformKeyval ()
+	{
+		return event->keyval;
+	}
+
+	virtual gunichar GetUnicode ()
+	{
+		// FIXME dunno what to do here..
+	}
+
+	virtual bool HasModifiers () { return true; }
+
+	virtual MoonModifier GetModifiers ()
+	{
+		if (android_metastate == AMETA_NONE)
+			return (MoonModifier)0;
+
+		int mods = 0;
+
+		if (android_metastate & AMETA_ALT_ON)
+			mods |= MoonModifier_Meta; // why couldn't gtk just use *ALT*?  is this the right modifier? FIXME
+		if (android_metastate & AMETA_SHIFT_ON)
+			mods |= MoonModifier_Shift;
+		if (android_metastate & AMETA_SYM_ON)
+			mods |= MoonModifier_Super; // FIXME
+
+		return (MoonModifier)mods;
+	}
+	
+	virtual bool IsModifier ()
+	{
+		switch (android_keycode) {
+		case AKEYCODE_ALT_LEFT:
+		case AKEYCODE_ALT_RIGHT:
+		case AKEYCODE_SHIFT_LEFT:
+		case AKEYCODE_SHIFT_RIGHT:
+		case AKEYCODE_SYM:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+private:
+	Key key;
+	int32_t keycode;
+	int32_t android_keycode;
+	int32_t android_scancode;
+	int32_t android_metastate;
+};
+
+class MoonButtonEventAndroid : public MoonButtonEvent {
+public:
+	MoonButtonEventAndroid (AInputEvent *event)
+	{
+		this->action = AMotionEvent_getAction (event);
+
+		this->is_release = (this->action & AMOTION_EVENT_ACTION_MASK) == AMOTION_EVENT_ACTION_UP;
+
+		this->metastate = AMotionEvent_getMetaState (event);
+
+		this->pressure = AMotionEvent_getPressure (event, 0);
+
+		this->x = AMotionEvent_getX (event, 0);
+		this->y = AMotionEvent_getY (event, 0);
+	}
+
+	MoonButtonEventAndroid (int32_t action, int32_t metastate, float pressure, float x, float y)
+	{
+		this->action = action;
+		this->is_release = (this->action & AMOTION_EVENT_ACTION_MASK) == AMOTION_EVENT_ACTION_UP;
+
+		this->metastate = metastate;
+		this->pressure = pressure;
+		this->x = x;
+		this->y = y;
+	}
+
+	virtual ~MoonButtonEventAndroid ()
+	{
+	}
+
+	virtual MoonEvent* Clone ()
+	{
+		return new MoonButtonEventAndroid (action, metastate, pressure, x, y);
+	}
+
+	virtual gpointer GetPlatformEvent ()
+	{
+		return NULL;
+	}
+	
+	virtual Point GetPosition ()
+	{
+		return Point (x, y);
+	}
+
+	virtual double GetPressure ()
+	{
+		return pressure;
+	}
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
+	{
+		// FIXME
+	}
+
+	virtual bool HasModifiers () { return true; }
+
+	virtual MoonModifier GetModifiers ()
+	{
+		if (metastate == AMETA_NONE)
+			return (MoonModifier)0;
+
+		int mods = 0;
+
+		if (metastate & AMETA_ALT_ON)
+			mods |= MoonModifier_Meta; // why couldn't gtk just use *ALT*?  is this the right modifier? FIXME
+		if (metastate & AMETA_SHIFT_ON)
+			mods |= MoonModifier_Shift;
+		if (metastate & AMETA_SYM_ON)
+			mods |= MoonModifier_Super; // FIXME
+
+		return (MoonModifier)mods;
+	}
+
+	bool IsRelease ()
+	{
+		return is_release;
+	}
+
+	int GetButton ()
+	{
+		return 1;
+	}
+
+	// the number of clicks.  gdk provides them as event->type ==
+	// GDK_3BUTTON_PRESS/GDK_2BUTTON_PRESS/GDK_BUTTON_PRESS
+	virtual int GetNumberOfClicks ()
+	{
+		return 1;
+	}
+
+private:
+	int32_t action;
+	int32_t metastate;
+	bool is_release;
+	float pressure;
+	float x;
+	float y;
+};
 
 /// our windowing system
 
@@ -73,6 +450,8 @@ MoonWindowingSystemAndroid::MoonWindowingSystemAndroid (bool out_of_browser)
 	gscreen = swrast_screen_create (null_sw_create ());
 #endif
 
+	source_id = 0;
+	sources = NULL;
 }
 
 MoonWindowingSystemAndroid::~MoonWindowingSystemAndroid ()
@@ -271,42 +650,90 @@ MoonWindowingSystemAndroid::GetSystemColor (SystemColor id)
 	return system_colors[id];
 }
 
+class AndroidSource {
+public:
+	AndroidSource (int source_id, int priority, int interval, MoonSourceFunc source_func, gpointer data, bool skip_initially)
+	{
+		this->source_id = source_id;
+		this->priority = priority;
+		this->interval = interval;
+		this->source_func = source_func;
+		this->data = data;
+		skip = skip_initially;
+		time_remaining = interval;
+	}
+
+	bool InvokeSourceFunc ()
+	{
+		return source_func (data);
+	}
+
+	static gint Compare (gconstpointer p1, gconstpointer p2)
+	{
+		const AndroidSource *source1 = (const AndroidSource*)p1;
+		const AndroidSource *source2 = (const AndroidSource*)p2;
+
+		gint result = source1->time_remaining - source2->time_remaining;
+		if (result != 0)
+			return result;
+
+		return source1->priority - source2->priority;
+	}
+
+	bool skip;
+
+	// this one must be signed
+	gint32 time_remaining;
+
+	guint source_id;
+	int priority;
+	gint32 interval;
+	MoonSourceFunc source_func;
+	gpointer data;
+};
+
+
 guint
 MoonWindowingSystemAndroid::AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data)
 {
-	// FIXME
-	return 0;
-#if GTK_PAL_CODE_VERSION
-	return g_timeout_add_full (priority, ms, (GSourceFunc)timeout, data, NULL);
-#endif
+	AndroidSource *new_source = new AndroidSource (source_id, priority, ms, timeout, data, emitting_sources);
+
+	sources = g_list_insert_sorted (sources, new_source, AndroidSource::Compare);
+
+	return source_id++;
+}
+
+void
+MoonWindowingSystemAndroid::RemoveSource (guint sourceId)
+{
+	for (GList *l = sources; l; l = l->next) {
+		AndroidSource *s = (AndroidSource*)l->data;
+		if (s->source_id == sourceId) {
+			sources = g_list_delete_link (sources, l);
+			delete s;
+			return;
+		}
+	}
 }
 
 void
 MoonWindowingSystemAndroid::RemoveTimeout (guint timeoutId)
 {
-	// FIXME
-#if GTK_PAL_CODE_VERSION
-	g_source_remove (timeoutId);
-#endif
+	RemoveSource (timeoutId);
 }
 
 guint
 MoonWindowingSystemAndroid::AddIdle (MoonSourceFunc idle, gpointer data)
 {
-	// FIXME
-	return 0;
-#if GTK_PAL_CODE_VERSION
-	return g_idle_add ((GSourceFunc)idle, data);
-#endif
+	AndroidSource *new_source = new AndroidSource (source_id, MOON_PRIORITY_LOW, 0, idle, data, emitting_sources);
+	sources = g_list_insert_sorted (sources, new_source, AndroidSource::Compare);
+	return source_id++;
 }
 
 void
-MoonWindowingSystemAndroid::RemoveIdle (guint idle_id)
+MoonWindowingSystemAndroid::RemoveIdle (guint idleId)
 {
-	// FIXME
-#if GTK_PAL_CODE_VERSION
-	g_source_remove (idle_id);
-#endif
+	RemoveSource (idleId);
 }
 
 MoonIMContext*
@@ -319,56 +746,50 @@ MoonWindowingSystemAndroid::CreateIMContext ()
 MoonEvent*
 MoonWindowingSystemAndroid::CreateEventFromPlatformEvent (gpointer platformEvent)
 {
+	AInputEvent *aevent = (AInputEvent*)platformEvent;
+
+	switch (AInputEvent_getType(aevent)) {
+	case AINPUT_EVENT_TYPE_KEY: {
+		switch (AInputEvent_getAction(event)) {
+		case AKEY_EVENT_ACTION_DOWN:
+		case AKEY_EVENT_ACTION_UP:
+			return new MoonKeyEventAndroid (aevent);
+		case AKEY_EVENT_ACTION_MULTIPLE:
+			g_warning ("unsupported AKEY_EVENT_ACTION_MULTIPLE");
+			return NULL;
+		}
+	}
+	case AINPUT_EVENT_TYPE_MOTION: {
+		switch (AMotionEvent_getAction(aevent) & AMOTION_EVENT_ACTION_MASK) {
+		case AMOTION_EVENT_ACTION_DOWN:
+		case AMOTION_EVENT_ACTION_UP:
+			return new MoonButtonEventAndroid (aevent);
+		case AMOTION_EVENT_ACTION_MOVE:
+			// notyet return new MoonMotionEventAndroid (aevent);
+			g_warning ("unsupported AMOTION_EVENT_ACTION_MOVE");
+			return NULL;
+		case AMOTION_EVENT_ACTION_POINTER_DOWN:
+			g_warning ("unsupported AMOTION_EVENT_ACTION_POINTER_DOWN");
+			return NULL;
+		case AMOTION_EVENT_ACTION_POINTER_UP:
+			g_warning ("unsupported AMOTION_EVENT_ACTION_POINTER_UP");
+			return NULL;
+		case AMOTION_EVENT_ACTION_CANCEL:
+			g_warning ("unsupported AMOTION_EVENT_ACTION_CANCEL");
+			return NULL;
+		case AMOTION_EVENT_ACTION_OUTSIDE:
+			g_warning ("unsupported AMOTION_EVENT_ACTION_OUTSIDE");
+			return NULL;
+			break;
+		}
+	}
+	default:
+		g_warning ("unknown android event");
+		break;
+	}
+
 	// FIXME
 	return NULL;
-#if GTK_PAL_CODE_VERSION
-	GdkEvent *gdk = (GdkEvent*)platformEvent;
-
-	switch (gdk->type) {
-	case GDK_MOTION_NOTIFY: {
-		GdkEventMotion *mev = (GdkEventMotion*)gdk;
-		if (mev->is_hint) {
-#if GTK_CHECK_VERSION(2,12,0)
-			if (gtk_check_version (2, 12, 0)) {
-				gdk_event_request_motions (mev);
-			}
-			else
-#endif
-			{
-				int ix, iy;
-				GdkModifierType state;
-				gdk_window_get_pointer (mev->window, &ix, &iy, (GdkModifierType*)&state);
-				mev->x = ix;
-				mev->y = iy;
-			}    
-		}
-
-		return new MoonMotionEventAndroid (gdk);
-	}
-	case GDK_BUTTON_PRESS:
-	case GDK_2BUTTON_PRESS:
-	case GDK_3BUTTON_PRESS:
-	case GDK_BUTTON_RELEASE:
-		return new MoonButtonEventAndroid (gdk);
-
-	case GDK_KEY_PRESS:
-	case GDK_KEY_RELEASE:
-		return new MoonKeyEventAndroid (gdk);
-
-	case GDK_ENTER_NOTIFY:
-	case GDK_LEAVE_NOTIFY:
-		return new MoonCrossingEventAndroid (gdk);
-
-	case GDK_FOCUS_CHANGE:
-		return new MoonFocusEventAndroid (gdk);
-
-	case GDK_SCROLL:
-		return new MoonScrollWheelEventAndroid (gdk);
-	default:
-		printf ("unhandled android event %d\n", gdk->type);
-		return NULL;
-	}
-#endif
 }
 
 guint
@@ -387,21 +808,126 @@ MoonWindowingSystemAndroid::CreatePixbufLoader (const char *imageType)
 }
 
 void
+MoonWindowingSystemAndroid::OnAppCommand (struct android_app* app, int32_t cmd)
+{
+}
+
+void
+MoonWindowingSystemAndroid::OnInputEvent (struct android_app* app, AInputEvent* event)
+{
+	MoonEvent *event = CreateEventFromPlatformEvent (event);
+	if (!event)
+		return;
+
+	MoonWindow *window = (MoonWindow*)app->userData;
+	window->HandleEvent (event);
+}
+
+gint32
+get_now_in_millis (void)
+{
+        struct timeval tv;
+        TimeSpan res;
+#ifdef CLOCK_MONOTONIC
+	struct timespec tspec;
+	if (clock_gettime (CLOCK_MONOTONIC, &tspec) == 0) {
+		return tspec.tv_sec * 1000 + tspec.tv_nsec / 1000000;
+	}
+#endif
+
+        if (gettimeofday (&tv, NULL) == 0) {
+                return tv.tv_sec * 1000  + tv.tv_usec / 1000;
+        }
+
+	// XXX error
+	return 0;
+}
+
+void
 MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window_close)
 {
-	// FIXME
-#if GTK_PAL_CODE_VERSION
-	if (window) {
-		window->Show ();
+	struct android_app* state;
 
-		if (quit_on_window_close)
-			g_signal_connect (((MoonWindowGtk*)window)->GetWidget (), "delete-event", G_CALLBACK (gtk_main_quit), NULL);
+	state->userData = window;
+	state->onAppCmd = MoonWindowingSystemAndroid::OnAppCommand;
+	state->onInputEvent = MoonWindowingSystemAndroid::OnInputEvent;
+
+	window->Show ();
+	// FIXME do something with quit_on_window_close
+
+	while (1) {
+		// Read all pending events.
+		int ident;
+		int events;
+		struct android_poll_source* source;
+		int timeout = -1;
+
+		if (sources != NULL) {
+			AndroidSource *s = (AndroidSource*)sources->data;
+			timeout = s->time_remaining;
+		}
+
+		gint32 before_poll = get_now_in_millis ();
+
+		while ((ident = ALooper_pollAll (timeout,
+						 NULL, &events,
+						 (void**)&source)) >= 0) {
+
+			// Process this event if there was one
+			if (source != NULL)
+				source->process(state, source);
+
+			// and exit early if we need to
+			if (state->destroyRequested != 0)
+				return;
+
+			gint32 after_poll = get_now_in_millis ();
+
+			if (sources) {
+				gint32 delta = before_poll - after_poll;
+
+				emitting_sources = true;
+				GList *l = sources;
+				while (l) {
+					AndroidSource *s = (AndroidSource*)l->data;
+					if (s->skip) {
+						// we've already invoked this source or it was added while we were already emitting sources, skip it
+						l = l->next;
+					}
+					else if (s->time_remaining + delta < 0) {
+						// we should invoke it
+						bool keep = s->InvokeSourceFunc ();
+						if (keep) {
+							s->skip = true;
+							s->time_remaining = s->interval;
+							sources = g_list_insert_sorted (sources, s, AndroidSource::Compare);
+						}
+						else {
+							delete s;
+						}
+
+						GList *next = l->next;
+						sources = g_list_delete_link (sources, l);
+						l = next;
+					}
+					else {
+						s->time_remaining += delta;
+						l = l->next;
+					}
+				}
+				emitting_sources = false;
+
+				l = sources;
+				while (l) {
+					AndroidSource *s = (AndroidSource*)sources->data;
+					s->skip = false;
+					l = l->next;
+				}
+			}
+
+
+		}
 	}
-
-	gdk_threads_enter ();
-	gtk_main ();
-	gdk_threads_leave ();
-#endif
 }
 
 guint32
