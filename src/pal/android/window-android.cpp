@@ -15,6 +15,8 @@
 
 #include <glib.h>
 
+#include "android_native_app_glue.h"
+
 #include "window-android.h"
 #include "clipboard-android.h"
 #include "pixbuf-android.h"
@@ -44,6 +46,10 @@ int MoonWindowAndroid::gctxn = 0;
 MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (windowType, w, h, parent, surface)
 {
+	this->width = w;
+	this->height = h;
+
+	CreateCairoContext ();
 }
 
 MoonWindowAndroid::~MoonWindowAndroid ()
@@ -198,4 +204,75 @@ void
 MoonWindowAndroid::SetStyle (WindowStyle style)
 {
 	// FIXME
+}
+
+static inline guint8
+convert_color_channel (guint8 src, guint8 alpha)
+{
+	return alpha ? src / (alpha / 255.0) : 0;
+}
+
+static inline void
+convert_bgra_to_rgba (guint8 const *src, guint8 *dst, gint width, gint height)
+{
+	guint8 const *src_pixel = src;
+	guint8 * dst_pixel = dst;
+	int y;
+
+	for (y = 0; y < height; y++)
+	{   
+		int x;
+
+		for (x = 0; x < width; x++)
+		{   
+			dst_pixel[0] = convert_color_channel (src_pixel[2], src_pixel[3]);
+			dst_pixel[1] = convert_color_channel (src_pixel[1], src_pixel[3]);
+			dst_pixel[2] = convert_color_channel (src_pixel[0], src_pixel[3]);
+			dst_pixel[3] = src_pixel[3];
+
+			dst_pixel += 4;
+			src_pixel += 4;
+		}   
+	}   
+}
+
+void
+MoonWindowAndroid::CreateCairoContext ()
+{
+	CairoSurface *target;
+
+	target = new CairoSurface (width, height);
+	ctx = new CairoContext (target);
+
+	backing_image_data = target->GetData ();
+	target->unref ();
+}
+
+void
+MoonWindowAndroid::Paint (struct android_app* app)
+{
+	ANativeWindow_Buffer buffer;
+	unsigned char *pixels;
+	cairo_t *cr;
+
+	g_warning ("Painting");
+	SetCurrentDeployment ();
+
+	if (app->window == NULL)
+		return;
+
+	g_warning ("Lock");
+	if (ANativeWindow_lock (app->window, &buffer, NULL) < 0)
+		return;
+
+	Region *region = new Region (Rect (0, 0, buffer.width, buffer.height));
+
+	pixels = (unsigned char *) buffer.bits;
+
+	g_warning ("Blit");
+	surface->Paint (ctx, region, transparent, true);
+	g_warning ("Splat");
+	convert_bgra_to_rgba (backing_image_data, pixels, buffer.width, buffer.height);
+
+	ANativeWindow_unlockAndPost (app->window);
 }

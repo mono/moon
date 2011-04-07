@@ -75,8 +75,14 @@ public:
 	void SetGalliumScreen (pipe_screen *gscreen) { screen = gscreen; }
 #endif
 
+	// FIXME: This shouldn't be public
+	void Paint (struct android_app* app);
 private:
+	void CreateCairoContext ();
+
 	cairo_surface_t *native;
+	CairoContext *ctx;
+	unsigned char *backing_image_data;
 
 #ifdef USE_GALLIUM
 	pipe_screen *screen;
