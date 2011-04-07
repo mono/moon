@@ -22,6 +22,9 @@ public:
 	virtual ~CairoSurface ();
 
 	cairo_surface_t *Cairo ();
+	unsigned char *GetData () {
+		return data;
+	}
 
 private:
 	int           size[2];

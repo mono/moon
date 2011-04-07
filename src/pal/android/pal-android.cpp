@@ -921,6 +921,7 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 		break;
 	case APP_CMD_INIT_WINDOW:
 		g_warning (" APP_CMD_INIT_WINDOW");
+		ANativeWindow_setBuffersGeometry(app->window, 0, 0, WINDOW_FORMAT_RGBA_8888);
 		break;
 	case APP_CMD_TERM_WINDOW:
 		g_warning (" APP_CMD_TERM_WINDOW");
@@ -1020,6 +1021,10 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 	g_warning("starting mainloop");
 
+	// HACK HACK HACK
+	window->GetSurface ()->HandleUIWindowAvailable ();
+	window->GetSurface ()->HandleUIWindowAllocation (true);
+
 	while (1) {
 		// Read all pending events.
 		int ident;
@@ -1106,6 +1111,8 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 
 		}
+		// HACK HACK HACK
+		((MoonWindowAndroid *)window)->Paint (state);
 	}
 }
 
