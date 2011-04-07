@@ -3572,9 +3572,7 @@ expand_property_path (XamlParserInfo *p, PropertyPath *path)
 			char *prefix = g_strndup (res->str + s + 1, e - s - 1);
 			char *type = g_strndup (res->str + e + 1, te - e - 1);
 
-#if PLUMB_ME
 			res = g_string_erase (res, s + 1, te - s - 1);
-#endif
 
 			XamlNamespace *ns = (XamlNamespace *) g_hash_table_find (p->namespace_map, namespace_for_prefix, prefix);
 			if (!ns) {

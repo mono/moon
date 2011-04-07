@@ -16,10 +16,6 @@
 #include "clock.h"
 #include "deployment.h"
 
-#define MOON_PRIORITY_HIGH G_PRIORITY_DEFAULT
-#define MOON_PRIORITY_DEFAULT G_PRIORITY_DEFAULT_IDLE
-#define MOON_PRIORITY_IDLE G_PRIORITY_DEFAULT_IDLE
-
 namespace Moonlight {
 
 /* @Namespace=None,ManagedEvents=Manual */

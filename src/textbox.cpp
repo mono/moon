@@ -777,8 +777,10 @@ static bool
 is_start_of_word (TextBuffer *buffer, int index)
 {
 	// A 'word' starts with an AlphaNumeric or some punctuation symbols immediately preceeded by lwsp
+#if PLUMB_ME
 	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
 		return false;
+#endif
 	
 	switch (g_unichar_type (buffer->text[index])) {
 	case G_UNICODE_LOWERCASE_LETTER:
@@ -795,7 +797,9 @@ is_start_of_word (TextBuffer *buffer, int index)
 		return true;
 	case G_UNICODE_OTHER_PUNCTUATION:
 		// words cannot start with '.', but they can start with '&' or '*' (for example)
+#if PLUMB_ME
 		return g_unichar_break_type (buffer->text[index]) == G_UNICODE_BREAK_ALPHABETIC;
+#endif
 	default:
 		return false;
 	}
@@ -836,6 +840,7 @@ TextBoxBase::CursorNextWord (int cursor)
 #else
 	i = cursor;
 	
+#if PLUMB_ME
 	// skip to the end of the current word
 	while (i < cr && !g_unichar_isspace (buffer->text[i]))
 		i++;
@@ -847,6 +852,7 @@ TextBoxBase::CursorNextWord (int cursor)
 	// find the start of the next word
 	while (i < cr && !is_start_of_word (buffer, i))
 		i++;
+#endif
 #endif
 	
 	return i;
@@ -894,16 +900,20 @@ TextBoxBase::CursorPrevWord (int cursor)
 	
 	if (cursor < buffer->len) {
 		// skip to the beginning of this word
+#if PLUMB_ME
 		while (i > begin && !g_unichar_isspace (buffer->text[i - 1]))
 			i--;
+#endif
 		
 		if (i < cursor && is_start_of_word (buffer, i))
 			return i;
 	}
 	
+#if PLUMB_ME
 	// skip to the start of the lwsp
 	while (i > begin && g_unichar_isspace (buffer->text[i - 1]))
 		i--;
+#endif
 	
 	if (i > begin)
 		i--;
@@ -1454,8 +1464,10 @@ TextBoxBase::Paste (MoonClipboard *clipboard, const char *str)
 	gunichar *text;
 	glong len, i;
 	
+#if PLUMB_ME
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+#endif
 	
 	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
 		// paste cannot exceed MaxLength
@@ -1754,12 +1766,16 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 		return true;
 	
 	// get the utf-8 pointers so that we can use them to get gunichar offsets
+#if PLUMB_ME
 	delete_start = g_utf8_offset_to_pointer (text, selection_cursor) + offset;
+#endif
 	delete_end = delete_start + n_chars;
 	
 	// get the character length/start index
+#if PLUMB_ME
 	length = g_utf8_pointer_to_offset (delete_start, delete_end);
 	start = g_utf8_pointer_to_offset (text, delete_start);
+#endif
 	
 	if (length > 0) {
 		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
@@ -1800,7 +1816,11 @@ bool
 TextBoxBase::RetrieveSurrounding ()
 {
 	const char *text = GetActualText ();
-	const char *cursor = g_utf8_offset_to_pointer (text, selection_cursor);
+	const char *cursor;
+
+#if PLUMB_ME
+	cursor = g_utf8_offset_to_pointer (text, selection_cursor);
+#endif
 	
 	im_ctx->SetSurroundingText (text, -1, cursor - text);
 	
@@ -1826,8 +1846,10 @@ TextBoxBase::Commit (const char *str)
 	if (is_read_only)
 		return;
 	
+#if PLUMB_ME
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+#endif
 	
 	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
 		// paste cannot exceed MaxLength
@@ -2554,7 +2576,9 @@ TextBox::SyncSelectedText ()
 		int start = MIN (selection_anchor, selection_cursor);
 		char *text;
 		
+#if PLUMB_ME
 		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
+#endif
 		
 		setvalue = false;
 		SetValue (TextBox::SelectedTextProperty, Value (text, Type::STRING, true));
@@ -2569,7 +2593,11 @@ TextBox::SyncSelectedText ()
 void
 TextBox::SyncText ()
 {
-	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+	char *text;
+
+#if PLUMB_ME
+	text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+#endif
 	
 	setvalue = false;
 	SetValue (TextBox::TextProperty, Value (text, Type::STRING, true));
@@ -2648,7 +2676,10 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			length = abs (selection_cursor - selection_anchor);
 			start = MIN (selection_anchor, selection_cursor);
 			
-			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+#if PLUMB_ME
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
+#endif
+			{
 				if (length > 0) {
 					// replace the currently selected text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
@@ -2673,9 +2704,12 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					
 					SyncAndEmit ();
 				}
-			} else {
+			}
+#if PLUMB_ME
+			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
+#endif
 		}
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
@@ -2750,7 +2784,10 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			gunichar *text;
 			glong textlen;
 			
-			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+#if PLUMB_ME
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
+#endif
+			{
 				if (buffer->len > 0) {
 					// replace the current text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);
@@ -2772,9 +2809,12 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				ResetIMContext ();
 				
 				SyncAndEmit (false);
-			} else {
+			}
+#if PLUMB_ME
+			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
+#endif
 		}
 		
 		changed = TextBoxModelChangedText;
@@ -2944,7 +2984,9 @@ PasswordBox::SyncSelectedText ()
 		int start = MIN (selection_anchor, selection_cursor);
 		char *text;
 		
+#if PLUMB_ME
 		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
+#endif
 		
 		setvalue = false;
 		SetValue (PasswordBox::SelectedTextProperty, Value (text, Type::STRING, true));
@@ -2963,14 +3005,20 @@ PasswordBox::SyncDisplayText ()
 	
 	g_string_truncate (display, 0);
 	
+#if PLUMB_ME
 	for (int i = 0; i < buffer->len; i++)
 		g_string_append_unichar (display, c);
+#endif
 }
 
 void
 PasswordBox::SyncText ()
 {
-	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+	char *text;
+
+#if PLUMB_ME
+	text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+#endif
 	
 	SyncDisplayText ();
 	
@@ -3037,7 +3085,10 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			gunichar *text;
 			glong textlen;
 			
-			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+#if PLUMB_ME
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
+#endif
+			{
 				if (buffer->len > 0) {
 					// replace the current text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);
@@ -3069,9 +3120,12 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				SyncDisplayText ();
 				
 				SyncAndEmit (false);
-			} else {
+			}
+#if PLUMB_ME
+			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
+#endif
 		}
 		
 		changed = TextBoxModelChangedText;
@@ -3086,7 +3140,10 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			length = abs (selection_cursor - selection_anchor);
 			start = MIN (selection_anchor, selection_cursor);
 			
-			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+#if PLUMB_ME
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
+#endif
+			{
 				if (length > 0) {
 					// replace the currently selected text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
@@ -3112,9 +3169,12 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					
 					SyncAndEmit ();
 				}
-			} else {
+			}
+#if PLUMB_ME
+			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
+#endif
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);

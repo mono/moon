@@ -24,7 +24,7 @@
 
 namespace Moonlight {
 
-class GtkNoCodecsUI : public EventObject {
+class GtkNoCodecsUI {
 private:
 	static bool running; // If there already is another CodecDownloader running
 	Surface *surface;
@@ -50,7 +50,6 @@ private:
 	void Close (); // Closes the window and unrefs ourself
 	void Show ();// Shows the codec installation ui and refs ourself
 	
-	/* @SkipFactories */
 	GtkNoCodecsUI (Surface *surface);
 	virtual ~GtkNoCodecsUI ();
 

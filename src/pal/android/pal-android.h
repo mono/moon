@@ -9,6 +9,8 @@
 struct pipe_screen;
 #endif
 
+#include "android_native_app_glue.h"
+
 namespace Moonlight {
 
 class MoonWindowingSystemAndroid : public MoonWindowingSystem {
@@ -69,6 +71,11 @@ private:
 	void RegisterWindow (MoonWindow *window);
 
 	bool RunningOnNvidia ();
+
+	static void OnAppCommand (android_app* app, int32_t cmd);
+	static int32_t OnInputEvent (android_app* app, AInputEvent* event);
+
+	void RemoveSource (guint sourceId);
 
 private:
 	// glib terminology here.  we mean "timeouts and idles"
