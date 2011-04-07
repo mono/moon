@@ -832,29 +832,17 @@ GalliumContext::Blur (MoonSurface *src,
 	int                      size, i;
 	double                   m[16];
 
-	size = Effect::ComputeGaussianSamples (radius, precision, values);
+	size = ComputeGaussianSamples (radius, precision, values);
 	if (size == 0) {
 		Matrix3D::Identity (m);
 		Project (src, m, 1.0, x, y);
 		return;
 	}
 
-	// software optimization that can hopefully be removed one day
+	// our software implementation is faster than softpipe
 	if (is_softpipe) {
-		int x0, y0;
-
-		GetMatrix (m);
-
-		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			Effect::Blur (this,
-				      src,
-				      radius,
-				      x + x0,
-				      y + y0,
-				      r.width,
-				      r.height);
-			return;
-		}
+		Context::Blur (src, radius, x, y);
+		return;
 	}
 
 	GetDeviceMatrix (m);
@@ -1073,28 +1061,13 @@ GalliumContext::DropShadow (MoonSurface *src,
 	int                      size, i;
 	double                   m[16];
 
-	size = Effect::ComputeGaussianSamples (radius, precision, values);
-
-	// software optimization that can hopefully be removed one day
+	// our software implementation is faster than softpipe
 	if (is_softpipe) {
-		int x0, y0;
-
-		GetMatrix (m);
-
-		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			Effect::DropShadow (this,
-					    src,
-					    dx,
-					    dy,
-					    radius,
-					    color,
-					    x + x0,
-					    y + y0,
-					    r.width,
-					    r.height);
-			return;
-		}
+		Context::DropShadow (src, dx, dy, radius, color, x, y);
+		return;
 	}
+
+	size = ComputeGaussianSamples (radius, precision, values);
 
 	GetDeviceMatrix (m);
 

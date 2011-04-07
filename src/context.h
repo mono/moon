@@ -191,6 +191,16 @@ public:
 
 	virtual void Flush ();
 
+protected:
+	int ComputeGaussianSamples (double radius,
+				    double precision,
+				    double *row);
+
+	void UpdateFilterValues (double radius,
+				 double *values,
+				 int    ***table,
+				 int    *size);
+
 private:
 	GHashTable *cache;
 

@@ -17,8 +17,7 @@
 #include "enums.h"
 #include "dependencyobject.h"
 #include "rect.h"
-#include "context.h"
-#include "pal.h"
+#include "color.h"
 
 #define MAX_SAMPLERS  16
 #define MAX_CONSTANTS 32
@@ -213,7 +212,8 @@ typedef enum _shader_param_srcmod_type {
 
 namespace Moonlight {
 
-class GalliumContext;
+class MoonSurface;
+class Context;
 
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
@@ -231,29 +231,6 @@ public:
 			     double      x,
 			     double      y);
 
-	static int ComputeGaussianSamples (double radius,
-					   double precision,
-					   double *row);
-
-	static void Blur (Context     *ctx,
-			  MoonSurface *src,
-			  double      radius,
-			  double      x,
-			  double      y,
-			  double      width,
-			  double      height);
-
-	static void DropShadow (Context     *ctx,
-				MoonSurface *src,
-				double      dx,
-				double      dy,
-				double      radius,
-				Color       *color,
-				double      x,
-				double      y,
-				double      width,
-				double      height);
-
 protected:
 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
@@ -262,11 +239,6 @@ protected:
 
 	friend class MoonUnmanagedFactory;
 	friend class MoonManagedFactory;
-
-	static void UpdateFilterValues (double radius,
-					double *values,
-					int    ***table,
-					int    *size);
 };
 
 #define MAX_BLUR_RADIUS 20

@@ -713,7 +713,7 @@ GLContext::Blur (MoonSurface *src,
 	int          size, i;
 	double       m[16];
 
-	size = Effect::ComputeGaussianSamples (radius, precision, values);
+	size = ComputeGaussianSamples (radius, precision, values);
 	if (size == 0) {
 		Matrix3D::Identity (m);
 		Project (src, m, 1.0, x, y);
@@ -915,7 +915,7 @@ GLContext::DropShadow (MoonSurface *src,
 	int          size, i;
 	double       m[16];
 
-	size = Effect::ComputeGaussianSamples (radius, precision, values);
+	size = ComputeGaussianSamples (radius, precision, values);
 
 	program = GetConvolveProgram (size);
 
