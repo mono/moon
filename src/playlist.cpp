@@ -1639,12 +1639,10 @@ parse_int (const char **pp, const char *end, int *result)
 	int res = 0;
 	bool success = false;
 
-#if PLUMB_ME
 	while (p <= end && g_ascii_isdigit (*p)) {
 		res = res * 10 + *p - '0';
 		p++;
 	}
-#endif
 
 	success = *pp != p;
 	
@@ -1668,12 +1666,10 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 
 	p = str;
 
-#if PLUMB_ME
 	if (!g_ascii_isdigit (*p)) {
 		parser->ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
 		return false;
 	}
-#endif
 
 	for (int i = 0; i < 3; i++) {
 		if (!parse_int (&p, end, &values [i])) {
@@ -1687,7 +1683,6 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 		p++;
 	}
 	
-#if PLUMB_ME
 	if (*p == '.') {
 		p++;
 		while (digits >= 0 && g_ascii_isdigit (*p)) {
@@ -1700,7 +1695,6 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 			return false;
 		}
 	}
-#endif
 	
 	switch (counter) {
 	case 1:
