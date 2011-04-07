@@ -414,7 +414,7 @@ Application::IsRunningOutOfBrowser ()
 	MoonInstallerService *installer = Runtime::GetInstallerService ();
 	Deployment *deployment = Deployment::GetCurrent ();
 	
-	return installer->IsRunningOutOfBrowser (deployment);
+	return installer ? installer->IsRunningOutOfBrowser (deployment) : false;
 }
 
 void
