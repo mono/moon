@@ -74,6 +74,7 @@ public:
 	void Flush ();
 
 protected:
+#if !defined(PLATFORM_ANDROID)
 	PFNGLCREATESHADERPROC glCreateShader;
 	PFNGLSHADERSOURCEPROC glShaderSource;
 	PFNGLCOMPILESHADERPROC glCompileShader;
@@ -100,6 +101,7 @@ protected:
 	PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
 	PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
 	PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+#endif
 
 	virtual void SetFramebuffer ();
 	virtual void SetScissor ();
