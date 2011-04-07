@@ -319,9 +319,7 @@ HttpRequest::SendAsync ()
 			}
 
 			templ = g_build_filename (dir, "XXXXXX", NULL);
-#if PLUMB_ME
 			tmpfile_fd = g_mkstemp (templ);
-#endif
 			if (tmpfile_fd == -1) {
 				char *msg = g_strdup_printf ("Could not create temporary download file %s for url %s\n", templ, GetUri ()->ToString ());
 				Failed (msg);
