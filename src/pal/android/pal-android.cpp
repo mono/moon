@@ -333,6 +333,14 @@ public:
 		return !down;
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsRelease () ? window->GetSurface()->HandleUIKeyRelease (this) : window->GetSurface()->HandleUIKeyPress (this);
+	}
+
 private:
 	bool down;
 	Key key;
@@ -432,6 +440,14 @@ public:
 	virtual int GetNumberOfClicks ()
 	{
 		return 1;
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsRelease () ? window->GetSurface()->HandleUIButtonRelease (this) : window->GetSurface()->HandleUIButtonPress (this);
 	}
 
 private:
@@ -824,9 +840,11 @@ MoonWindowingSystemAndroid::OnInputEvent (android_app* app, AInputEvent* aevent)
 		return -1;
 
 	MoonWindow *window = (MoonWindow*)app->userData;
-	window->HandleEvent (event);
 
-	return 0;
+	event->DispatchToWindow (window);
+
+	// return 1 unconditionally for now.
+	return 1;
 }
 
 gint32
