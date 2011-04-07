@@ -36,7 +36,7 @@ public:
 	virtual void RemoveTimeout (guint timeoutId);
 
 	virtual guint AddIdle (MoonSourceFunc idle, gpointer data);
-	virtual void RemoveIdle (guint idle_id);
+	virtual void RemoveIdle (guint idleId);
 
 	virtual MoonIMContext* CreateIMContext ();
 
@@ -69,6 +69,12 @@ private:
 	void RegisterWindow (MoonWindow *window);
 
 	bool RunningOnNvidia ();
+
+private:
+	// glib terminology here.  we mean "timeouts and idles"
+	GList *sources;
+	guint source_id;
+	bool emitting_sources;
 };
 
 };
