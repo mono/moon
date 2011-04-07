@@ -332,7 +332,9 @@ public:
 		system_data = data;
 	}
 
+protected:
 	gpointer system_data;
+
 private:
 	MoonWindowlessCtor windowless_ctor;
 };
