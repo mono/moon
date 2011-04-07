@@ -422,10 +422,8 @@ HttpRequest::Started (HttpResponse *response)
 	VERIFY_MAIN_THREAD;
 	LOG_DOWNLOADER ("HttpRequest::Started ()\n");
 
-#if PLUMB_ME
 	g_warn_if_fail (response != NULL);
 	g_warn_if_fail (this->response == NULL);
-#endif
 
 	if (this->response != NULL)
 		this->response->unref ();
