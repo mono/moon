@@ -613,7 +613,10 @@ FloatTryParse (const char *str, double *val)
 		return false;
 	}
 	
-#if PLUMB_ME
+	/* Android implements localeconv, but doesn't have the structure, we're presuming
+	 * its always "." there
+	 */
+#if !defined (PLATFORM_ANDROID)
 	if (decimal && (locale = localeconv ()) && strcmp (locale->decimal_point, ".") != 0) {
 		/* locale doesn't use '.' as decimal point so we need to munge
 		 * the string into the locale's formatting */

@@ -26,6 +26,8 @@ static struct stat platform_a11y_stat;
 void
 a11y_stat_init (const char *platform_dir)
 {
+	// Android doesn't have strrstr and will doesn't use a11y, just guard this for now
+#if !PLATFORM_ANDROID
 	//please keep this lookup pattern in sync with the one in A11yHelper.cs (Initiailize() method)
 	const char* moonlight_at_novell = g_strrstr (platform_dir, "moonlight@novell.com");
 	if (moonlight_at_novell != NULL) {
@@ -41,6 +43,7 @@ a11y_stat_init (const char *platform_dir)
 		g_free (after);
 		moonlight_at_novell = NULL;
 	}
+#endif
 }
 
 

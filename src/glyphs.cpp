@@ -664,9 +664,7 @@ Glyphs::SetIndicesInternal (const char *in)
 				inptr++;
 			
 			if (*inptr != ',') {
-#if PLUMB_ME
 				value = g_ascii_strtod (inptr, &end);
-#endif
 				if ((value == 0.0 || value == HUGE_VAL || value == -HUGE_VAL) && errno != 0) {
 					// invalid advance or offset
 					d(print_parse_error (in, inptr, strerror (errno)));
