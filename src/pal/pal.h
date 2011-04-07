@@ -51,7 +51,9 @@
 #if defined(PLATFORM_ANDROID)
 #define GLchar char
 
-extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size);
+extern "C" {
+	int posix_memalign (void **ptr, size_t alignment, size_t size);
+}
 #endif
 
 
