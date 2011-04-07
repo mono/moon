@@ -165,9 +165,7 @@ public:
 
 	void clear_buffer_str ()
 	{
-#if PLUMB_ME
 		g_string_set_size (buffer, 0);
-#endif
 	}
 
 	void move_next ();
