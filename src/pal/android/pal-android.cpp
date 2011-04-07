@@ -832,25 +832,57 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 {
 	MoonWindow *window = (MoonWindow*)app->userData;
 
+	g_warning("MoonWindowingSystemAndroid::OnAppCommand");
+
 	switch (cmd) {
 	case APP_CMD_INPUT_CHANGED:
+		g_warning (" APP_CMD_INPUT_CHANGED");
+		break;
 	case APP_CMD_INIT_WINDOW:
+		g_warning (" APP_CMD_INIT_WINDOW");
+		break;
 	case APP_CMD_TERM_WINDOW:
+		g_warning (" APP_CMD_TERM_WINDOW");
+		break;
 	case APP_CMD_WINDOW_RESIZED:
+		g_warning (" APP_CMD_WINDOW_RESIZED");
 		window->Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));
 		break;
 	case APP_CMD_WINDOW_REDRAW_NEEDED:
+		g_warning (" APP_CMD_WINDOW_REDRAW_NEEDED");
+		break;
 	case APP_CMD_CONTENT_RECT_CHANGED:
+		g_warning (" APP_CMD_CONTENT_RECT_CHANGED");
+		break;
 	case APP_CMD_GAINED_FOCUS:
+		g_warning (" APP_CMD_GAINED_FOCUS");
+		break;
 	case APP_CMD_LOST_FOCUS:
+		g_warning (" APP_CMD_LOST_FOCUS");
+		break;
 	case APP_CMD_CONFIG_CHANGED:
+		g_warning (" APP_CMD_CONFIG_CHANGED");
+		break;
 	case APP_CMD_LOW_MEMORY:
+		g_warning (" APP_CMD_LOW_MEMORY");
+		break;
 	case APP_CMD_START:
+		g_warning (" APP_CMD_START");
+		break;
 	case APP_CMD_RESUME:
+		g_warning (" APP_CMD_RESUME");
+		break;
 	case APP_CMD_SAVE_STATE:
+		g_warning (" APP_CMD_SAVE_STATE");
+		break;
 	case APP_CMD_PAUSE:
+		g_warning (" APP_CMD_PAUSE");
+		break;
 	case APP_CMD_STOP:
+		g_warning (" APP_CMD_STOP");
+		break;
 	case APP_CMD_DESTROY:
+		g_warning (" APP_CMD_DESTROY");
 		break;
 	}
 }
@@ -858,12 +890,14 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 int32_t
 MoonWindowingSystemAndroid::OnInputEvent (android_app* app, AInputEvent* aevent)
 {
+	g_warning ("MoonWindowingSystemAndroid::OnInputEvent");
 	MoonEvent *event = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (aevent);
 	if (!event)
 		return -1;
 
 	MoonWindow *window = (MoonWindow*)app->userData;
 
+	g_warning ("  Dispatching window to event");
 	event->DispatchToWindow (window);
 
 	// return 1 unconditionally for now.
@@ -898,8 +932,12 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 	state->onAppCmd = MoonWindowingSystemAndroid::OnAppCommand;
 	state->onInputEvent = MoonWindowingSystemAndroid::OnInputEvent;
 
+	g_warning("showing window");
+
 	window->Show ();
 	// FIXME do something with quit_on_window_close
+
+	g_warning("starting mainloop");
 
 	while (1) {
 		// Read all pending events.
@@ -915,6 +953,8 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 		gint32 before_poll = get_now_in_millis ();
 
+		g_warning ("sleeping for at most %d milliseconds (until next timeout)", timeout);
+
 		while ((ident = ALooper_pollAll (timeout,
 						 NULL, &events,
 						 (void**)&source)) >= 0) {
@@ -924,8 +964,10 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 				source->process(state, source);
 
 			// and exit early if we need to
-			if (state->destroyRequested != 0)
+			if (state->destroyRequested != 0) {
+				g_warning ("state->destroyRequested set, leaving mainloop");
 				return;
+			}
 
 			gint32 after_poll = get_now_in_millis ();
 
@@ -934,6 +976,7 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 				emitting_sources = true;
 				GList *l = sources;
+				int num_sources_handled = 0;
 				while (l) {
 					AndroidSource *s = (AndroidSource*)l->data;
 					if (s->skip) {
@@ -942,6 +985,7 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 					}
 					else if (s->time_remaining + delta < 0) {
 						// we should invoke it
+						num_sources_handled ++;
 						bool keep = s->InvokeSourceFunc ();
 						if (keep) {
 							s->skip = true;
@@ -962,6 +1006,7 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 					}
 				}
 				emitting_sources = false;
+				g_warning ("  emitted %d AndroidSources this mainloop iteration", num_sources_handled);
 
 				l = sources;
 				while (l) {
