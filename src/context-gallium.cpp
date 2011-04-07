@@ -684,15 +684,13 @@ GalliumContext::Project (MoonSurface  *src,
 		int x0, y0;
 
 		if (Matrix3D::IsIntegerTranslation (matrix, &x0, &y0)) {
-			cairo_surface_t *cs = src->Cairo ();
-			cairo_t         *cr = Context::Push (Cairo ());
+			cairo_matrix_t m;
 
-			cairo_translate (cr, x0, y0);
-			cairo_set_source_surface (cr, cs, x, y);
-			cairo_paint_with_alpha (cr, alpha);
-			cairo_surface_destroy (cs);
+			cairo_matrix_init_translate (&m, x0, y0);
 
-			Pop ();
+			Context::Push (Context::Transform (m));
+			Context::Blend (src, alpha, x, y);
+			Context::Pop ();
 			return;
 		}
 	}
