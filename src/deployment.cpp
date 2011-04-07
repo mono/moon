@@ -42,6 +42,8 @@ G_END_DECLS
 #endif
 #include "uri.h"
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
@@ -1982,9 +1984,7 @@ Deployment::UnrefDelayed (EventObject *obj)
 void
 Deployment::TrackObjectCreated (EventObject *obj)
 {
-#if PLUMB_ME
-	g_atomic_int_inc (&objects_created);
-#endif
+	InterlockedIncrement (&objects_created);
 
 #if OBJECT_TRACKING
 	pthread_mutex_lock (&objects_alive_mutex);
@@ -1998,9 +1998,7 @@ Deployment::TrackObjectCreated (EventObject *obj)
 void
 Deployment::TrackObjectDestroyed (EventObject *obj)
 {
-#if PLUMB_ME
-	g_atomic_int_inc (&objects_destroyed);
-#endif
+	InterlockedIncrement (&objects_destroyed);
 	
 #if OBJECT_TRACKING
 	pthread_mutex_lock (&objects_alive_mutex);

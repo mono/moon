@@ -25,6 +25,8 @@
 #include "deployment.h"
 #include "capture.h"
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 /*
@@ -1037,19 +1039,13 @@ AudioPlayer::AudioPlayer ()
 void
 AudioPlayer::ref ()
 {
-#if PLUMB_ME
-	g_atomic_int_inc (&refcount);
-#endif
+	InterlockedIncrement (&refcount);
 }
 
 void
 AudioPlayer::unref ()
 {
-#if PLUMB_ME
-	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
-#else
-	int v = 0;
-#endif
+	int v = InterlockedExchangeAdd (&refcount, -1) - 1;
 
 	if (v == 0) {
 		Dispose ();

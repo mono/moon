@@ -29,6 +29,8 @@
 #include "debug.h"
 #include "deployment.h"
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 #define AUDIO_BUFFER_SIZE (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
@@ -520,7 +522,7 @@ FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *
 	pthread_cond_init (&wait_cond, NULL);
 
 	pthread_mutex_lock (&worker_thread_mutex);
-	if (g_atomic_int_exchange_and_add (&demuxers, 1) == 0) {
+	if (InterlockedExchangeAdd (&demuxers, 1) == 0) {
 		pthread_create (&worker_thread, NULL, WorkerLoop, NULL);
 	}
 	pthread_mutex_unlock (&worker_thread_mutex);
