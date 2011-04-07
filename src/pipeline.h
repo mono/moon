@@ -1673,7 +1673,9 @@ class ExternalDemuxer : public IMediaDemuxer {
 private:
 	void *instance;
 	bool can_seek;
+#if PLUMB_ME
 	pthread_rwlock_t rwlock;
+#endif
 	CloseDemuxerCallback close_demuxer_callback;
 	GetDiagnosticAsyncCallback get_diagnostic_async_callback;
 	GetFrameAsyncCallback get_sample_async_callback;

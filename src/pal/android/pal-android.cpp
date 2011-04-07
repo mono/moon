@@ -851,7 +851,7 @@ get_now_in_millis (void)
 void
 MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window_close)
 {
-	extern android_app* state;
+	android_app* state = (android_app*) system_data;
 
 	state->userData = window;
 	state->onAppCmd = MoonWindowingSystemAndroid::OnAppCommand;
