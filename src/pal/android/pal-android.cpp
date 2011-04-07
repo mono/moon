@@ -830,6 +830,29 @@ MoonWindowingSystemAndroid::CreatePixbufLoader (const char *imageType)
 void
 MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 {
+	MoonWindow *window = (MoonWindow*)app->userData;
+
+	switch (cmd) {
+	case APP_CMD_INPUT_CHANGED:
+	case APP_CMD_INIT_WINDOW:
+	case APP_CMD_TERM_WINDOW:
+	case APP_CMD_WINDOW_RESIZED:
+		window->Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));
+		break;
+	case APP_CMD_WINDOW_REDRAW_NEEDED:
+	case APP_CMD_CONTENT_RECT_CHANGED:
+	case APP_CMD_GAINED_FOCUS:
+	case APP_CMD_LOST_FOCUS:
+	case APP_CMD_CONFIG_CHANGED:
+	case APP_CMD_LOW_MEMORY:
+	case APP_CMD_START:
+	case APP_CMD_RESUME:
+	case APP_CMD_SAVE_STATE:
+	case APP_CMD_PAUSE:
+	case APP_CMD_STOP:
+	case APP_CMD_DESTROY:
+		break;
+	}
 }
 
 int32_t
