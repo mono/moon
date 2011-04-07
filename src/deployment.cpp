@@ -579,6 +579,11 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 		errorCode = *(int*) mono_object_unbox (ret);
 	}
 	
+	// This is here to help debugging while get things fleshed out, remove it soon
+#if PLATFORM_ANDROID
+	mono_print_unhandled_exception (exc);
+#endif
+
 	// FIXME: we need to figure out what type of exception it is
 	// and map it to the right MoonError::ExceptionType enum
 	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
@@ -607,6 +612,11 @@ Deployment::ManagedExceptionToMoonError (MonoObject *exc, MoonError::ExceptionTy
 
 		errorCode = *(int*) mono_object_unbox (ret);
 	}
+
+	// This is here to help debugging while get things fleshed out, remove it soon
+#if PLATFORM_ANDROID
+	mono_print_unhandled_exception (exc);
+#endif
 
 	MoonError::FillIn (error, type, errorCode, message);
 }
