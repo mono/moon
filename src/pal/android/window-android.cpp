@@ -108,13 +108,17 @@ MoonWindowAndroid::HandleEvent (gpointer platformEvent)
 void
 MoonWindowAndroid::Show ()
 {
-	// FIXME
+	if (surface) {
+		surface->HandleUIWindowUnavailable ();
+		surface->HandleUIWindowAvailable ();
+	}
 }
 
 void
 MoonWindowAndroid::Hide ()
 {
-	// FIXME
+	if (surface)
+		surface->HandleUIWindowAvailable ();
 }
 
 void
