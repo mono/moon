@@ -50,7 +50,9 @@ ResourceDictionaryIterator::ResourceDictionaryIterator (ResourceDictionary *reso
 #ifdef HAVE_G_HASH_TABLE_ITER
 	Init ();
 #else
+#if PLUMB_ME
 	array = g_array_sized_new (false, false, sizeof (KeyValuePair), resources->array->len);
+#endif
 	g_hash_table_foreach (resources->hash, add_key_value_pair, array);
 #endif
 }

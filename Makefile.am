@@ -114,7 +114,8 @@ check-mono:
 	   echo "Your mono version is up to date"; \
 	 fi)
 	
-all-local: check-mono
+# all-local: check-mono
+all-local:
 
 dist-hook:
 	mkdir $(distdir)/icons

@@ -319,7 +319,9 @@ HttpRequest::SendAsync ()
 			}
 
 			templ = g_build_filename (dir, "XXXXXX", NULL);
+#if PLUMB_ME
 			tmpfile_fd = g_mkstemp (templ);
+#endif
 			if (tmpfile_fd == -1) {
 				char *msg = g_strdup_printf ("Could not create temporary download file %s for url %s\n", templ, GetUri ()->ToString ());
 				Failed (msg);
@@ -420,8 +422,10 @@ HttpRequest::Started (HttpResponse *response)
 	VERIFY_MAIN_THREAD;
 	LOG_DOWNLOADER ("HttpRequest::Started ()\n");
 
+#if PLUMB_ME
 	g_warn_if_fail (response != NULL);
 	g_warn_if_fail (this->response == NULL);
+#endif
 
 	if (this->response != NULL)
 		this->response->unref ();

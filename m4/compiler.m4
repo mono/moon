@@ -1,10 +1,10 @@
 AC_DEFUN([MOONLIGHT_CHECK_C_COMPILER],
 [
 	dnl add -fstack-protector-all when compiling with gcc
-	if test "x$GCC" = "xyes" ; then
-		CFLAGS="-fstack-protector-all $CFLAGS"
-		CXXFLAGS="-fstack-protector-all $CXXFLAGS"
-	fi
+	dnl if test "x$GCC" = "xyes" ; then
+	dnl	CFLAGS="-fstack-protector-all $CFLAGS"
+	dnl	CXXFLAGS="-fstack-protector-all $CXXFLAGS"
+	dnl fi
 
 	dnl check for MMX support
 	AC_COMPILE_IFELSE([

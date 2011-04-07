@@ -2280,7 +2280,6 @@ class Generator {
 		} else if (header.Contains ("pal/cocoa/")) {
 			endif = "#endif\n";
 			file.AppendLine ("#if PAL_COCOA_WINDOWING");
-		}
 		} else if (header.Contains ("pal/android/")) {
 			endif = "#endif\n";
 			file.AppendLine ("#if PAL_ANDROID_WINDOWING");

@@ -213,7 +213,9 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	if (deployment != NULL && this != deployment) {
 		deployment->ref ();
 	}
+#if PLUMB_ME
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
+#endif
 	refcount = 1;
 	events = NULL;
 	addManagedRef = NULL;
@@ -426,7 +428,11 @@ EventObject::IsAttached ()
 void
 EventObject::Resurrect ()
 {
+#if PLUMB_ME
 	int v = g_atomic_int_exchange_and_add (&refcount, 1);
+#else
+	int v = 0;
+#endif
 
 #if SANITY
 	g_assert (v >= 0); //  #if SANITY
@@ -438,7 +444,11 @@ EventObject::Resurrect ()
 void
 EventObject::ref ()
 {
+#if PLUMB_ME
 	int v = g_atomic_int_exchange_and_add (&refcount, 1);
+#else
+	int v = 0;
+#endif
 		
 #if DEBUG		
 	if (deployment != Deployment::GetCurrent () && object_type != Type::DEPLOYMENT) {
@@ -517,13 +527,19 @@ EventObject::unref ()
 		return;
 	}
 
+#if PLUMB_ME
 	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+#else
+	int v = 0;
+#endif
 	
 	// from now on we can't access any instance fields if v > 0
 	// since another thread might have unreffed and caused our destruction
 
 	if (v == 0 && events != NULL && events->emitting) {
+#if PLUMB_ME
 		g_atomic_int_exchange_and_add (&refcount, 1);
+#endif
 		unref_delayed ();
 		return;
 	}
@@ -549,7 +565,9 @@ EventObject::unref ()
 		// TODO: we should disallow resurrection, it's not thread-safe
 		// if we got resurrected and unreffed, we'd be deleted by now
 		// in which case we'll double free here.
+#if PLUMB_ME
 		v = g_atomic_int_get (&refcount);
+#endif
 		if (v == 0)
 			delete this;
 			

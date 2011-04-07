@@ -11,7 +11,6 @@
 #include "config.h"
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -409,10 +408,12 @@ MoonAppDatabase::CreateAppRecord (const Uri *origin)
 		domain = "localhost";
 	
 	do {
+#if PLUMB_ME
 		uid = g_strdup_printf ("%u.%s", g_random_int (), domain);
 		install_dir = g_build_filename (base_dir, uid, NULL);
 		if (g_mkdir_with_parents (install_dir, 0777) == 0)
 			break;
+#endif
 		
 		g_free (install_dir);
 		g_free (uid);
@@ -627,8 +628,10 @@ MoonInstallerService::InitDatabase ()
 	const char *base_dir = GetBaseInstallDir ();
 	
 	if (db == NULL) {
+#if PLUMB_ME
 		if (g_mkdir_with_parents (base_dir, 0777) == -1 && errno != EEXIST)
 			return false;
+#endif
 		
 		db = new MoonAppDatabase (base_dir);
 	}

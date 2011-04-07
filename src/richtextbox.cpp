@@ -171,12 +171,14 @@ RichTextBoxActionBackspace::RemoveCharacterFromRun (Run *run, int loc)
 
 	char *new_text = g_strdup (old_run_text);
 
+#if PLUMB_ME
 	char *p = g_utf8_prev_char (new_text + loc);
 	int length_of_char = new_text + loc - p;
 
 	memmove (p, new_text + loc, strlen (new_text + loc));
 
 	new_text[strlen (new_text) - length_of_char] = 0;
+#endif
 
 	run->SetText (new_text);
 }

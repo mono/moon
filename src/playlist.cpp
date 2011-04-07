@@ -428,6 +428,7 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 void
 PlaylistEntry::AddParams (const char *name, const char *value)
 {
+#if PLUMB_ME
 	char *uppername = g_ascii_strup (name, strlen (name));
 	if (!strcmp (uppername, "AUTHOR")) {
 		SetAuthor (value);
@@ -451,6 +452,7 @@ PlaylistEntry::AddParams (const char *name, const char *value)
 		} 
 	}
 	g_free (uppername);
+#endif
 }
 
 Uri *
@@ -1538,6 +1540,7 @@ str_match (const char *candidate, const char *tag)
 void
 PlaylistParser::on_start_element_internal_asxparser (AsxParser *parser, const char *name, GHashTable *atts)
 {
+#if PLUMB_ME
 	PlaylistParser *pp = (PlaylistParser *) parser->GetUserData ();
 
 	/*
@@ -1562,6 +1565,7 @@ PlaylistParser::on_start_element_internal_asxparser (AsxParser *parser, const ch
 
 	g_list_free (keys);
 	g_free (attr_list);
+#endif
 }
 
 void
@@ -1635,10 +1639,12 @@ parse_int (const char **pp, const char *end, int *result)
 	int res = 0;
 	bool success = false;
 
+#if PLUMB_ME
 	while (p <= end && g_ascii_isdigit (*p)) {
 		res = res * 10 + *p - '0';
 		p++;
 	}
+#endif
 
 	success = *pp != p;
 	
@@ -1662,10 +1668,12 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 
 	p = str;
 
+#if PLUMB_ME
 	if (!g_ascii_isdigit (*p)) {
 		parser->ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
 		return false;
 	}
+#endif
 
 	for (int i = 0; i < 3; i++) {
 		if (!parse_int (&p, end, &values [i])) {
@@ -1679,6 +1687,7 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 		p++;
 	}
 	
+#if PLUMB_ME
 	if (*p == '.') {
 		p++;
 		while (digits >= 0 && g_ascii_isdigit (*p)) {
@@ -1691,6 +1700,7 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 			return false;
 		}
 	}
+#endif
 	
 	switch (counter) {
 	case 1:
@@ -2203,6 +2213,7 @@ PlaylistParser::IsASX2 (MemoryBuffer *source)
 bool
 PlaylistParser::ParseASX2 ()
 {
+#if PLUMB_ME
 	int bytes_read;
 	char *buffer;
 	char *ref;
@@ -2253,6 +2264,7 @@ PlaylistParser::ParseASX2 ()
 	parent->AddEntry (entry);
 	current_entry = entry;
 	entry->unref ();
+#endif
 
 	return true;
 }

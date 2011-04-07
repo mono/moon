@@ -278,7 +278,7 @@ void
 CaptureDevice::SetPalDevice (MoonCaptureDevice *value)
 {
 	VERIFY_MAIN_THREAD;
-#if SANITY
+#if SANITY && PLUMB_ME
 	g_warn_if_fail (pal_device == NULL);
 #endif
 	pal_device = value;

@@ -19,7 +19,9 @@ namespace Moonlight {
 
 class MoonlightConfiguration {
 private:
+#if PLUMB_ME
 	GKeyFile *data;
+#endif
 	gchar *filename;
 	
 public:

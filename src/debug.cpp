@@ -32,7 +32,9 @@ G_END_DECLS
 #include <signal.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#if HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif
 #include <unistd.h>
 #include <ctype.h>
 
@@ -63,7 +65,7 @@ get_method_name_from_ip (void *ip)
 }
 #endif
 
-#if !defined(__APPLE__) && !defined(__OS_THAT_DOESNT_HATE_POSIX__)
+#if !defined(__APPLE__) && !defined(__OS_THAT_DOESNT_HATE_POSIX__) && !defined(PLATFORM_ANDROID)
 static char*
 get_method_from_ip (void *ip)
 {
@@ -791,7 +793,7 @@ static void
 print_gdb_trace ()
 {
 	/* Try to get more meaningful information using gdb */
-#if !defined(PLATFORM_WIN32)
+#if !defined(PLATFORM_WIN32) && !defined(PLATFORM_ANDROID)
 	/* From g_spawn_command_line_sync () in eglib */
 	int res;
 	int stdout_pipe [2] = { -1, -1 };
