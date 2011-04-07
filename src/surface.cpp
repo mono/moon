@@ -12,6 +12,8 @@
 
 #include "surface.h"
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 MoonSurface::MoonSurface ()
@@ -26,7 +28,7 @@ MoonSurface::~MoonSurface ()
 MoonSurface *
 MoonSurface::ref ()
 {
-	g_atomic_int_exchange_and_add (&refcount, 1);
+	InterlockedExchangeAdd (&refcount, 1);
 
 	return this;
 }
@@ -36,7 +38,7 @@ MoonSurface::unref ()
 {
 	int v;
 
-	v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	v = InterlockedExchangeAdd (&refcount, -1) - 1;
 	if (v == 0)
 		delete this;
 }
