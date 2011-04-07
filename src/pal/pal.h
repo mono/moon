@@ -126,6 +126,12 @@ typedef bool (*MoonCallback) (gpointer sender, gpointer data);
 
 typedef void (*MoonClipboardGetTextCallback) (MoonClipboard *clipboard, const char *text, gpointer data);
 
+enum MoonEventStatus {
+	MoonEventNotSupported = -1,
+	MoonEventNotHandled,
+	MoonEventHandled
+};
+
 class MoonEvent {
 public:
 	virtual ~MoonEvent () {}
@@ -135,6 +141,8 @@ public:
 	// platform interfaces which consume events can get at the actual data.
 	virtual gpointer GetPlatformEvent() = 0;
 	
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window) = 0;
+
 	virtual bool HasModifiers () { return false; }
 	
 	// FIXME: should this be separate bool getters instead (like IsShiftDown, IsCtrlDown, IsAltDown)?

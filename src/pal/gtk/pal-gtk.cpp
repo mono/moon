@@ -356,6 +356,19 @@ public:
 		}
 	}
 
+	bool IsRelease ()
+	{
+		return event->type == GDK_KEY_RELEASE;
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsRelease () ? window->GetSurface()->HandleUIKeyRelease (this) : window->GetSurface()->HandleUIKeyPress (this);
+	}
+
 private:
 	GdkEventKey *event;
 
@@ -440,6 +453,14 @@ public:
 		return event->button;
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsRelease() ? window->GetSurface()->HandleUIButtonRelease (this) : window->GetSurface()->HandleUIButtonPress (this);
+	}
+
 	// the number of clicks.  gdk provides them as event->type ==
 	// GDK_3BUTTON_PRESS/GDK_2BUTTON_PRESS/GDK_BUTTON_PRESS
 	virtual int GetNumberOfClicks ()
@@ -504,6 +525,14 @@ public:
 		return (MoonModifier) event->state;
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUIMotion (this);
+	}
+
 private:
 	GdkEventMotion *event;
 };
@@ -556,6 +585,14 @@ public:
 		return event->type == GDK_ENTER_NOTIFY;
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUICrossing (this);
+	}
+
 private:
 	GdkEventCrossing *event;
 };
@@ -585,6 +622,14 @@ public:
 	virtual bool IsIn ()
 	{
 		return event->in != 0;
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsIn () ? window->GetSurface()->HandleUIFocusIn (this) : window->GetSurface()->HandleUIFocusOut (this);
 	}
 
 private:
@@ -636,6 +681,14 @@ public:
 	virtual MoonModifier GetModifiers ()
 	{
 		return (MoonModifier) event->state;
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUIScroll (this);
 	}
 
 #define MOON_SCROLL_WHEEL_DELTA 10
