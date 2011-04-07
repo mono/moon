@@ -459,6 +459,89 @@ private:
 	float y;
 };
 
+class MoonMotionEventAndroid : public MoonMotionEvent {
+public:
+	MoonMotionEventAndroid (AInputEvent *event)
+	{
+		this->metastate = AMotionEvent_getMetaState (event);
+
+		this->pressure = AMotionEvent_getPressure (event, 0);
+
+		this->x = AMotionEvent_getX (event, 0) * AMotionEvent_getXPrecision (event);
+		this->y = AMotionEvent_getY (event, 0) * AMotionEvent_getYPrecision (event);
+	}
+
+	MoonMotionEventAndroid (int32_t metastate, float pressure, float x, float y)
+	{
+		this->metastate = metastate;
+		this->pressure = pressure;
+		this->x = x;
+		this->y = y;
+	}
+
+	virtual ~MoonMotionEventAndroid ()
+	{
+	}
+
+	virtual MoonEvent* Clone ()
+	{
+		return new MoonMotionEventAndroid (metastate, pressure, x, y);
+	}
+
+	virtual gpointer GetPlatformEvent ()
+	{
+		return NULL;
+	}
+
+	virtual Point GetPosition ()
+	{
+		return Point (x, y);
+	}
+
+	virtual double GetPressure ()
+	{
+		return pressure;
+	}
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
+	{
+		// FIXME
+	}
+
+	virtual bool HasModifiers () { return true; }
+
+	virtual MoonModifier GetModifiers ()
+	{
+		if (metastate == AMETA_NONE)
+			return (MoonModifier)0;
+
+		int mods = 0;
+
+		if (metastate & AMETA_ALT_ON)
+			mods |= MoonModifier_Meta; // why couldn't gtk just use *ALT*?  is this the right modifier? FIXME
+		if (metastate & AMETA_SHIFT_ON)
+			mods |= MoonModifier_Shift;
+		if (metastate & AMETA_SYM_ON)
+			mods |= MoonModifier_Super; // FIXME
+
+		return (MoonModifier)mods;
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUIMotion (this);
+	}
+
+private:
+	int32_t metastate;
+	float pressure;
+	float x;
+	float y;
+};
+
 /// our windowing system
 
 MoonWindowingSystemAndroid::MoonWindowingSystemAndroid (bool out_of_browser)
@@ -569,7 +652,7 @@ MoonWindowingSystemAndroid::LoadSystemColors ()
 {
 	// FIXME
 #if GTK_PAL_CODE_VERSION
-	GtkSettings *settings = gtk_settings_get_default ();
+	AndroidSettings *settings = gtk_settings_get_default ();
 	GtkWidget *widget;
 	GtkStyle *style;
 	
@@ -785,9 +868,7 @@ MoonWindowingSystemAndroid::CreateEventFromPlatformEvent (gpointer platformEvent
 		case AMOTION_EVENT_ACTION_UP:
 			return new MoonButtonEventAndroid (aevent);
 		case AMOTION_EVENT_ACTION_MOVE:
-			// notyet return new MoonMotionEventAndroid (aevent);
-			g_warning ("unsupported AMOTION_EVENT_ACTION_MOVE");
-			return NULL;
+			return new MoonMotionEventAndroid (aevent);
 		case AMOTION_EVENT_ACTION_POINTER_DOWN:
 			g_warning ("unsupported AMOTION_EVENT_ACTION_POINTER_DOWN");
 			return NULL;
@@ -953,7 +1034,7 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 		gint32 before_poll = get_now_in_millis ();
 
-		g_warning ("sleeping for at most %d milliseconds (until next timeout)", timeout);
+		//		g_warning ("sleeping for at most %d milliseconds (until next timeout)", timeout);
 
 		while ((ident = ALooper_pollAll (timeout,
 						 NULL, &events,
@@ -976,23 +1057,28 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 				emitting_sources = true;
 				GList *l = sources;
-				int num_sources_handled = 0;
+				//int num_sources_handled = 0;
+				//g_warning ("processing sources");
 				while (l) {
 					AndroidSource *s = (AndroidSource*)l->data;
 					if (s->skip) {
+						//g_warning ("skipping");
 						// we've already invoked this source or it was added while we were already emitting sources, skip it
 						l = l->next;
 					}
 					else if (s->time_remaining + delta < 0) {
 						// we should invoke it
-						num_sources_handled ++;
+						//g_warning ("invoking");
+						//num_sources_handled ++;
 						bool keep = s->InvokeSourceFunc ();
 						if (keep) {
+							//g_warning ("we're keeping it, reinsert it into the list");
 							s->skip = true;
 							s->time_remaining = s->interval;
 							sources = g_list_insert_sorted (sources, s, AndroidSource::Compare);
 						}
 						else {
+							//g_warning ("we're not keeping it, delete it");
 							delete s;
 						}
 
@@ -1002,11 +1088,13 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 					}
 					else {
 						s->time_remaining += delta;
+						if (s->time_remaining < 0)
+							s->time_remaining = 0;
 						l = l->next;
 					}
 				}
 				emitting_sources = false;
-				g_warning ("  emitted %d AndroidSources this mainloop iteration", num_sources_handled);
+				//g_warning ("  emitted %d AndroidSources this mainloop iteration", num_sources_handled);
 
 				l = sources;
 				while (l) {
