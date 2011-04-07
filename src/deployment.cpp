@@ -1894,6 +1894,7 @@ Deployment::DrainUnrefs ()
 	
 loop:
 	// Get the list of objects to unref.
+#if PLUMB_ME
 	do {
 		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
 		
@@ -1901,6 +1902,7 @@ loop:
 			break;
 		
 	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, NULL));
+#endif
 	
 	// Loop over all the objects in the list and unref them.
 	while (list != NULL) {
@@ -1913,7 +1915,9 @@ loop:
 		list = next;
 	}
 
+#if PLUMB_ME
 	list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+#endif
 	if (list != NULL)
 		goto loop;
 	
@@ -1961,10 +1965,12 @@ Deployment::UnrefDelayed (EventObject *obj)
 	item->obj = obj;
 	
 	// Prepend the list item into the list
+#if PLUMB_ME
 	do {
 		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
 		item->next = list;
 	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, item));
+#endif
 	
 	// If we created a new list instead of prepending to an existing one, add a idle tick call.
 	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
@@ -1976,7 +1982,9 @@ Deployment::UnrefDelayed (EventObject *obj)
 void
 Deployment::TrackObjectCreated (EventObject *obj)
 {
+#if PLUMB_ME
 	g_atomic_int_inc (&objects_created);
+#endif
 
 #if OBJECT_TRACKING
 	pthread_mutex_lock (&objects_alive_mutex);
@@ -1990,7 +1998,9 @@ Deployment::TrackObjectCreated (EventObject *obj)
 void
 Deployment::TrackObjectDestroyed (EventObject *obj)
 {
+#if PLUMB_ME
 	g_atomic_int_inc (&objects_destroyed);
+#endif
 	
 #if OBJECT_TRACKING
 	pthread_mutex_lock (&objects_alive_mutex);

@@ -13,7 +13,7 @@
 
 #include <config.h>
 
-#include <glib/gstdio.h>
+#include <glib.h>
 #include <fcntl.h>
 #include <errno.h>
 

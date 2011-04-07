@@ -21,21 +21,26 @@ namespace Moonlight {
 
 MoonlightConfiguration::MoonlightConfiguration ()
 {
+#if PLUMB_ME
 	filename = g_build_filename (g_get_user_config_dir (), "moonlight", "configuration", NULL);;
 	data = g_key_file_new ();
 	// We don't care about errors.
 	g_key_file_load_from_file (data, filename, (GKeyFileFlags) (G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS), NULL);
+#endif
 }
 
 MoonlightConfiguration::~MoonlightConfiguration ()
 {
+#if PLUMB_ME
 	g_key_file_free (data);
 	g_free (filename);
+#endif
 }
 
 void
 MoonlightConfiguration::Save ()
 {
+#if PLUMB_ME
 	gsize length;
 	gchar *contents = g_key_file_to_data (data, &length, NULL);
 	char *dir = g_path_get_dirname (filename);
@@ -53,51 +58,74 @@ MoonlightConfiguration::Save ()
 
 	g_free (contents);
 	g_free (dir);
+#endif
 }
 
 gchar**
 MoonlightConfiguration::GetKeys (const char *group)
 {
+#if PLUMB_ME
 	return g_key_file_get_keys (data, group, NULL, NULL);
+#else
+	return NULL;
+#endif
 }
 
 void
 MoonlightConfiguration::RemoveKey (const char *group, const char *key)
 {
+#if PLUMB_ME
 	g_key_file_remove_key (data,
 			       group,
 			       key,
 			       NULL);
+#endif
 }
 
 bool
 MoonlightConfiguration::HasKey (const char *group, const char *key)
 {
+#if PLUMB_ME
 	return (bool)g_key_file_has_key (data, group, key, NULL);
+#else
+	return FALSE;
+#endif
 }
 	
 void 
 MoonlightConfiguration::SetBooleanValue (const char *group, const char *key, gboolean value)
 {
+#if PLUMB_ME
 	g_key_file_set_boolean (data, group, key, value);
+#endif
 }
 
 void
 MoonlightConfiguration::SetStringValue (const char *group, const char *key, const char *value)
 {
+#if PLUMB_ME
 	g_key_file_set_string (data, group, key, value);
+#endif
 }
 
 char *
 MoonlightConfiguration::GetStringValue (const char *group, const char *key)
 {
+#if PLUMB_ME
 	return g_key_file_get_string (data, group, key, NULL);
+#else
+	return NULL;
+#endif
 }
 
 bool
 MoonlightConfiguration::GetBooleanValue (const char *group, const char *key)
 {
+#if PLUMB_ME
 	return (bool)g_key_file_get_boolean (data, group, key, NULL);
+#else
+	return FALSE;
+#endif
 }
 
 

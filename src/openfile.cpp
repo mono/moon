@@ -12,11 +12,10 @@
 
 #include <config.h>
 
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-
-#include <glib/gstdio.h>
 
 #include "openfile.h"
 #include "runtime.h"

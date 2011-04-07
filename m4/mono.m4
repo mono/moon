@@ -15,24 +15,24 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		[with_mono_path=$srcdir/../mono]
 	)
 
+	if test ! -d "$with_mcs_path"; then
+		AC_ERROR($with_mcs_path doesn't exist)
+	fi
+
+	if test ! -d $with_mono_path; then
+		with_mono_path=$with_mcs_path/..
+	fi
+
+	MCS_PATH=$(cd "$with_mcs_path" && pwd)
+	AC_SUBST(MCS_PATH)
+
+	MONO_PATH=$(cd "$with_mono_path" && pwd)
+	AC_SUBST(MONO_PATH)
+
 	MOON_ARG_ENABLED_BY_DEFAULT([browser-support], [Disable the browser plugin])
 	browser_support=$enableval
 	if test "x$browser_support" = xyes; then
 		MONO_REQUIRED_VERSION=$MONO_REQUIRED_BROWSER_VERSION
-
-		if test ! -d "$with_mcs_path"; then
-			AC_ERROR($with_mcs_path doesn't exist)
-		fi
-
-		if test ! -d $with_mono_path; then
-			with_mono_path=$with_mcs_path/..
-		fi
-
-		MCS_PATH=$(cd "$with_mcs_path" && pwd)
-		AC_SUBST(MCS_PATH)
-	
-		MONO_PATH=$(cd "$with_mono_path" && pwd)
-		AC_SUBST(MONO_PATH)
 
 		dnl
 		dnl path to mono-basic checkout
@@ -75,8 +75,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			], [
 				AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
 			])
-		elif test "x$with_pal" = "xcocoa"; then
-			dnl FIXME
+		else
 			AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
 		fi
 	else

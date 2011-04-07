@@ -664,7 +664,9 @@ Glyphs::SetIndicesInternal (const char *in)
 				inptr++;
 			
 			if (*inptr != ',') {
+#if PLUMB_ME
 				value = g_ascii_strtod (inptr, &end);
+#endif
 				if ((value == 0.0 || value == HUGE_VAL || value == -HUGE_VAL) && errno != 0) {
 					// invalid advance or offset
 					d(print_parse_error (in, inptr, strerror (errno)));
@@ -979,10 +981,12 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		const char *str = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		g_free (text);
 		
+#if PLUMB_ME
 		if (str != NULL)
 			text = g_utf8_to_ucs4_fast (str, -1, NULL);
 		else
 			text = NULL;
+#endif
 		
 		dirty = true;
 	} else if (args->GetId () == Glyphs::IndicesProperty) {

@@ -549,6 +549,7 @@ FloatTryParse (const char *str, double *val)
 	}
 	
 	/* integral part of the decimal number */
+#if PLUMB_ME
 	while (g_ascii_isdigit (*vptr))
 		vptr++;
 	
@@ -600,6 +601,7 @@ FloatTryParse (const char *str, double *val)
 		if ((vptr - exponent) > (2 + sign))
 			return false;
 	}
+#endif
 	
 	/* keep track of the length of the decimal number */
 	len = vptr - inptr;
@@ -613,6 +615,7 @@ FloatTryParse (const char *str, double *val)
 		return false;
 	}
 	
+#if PLUMB_ME
 	if (decimal && (locale = localeconv ()) && strcmp (locale->decimal_point, ".") != 0) {
 		/* locale doesn't use '.' as decimal point so we need to munge
 		 * the string into the locale's formatting */
@@ -629,6 +632,7 @@ FloatTryParse (const char *str, double *val)
 		
 		inptr = buf;
 	}
+#endif
 	
 	errno = 0;
 	f = strtof (inptr, &inend);

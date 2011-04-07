@@ -202,7 +202,9 @@ Context::Context ()
 {
 	cache = g_hash_table_new (g_direct_hash, g_direct_equal);
 
+#if PLUMB_ME
 	g_assert (posix_memalign ((void **)(&rgb_uv), 16, 96) == 0);
+#endif
 	have_mmx = CPU::HaveMMX ();
 	have_sse2 = CPU::HaveSSE2 ();
 }
@@ -219,7 +221,9 @@ Context::Context (MoonSurface *surface)
 
 	cache = g_hash_table_new (g_direct_hash, g_direct_equal);
 
+#if PLUMB_ME
 	g_assert (posix_memalign ((void **)(&rgb_uv), 16, 96) == 0);
+#endif
 	have_mmx = CPU::HaveMMX ();
 	have_sse2 = CPU::HaveSSE2 ();
 }
@@ -431,10 +435,12 @@ Context::BlitYV12 (unsigned char *data[],
 		rgb_stride += 64 - remain;
 	}
 
+#if PLUMB_ME
 	if (posix_memalign ((void **) (&rgb_buffer), 16, r.height * rgb_stride)) {
 		g_warning ("Could not allocate memory for video RGB buffer");
 		return;
 	}
+#endif
 
 	YUVConverter::YV12ToBGRA (data,
 				  stride,
