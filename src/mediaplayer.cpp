@@ -390,13 +390,11 @@ MediaPlayer::SetVideoBufferSize (gint32 width, gint32 height)
 		LOG_MEDIAPLAYER ("MediaPlayer::SetVideoBufferSize (): creating new buffer.\n");
 		free (rgb_buffer);
 		// for conversion to rgb32 format needed for rendering with 16 byte alignment
-#if PLUMB_ME
 		if (posix_memalign ((void **)(&rgb_buffer), 16, height * stride)) {
 			rgb_buffer = NULL;
 			g_warning ("Could not allocate memory for video RGB buffer");
 			return;
 		}	
-#endif
 		memset (rgb_buffer, 0, height * stride);
 		
 		buffer_width = width;

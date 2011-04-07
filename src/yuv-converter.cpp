@@ -364,10 +364,8 @@ YUVConverter::YUVConverter (Media* media, VideoStream* stream) : IImageConverter
 	have_mmx = CPU::HaveMMX ();
 	have_sse2 = CPU::HaveSSE2 ();
 
-#if PLUMB_ME
 	if (posix_memalign ((void **)(&rgb_uv), 16, 96))
 		rgb_uv = NULL;
-#endif
 }
 
 YUVConverter::~YUVConverter ()
@@ -394,12 +392,10 @@ YUVConverter::Open ()
 MediaResult
 YUVConverter::Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride [])
 {
-#if PLUMB_ME
 	if (rgb_uv == NULL && posix_memalign ((void **)(&rgb_uv), 16, 96) != 0) {
 		ReportErrorOccurred ("Could not allocate memory for YUVConverter");
 		return MEDIA_FAIL;
 	}
-#endif
 
 	YV12ToBGRA (src,
 		    srcStride,
