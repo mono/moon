@@ -740,7 +740,7 @@ UIElementCollection::ResortByZIndex ()
 		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement (types);
 	
 	if (array->len > 1)
-		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
+		MergeSort (z_sorted->pdata, z_sorted->len, sizeof (void *), UIElementZIndexComparer);
 }
 
 bool
@@ -985,7 +985,7 @@ MultiScaleSubImageCollection::ResortByZIndex ()
 		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsMultiScaleSubImage (types);
 	
 	if (array->len > 1)
-		g_ptr_array_sort (z_sorted, MultiScaleSubImageZIndexComparer);
+		MergeSort (z_sorted->pdata, z_sorted->len, sizeof (void *), MultiScaleSubImageZIndexComparer);
 }
 
 bool

@@ -61,6 +61,8 @@ G_GNUC_INTERNAL void g_ptr_array_insert (GPtrArray *array, guint index, void *it
 
 G_GNUC_INTERNAL void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
+void MergeSort (void *base, size_t nmemb, size_t size, GCompareFunc compare);
+
 enum CanonMode {
 	CanonModeNone,
 	CanonModeXap,

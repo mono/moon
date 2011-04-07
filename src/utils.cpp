@@ -415,6 +415,96 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 	array->pdata[index] = item;
 }
 
+static void
+msort (void *array, void *buf, size_t low, size_t high, size_t size, GCompareFunc compare)
+{
+	char *al, *am, *ah, *ls, *hs, *lo, *hi, *b;
+	size_t copied = 0;
+	size_t mid;
+	
+	mid = MID (low, high);
+	
+	if (mid + 1 < high)
+		msort (array, buf, mid + 1, high, size, compare);
+	
+	if (mid > low)
+		msort (array, buf, low, mid, size, compare);
+	
+	ah = ((char *) array) + ((high + 1) * size);
+	am = ((char *) array) + ((mid + 1) * size);
+	al = ((char *) array) + (low * size);
+	
+	b = (char *) buf;
+	lo = al;
+	hi = am;
+	
+	do {
+		ls = lo;
+		hs = hi;
+		
+		if (lo > al || hi > am) {
+			/* our last loop already compared lo & hi and found lo <= hi */
+			lo += size;
+		}
+		
+		while (lo < am && compare (lo, hi) <= 0)
+			lo += size;
+		
+		if (lo < am) {
+			/* our last compare tells us hi < lo */
+			hi += size;
+			
+			while (hi < ah && compare (hi, lo) < 0)
+				hi += size;
+			
+			if (lo > ls) {
+				memcpy (b, ls, lo - ls);
+				copied += (lo - ls);
+				b += (lo - ls);
+			}
+			
+			memcpy (b, hs, hi - hs);
+			copied += (hi - hs);
+			b += (hi - hs);
+		} else if (copied) {
+			memcpy (b, ls, lo - ls);
+			copied += (lo - ls);
+			b += (lo - ls);
+			
+			/* copy everything we needed to re-order back into array */
+			memcpy (al, buf, copied);
+			return;
+		} else {
+			/* everything already in order */
+			return;
+		}
+	} while (hi < ah);
+	
+	if (lo < am)
+		memcpy (b, lo, am - lo);
+	
+	memcpy (al, buf, ah - al);
+}
+
+void
+MergeSort (void *base, size_t nmemb, size_t size, GCompareFunc compare)
+{
+	void *tmp;
+	
+	if (nmemb < 2)
+		return;
+	
+	if (!(tmp = malloc (nmemb * size))) {
+		/* fall back to using qsort() and hope & pray that the results are "stable" */
+		qsort (base, nmemb, size, compare);
+		return;
+	}
+	
+	msort (base, tmp, 0, nmemb - 1, size, compare);
+	
+	free (tmp);
+}
+
 #define UINTTRYPARSE(bits, max)                                         \
 bool                                                                    \
 UInt##bits##TryParse (const char *str, guint##bits *retval, int *err)   \
