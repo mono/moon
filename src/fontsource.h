@@ -27,12 +27,12 @@ enum FontSourceType {
 
 /* @IncludeInKinds */
 struct FontSource {
-	FontSourceType type;
-
+	// Do not change the order of the fields, they are mirrored in managed
 	union {
 		ManagedStreamCallbacks *stream;
 		GlyphTypeface *typeface;
 	} source;
+	FontSourceType type;
 
 	bool operator== (const FontSource& f) const
 	{
