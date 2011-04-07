@@ -1,13 +1,5 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# analogous to System.Window's EventObjectToggleRef
-+SC-T: Mono.ScriptObjectToggleRef
-
-# keep low-level (Mono.*) types as [SecurityCritical] and validate their callers
-+SC-T: Mono.ScriptObjectHelper
-+SC-T: Mono.ScriptObjectEventInfo
-+SC-T: System.Windows.Browser.ManagedObject/EventOps
-
 # members of ScriptObject that need SC
 +SC-M: System.Object System.Windows.Browser.ScriptObject::Invoke(System.Reflection.MethodInfo,System.Object,System.Object[])
 +SC-M: System.Void System.Windows.Browser.ScriptObject::Invoke(System.String,System.Object[],Mono.Value&)
@@ -17,10 +9,9 @@
 +SC-M: System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
 +SC-M: System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
 
-+SC-M: System.Void System.Windows.Browser.ScriptObject::AddEventHandler(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
-+SC-M: System.Void System.Windows.Browser.ScriptObject::RemoveEventHandler(System.String,System.Windows.Browser.ScriptObject)
-
 # play it safe with our unsafe methods
 +SC-M: System.Windows.Browser.BrowserInformation System.Windows.Browser.HtmlPage::get_UnsafeBrowserInformation()
 +SC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::get_UnsafeWindow()
 
+# calls Activator.CreateInstance to create System.Windows.Browser.ManagedObject+ListOps`1
++SC-M: System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
