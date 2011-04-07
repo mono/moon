@@ -227,6 +227,63 @@ GLContext::SetupTexCoordData ()
 }
 
 void
+GLContext::SetupTexCoordData (const double *matrix,
+			      double       du,
+			      double       dv)
+{
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	double          p[4][4];
+	int             i;
+
+	p[0][0] = 0.0;
+	p[0][1] = 0.0;
+	p[0][2] = 0.0;
+	p[0][3] = 1.0;
+
+	p[1][0] = r.width;
+	p[1][1] = 0.0;
+	p[1][2] = 0.0;
+	p[1][3] = 1.0;
+
+	p[2][0] = r.width;
+	p[2][1] = r.height;
+	p[2][2] = 0.0;
+	p[2][3] = 1.0;
+
+	p[3][0] = 0.0;
+	p[3][1] = r.height;
+	p[3][2] = 0.0;
+	p[3][3] = 1.0;
+
+	for (i = 0; i < 4; i++)
+		Matrix3D::TransformPoint (p[i], matrix, p[i]);
+
+	texcoords[0][0] = p[0][0] * du;
+	texcoords[0][1] = p[0][1] * dv;
+	texcoords[0][2] = p[0][2];
+	texcoords[0][3] = p[0][3];
+
+	texcoords[1][0] = p[1][0] * du;
+	texcoords[1][1] = p[1][1] * dv;
+	texcoords[1][2] = p[1][2];
+	texcoords[1][3] = p[1][3];
+
+	texcoords[2][0] = p[2][0] * du;
+	texcoords[2][1] = p[2][1] * dv;
+	texcoords[2][2] = p[2][2];
+	texcoords[2][3] = p[2][3];
+
+	texcoords[3][0] = p[3][0] * du;
+	texcoords[3][1] = p[3][1] * dv;
+	texcoords[3][2] = p[3][2];
+	texcoords[3][3] = p[3][3];
+ 
+ 	ms->unref ();
+}
+
+void
 GLContext::Push (Group extents)
 {
 	g_warning ("GLContext::Push has been called. The derived class should have overridden it.");

@@ -113,6 +113,9 @@ protected:
 				      double       height);
 
 	void SetupTexCoordData ();
+	void SetupTexCoordData (const double *matrix,
+				double       du,
+				double       dv);
 
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
