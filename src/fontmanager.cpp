@@ -16,8 +16,6 @@
 #include <errno.h>
 #include <ctype.h>
 
-#if HAVE_FREETYPE2
-
 #include "fontmanager.h"
 #include "zip/unzip.h"
 #include "debug.h"
@@ -25,6 +23,7 @@
 #include "list.h"
 #include "factory.h"
 
+#if HAVE_FREETYPE2
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
 #include FT_TRUETYPE_TABLES_H
@@ -2074,4 +2073,172 @@ FontManager::GetSystemGlyphTypefaces ()
 
 };
 
+#else
+namespace Moonlight {
+
+bool
+FontWeightIsBold (FontWeights weight)
+{
+	return FALSE;
+}
+
+FontFace::~FontFace ()
+{
+}
+
+void
+FontFace::ref ()
+{
+}
+
+void
+FontFace::unref ()
+{
+}
+
+void
+FontFace::GetExtents (double size, bool gapless, FontFaceExtents *extents)
+{
+}
+
+bool
+FontFace::IsBold ()
+{
+	return FALSE;
+}
+
+bool
+FontFace::IsItalic ()
+{
+	return FALSE;
+}
+
+bool
+FontFace::LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations simulate)
+{
+	return FALSE;
+}
+
+guint32
+FontFace::GetCharIndex (gunichar unichar)
+{
+	return 0;
+}
+
+guint32
+FontFace::GetCharFromIndex (gunichar unichar)
+{
+	return 0;
+}
+
+FontManager::FontManager ()
+{
+}
+
+FontManager::~FontManager ()
+{
+}
+
+GlyphTypefaceCollection *
+FontManager::GetSystemGlyphTypefaces ()
+{
+	return NULL;
+}
+
+FontFace *
+FontManager::OpenFont (const char *name, FontStretches stretch, FontWeights weight, FontStyles style)
+{
+	return NULL;
+}
+
+FontFace *
+FontManager::OpenFont (const char *name, int index)
+{
+	return NULL;
+}
+
+FontFace *
+FontManager::OpenFont (const GlyphTypeface *typeface)
+{
+	return NULL;
+}
+
+void
+FontManager::AddResource (const char *resource_id, const char *path)
+{
+}
+
+FontResource *
+FontManager::AddResource (ManagedStreamCallbacks *stream)
+{
+	return NULL;
+}
+
+GlyphTypeface::GlyphTypeface (const char *path, int index, FontFace *face)
+{
+}
+
+GlyphTypeface::~GlyphTypeface ()
+{
+}
+
+GlyphTypeface::GlyphTypeface (const GlyphTypeface *typeface)
+{
+}
+
+const char *
+GlyphTypeface::GetFontUri () const
+{
+	return NULL;
+}
+
+double
+GlyphTypeface::GetVersion () const
+{
+	return 0.0;
+}
+
+FontResource::FontResource (const FontResource& resource)
+{
+}
+
+FontResource::FontResource (const GlyphTypeface *typeface)
+{
+}
+
+FontResource::FontResource (const char *id)
+{
+}
+
+FontResource::~FontResource ()
+{
+}
+
+bool
+FontResource::operator== (const FontResource &v) const
+{
+	return TRUE;
+}
+
+GlyphTypefaceCollection::GlyphTypefaceCollection ()
+{
+}
+
+bool
+GlyphTypefaceCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	return FALSE;
+}
+
+void
+GlyphTypefaceCollection::RemovedFromCollection (Value *value, bool is_value_safe)
+{
+}
+
+void
+GlyphTypefaceCollection::OnIsAttachedChanged (bool attached)
+{
+}
+
+};
 #endif
