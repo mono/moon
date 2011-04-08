@@ -77,7 +77,8 @@ MoonWindowAndroid::GetPlatformWindow ()
 void
 MoonWindowAndroid::Resize (int width, int height)
 {
-	// FIXME
+	if (surface)
+		surface->HandleUIWindowAllocation (true);
 }
 
 void
@@ -179,13 +180,19 @@ MoonWindowAndroid::GetTop ()
 void
 MoonWindowAndroid::SetWidth (double width)
 {
-	// FIXME
+	if (this->width == width)
+		return;
+	this->width = width;
+	Resize (width, height);
 }
 
 void
 MoonWindowAndroid::SetHeight (double height)
 {
-	// FIXME
+	if (this->height == height)
+		return;
+	this->height = height;
+	Resize (width, height);
 }
 
 void

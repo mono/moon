@@ -922,6 +922,7 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 	case APP_CMD_INIT_WINDOW:
 		g_warning (" APP_CMD_INIT_WINDOW");
 		ANativeWindow_setBuffersGeometry(app->window, 0, 0, WINDOW_FORMAT_RGBA_8888);
+		window->Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));
 		break;
 	case APP_CMD_TERM_WINDOW:
 		g_warning (" APP_CMD_TERM_WINDOW");
