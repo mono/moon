@@ -272,9 +272,14 @@ MoonWindowAndroid::Paint (gpointer data)
 	g_warning ("Lock");
 	if (ANativeWindow_lock (app->window, &buffer, NULL) < 0)
 		return;
-
+	g_warning ("buffer = (%d,%d) surface = (%d,%d)", buffer.width, buffer.height, width,height);
 	Region *region = new Region (Rect (0, 0, buffer.width, buffer.height));
-
+	if (width != buffer.width || height != buffer.height) {
+		width = buffer.width;
+		height = buffer.height;		
+		CreateCairoContext();
+		Resize (buffer.width, buffer.height);
+	}
 	pixels = (unsigned char *) buffer.bits;
 
 	g_warning ("Blit");
