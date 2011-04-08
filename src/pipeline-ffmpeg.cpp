@@ -532,7 +532,7 @@ void
 FfmpegDemuxer::Dispose ()
 {
 	pthread_mutex_lock (&worker_thread_mutex);
-	if (g_atomic_int_dec_and_test (&demuxers)) {
+	if (InterlockedDecrement (&demuxers) == 0) {
 		/* No more demuxers, stop the thread */
 		pthread_mutex_lock (&worker_mutex);
 		worker_list.Clear (true);
