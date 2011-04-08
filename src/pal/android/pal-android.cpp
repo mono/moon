@@ -945,6 +945,7 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 		break;
 	case APP_CMD_CONFIG_CHANGED:
 		g_warning (" APP_CMD_CONFIG_CHANGED");
+		window->Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));	
 		break;
 	case APP_CMD_LOW_MEMORY:
 		g_warning (" APP_CMD_LOW_MEMORY");
