@@ -3593,9 +3593,8 @@ expand_property_path (XamlParserInfo *p, PropertyPath *path)
 			
 			char *uri = g_strdup_printf ("'%s'", Type::Find (p->deployment, info->GetKind ())->GetName ());
 
-#if PLUMB_ME
 			res = g_string_insert (res, s + 1, uri);
-#endif
+
 			i = s + 1 + strlen (uri);
 			len = strlen (res->str);
 
