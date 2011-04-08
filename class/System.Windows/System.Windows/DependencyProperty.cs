@@ -163,7 +163,7 @@ namespace System.Windows {
 				v = new Value { k = types.TypeToKind (propertyType), IsNull = true };
 				default_value = null;
 			} else {
-				v = Value.FromObject (default_value, false);
+				v = Value.FromObject (default_value, true);
 			}
 
 			IntPtr handle;
@@ -394,12 +394,6 @@ namespace System.Windows {
 					attached = NativeMethods.dependency_property_is_attached (native);
 				return attached.Value;
 			}
-		}
-
-		private bool boxValueTypes = true;
-		internal bool BoxValueTypes {
-			get { return boxValueTypes; }
-			set { boxValueTypes = value; }
 		}
 
 		internal bool IsNullable {

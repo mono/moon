@@ -254,7 +254,7 @@ namespace Mono {
 				throw new ArgumentException (string.Format ("The DependencyProperty '{3}.{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name, dp.DeclaringType.FullName));
 			}
 				                     
-			using (var val = Value.FromObject (value, dp.PropertyType == typeof(object) && dp.BoxValueTypes)) {
+			using (var val = Value.FromObject (value, dp is CustomDependencyProperty)) {
 				var v = val;
 				NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
 			}

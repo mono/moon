@@ -1664,7 +1664,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ManagedSameReference ()
 		{
 			string s = "Hi";
@@ -1796,8 +1795,22 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("We don't preserve the object reference")]
-		public void GetMetadata_DefaultValueIsSameObject_ValueType ()
+		public void GetMetadata_DefaultValueIsSameObject_ValueType_CoreDP ()
+		{
+			var o = FrameworkElement.WidthProperty.GetMetadata (typeof (FrameworkElement)).DefaultValue;
+			var dp = FrameworkElement.WidthProperty;
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.AreNotSame (o, md.DefaultValue, "#1");
+			Assert.AreNotSame (o, new Rectangle ().GetValue (dp), "#2");
+
+			object val = new Rectangle ().GetValue (dp);
+			Assert.IsInstanceOfType<double> (val, "#3");
+			Assert.IsTrue (double.IsNaN ((double) val), "#4");
+		}
+
+		[TestMethod]
+		public void GetMetadata_DefaultValueIsSameObject_ValueType_CustomDP ()
 		{
 			object o = 5;
 			var dp = DependencyProperty.Register ("aaaaaaa9", typeof (int), typeof (FrameworkElement), new PropertyMetadata (o));

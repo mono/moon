@@ -35,15 +35,6 @@ namespace System.Windows {
 		internal static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.SETTER, "Value", typeof (object));
 		internal static readonly DependencyProperty ConvertedValueProperty = DependencyProperty.Lookup (Kind.SETTER, "ConvertedValue", typeof (object));
 
-		static Setter ()
-		{
-			// special behavior here - we need our
-			// converted values to be unboxed (if they can
-			// be) so they can be fetched from unmanaged
-			// code.
-			ConvertedValueProperty.BoxValueTypes = false;
-		}
-
 		public Setter (DependencyProperty property, object value)
 		{
 			Property = property;

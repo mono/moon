@@ -452,18 +452,8 @@ namespace Mono {
 			Value value = new Value ();
 			
 			unsafe {
-				if (v is ValueType) {
+				if (box_value_types && (v is ValueType || v is string)) {
 					value.boxed_valuetype = GCHandle.ToIntPtr (GCHandle.Alloc (v));
-				}
-				// get rid of this case right away.
-				if (box_value_types && v.GetType().IsValueType) {
-					//Console.WriteLine ("Boxing a value of type {0}:", v.GetType());
-
-					GCHandle handle = GCHandle.Alloc (v);
-					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
-					value.IsGCHandle = true;
-					value.u.p = GCHandle.ToIntPtr (handle);
-					return value;
 				}
 
 				if (v is IEasingFunction && !(v is EasingFunctionBase))
