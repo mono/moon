@@ -391,9 +391,10 @@ GLContext::GetVertexShader ()
 	const GLchar *vShaderStr[] = {
 		"attribute vec4 InVertex;",
 		"attribute vec4 InTexCoord0;",
+		"varying vec4 v_TexCoord0;",
 		"void main()",
 		"{",
-		"  gl_TexCoord[0] = InTexCoord0;",
+		"  v_TexCoord0 = InTexCoord0;",
 		"  gl_Position = InVertex;",
 		"}"
 	};
@@ -504,6 +505,7 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		return project_program[alpha][yuv];
 
 	s = g_string_new ("uniform sampler2D sampler0;");
+	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
 	if (yuv) {
 		g_string_sprintfa (s, "uniform sampler2D sampler1;");
 		g_string_sprintfa (s, "uniform sampler2D sampler2;");
@@ -514,9 +516,9 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 	g_string_sprintfa (s, "{");
 	if (yuv) {
 		g_string_sprintfa (s, "float r, g, b, y, u, v;");
-		g_string_sprintfa (s, "y = texture2DProj(sampler0, gl_TexCoord[0].xyzw).r;");
-		g_string_sprintfa (s, "u = texture2DProj(sampler1, gl_TexCoord[0].xyzw).r;");
-		g_string_sprintfa (s, "v = texture2DProj(sampler2, gl_TexCoord[0].xyzw).r;");
+		g_string_sprintfa (s, "y = texture2DProj(sampler0, v_TexCoord0.xyzw).r;");
+		g_string_sprintfa (s, "u = texture2DProj(sampler1, v_TexCoord0.xyzw).r;");
+		g_string_sprintfa (s, "v = texture2DProj(sampler2, v_TexCoord0.xyzw).r;");
 		g_string_sprintfa (s, "y = 1.1643 * (y - 0.0625);");
 		g_string_sprintfa (s, "u = u - 0.5;");
 		g_string_sprintfa (s, "v = v - 0.5;");
@@ -526,7 +528,7 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
 	}
 	else {
-		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, gl_TexCoord[0].xyzw)");
+		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
 	}
 	if (alpha)
 		g_string_sprintfa (s, " * alpha");
@@ -667,11 +669,12 @@ GLContext::GetConvolveProgram (unsigned size)
 		return convolve_program[size];
 
 	s = g_string_new ("uniform sampler2D sampler0;");
+	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
 	g_string_sprintfa (s, "uniform vec4 InFilter[%d];", (size + 1) * 2);
 	g_string_sprintfa (s, "void main()");
 	g_string_sprintfa (s, "{");
 	g_string_sprintfa (s, "vec4 tex, sum, off;");
-	g_string_sprintfa (s, "tex = gl_TexCoord[0] + InFilter[0];");
+	g_string_sprintfa (s, "tex = v_TexCoord0 + InFilter[0];");
 
 	if (size) {
 		g_string_sprintfa (s, "off = tex + InFilter[2];");
@@ -876,11 +879,12 @@ GLContext::GetDropShadowProgram (unsigned size)
 	s = g_string_new ("uniform sampler2D sampler0;");
 	g_string_sprintfa (s, "uniform sampler2D sampler1;");
 	g_string_sprintfa (s, "uniform vec4 InFilter[%d];", (size + 1) * 2);
+	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
 	g_string_sprintfa (s, "void main()");
 	g_string_sprintfa (s, "{");
 	g_string_sprintfa (s, "vec4 tex, sum, off, img;");
-	g_string_sprintfa (s, "img = texture2D(sampler0, gl_TexCoord[0].xy);");
-	g_string_sprintfa (s, "tex = gl_TexCoord[0];");
+	g_string_sprintfa (s, "img = texture2D(sampler0, v_TexCoord0.xy);");
+	g_string_sprintfa (s, "tex = v_TexCoord0;");
 
 	if (size > 0) { 
 		g_string_sprintfa (s, "off = tex + InFilter[2];");
@@ -1215,7 +1219,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 						break;
 					case D3DSPR_TEXTURE:
 						sprintf (src_reg[D3DSPR_TEXTURE][dcl.reg.regnum],
-							 "gl_TexCoord[0]");
+							 "v_TexCoord0");
 					default:
 						break;
 				}
@@ -1302,6 +1306,8 @@ GLContext::GetEffectProgram (PixelShader *ps)
 	g_string_sprintfa (s,
 			   "uniform vec4 InConstant[%d];\n",
 			   MAX_CONSTANTS);
+
+	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
 
 	if (n_imm)
 		g_string_sprintfa (s, "uniform vec4 imm[%d];\n", n_imm);
