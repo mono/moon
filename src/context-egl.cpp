@@ -47,12 +47,18 @@ MoonEGLContext::Initialize ()
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 		EGL_NONE
 	};
+
+	const EGLint context_attribs[] = {
+		EGL_CONTEXT_CLIENT_VERSION, 2,
+		EGL_NONE
+	};
+
 	EGLint numConfigs;
 	EGLConfig config;
 
 	eglChooseConfig(display, attribs, &config, 1, &numConfigs);
 
-	context = eglCreateContext(display, config, NULL, NULL);
+	context = eglCreateContext(display, config, NULL, context_attribs);
 
 	if (eglMakeCurrent (display, surface, surface, context) == EGL_FALSE) {
 		g_warning ("Failed to make MoonEGL context current");
