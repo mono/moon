@@ -1,4 +1,4 @@
-SUBDIRS=SecurityAttributes
+SUBDIRS=
 
 LINKER = monolinker
 #GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
@@ -11,19 +11,6 @@ TUNER_DESCS =	\
 	$(srcdir)/Descriptors/System.ServiceModel.xml	\
 	$(srcdir)/Descriptors/System.Core.xml	\
 	$(srcdir)/Descriptors/a11y.xml
-
-SECURITY_ATTRIBUTES_INFO = \
-	SecurityAttributes/mscorlib.secattr \
-	SecurityAttributes/System.secattr \
-	SecurityAttributes/System.Core.secattr \
-	SecurityAttributes/System.Net.secattr \
-	SecurityAttributes/System.Runtime.Serialization.secattr \
-	SecurityAttributes/System.ServiceModel.secattr \
-	SecurityAttributes/System.ServiceModel.Web.secattr \
-	SecurityAttributes/System.Windows.Browser.secattr \
-	SecurityAttributes/System.Windows.secattr \
-	SecurityAttributes/System.Xml.secattr \
-	SecurityAttributes/Microsoft.VisualBasic.secattr
 
 MCS_ASSEMBLIES = \
 	mscorlib	\
@@ -84,18 +71,17 @@ TUNER_FLAGS =	\
 	-c link		\
 	-b true		\
 	-g true		\
-	-m secattrs SecurityAttributes	\
 	-m throw_on_visibility_error true	\
 	-m display_internalized false
 
 TUNER_STEPS = \
-	Mono.Tuner.InjectSecurityAttributes,Mono.Tuner:OutputStep	\
 	Mono.Tuner.AdjustVisibility,Mono.Tuner:OutputStep	\
 	Mono.Tuner.PrintStatus,Mono.Tuner:OutputStep	\
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
 $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll: $(wildcard $(MCS_PATH)/tools/tuner/Mono.Tuner/*.cs)
+	mkdir -p $(top_srcdir)/class/lib/tuner/
 	cd $(MCS_PATH)/tools/tuner && mcs -r:System.dll -r:System.Core.dll -r:System.Xml.dll -r:monolinker.exe -r:`pkg-config --variable=Libraries cecil` -target:library -out:$(PWD)/$@ @$(MCS_PATH)/tools/tuner/Mono.Tuner.dll.sources -debug:full
 
 if HAVE_MONO_BASIC
@@ -109,7 +95,7 @@ working.stamp: $(INPUT_FILES)
 	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb
 	touch $(WORKING_FILES) working.stamp
 
-output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO) $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll
+output.stamp: working.stamp $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll
 	MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i $(srcdir)/../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)

@@ -3,7 +3,7 @@ assembly = System.Windows.Browser
 if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
 assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
-sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
+sl_secattr = ../SecurityAttributes/$(assembly).secattr
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
@@ -93,9 +93,8 @@ LINKER_FLAGS =	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
 
-$(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
+$(assemblysl): $(assemblysl_raw) 
+	cp $(assemblysl_raw) $(assemblysl)
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:DESKTOP -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \

@@ -127,7 +127,6 @@
 +SC-T: System.Runtime.Serialization.Formatters.Binary.MessageFormatter
 +SC-T: System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata
 +SC-T: System.Runtime.Serialization.Formatters.Binary.TypeMetadata
-+SC-T: System.Runtime.Serialization.FormatterServices
 +SC-T: System.Runtime.Serialization.ObjectIDGenerator
 +SC-T: System.Threading.Mutex
 
@@ -172,7 +171,6 @@
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::.ctor(System.Runtime.Remoting.Messaging.IMethodCallMessage,System.Runtime.Remoting.Messaging.CADMethodReturnMessage)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::InitMethodProperty(System.String,System.Object)
-+SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodResponse::get_MethodBase()
 
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Remoting.Messaging.CADMethodCallMessage)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::InitMethodProperty(System.String,System.Object)
@@ -180,7 +178,15 @@
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Remoting.Messaging.Header[])
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::CopyFrom(System.Runtime.Remoting.Messaging.IMethodMessage)
-+SC-M: System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodCall::get_MethodBase()
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.MethodCall::get_HasVarArgs()
++SC-M: System.String System.Runtime.Remoting.Messaging.MethodCall::GetArgName(System.Int32)
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.MethodCall::get_Properties()
+
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ConstructionCall::get_Properties()
+
++SC-M: System.Boolean System.Runtime.Remoting.Messaging.ErrorMessage::get_HasVarArgs()
++SC-M: System.String System.Runtime.Remoting.Messaging.ErrorMessage::GetArgName(System.Int32)
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ErrorMessage::get_Properties()
 
 +SC-M: System.Boolean System.Runtime.Remoting.Messaging.MethodResponse::get_HasVarArgs()
 +SC-M: System.Int32 System.Runtime.Remoting.Messaging.MethodResponse::get_OutArgCount()
@@ -189,21 +195,20 @@
 +SC-M: System.Object System.Runtime.Remoting.Messaging.MethodResponse::GetOutArg(System.Int32)
 +SC-M: System.String System.Runtime.Remoting.Messaging.MethodResponse::GetOutArgName(System.Int32)
 
-+SC-M: System.Void System.Runtime.Remoting.Messaging.ReturnMessage::.ctor(System.Object,System.Object[],System.Int32,System.Runtime.Remoting.Messaging.LogicalCallContext,System.Runtime.Remoting.Messaging.IMethodCallMessage)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.ReturnMessage::.ctor(System.Exception,System.Runtime.Remoting.Messaging.IMethodCallMessage)
 
 +SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::InternalGetTransparentProxy(System.String)
 +SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::PrivateInvoke(System.Runtime.Remoting.Proxies.RealProxy,System.Runtime.Remoting.Messaging.IMessage,System.Exception&,System.Object[]&)
 
++SC-M: System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)
+
 +SC-M: System.Void System.Runtime.Remoting.ObjRef::.ctor()
-+SC-M: System.Object System.Runtime.Remoting.ObjRef::GetRealObject(System.Runtime.Serialization.StreamingContext)
 +SC-M: System.Void System.Runtime.Remoting.ObjRef::UpdateChannelInfo()
 
 +SC-M: System.Void System.Resources.ResourceReader::.ctor(System.IO.Stream)
 +SC-M: System.Void System.Resources.ResourceReader::.ctor(System.String)
 +SC-M: System.Object System.Resources.ResourceReader::ReadNonPredefinedValue(System.Type)
 +SC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceReader::ResourceValueAsStream(System.String,System.Int32)
-+SC-M: System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey6::<>m__3(System.Object,System.EventArgs)
 +SC-M: System.Object System.Resources.ResourceReader::ReadValueVer2(System.Int32)
 +SC-M: System.Object System.Resources.ResourceReader::ReadValueVer1(System.Type)
 +SC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceReader/ResourceEnumerator::get_ValueAsStream()
@@ -281,7 +286,6 @@
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[])
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[])
 +SC-M: System.Object System.AppDomain::InvokeInDomainByID(System.Int32,System.Reflection.MethodInfo,System.Object,System.Object[])
-+SC-M: System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
 +SC-M: System.String System.Reflection.Assembly::GetCodeBase(System.Boolean)
 +SC-M: System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()
 +SC-M: System.AppDomainSetup System.AppDomain::get_SetupInformationNoCopy()

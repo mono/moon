@@ -1,0 +1,5 @@
+# manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
+
+# Calls Activator.CreateInstance to create IWebRequestCreate instance of the browser and client http stack creators
++SSC-M: System.Void System.Net.WebRequest::.cctor()
+

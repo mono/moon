@@ -7,28 +7,27 @@ find-sc.exe
 	under the /compatibility directory and its content is stored
 	in SVN in order to track changes over time (and new SL releases)
 
-detect-sc.exe
+detect.exe
 
-	Find out what Moonlight (platform code) methods are likely to
-	need [SecurityCritical] in order to work properly under the
-	CoreCLR securiy model. The output of the tool is kept under the
-	/automatic directory and its content is stored in SVN in order 
-	to track/audit changes.
+	This tool will:
+	1) Read all platform code assemblies;
+	2) Mark types and methods that needs to be [SecurityCritical]
+	to ensure compatibility. These are the /compatibility/*.compat.sc
+	and are the results from the 'find-sc.exe' tool
+	3) Mark types and methods that were manually identified to
+	require [SecurityCritical] or [SecuritySafeCritical] attributes.
+	They are read from /overrides/*.manual
+	4) Detect code that requires [SecurityCritical] in order to work
+	properly under the CoreCLR security model;
+	5) Detect code that requires [SecuritySafeCritical] (anything
+	calling SC) in order to work properly under the CoreCLR security
+	model;
+	6) Save the *.secattr files (one per assembly) that are usable
+	by the linker to inject the security attributes inside the 
+	Moonlight assemblies.
 
-detect-ssc.exe
-
-	Find out what Moonlight (platform code) methods are likely to
-	need [SecuritySafeCritical] in order to work properly under the
-	CoreCLR securiy model. The output of the tool is kept under the
-	/automatic directory and its content is stored in SVN in order 
-	to track/audit changes.
-
-merge.exe
-
-	Merge all data files (from compatibility, automatic and overrides)
-	into a single file (per assembly) usable by the tuner to inject
-	the right [SecurityCritical] or [SecuritySafeCritical] attributes
-	into the platform assemblies.
+	Note: this new tools is a replacement for the previous 
+	'detect-sc', 'detect-ssc' and 'merge' tools
 
 audit.exe
 
@@ -68,11 +67,6 @@ FILES
 	Files are generated, using find-sc.exe, from Silverlight 2.0 
 	platform code. They contains the [SecurityCritical] attributes
 	on visible API which are required for comaptibility.
-
-/automatic/*.auto.[sc|ssc]
-
-	Files are generated, using detect-sc.exe and detect-ssc.exe,
-	on the Moonlight 2.0 platform code.
 
 /overrides/*.manual
 

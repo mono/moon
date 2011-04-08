@@ -3,7 +3,7 @@ assembly = System.Windows
 NET_2_1_ASSEMBLY_DEPS=-r:System.Runtime.Serialization.dll
 NET_3_0_ASSEMBLY_DEPS=
 
-sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
+sl_secattr = ../SecurityAttributes/$(assembly).secattr
 
 if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
@@ -866,9 +866,8 @@ $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.res
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
+$(assemblysl): $(assemblysl_raw)
+	cp $(assemblysl_raw) $(assemblysl)
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
@@ -885,10 +884,8 @@ $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Re
 		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
-$(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
-	$(AM_V_GEN)MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
-		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
+$(bootstrap_assemblysl): $(bootstrap_assemblysl_raw)
+	cp $(bootstrap_assemblysl_raw) $(bootstrap_assemblysl)
 
 $(bootstrap_assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \

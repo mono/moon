@@ -171,7 +171,7 @@ runtime/Makefile
 gallium/Makefile
 class/Makefile
 class/tuning/Makefile
-class/tuning/SecurityAttributes/Makefile
+class/SecurityAttributes/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/System.Windows.Controls/Makefile

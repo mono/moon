@@ -1,10 +1,15 @@
 .NOTPARALLEL:
 
-SUBDIRS = .
 if INCLUDE_BROWSER_MANAGED_CODE
-SUBDIRS += tuning
+SUBDIRS = tuning .
+else
+SUBDIRS = .
 endif
-SUBDIRS += System.Windows.Browser System.Windows System.Windows.Controls System.Windows.Controls.Data
+SUBDIRS += System.Windows.Browser System.Windows
+if INCLUDE_BROWSER_MANAGED_CODE
+SUBDIRS += SecurityAttributes
+endif
+SUBDIRS += System.Windows.Controls System.Windows.Controls.Data
 if INCLUDE_DESKTOP_MANAGED_CODE
 SUBDIRS += Moon.Windows.Desktop
 endif
@@ -15,9 +20,6 @@ EXTRA_DIST = mono.pub winfx3.pub mono.snk silverlight.pub
 #
 all-local: make-lib-directories
 	@echo Bootstrapping circular build;
-if INCLUDE_BROWSER_MANAGED_CODE
-	$(MAKE) -C tuning
-endif
 	$(MAKE) -C System.Windows bootstrap
 
 make-lib-directories:
