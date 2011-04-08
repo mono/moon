@@ -97,12 +97,10 @@ private:
 	void SetConstantBuffer (const void *data, int bytes);
 
 	pipe_resource *SetupVertexData (Color *color);
-	pipe_resource *SetupVertexData (pipe_sampler_state *sampler,
-					const double       *matrix,
-					double             x,
-					double             y,
-					double             width,
-					double             height);
+	pipe_resource *SetupVertexData ();
+	pipe_resource *SetupVertexData (const double *matrix,
+					double       du,
+					double       dv);
 
 	void *GetBlendShader ();
 	void *GetProjectShader (double alpha);
