@@ -83,6 +83,7 @@ private:
 	cairo_surface_t *native;
 	CairoContext *ctx;
 	unsigned char *backing_image_data;
+	Region *damage;
 
 #ifdef USE_GALLIUM
 	pipe_screen *screen;
