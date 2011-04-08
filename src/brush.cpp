@@ -1297,13 +1297,12 @@ VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	// XXX we should cache the surface so that it can be
 	// used multiple times without having to re-render each time.
 	Rect bounds = ui->GetSubtreeBounds().RoundOut ();
-	
-	surface = image_brush_create_similar (cr, (int) bounds.width, (int) bounds.height);
-	
-	cairo_t *surface_cr = cairo_create (surface);
+
+	CairoSurface *surface = new CairoSurface (bounds.width, bounds.height);
+	Context *surface_ctx = new CairoContext (surface);
 	Region region = Region (0, 0, bounds.width, bounds.height);
-	ui->Render (surface_cr, &region);
-	cairo_destroy (surface_cr);
+	ui->Render (surface_ctx, &region);
+	delete surface_ctx;
 	
 	Stretch stretch = GetStretch ();
 	
@@ -1313,7 +1312,7 @@ VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	Transform *transform = GetTransform ();
 	Transform *relative_transform = GetRelativeTransform ();
 	
- 	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+ 	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface->Cairo ());
 
 	cairo_matrix_t matrix;
  	image_brush_compute_pattern_matrix (&matrix, area.width, area.height,
@@ -1326,7 +1325,7 @@ VisualBrush::SetupBrush (cairo_t *cr, const Rect &area)
  	cairo_set_source (cr, pattern);
  	cairo_pattern_destroy (pattern);
 
-	cairo_surface_destroy (surface);
+	surface->unref ();
 }
 
 void

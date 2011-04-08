@@ -440,8 +440,6 @@ class VideoBrush : public TileBrush {
 /* @ManagedDependencyProperties=None */
 /* @ManagedEvents=None */
 class VisualBrush : public TileBrush {
-	cairo_surface_t *surface;
-
 	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 
  protected:
