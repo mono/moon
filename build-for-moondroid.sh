@@ -1,4 +1,4 @@
 #!/bin/sh
-ACLOCAL_FLAGS="-I /usr/X11/share/aclocal" ./autogen.sh --host=arm-linux-androideabi --prefix=/opt/moonlight-android --with-pal=android --with-unwind=no --with-curl=no --with-mono-path=/Users/plasma/Work/moonlight-android/mono --with-manual-mono=yes --with-cairo=system --disable-browser-support CFLAGS="-DPLATFORM_ANDROID -I/opt/moonlight-android/include $CFLAGS" LDFLAGS="-L/opt/moonlight-android/lib $LDFLAGS" CXXFLAGS="-fno-rtti -DPLATFORM_ANDROID -I/opt/moonlight-android/include $CFLAGS"
+ACLOCAL_FLAGS="-I /usr/X11/share/aclocal" ./autogen.sh --host=arm-linux-androideabi --prefix=$MOONLIGHT_PREFIX --with-ffmpeg=no --with-alsa=no --with-pulseaudio=no --with-pal=android --with-unwind=no --with-curl=no --with-manual-mono=yes --with-cairo=system --disable-browser-support --with-gallium-path=no --enable-sdk=no --with-glx=no --with-testing=no CFLAGS="-DPLATFORM_ANDROID -I$MOONLIGHT_PREFIX/include $CFLAGS" LDFLAGS="-L$MOONLIGHT_PREFIX/lib $LDFLAGS" CXXFLAGS="-fno-rtti -DPLATFORM_ANDROID -I$MOONLIGHT_PREFIX/include $CFLAGS"
 make
 make install
