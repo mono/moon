@@ -514,6 +514,8 @@ Value::IsDependencyObject (Deployment *d) const
 GCHandle
 Value::AsGCHandle () const
 {
+	if (boxed_valuetype)
+		return (GCHandle) boxed_valuetype;
 	if (GetIsManaged ())
 		return (GCHandle) u.managed_object;
 	if (u.dependency_object == NULL)
@@ -527,7 +529,7 @@ Value::AsGCHandle () const
 bool
 Value::HoldManagedRef (Deployment *deployment)
 {
-	if (GetIsManaged ())
+	if (GetIsManaged () || boxed_valuetype)
 		return true;
 	if (IsEventObject (deployment)) {
 		// These types are DOs in native and structs in managed,
@@ -547,6 +549,12 @@ Value::HoldManagedRef (Deployment *deployment)
 void
 Value::Strengthen (Deployment *deployment)
 {
+	if (boxed_valuetype && GCHandle (boxed_valuetype).IsWeak ()) {
+		void *handle = boxed_valuetype;
+		boxed_valuetype = deployment->CreateGCHandle (deployment->GetGCHandleTarget (handle)).ToIntPtr ();
+		deployment->FreeGCHandle (boxed_valuetype);
+	}
+
 	if (GetIsManaged ()) {
 		if (GCHandle (this->u.managed_object).IsWeak ()) {
 			void *handle = this->u.managed_object;
@@ -563,6 +571,12 @@ Value::Strengthen (Deployment *deployment)
 void
 Value::Weaken (Deployment *deployment)
 {
+	if (boxed_valuetype && GCHandle (boxed_valuetype).IsNormal ()) {
+		void *handle = boxed_valuetype;
+		boxed_valuetype = deployment->CreateWeakGCHandle (deployment->GetGCHandleTarget (handle)).ToIntPtr ();
+		deployment->FreeGCHandle (handle);
+	}
+
 	if (GetIsManaged ()) {
 		if (GCHandle (this->u.managed_object).IsNormal ()) {
 			void *handle = this->u.managed_object;
