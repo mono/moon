@@ -863,6 +863,29 @@ Context::GetDeviceMatrix (double *out)
 	Matrix3D::Multiply (out, m, viewport);
 }
 
+bool
+Context::GetSourceMatrix (double *out, double *in, double x, double y)
+{
+	double offset[16];
+	double m[16];
+
+	Matrix3D::Translate (offset, x, y, 0.0);
+	Matrix3D::Multiply (m, offset, in);
+
+	// no Z in source matrices
+#define M(row, col) m[col * 4 + row]
+	M (2, 0) = M (2, 1) = M (2, 3) = 0.0;
+	M (2, 2) = 1.0;
+#undef M
+
+	if (!Matrix3D::Inverse (out, m)) {
+		g_warning ("Context::GetSourceMatrix: no inverse");
+		return false;
+	}
+
+	return true;
+}
+
 int
 Context::ComputeGaussianSamples (double radius,
 				 double precision,

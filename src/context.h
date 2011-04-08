@@ -137,7 +137,6 @@ public:
 	bool IsImmutable ();
 	bool IsMutable () { return !IsImmutable (); }
 	void GetMatrix (double *out);
-	void GetDeviceMatrix (double *out);
 
 	virtual void Push (Group extents);
 	virtual void Push (Group extents, MoonSurface *surface);
@@ -192,6 +191,9 @@ public:
 	virtual void Flush ();
 
 protected:
+	void GetDeviceMatrix (double *out);
+	bool GetSourceMatrix (double *out, double *in, double x, double y);
+
 	int ComputeGaussianSamples (double radius,
 				    double precision,
 				    double *row);
