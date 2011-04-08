@@ -265,6 +265,7 @@ public:
 		void *managed_object; // This should be a GCHandle, but g++ says that types with ctors/copy assignment operators can't be used in unions
 		void *npobj;
 	} u;
+	void *boxed_valuetype;
 	
 	// You don't want to be using this ctor.  it's here to help
 	// c++ recognize bad unspecified pointer args to Value ctors

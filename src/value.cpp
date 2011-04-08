@@ -145,6 +145,7 @@ void
 Value::Init ()
 {
 	padding = 0;
+	boxed_valuetype = NULL;
 	memset (&u, 0, sizeof (u));
 	SetIsNull (true);
 }
@@ -578,9 +579,13 @@ Value::Weaken (Deployment *deployment)
 void
 Value::Copy (const Value& v)
 {
+	boxed_valuetype = v.boxed_valuetype;
 	padding = v.padding;
 	k = v.k;
 	u = v.u;
+
+	if (boxed_valuetype != NULL)
+		boxed_valuetype = Deployment::GetCurrent ()->CloneGCHandle (boxed_valuetype).ToIntPtr ();
 
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
 		u.managed_object = Deployment::GetCurrent ()->CloneGCHandle (u.managed_object).ToIntPtr ();
@@ -753,6 +758,9 @@ Value::Copy (const Value& v)
 void
 Value::FreeValueInternal ()
 {
+	if (boxed_valuetype != NULL)
+		Deployment::GetCurrent ()->FreeGCHandle (boxed_valuetype);
+
 	if ((padding & GCHandleFlag) == GCHandleFlag) {
 		Deployment::GetCurrent ()->FreeGCHandle ((GCHandle) u.managed_object);
 		return;

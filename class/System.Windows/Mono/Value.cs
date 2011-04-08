@@ -147,6 +147,7 @@ namespace Mono {
 		public Kind k;
 		public int bitfield;
 		public ValUnion u;
+		public IntPtr boxed_valuetype;
 
 		public bool IsGCHandle {
 			get { return (bitfield & GCHandleFlag) == GCHandleFlag; }
@@ -176,6 +177,10 @@ namespace Mono {
 		{
 			if (value == null || value->IsNull) {
 				return null;
+			}
+
+			if (value->boxed_valuetype != IntPtr.Zero) {
+				return GCHandle.FromIntPtr (value->boxed_valuetype).Target;
 			}
 
 			if (value->IsGCHandle) {
@@ -447,6 +452,9 @@ namespace Mono {
 			Value value = new Value ();
 			
 			unsafe {
+				if (v is ValueType) {
+					value.boxed_valuetype = GCHandle.ToIntPtr (GCHandle.Alloc (v));
+				}
 				// get rid of this case right away.
 				if (box_value_types && v.GetType().IsValueType) {
 					//Console.WriteLine ("Boxing a value of type {0}:", v.GetType());
