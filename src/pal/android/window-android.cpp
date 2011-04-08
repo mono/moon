@@ -308,17 +308,19 @@ convert_color_channel (guint8 src, guint8 alpha)
 }
 
 static inline void
-convert_bgra_to_rgba (guint8 const *src, guint8 *dst, gint width, gint height)
+convert_bgra_to_rgba (guint8 const *src, guint8 *dst, gint stride, gint x, gint y, gint width, gint height)
 {
 	guint8 const *src_pixel = src;
 	guint8 * dst_pixel = dst;
-	int y;
-
-	for (y = 0; y < height; y++)
+	guint8 const *src_row = src_pixel + (stride * y) + (x * 4);
+	guint8 *dst_row = dst_pixel + (stride * y) + (x * 4);
+	
+	for (int i = 0; i < height; i++)
 	{   
-		int x;
-
-		for (x = 0; x < width; x++)
+		int j;
+		src_pixel = src_row;
+		dst_pixel = dst_row;
+		for (j = 0; j < width; j++)
 		{   
 			dst_pixel[0] = convert_color_channel (src_pixel[2], src_pixel[3]);
 			dst_pixel[1] = convert_color_channel (src_pixel[1], src_pixel[3]);
@@ -327,7 +329,9 @@ convert_bgra_to_rgba (guint8 const *src, guint8 *dst, gint width, gint height)
 
 			dst_pixel += 4;
 			src_pixel += 4;
-		}   
+		}
+		src_row += stride;
+		dst_row += stride;
 	}   
 }
 
@@ -348,39 +352,46 @@ MoonWindowAndroid::Paint (gpointer data)
 {
 	ANativeWindow_Buffer buffer;
 	unsigned char *pixels;
-	cairo_t *cr;
 	struct android_app *app = (struct android_app *) data;
 
-	g_warning ("Painting");
 	SetCurrentDeployment ();
 
 	if (app->window == NULL)
 		return;
 		
+
+	// Make sure our buffer is the right size
+	Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));
+
 	if (damage->IsEmpty ()) {
 		//g_warning ("no damage");
 		return;
 	}
-		
-	g_warning ("Lock");
-	if (ANativeWindow_lock (app->window, &buffer, NULL) < 0)
-		return;
 	
-	if (width != buffer.width || height != buffer.height) {
-		Resize (buffer.width, buffer.height);
-		delete damage;
-		damage = new Region (Rect (0, 0, buffer.width, buffer.height));
-	}
-	pixels = (unsigned char *) buffer.bits;
-	
-	Rect extents = damage->GetExtents();
-	g_warning ("Blit damage = (%g,%g,%g,%g", extents.y, extents.x, extents.width, extents.height);
 	surface->Paint (ctx, damage, transparent, true);
+	
+	gint stride = width * 4;
+
+	int count = damage->GetRectangleCount (); 
+	for (int i = 0; i < count; i++) {
+		Rect box = damage->GetRectangle (i);
+		ARect dirty;
+		dirty.left = box.x;
+		dirty.top = box.y;
+		dirty.right = box.x+box.width;
+		dirty.bottom = box.y+box.height;
+
+		g_warning ("Blit damage(%d) = (%g,%g,%g,%g)", i, box.x, box.y, box.width, box.height);
+		if (ANativeWindow_lock (app->window, &buffer, &dirty) < 0)
+			continue;
+		
+		pixels = (unsigned char *) buffer.bits;
+		convert_bgra_to_rgba (backing_image_data, pixels, stride, box.x, box.y, box.width, box.height);
+	
+		ANativeWindow_unlockAndPost (app->window);
+	}
+	
 	delete damage;
 	damage = new Region ();
-	g_warning ("Splat");
-	convert_bgra_to_rgba (backing_image_data, pixels, buffer.width, buffer.height);
-
-	ANativeWindow_unlockAndPost (app->window);
 }
 #endif
