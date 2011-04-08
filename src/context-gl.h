@@ -120,6 +120,7 @@ protected:
 			     GLsizei      count,
 			     const GLchar **str);
 	GLuint GetVertexShader ();
+	virtual const char *ProgramPrecisionString ();
 	GLuint GetBlendProgram ();
 	GLuint GetProjectProgram (double alpha, unsigned yuv);
 	GLuint GetConvolveProgram (unsigned size);

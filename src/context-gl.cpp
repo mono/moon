@@ -409,6 +409,12 @@ GLContext::GetVertexShader ()
 	return vs;
 }
 
+const char *
+GLContext::ProgramPrecisionString ()
+{
+	return "";
+}
+
 GLuint
 GLContext::GetBlendProgram ()
 {
@@ -418,7 +424,8 @@ GLContext::GetBlendProgram ()
 	if (blend_program)
 		return blend_program;
 
-	s = g_string_new ("uniform vec4 color;");
+	s = g_string_new (ProgramPrecisionString ());
+	g_string_sprintfa (s, "uniform vec4 color;");
 	g_string_sprintfa (s, "void main()");
 	g_string_sprintfa (s, "{");
 	g_string_sprintfa (s, "gl_FragColor = color;");
@@ -504,7 +511,8 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 	if (project_program[alpha][yuv])
 		return project_program[alpha][yuv];
 
-	s = g_string_new ("uniform sampler2D sampler0;");
+	s = g_string_new (ProgramPrecisionString ());
+	g_string_sprintfa (s, "uniform sampler2D sampler0;");
 	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
 	if (yuv) {
 		g_string_sprintfa (s, "uniform sampler2D sampler1;");
@@ -668,7 +676,8 @@ GLContext::GetConvolveProgram (unsigned size)
 	if (convolve_program[size])
 		return convolve_program[size];
 
-	s = g_string_new ("uniform sampler2D sampler0;");
+	s = g_string_new (ProgramPrecisionString ());
+	g_string_sprintfa (s, "uniform sampler2D sampler0;");
 	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
 	g_string_sprintfa (s, "uniform vec4 InFilter[%d];", (size + 1) * 2);
 	g_string_sprintfa (s, "void main()");
@@ -876,7 +885,8 @@ GLContext::GetDropShadowProgram (unsigned size)
 	if (dropshadow_program[size])
 		return dropshadow_program[size];
 
-	s = g_string_new ("uniform sampler2D sampler0;");
+	s = g_string_new (ProgramPrecisionString ());
+	g_string_sprintfa (s, "uniform sampler2D sampler0;");
 	g_string_sprintfa (s, "uniform sampler2D sampler1;");
 	g_string_sprintfa (s, "uniform vec4 InFilter[%d];", (size + 1) * 2);
 	g_string_sprintfa (s, "varying vec4 v_TexCoord0;");
@@ -1158,7 +1168,7 @@ GLContext::GetEffectProgram (PixelShader *ps)
 		}
 	}
 	
-	s = g_string_new (NULL);
+	s = g_string_new (ProgramPrecisionString ());
 
 	sprintf (dst_reg[D3DSPR_COLOROUT][0], "gl_FragColor");
 
