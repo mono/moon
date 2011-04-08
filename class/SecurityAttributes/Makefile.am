@@ -62,7 +62,7 @@ LINKER_FLAGS =	\
 	-b true	\
 	-m secattrs .
 
-all: ivt-check
+all: ivt-check detect.exe
 	mono --debug detect.exe -v -v -v -a ../lib/2.1/ .
 	for i in $(TRUSTED_ASSEMBLIES); do \
 		MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -a $$i $(LINKER_FLAGS) $(LINKER_STEPS); \
