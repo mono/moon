@@ -78,9 +78,24 @@ MoonWindowAndroid::GetPlatformWindow ()
 void
 MoonWindowAndroid::Resize (int width, int height)
 {
+	if (this->width == width && this->height == height)
+		return;
+	
+	g_warning ("buffer = (%d,%d) surface = (%d,%d)", width, height, this->width, this->height);
+	
+	this->width = width;
+	this->height = height;
+
+	
+	delete damage;
+	damage = new Region (0.0, 0.0, width, height);
+
+	CreateCairoContext();
+	
 	if (surface)
 		surface->HandleUIWindowAllocation (true);
-}
+	
+}	
 
 void
 MoonWindowAndroid::SetBackgroundColor (Color *color)
@@ -104,7 +119,7 @@ MoonWindowAndroid::Invalidate (Rect r)
 void
 MoonWindowAndroid::ProcessUpdates ()
 {
-	//FIXME
+	// FIXME
 }
 
 gboolean
@@ -184,8 +199,8 @@ MoonWindowAndroid::SetWidth (double width)
 {
 	if (this->width == width)
 		return;
-	this->width = width;
-	Resize (width, height);
+	
+	Resize (width, this->height);
 }
 
 void
@@ -193,8 +208,8 @@ MoonWindowAndroid::SetHeight (double height)
 {
 	if (this->height == height)
 		return;
-	this->height = height;
-	Resize (width, height);
+
+	Resize (this->width, height);
 }
 
 void
@@ -272,7 +287,7 @@ MoonWindowAndroid::Paint (gpointer data)
 		return;
 		
 	if (damage->IsEmpty ()) {
-		g_warning ("no damage");
+		//g_warning ("no damage");
 		return;
 	}
 		
@@ -281,9 +296,6 @@ MoonWindowAndroid::Paint (gpointer data)
 		return;
 	
 	if (width != buffer.width || height != buffer.height) {
-		g_warning ("buffer = (%d,%d) surface = (%d,%d)", buffer.width, buffer.height, width,height);	width = buffer.width;
-		height = buffer.height;		
-		CreateCairoContext();
 		Resize (buffer.width, buffer.height);
 		delete damage;
 		damage = new Region (Rect (0, 0, buffer.width, buffer.height));
@@ -291,7 +303,7 @@ MoonWindowAndroid::Paint (gpointer data)
 	pixels = (unsigned char *) buffer.bits;
 	
 	Rect extents = damage->GetExtents();
-	g_warning ("Blit damage = (%d,%d,%d,%d", extents.y, extents.x, extents.width, extents.height);
+	g_warning ("Blit damage = (%g,%g,%g,%g", extents.y, extents.x, extents.width, extents.height);
 	surface->Paint (ctx, damage, transparent, true);
 	delete damage;
 	damage = new Region ();
