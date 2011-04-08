@@ -973,10 +973,19 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 int32_t
 MoonWindowingSystemAndroid::OnInputEvent (android_app* app, AInputEvent* aevent)
 {
+	// handle the back button here
+	if (AInputEvent_getType(aevent) == AINPUT_EVENT_TYPE_KEY
+	    && AKeyEvent_getAction(aevent) == AKEY_EVENT_ACTION_UP
+	    && AKeyEvent_getKeyCode(aevent) == 	AKEYCODE_BACK) {
+
+		ANativeActivity_finish (app->activity);
+		return 1;
+	}
+
 	g_warning ("MoonWindowingSystemAndroid::OnInputEvent");
 	MoonEvent *event = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (aevent);
 	if (!event)
-		return -1;
+		return 0;
 
 	MoonWindow *window = (MoonWindow*)app->userData;
 
