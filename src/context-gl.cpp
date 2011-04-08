@@ -271,7 +271,7 @@ GLContext::Blit (unsigned char *data,
 	// need word alignment
 	g_assert ((stride % 4) == 0);
 
-#if !defined(PLATFORM_ANDROID)
+#if !defined(USE_EGL)
 	glPixelStorei (GL_UNPACK_ROW_LENGTH, stride / 4);
 #endif
 	glBindTexture (GL_TEXTURE_2D, texture);
@@ -285,7 +285,7 @@ GLContext::Blit (unsigned char *data,
 			 GL_UNSIGNED_BYTE,
 			 data);
 	glBindTexture (GL_TEXTURE_2D, 0);
-#if !defined(PLATFORM_ANDROID)
+#if !defined(USE_EGL)
 	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
 #endif
 
@@ -315,7 +315,7 @@ GLContext::BlitYV12 (unsigned char *data[],
 	texture[1] = dst->TextureU ();
 	texture[2] = dst->TextureV ();
 
-#if !defined(PLATFORM_ANDROID)
+#if !defined(USE_EGL)
 	glPixelStorei (GL_UNPACK_ROW_LENGTH, stride[0]);
 #endif
 	glBindTexture (GL_TEXTURE_2D, texture[0]);
@@ -329,7 +329,7 @@ GLContext::BlitYV12 (unsigned char *data[],
 			 GL_UNSIGNED_BYTE,
 			 data[0]);
 	for (i = 1; i < 3; i++) {
-#if !defined(PLATFORM_ANDROID)
+#if !defined(USE_EGL)
 		glPixelStorei (GL_UNPACK_ROW_LENGTH, stride[i]);
 #endif
 		glBindTexture (GL_TEXTURE_2D, texture[i]);
@@ -344,7 +344,7 @@ GLContext::BlitYV12 (unsigned char *data[],
 				 data[i]);
 	}
 	glBindTexture (GL_TEXTURE_2D, 0);
-#if !defined(PLATFORM_ANDROID)
+#if !defined(USE_EGL)
 	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
 #endif
 

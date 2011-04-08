@@ -13,6 +13,16 @@ AC_DEFUN([MOONLIGHT_CHECK_GLX],
 		fi
 	fi
 
+	AM_CONDITIONAL(HAVE_GL, [test x$with_glx != xno])
 	AM_CONDITIONAL(HAVE_GLX, [test x$with_glx != xno])
 ])
+AC_DEFUN([MOONLIGHT_CHECK_EGL],
+[
+	AC_ARG_WITH(egl, AC_HELP_STRING([--with-egl=yes|no],
+		[If you want to enable support for egl]),
+		[], [with_egl=no])
 
+	AC_DEFINE(USE_EGL, 1, [Include egl support])
+	AM_CONDITIONAL(HAVE_GL, [test x$with_egl != xno])
+	AM_CONDITIONAL(HAVE_EGL, [test x$with_egl != xno])
+])
