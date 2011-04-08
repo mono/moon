@@ -48,6 +48,7 @@ MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, M
 {
 	this->width = w;
 	this->height = h;
+	damage = new Region ();
 
 	CreateCairoContext ();
 }
@@ -97,12 +98,13 @@ void
 MoonWindowAndroid::Invalidate (Rect r)
 {
 	// FIXME
+	damage->Union (r);
 }
 
 void
 MoonWindowAndroid::ProcessUpdates ()
 {
-	// FIXME
+	//FIXME
 }
 
 gboolean
@@ -268,22 +270,31 @@ MoonWindowAndroid::Paint (gpointer data)
 
 	if (app->window == NULL)
 		return;
-
+		
+	if (damage->IsEmpty ()) {
+		g_warning ("no damage");
+		return;
+	}
+		
 	g_warning ("Lock");
 	if (ANativeWindow_lock (app->window, &buffer, NULL) < 0)
 		return;
-	g_warning ("buffer = (%d,%d) surface = (%d,%d)", buffer.width, buffer.height, width,height);
-	Region *region = new Region (Rect (0, 0, buffer.width, buffer.height));
+	
 	if (width != buffer.width || height != buffer.height) {
-		width = buffer.width;
+		g_warning ("buffer = (%d,%d) surface = (%d,%d)", buffer.width, buffer.height, width,height);	width = buffer.width;
 		height = buffer.height;		
 		CreateCairoContext();
 		Resize (buffer.width, buffer.height);
+		delete damage;
+		damage = new Region (Rect (0, 0, buffer.width, buffer.height));
 	}
 	pixels = (unsigned char *) buffer.bits;
-
-	g_warning ("Blit");
-	surface->Paint (ctx, region, transparent, true);
+	
+	Rect extents = damage->GetExtents();
+	g_warning ("Blit damage = (%d,%d,%d,%d", extents.y, extents.x, extents.width, extents.height);
+	surface->Paint (ctx, damage, transparent, true);
+	delete damage;
+	damage = new Region ();
 	g_warning ("Splat");
 	convert_bgra_to_rgba (backing_image_data, pixels, buffer.width, buffer.height);
 
