@@ -44,14 +44,21 @@ MoonEGLContext::Initialize ()
 		EGL_BLUE_SIZE, 8,
 		EGL_GREEN_SIZE, 8,
 		EGL_RED_SIZE, 8,
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 		EGL_NONE
 	};
+
+	const EGLint context_attribs[] = {
+		EGL_CONTEXT_CLIENT_VERSION, 2,
+		EGL_NONE
+	};
+
 	EGLint numConfigs;
 	EGLConfig config;
 
 	eglChooseConfig(display, attribs, &config, 1, &numConfigs);
 
-	context = eglCreateContext(display, config, NULL, NULL);
+	context = eglCreateContext(display, config, NULL, context_attribs);
 
 	if (eglMakeCurrent (display, surface, surface, context) == EGL_FALSE) {
 		g_warning ("Failed to make MoonEGL context current");
@@ -63,12 +70,9 @@ MoonEGLContext::Initialize ()
 	if (maxTextureSize < 2048)
 		g_warning ("OpenGL max texture size: %d", maxTextureSize);
 
-	printf ("Moonlight: OpenGL vendor string: %s\n",
-		glGetString (GL_VENDOR));
-	printf ("Moonlight: OpenGL renderer string: %s\n",
-		glGetString (GL_RENDERER));
-	printf ("Moonlight: OpenGL version string: %s\n",
-		glGetString (GL_VERSION));
+	g_warning ("Moonlight: OpenGL vendor string: %s\n", glGetString (GL_VENDOR));
+	g_warning ("Moonlight: OpenGL renderer string: %s\n", glGetString (GL_RENDERER));
+	g_warning ("Moonlight: OpenGL version string: %s\n", glGetString (GL_VERSION));
 
 	return true;
 }
