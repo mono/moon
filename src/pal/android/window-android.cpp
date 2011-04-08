@@ -24,24 +24,14 @@
 #include "timemanager.h"
 #include "enums.h"
 #include "context-cairo.h"
-#ifdef USE_GALLIUM
-#define __MOON_GALLIUM__
-#include "context-gallium.h"
-#ifdef CLAMP
-#undef CLAMP
-#endif
-#include "util/u_inlines.h"
-#endif
 
-// Gallium context cache size.
-//
-#define CONTEXT_CACHE_SIZE 1
+#define __MOON_EGL__
+
+#ifdef USE_EGL
+#include "context-egl.h"
+#endif
 
 using namespace Moonlight;
-
-#ifdef USE_GALLIUM
-int MoonWindowAndroid::gctxn = 0;
-#endif
 
 MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (windowType, w, h, parent, surface)
@@ -50,11 +40,22 @@ MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, M
 	this->height = h;
 	damage = new Region ();
 
+#ifdef USE_EGL
+	egltarget = NULL;
+	eglctx = NULL;
+#else
 	CreateCairoContext ();
+#endif
 }
 
 MoonWindowAndroid::~MoonWindowAndroid ()
 {
+#ifdef USE_EGL
+	if (eglctx)
+		delete eglctx;
+	if (egltarget)
+		egltarget->unref ();
+#endif
 }
 
 void
@@ -90,7 +91,9 @@ MoonWindowAndroid::Resize (int width, int height)
 	delete damage;
 	damage = new Region (0.0, 0.0, width, height);
 
+#if !defined (USE_EGL)
 	CreateCairoContext();
+#endif
 	
 	if (surface)
 		surface->HandleUIWindowAllocation (true);
@@ -230,6 +233,74 @@ MoonWindowAndroid::SetStyle (WindowStyle style)
 	// FIXME
 }
 
+#ifdef USE_EGL
+void
+MoonWindowAndroid::Paint (gpointer data)
+{
+	struct android_app *app = (struct android_app *) data;
+
+	if (app->window == NULL)
+		return;
+
+	if (!egltarget) {
+		const EGLint attribs[] = {
+			EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+			EGL_BLUE_SIZE, 8,
+			EGL_GREEN_SIZE, 8,
+			EGL_RED_SIZE, 8,
+			EGL_NONE
+		};
+
+		EGLint format;
+		EGLint numConfigs;
+		EGLConfig config;
+		EGLDisplay native_display;
+		EGLSurface native_surface;
+		MoonEGLContext *context;
+
+		native_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+
+		eglInitialize (native_display, 0, 0);
+
+		eglChooseConfig (native_display, attribs, &config, 1, &numConfigs);
+		eglGetConfigAttrib (native_display, config, EGL_NATIVE_VISUAL_ID, &format);
+
+		ANativeWindow_setBuffersGeometry (app->window, 0, 0, format);
+
+		native_surface = eglCreateWindowSurface (native_display, config, app->window, NULL);
+
+		egltarget = new MoonEGLSurface (native_display, native_surface);
+		context = new MoonEGLContext (egltarget);
+
+		if (context->Initialize ()) {
+			eglctx = context;
+		} else {
+			delete context;
+		}
+	}
+	
+	if (damage->IsEmpty ()) {
+		//g_warning ("no damage");
+		return;
+	}
+
+	if (egltarget && eglctx) {
+		Rect r0 = Rect (0, 0, width, height);
+
+		egltarget->Reshape (width, height);
+
+		static_cast<Context *> (eglctx)->Push (Context::Clip (damage->GetExtents ()));
+		surface->Paint (eglctx, damage, GetTransparent (), true);
+		static_cast<Context *> (eglctx)->Pop ();
+
+		eglctx->Flush ();
+
+		egltarget->SwapBuffers ();
+	} else {
+		g_warning ("uhoh");
+	}
+}
+#else
 static inline guint8
 convert_color_channel (guint8 src, guint8 alpha)
 {
@@ -312,3 +383,4 @@ MoonWindowAndroid::Paint (gpointer data)
 
 	ANativeWindow_unlockAndPost (app->window);
 }
+#endif

@@ -25,8 +25,10 @@ struct pipe_screen;
 
 namespace Moonlight {
 
-class GLXSurface;
-class GLXContext;
+#if USE_EGL
+class MoonEGLSurface;
+class MoonEGLContext;
+#endif
 
 /* @Namespace=System.Windows */
 class MoonWindowAndroid : public MoonWindow {
@@ -71,24 +73,21 @@ public:
 
 	virtual gpointer GetPlatformWindow ();
 
-#ifdef USE_GALLIUM
-	void SetGalliumScreen (pipe_screen *gscreen) { screen = gscreen; }
-#endif
-
 	// FIXME: This shouldn't be public
 	void Paint (gpointer app);
 private:
+#if !USE_EGL
 	void CreateCairoContext ();
 
 	cairo_surface_t *native;
 	CairoContext *ctx;
 	unsigned char *backing_image_data;
+#endif
 	Region *damage;
 
-#ifdef USE_GALLIUM
-	pipe_screen *screen;
-	Context *gctx;
-	static int gctxn;
+#if USE_EGL
+	MoonEGLSurface *egltarget;
+	MoonEGLContext *eglctx;
 #endif
 
 	int left;
