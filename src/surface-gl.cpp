@@ -111,7 +111,9 @@ void
 GLSurface::AllocYUV ()
 {
 	if (!textureYUV[0]) {
-		int i;
+		GLfloat borderY[] = { 0.0625f, 0.0625f, 0.0625f, 0.0625f };
+		GLfloat borderUV[] = { 0.5f , 0.5f, 0.5f, 0.5f };
+		int     i;
 
 		glGenTextures (3, textureYUV);
 
@@ -125,6 +127,9 @@ GLSurface::AllocYUV ()
 			      GL_LUMINANCE,
 			      GL_UNSIGNED_BYTE,
 			      NULL);
+		glTexParameterfv (GL_TEXTURE_2D,
+				  GL_TEXTURE_BORDER_COLOR,
+				  borderY);
 		for (i = 1; i < 3; i++) {
 			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
 			glTexImage2D (GL_TEXTURE_2D,
@@ -136,6 +141,9 @@ GLSurface::AllocYUV ()
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
+			glTexParameterfv (GL_TEXTURE_2D,
+					  GL_TEXTURE_BORDER_COLOR,
+					  borderUV);
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
