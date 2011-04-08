@@ -7,6 +7,51 @@ DIE=0
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
+configure_mono=1
+build_mono=1
+mono_flags="--with-sgen=no"
+mono_path=../mono
+mcs_path=../mono/mcs
+mono_basic_path=../mono-basic
+configure_gallium=1
+build_gallium=1
+gallium_path=../mesa
+build_cairo=1
+build_curl=1
+for arg; do
+  case "$arg" in
+    --with-manual-mono=yes | --with-manual-mono )
+      build_mono=0
+      configure_mono=0 ;;
+    --with-manual-mono=build )
+      build_mono=1
+      configure_mono=0 ;;
+    --with-mcs-path* )
+      mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --with-mono-path* )
+      mono_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --with-mono-basic-path* )
+      mono_basic_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --with-manual-gallium=yes | --with-manual-gallium )
+      build_gallium=0
+      configure_gallium=0 ;;
+    --with-manual-gallium=build )
+      build_gallium=1
+      configure_gallium=0 ;;
+    --with-gallium-path* )
+      gallium_path=$(echo $arg|sed -e 's,.*=,,') ;;
+    --with-sgen=yes | --with-sgen )
+      mono_flags="--with-moon-gc=sgen" ;;
+    --with-cairo=system )
+      build_cairo=0 ;;
+    --with-curl=system )
+      build_curl=0 ;;
+  esac
+done
+
+
+
+
 if [ -n "$MONO_PATH" ]; then
 	# from -> /mono/lib:/another/mono/lib
 	# to -> /mono /another/mono
@@ -132,66 +177,34 @@ if test -d $srcdir/pixman; then
   echo Done running pixman/autogen.sh ...
 fi
 
-if test -d $srcdir/cairo; then
-  echo Running cairo/autogen.sh ...
-  pixmandir=`readlink -n $0`
-  pixmandir=`dirname $pixmandir`/pixman
+if [ $build_cairo -eq 1 ] ; then
+	if test -d $srcdir/cairo; then
+	  echo Running cairo/autogen.sh ...
+	  pixmandir=`readlink -n $0`
+	  pixmandir=`dirname $pixmandir`/pixman
 
-  old_pkg=$PKG_CONFIG_PATH
-  PKG_CONFIG_PATH=$pixmandir
-  export PKG_CONFIG_PATH
+	  old_pkg=$PKG_CONFIG_PATH
+	  PKG_CONFIG_PATH=$pixmandir
+	  export PKG_CONFIG_PATH
 
-  if test -n "$old_pkg"; then 
-      PKG_CONFIG_PATH=$pixmandir:$old_pkg
-      export PKG_CONFIG_PATH
+	  if test -n "$old_pkg"; then
+	      PKG_CONFIG_PATH=$pixmandir:$old_pkg
+	      export PKG_CONFIG_PATH
+	  fi
+
+	  (cd $srcdir/cairo ; NOCONFIGURE=1 ./autogen.sh "$@")
+
+	  echo Done running cairo/autogen.sh ...
+	fi
+fi
+
+if [ $build_curl -eq 1 ] ; then
+  if test -d $srcdir/curl; then
+    echo Running curl/buildconf ...
+    (cd $srcdir/curl ; ./buildconf )
+    echo Done running curl/buildconf ...
   fi
-
-  (cd $srcdir/cairo ; NOCONFIGURE=1 ./autogen.sh "$@")
-
-  echo Done running cairo/autogen.sh ...
 fi
-
-if test -d $srcdir/curl; then
-  echo Running curl/buildconf ...
-  (cd $srcdir/curl ; ./buildconf )
-  echo Done running curl/buildconf ...
-fi
-
-configure_mono=1
-build_mono=1
-mono_flags="--with-sgen=no"
-mono_path=../mono
-mcs_path=../mono/mcs
-mono_basic_path=../mono-basic
-configure_gallium=1
-build_gallium=1
-gallium_path=../mesa
-for arg; do
-  case "$arg" in
-    --with-manual-mono=yes | --with-manual-mono )
-      build_mono=0
-      configure_mono=0 ;;
-    --with-manual-mono=build )
-      build_mono=1
-      configure_mono=0 ;;
-    --with-mcs-path* )
-      mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
-    --with-mono-path* )
-      mono_path=$(echo $arg|sed -e 's,.*=,,') ;;
-    --with-mono-basic-path* )
-      mono_basic_path=$(echo $arg|sed -e 's,.*=,,') ;;
-    --with-manual-gallium=yes | --with-manual-gallium )
-      build_gallium=0
-      configure_gallium=0 ;;
-    --with-manual-gallium=build )
-      build_gallium=1
-      configure_gallium=0 ;;
-    --with-gallium-path* )
-      gallium_path=$(echo $arg|sed -e 's,.*=,,') ;;
-    --with-sgen=yes | --with-sgen )
-      mono_flags="--with-moon-gc=sgen" ;;
-  esac
-done
 
 if test ! -d $mono_path; then
 	mono_path=$mcs_path/..
