@@ -1801,10 +1801,8 @@ GenerateGlyphCluster (TextFont *font, GlyphInfo **pglyph, const char *text, int 
 			x0 += glyph->metrics.horiAdvance;
 			prev = glyph;
 			
-#if PLUMB_ME
 			if (!g_unichar_isspace (c))
 				x1 = x0;
-#endif
 		}
 		
 		moon_close_path (cluster->path);

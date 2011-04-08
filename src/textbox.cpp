@@ -777,10 +777,8 @@ static bool
 is_start_of_word (TextBuffer *buffer, int index)
 {
 	// A 'word' starts with an AlphaNumeric or some punctuation symbols immediately preceeded by lwsp
-#if PLUMB_ME
 	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
 		return false;
-#endif
 	
 	switch (g_unichar_type (buffer->text[index])) {
 	case G_UNICODE_LOWERCASE_LETTER:
@@ -840,7 +838,6 @@ TextBoxBase::CursorNextWord (int cursor)
 #else
 	i = cursor;
 	
-#if PLUMB_ME
 	// skip to the end of the current word
 	while (i < cr && !g_unichar_isspace (buffer->text[i]))
 		i++;
@@ -852,7 +849,6 @@ TextBoxBase::CursorNextWord (int cursor)
 	// find the start of the next word
 	while (i < cr && !is_start_of_word (buffer, i))
 		i++;
-#endif
 #endif
 	
 	return i;
@@ -900,20 +896,16 @@ TextBoxBase::CursorPrevWord (int cursor)
 	
 	if (cursor < buffer->len) {
 		// skip to the beginning of this word
-#if PLUMB_ME
 		while (i > begin && !g_unichar_isspace (buffer->text[i - 1]))
 			i--;
-#endif
 		
 		if (i < cursor && is_start_of_word (buffer, i))
 			return i;
 	}
 	
-#if PLUMB_ME
 	// skip to the start of the lwsp
 	while (i > begin && g_unichar_isspace (buffer->text[i - 1]))
 		i--;
-#endif
 	
 	if (i > begin)
 		i--;
