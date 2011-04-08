@@ -55,6 +55,7 @@ GLSurface::Cairo ()
 
 	if (!data) {
 		if (texture) {
+#if !USE_EGL
 			data = (unsigned char *) g_malloc (stride * size[1]);
 
 			glBindTexture (GL_TEXTURE_2D, texture);
@@ -64,6 +65,7 @@ GLSurface::Cairo ()
 				       GL_UNSIGNED_BYTE,
 				       data);
 			glBindTexture (GL_TEXTURE_2D, 0);
+#endif
 		}
 		else {
 			data = (unsigned char *) g_malloc0 (stride * size[1]);
@@ -99,10 +101,12 @@ GLSurface::Texture ()
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
 
+#if !USE_EGL
 	if (data) {
 		g_free (data);
 		data = NULL;
 	}
+#endif
 
 	return texture;
 }

@@ -372,16 +372,23 @@ libmoon_la_SOURCES_GALLIUM =	\
 	context-gallium.cpp	\
 	context-gallium.h
 
-libmoon_la_SOURCES_GLX = 	\
+libmoon_la_SOURCES_GL = 	\
 	surface-gl.cpp	\
 	surface-gl.h	\
 	context-gl.cpp	\
-	context-gl.h    \
+	context-gl.h    
+
+libmoon_la_SOURCES_GLX = 	\
 	surface-glx.cpp	\
 	surface-glx.h	\
 	context-glx.cpp	\
 	context-glx.h
 
+libmoon_la_SOURCES_EGL = 	\
+	surface-egl.cpp	\
+	surface-egl.h	\
+	context-egl.cpp	\
+	context-egl.h
 
 # Conditionally built items are added to the nodist target as they
 # are already in EXTRA_DIST.
@@ -424,8 +431,16 @@ if HAVE_GALLIUM
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GALLIUM)
 endif
 
+if HAVE_GL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GL)
+endif
+
 if HAVE_GLX
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GLX)
+endif
+
+if HAVE_EGL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_EGL)
 endif
 
 EXTRA_DIST = \
@@ -451,12 +466,14 @@ EXTRA_DIST = \
 	$(libmoon_la_SOURCES_PULSEAUDIO) \
 	$(libmoon_la_SOURCES_CURL) \
 	$(libmoon_la_SOURCES_GALLIUM) \
-	$(libmoon_la_SOURCES_GLX)
+	$(libmoon_la_SOURCES_GL) \
+	$(libmoon_la_SOURCES_GLX) \
+	$(libmoon_la_SOURCES_EGL)
 
-libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
-libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 dist_libmoonxpi_la_SOURCES = $(dist_libmoon_la_SOURCES)
 nodist_libmoonxpi_la_SOURCES = $(nodist_libmoon_la_SOURCES)
 

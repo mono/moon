@@ -74,7 +74,7 @@ public:
 	void Flush ();
 
 protected:
-#if !defined(PLATFORM_ANDROID)
+#if !defined(USE_EGL)
 	PFNGLCREATESHADERPROC glCreateShader;
 	PFNGLSHADERSOURCEPROC glShaderSource;
 	PFNGLCOMPILESHADERPROC glCompileShader;
