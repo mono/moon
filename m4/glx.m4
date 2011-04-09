@@ -22,7 +22,10 @@ AC_DEFUN([MOONLIGHT_CHECK_EGL],
 		[If you want to enable support for egl]),
 		[], [with_egl=no])
 
-	AC_DEFINE(USE_EGL, 1, [Include egl support])
+	if test x$with_egl = xyes; then
+		AC_DEFINE(USE_EGL, 1, [Include egl support])
+	fi
+
 	AM_CONDITIONAL(HAVE_GL, [test x$with_egl != xno])
 	AM_CONDITIONAL(HAVE_EGL, [test x$with_egl != xno])
 ])
