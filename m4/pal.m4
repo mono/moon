@@ -80,6 +80,10 @@ elif test "x$with_pal" = "xandroid"; then
 
 	PAL=android
 
+	PKG_CHECK_MODULES(FREETYPE2, freetype2, [
+		AC_DEFINE([HAVE_FREETYPE2], [1], 
+			[Include support for freetype2 in the font manager])
+        ])
 else
 
 	AC_MSG_ERROR([unknown PAL specified])
