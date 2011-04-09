@@ -634,17 +634,28 @@ GLXContext::Paint (MoonSurface *src,
 		   double      x,
 		   double      y)
 {
-	Target *target = Top ()->GetTarget ();
-	Rect   r = target->GetData (NULL);
-	Rect   clip;
+	GLXContext::Project (src, NULL, alpha, x, y);
+}
 
-	Top ()->GetClip (&clip);
+void
+GLXContext::Project (MoonSurface  *src,
+		     const double *matrix,
+		     double       alpha,
+		     double       x,
+		     double       y)
+{
+	GLXSurface *surface = (GLXSurface *) src;
+	Target     *target = Top ()->GetTarget ();
+	Rect       r = target->GetData (NULL);
+	Rect       clip = GetClip ();
+	double     m[16];
 
 	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
-		double m[16];
-		int    x0, y0;
+		int x0, y0;
 
 		GetMatrix (m);
+		if (matrix)
+			Matrix3D::Multiply (m, matrix, m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
 			GLXSurface *surface = (GLXSurface *) src;
@@ -663,55 +674,37 @@ GLXContext::Paint (MoonSurface *src,
 		}
 	}
 
-	ForceCurrent ();
-
-	GLContext::Paint (src, alpha, x, y);
-}
-
-void
-GLXContext::Project (MoonSurface  *src,
-		     const double *matrix,
-		     double       alpha,
-		     double       x,
-		     double       y)
-{
-	GLXSurface *surface = (GLXSurface *) src;
-
 	if (!HasDrawable () && !surface->HasTexture ()) {
-		double m[16];
-		int    x0, y0;
+		int x0, y0;
 
 		GetMatrix (m);
-		Matrix3D::Multiply (m, matrix, m);
+		if (matrix)
+			Matrix3D::Multiply (m, matrix, m);
 
 		// avoid GL rendering to target without previously
 		// allocated hardware drawable
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			Target          *target = Top ()->GetTarget ();
-			Rect            r = Rect (x + x0,
-						  y + y0,
-						  surface->Width (),
-						  surface->Height ());
-			cairo_surface_t *cs = src->Cairo ();
-			cairo_t         *cr = Push (Cairo (r));
+			cairo_matrix_t m;
 
-			cairo_identity_matrix (cr);
-			cairo_translate (cr, x0, y0);
-			cairo_set_operator (cr, target->GetInit () ?
-					    CAIRO_OPERATOR_OVER :
-					    CAIRO_OPERATOR_SOURCE);
-			cairo_set_source_surface (cr, cs, x, y);
-			cairo_paint_with_alpha (cr, alpha);
-			cairo_surface_destroy (cs);
+			cairo_matrix_init_translate (&m, x0, y0);
 
+			Context::Push (Context::AbsoluteTransform (m));
+			Context::Paint (src, alpha, x, y);
 			Context::Pop ();
 			return;
 		}
 	}
 
+	GetDeviceMatrix (m);
+	if (matrix)
+		Matrix3D::Multiply (m, matrix, m);
+
+	if (!GetSourceMatrix (m, m, x, y))
+		return;
+
 	ForceCurrent ();
 
-	GLContext::Project (src, matrix, alpha, x, y);
+	GLContext::Paint (src, m, alpha);
 }
 
 void

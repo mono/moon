@@ -495,19 +495,6 @@ GLContext::Paint (Color *color)
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-void
-GLContext::Paint (MoonSurface *src,
-		  double      alpha,
-		  double      x,
-		  double      y)
-{
-	double m[16];
-
-	Matrix3D::Identity (m);
-
-	Project (src, m, alpha, x, y);
-}
-
 GLuint
 GLContext::GetProjectProgram (double opacity, unsigned yuv)
 {
@@ -567,11 +554,9 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 }
 
 void
-GLContext::Project (MoonSurface  *src,
-		    const double *matrix,
-		    double       alpha,
-		    double       x,
-		    double       y)
+GLContext::Paint (MoonSurface  *src,
+		  const double *matrix,
+		  double       alpha)
 {
 	GLSurface *surface = (GLSurface *) src;
 	GLsizei   width0 = surface->Width ();
@@ -580,7 +565,6 @@ GLContext::Project (MoonSurface  *src,
 	int       n_sampler, i;
 	GLuint    program;
 	GLint     alpha_location;
-	double    m[16];
 
 	if (surface->IsPlanar ()) {
 		program = GetProjectProgram (alpha, 1);
@@ -596,17 +580,12 @@ GLContext::Project (MoonSurface  *src,
 		n_sampler = 1;
 	}
 
-	GetDeviceMatrix (m);
-	Matrix3D::Multiply (m, matrix, m);
-	if (!GetSourceMatrix (m, m, x, y))
-		return;
-
 	SetFramebuffer ();
 	SetViewport ();
 	SetScissor ();
 
 	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupTexCoordData (matrix, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -667,7 +646,39 @@ GLContext::Project (MoonSurface  *src,
 
 	glUseProgram (0);
 
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
+	glBindFramebuffer (GL_FRAMEBUFFER, 0);	
+}
+
+void
+GLContext::Paint (MoonSurface *src,
+		  double      alpha,
+		  double      x,
+		  double      y)
+{
+	double m[16];
+
+	GetDeviceMatrix (m);
+	if (!GetSourceMatrix (m, m, x, y))
+		return;
+
+	GLContext::Paint (src, m, alpha);
+}
+
+void
+GLContext::Project (MoonSurface  *src,
+		    const double *matrix,
+		    double       alpha,
+		    double       x,
+		    double       y)
+{
+	double m[16];
+
+	GetDeviceMatrix (m);
+	Matrix3D::Multiply (m, matrix, m);
+	if (!GetSourceMatrix (m, m, x, y))
+		return;
+
+	GLContext::Paint (src, m, alpha);
 }
 
 GLuint

@@ -133,6 +133,10 @@ protected:
 	GLuint GetEffectProgram (PixelShader *ps);
 	static const char *WritemaskToType (const char *writemask);
 
+	void Paint (MoonSurface  *src,
+		    const double *matrix,
+		    double       alpha);
+
 	float vertices[4][4];
 	float texcoords[4][4];
 
