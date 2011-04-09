@@ -1127,12 +1127,16 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 					s->skip = false;
 					l = l->next;
 				}
+
+				timeout = -1;
+				if (sources != NULL) {
+					AndroidSource *s = (AndroidSource*)sources->data;
+					timeout = s->time_remaining;
+				}
 			}
 
 
 		}
-		// HACK HACK HACK
-		((MoonWindowAndroid *)window)->Paint (state);
 	}
 }
 

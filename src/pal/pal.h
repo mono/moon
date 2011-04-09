@@ -343,6 +343,7 @@ public:
 	void SetPlatformWindowingSystemData (gpointer data) {
 		system_data = data;
 	}
+	gpointer GetPlatformWindowingSystemData () { return system_data; }
 
 protected:
 	gpointer system_data;

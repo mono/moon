@@ -122,7 +122,8 @@ MoonWindowAndroid::Invalidate (Rect r)
 void
 MoonWindowAndroid::ProcessUpdates ()
 {
-	// FIXME
+	android_app* state = (android_app*) Runtime::GetWindowingSystem()->GetPlatformWindowingSystemData ();
+	Paint (state);
 }
 
 gboolean
