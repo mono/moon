@@ -84,7 +84,29 @@ BitmapSource::Invalidate ()
 	image_surface = cairo_image_surface_create_for_data ((unsigned char *) GetBitmapData (), CAIRO_FORMAT_ARGB32, 
 		GetPixelWidth (), GetPixelHeight (), GetPixelWidth () * 4);
 
+	cache.Release ();
 	Emit (BitmapSource::PixelDataChangedEvent);
+}
+
+MoonSurface *
+BitmapSource::GetSurface (Context *ctx)
+{
+	MoonSurface *surface;
+	
+	surface = ctx->Lookup (&cache);
+	if (surface)
+		return surface;
+	
+	ctx->Push (Context::Group (Rect (0,
+					 0,
+					 GetPixelWidth (),
+					 GetPixelHeight ())));
+	ctx->Blit ((unsigned char *) GetBitmapData (), GetPixelWidth () * 4);
+	ctx->Pop (&surface);
+	ctx->Replace (&cache, surface);
+	surface->unref ();
+
+	return ctx->Lookup (&cache);
 }
 
 };

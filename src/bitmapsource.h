@@ -18,6 +18,7 @@
 
 #include "dependencyobject.h"
 #include "imagesource.h"
+#include "context.h"
 
 namespace Moonlight {
 
@@ -28,6 +29,7 @@ class BitmapSource : public ImageSource {
 	bool own_data; // if true, we free in the dtor.
  protected:
 	cairo_surface_t *image_surface;
+	Context::Cache cache;
 
 	/* @GeneratePInvoke,ManagedAccess=Protected */
 	BitmapSource ();
@@ -60,6 +62,7 @@ class BitmapSource : public ImageSource {
 	virtual void Invalidate ();
 
 	virtual cairo_surface_t *GetImageSurface () { return image_surface; }
+	MoonSurface *GetSurface (Context *ctx);
 	virtual void OnIsAttachedChanged (bool value);
 };
 
