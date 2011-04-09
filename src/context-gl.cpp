@@ -755,6 +755,9 @@ GLContext::Blur (MoonSurface *src,
 		return;
 	}
 
+	// convolve program doesn't support planar surfaces
+	g_assert (!surface->IsPlanar ());
+
 	program = GetConvolveProgram (size);
 
 	GetDeviceMatrix (m);
@@ -965,6 +968,9 @@ GLContext::DropShadow (MoonSurface *src,
 	double       m[16];
 
 	size = ComputeGaussianSamples (radius, precision, values);
+
+	// convolve program doesn't support planar surfaces
+	g_assert (!surface->IsPlanar ());
 
 	program = GetConvolveProgram (size);
 
@@ -1693,6 +1699,9 @@ GLContext::ShaderEffect (MoonSurface *src,
 
 	g_assert (n_constant <= MAX_CONSTANTS);
 	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
+
+	// effect programs don't support planar surfaces
+	g_assert (!surface->IsPlanar ());
 
 	GetDeviceMatrix (m);
 	if (!GetSourceMatrix (m, m, x, y))
