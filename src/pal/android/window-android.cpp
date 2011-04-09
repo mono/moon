@@ -235,10 +235,8 @@ MoonWindowAndroid::SetStyle (WindowStyle style)
 
 #ifdef USE_EGL
 void
-MoonWindowAndroid::Paint (gpointer data)
+MoonWindowAndroid::Paint (android_app *app)
 {
-	struct android_app *app = (struct android_app *) data;
-
 	if (app->window == NULL)
 		return;
 
