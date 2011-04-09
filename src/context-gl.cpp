@@ -584,9 +584,10 @@ GLContext::Project (MoonSurface  *src,
 
 	if (surface->IsPlanar ()) {
 		program = GetProjectProgram (alpha, 1);
-		texture[0] = surface->TextureY ();
-		texture[1] = surface->TextureU ();
-		texture[2] = surface->TextureV ();
+
+		for (i = 0; i < 3; i++)
+			texture[i] = surface->TextureYUV (i);
+
 		n_sampler = 3;
 	}
 	else {
