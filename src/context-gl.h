@@ -116,6 +116,8 @@ protected:
 				double       du,
 				double       dv);
 
+	static int PixelAlignment (int stride);
+
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
 			     const GLchar **str);

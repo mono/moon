@@ -266,6 +266,17 @@ GLContext::Clear (Color *color)
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
+int
+GLContext::PixelAlignment (int stride)
+{
+	int alignment = 8;
+
+	while (stride % alignment)
+		alignment >>= 1;
+
+	return alignment;
+}
+
 void
 GLContext::Blit (unsigned char *data,
 		 int           stride)
