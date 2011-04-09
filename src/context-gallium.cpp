@@ -899,7 +899,7 @@ GalliumContext::Blur (MoonSurface *src,
 	cso_set_vertex_shader_handle (cso, tex_vs);
 	cso_set_fragment_shader_handle (cso, GetConvolveShader (size));
 
-	Context::Push (Group (r), intermediate);
+	Push (Group (r), intermediate);
 
 	cso_set_blend (cso, &blend_src);
 	cso_single_sampler (cso, 0, &convolve_sampler);
@@ -1114,7 +1114,7 @@ GalliumContext::DropShadow (MoonSurface *src,
 	cso_save_viewport (cso);
 	cso_save_rasterizer (cso);
 
-	Context::Push (Group (r), intermediate);
+	Push (Group (r), intermediate);
 
 	cso_set_blend (cso, &blend_src);
 	cso_single_sampler (cso, 0, &convolve_sampler);
