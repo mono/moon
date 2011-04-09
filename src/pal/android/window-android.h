@@ -19,6 +19,8 @@
 #include "window.h"
 #include "runtime.h"
 
+#include "pal-android.h"
+
 #ifdef USE_GALLIUM
 struct pipe_screen;
 #endif
@@ -74,7 +76,7 @@ public:
 	virtual gpointer GetPlatformWindow ();
 
 	// FIXME: This shouldn't be public
-	void Paint (gpointer app);
+	void Paint (android_app* app);
 private:
 #if !USE_EGL
 	void CreateCairoContext ();

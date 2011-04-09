@@ -447,6 +447,11 @@ public:
 		if (!window || !window->GetSurface())
 			return MoonEventNotHandled;
 
+		g_debug ("MoonButtonEvent (action= %s, pressure= %g, x= %g, y= %g)",
+			 (this->action & AMOTION_EVENT_ACTION_MASK) == AMOTION_EVENT_ACTION_UP ? "AMOTION_EVENT_ACTION_UP" : "AMOTION_EVENT_ACTION_DOWN",
+			 pressure,
+			 x, y);
+
 		return IsRelease () ? window->GetSurface()->HandleUIButtonRelease (this) : window->GetSurface()->HandleUIButtonPress (this);
 	}
 
@@ -531,6 +536,10 @@ public:
 	{
 		if (!window || !window->GetSurface())
 			return MoonEventNotHandled;
+
+		g_debug ("MoonMotionEvent (pressure= %g, x= %g, y= %g)",
+			 pressure,
+			 x, y);
 
 		return window->GetSurface()->HandleUIMotion (this);
 	}
