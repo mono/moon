@@ -589,9 +589,7 @@ GLContext::Project (MoonSurface  *src,
 	GLint     alpha_location;
 	double    m[16];
 
-	if (surface->TextureY () &&
-	    surface->TextureU () &&
-	    surface->TextureV ()) {
+	if (surface->IsPlanar ()) {
 		program = GetProjectProgram (alpha, 1);
 		texture[0] = surface->TextureY ();
 		texture[1] = surface->TextureU ();
