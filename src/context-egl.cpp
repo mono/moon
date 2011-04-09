@@ -91,9 +91,14 @@ MoonEGLContext::ForceCurrent ()
 		MakeCurrent ();
 }
 
+const char *
+MoonEGLContext::ProgramPrecisionString ()
+{
+	return "precision mediump float;";
+}
+
 void
-MoonEGLContext::SetupVertexData (const double *matrix,
-			     double       x,
+MoonEGLContext::SetupVertexData (double       x,
 			     double       y,
 			     double       width,
 			     double       height)
@@ -103,9 +108,7 @@ MoonEGLContext::SetupVertexData (const double *matrix,
 	Rect        r = target->GetData (&ms);
 	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
 
-#if PLUMB_ME // kangaroo
-	GLContext::SetupVertexData (matrix, x, y, width, height);
-#endif
+	GLContext::SetupVertexData (x, y, width, height);
 
 	if (dst->GetEGLDisplay ()) {
 		int i;
@@ -173,7 +176,7 @@ MoonEGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (NULL, 0, 0, width0, height0);
+		SetupVertexData (0, 0, width0, height0);
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -228,8 +231,7 @@ MoonEGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (NULL,
-				 rSrc.x - r.x,
+		SetupVertexData (rSrc.x - r.x,
 				 rSrc.y - r.y,
 				 width0,
 				 height0);
@@ -492,72 +494,6 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 	GLContext::BlitYV12 (data, stride);
 
 	ms->unref ();
-}
-
-void
-MoonEGLContext::Blend (Color *color)
-{
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	Rect        clip;
-
-	Top ()->GetClip (&clip);
-
-	if (!target->GetInit () && r == clip) {
-		// mark target as initialized
-		target->SetInit (ms);
-	}
-
-	ForceCurrent ();
-
-#if PLUMB_ME // kangaroo
-	GLContext::Blend (color);
-#endif
-
-	ms->unref ();
-}
-
-void
-MoonEGLContext::Blend (MoonSurface *src,
-		   double      alpha,
-		   double      x,
-		   double      y)
-{
-	Target *target = Top ()->GetTarget ();
-	Rect   r = target->GetData (NULL);
-	Rect   clip;
-
-	Top ()->GetClip (&clip);
-
-	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
-		double m[16];
-		int    x0, y0;
-
-		GetMatrix (m);
-
-		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			MoonEGLSurface *surface = (MoonEGLSurface *) src;
-			Rect       r = Rect (x + x0,
-					     y + y0,
-					     surface->Width (),
-					     surface->Height ());
-
-			// matching dimensions and no transformation allow us
-			// to set source as initial state of target surface when
-			// it is not already initialized.
-			if (r == clip) {
-				target->SetInit (src);
-				return;
-			}
-		}
-	}
-
-	ForceCurrent ();
-
-#if PLUMB_ME // kangaroo
-	GLContext::Blend (src, alpha, x, y);
-#endif
 }
 
 void

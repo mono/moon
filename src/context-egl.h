@@ -39,13 +39,6 @@ public:
 	void BlitYV12 (unsigned char *data[],
 		       int           stride[]);
 
-	void Blend (Color *color);
-
-	void Blend (MoonSurface *src,
-		    double      alpha,
-		    double      x,
-		    double      y);
-
 	void Project (MoonSurface  *src,
 		      const double *matrix,
 		      double       alpha,
@@ -79,11 +72,11 @@ public:
 	void Flush ();
 
 protected:
-	void SetupVertexData (const double *matrix,
-			      double       x,
+	void SetupVertexData (double       x,
 			      double       y,
 			      double       width,
 			      double       height);
+	const char *ProgramPrecisionString ();
 	void SetFramebuffer ();
 	void SetScissor ();
 	void ForceCurrent ();
