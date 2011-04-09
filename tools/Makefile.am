@@ -8,7 +8,7 @@ if INCLUDE_MANAGED_CODE
 SUBDIRS += xamlg xaml2html mxap unsign sockpol
 endif
 
-if HAVE_GTKSHARP
+if HAVE_GTK_SHARP
 SUBDIRS += munxap
 endif
 
