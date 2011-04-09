@@ -131,9 +131,11 @@ GLSurface::AllocYUV ()
 			      GL_LUMINANCE,
 			      GL_UNSIGNED_BYTE,
 			      NULL);
+#if PLUMB_ME // kangaroo
 		glTexParameterfv (GL_TEXTURE_2D,
 				  GL_TEXTURE_BORDER_COLOR,
 				  borderY);
+#endif
 		for (i = 1; i < 3; i++) {
 			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
 			glTexImage2D (GL_TEXTURE_2D,
@@ -145,9 +147,11 @@ GLSurface::AllocYUV ()
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
+#if PLUMB_ME // kangaroo
 			glTexParameterfv (GL_TEXTURE_2D,
 					  GL_TEXTURE_BORDER_COLOR,
 					  borderUV);
+#endif
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}

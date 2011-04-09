@@ -103,7 +103,9 @@ MoonEGLContext::SetupVertexData (const double *matrix,
 	Rect        r = target->GetData (&ms);
 	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
 
+#if PLUMB_ME // kangaroo
 	GLContext::SetupVertexData (matrix, x, y, width, height);
+#endif
 
 	if (dst->GetEGLDisplay ()) {
 		int i;
@@ -509,7 +511,9 @@ MoonEGLContext::Blend (Color *color)
 
 	ForceCurrent ();
 
+#if PLUMB_ME // kangaroo
 	GLContext::Blend (color);
+#endif
 
 	ms->unref ();
 }
@@ -551,7 +555,9 @@ MoonEGLContext::Blend (MoonSurface *src,
 
 	ForceCurrent ();
 
+#if PLUMB_ME // kangaroo
 	GLContext::Blend (src, alpha, x, y);
+#endif
 }
 
 void

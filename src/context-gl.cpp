@@ -635,10 +635,12 @@ GLContext::Project (MoonSurface  *src,
 				 GL_LINEAR);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				 GL_LINEAR);
+#if PLUMB_ME // kangaroo
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 				 GL_CLAMP_TO_BORDER);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
 				 GL_CLAMP_TO_BORDER);
+#endif
 
 		glUniform1i (sampler_location, i);
 	}
