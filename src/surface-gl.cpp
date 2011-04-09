@@ -97,6 +97,12 @@ GLSurface::Texture ()
 	return texture;
 }
 
+bool
+GLSurface::IsPlanar ()
+{
+	return (textureYUV[0] && textureYUV[1] && textureYUV[2]);
+}
+
 void
 GLSurface::AllocYUV ()
 {

@@ -32,6 +32,7 @@ public:
 	GLuint Texture ();
 
 	// Planar YUV
+	bool IsPlanar ();
 	void AllocYUV ();
 	GLuint TextureY ();
 	GLuint TextureU ();
