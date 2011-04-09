@@ -31,6 +31,8 @@ struct FontStyleInfo {
 	int set;
 };
 
+bool FontWeightIsBold (FontWeights weight);
+
 void font_style_info_init (FontStyleInfo *info, const char *family);
 
 void font_style_info_parse (FontStyleInfo *info, const char *style, bool family);

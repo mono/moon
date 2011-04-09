@@ -27,8 +27,6 @@ struct ManagedStreamCallbacks;
 class FontManager;
 class FontFace;
 
-bool FontWeightIsBold (FontWeights weight);
-
 struct GlyphMetrics {
 	double horiBearingX;
 	//double horiBearingY;

@@ -20,6 +20,7 @@
 
 #include "timesource.h"
 #include "moon-path.h"
+#include "font-utils.h"
 #include "debug.h"
 #include "fonts.h"
 
