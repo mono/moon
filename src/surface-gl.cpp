@@ -107,39 +107,32 @@ GLint
 GLSurface::TextureYUV (int i)
 {
 	if (!textureYUV[i]) {
-		GLfloat borderY[] = { 0.0625f, 0.0625f, 0.0625f, 0.0625f };
-		GLfloat borderUV[] = { 0.5f , 0.5f, 0.5f, 0.5f };
-		int     i;
+		int width[] = { size[0], size[0] / 2, size[0] / 2 };
+		int height[] = { size[1], size[1] / 2, size[1] / 2 };
+		int i;
 
 		glGenTextures (3, textureYUV);
 
-		glBindTexture (GL_TEXTURE_2D, textureYUV[0]);
-		glTexImage2D (GL_TEXTURE_2D,
-			      0,
-			      GL_LUMINANCE,
-			      size[0],
-			      size[1],
-			      0,
-			      GL_LUMINANCE,
-			      GL_UNSIGNED_BYTE,
-			      NULL);
-		glTexParameterfv (GL_TEXTURE_2D,
-				  GL_TEXTURE_BORDER_COLOR,
-				  borderY);
-		for (i = 1; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
+			GLfloat border[][4] = {
+				{ 0.0625f, 0.0625f, 0.0625f, 0.0625f },
+				{   0.5f ,    0.5f,    0.5f,    0.5f },
+				{   0.5f ,    0.5f,    0.5f,    0.5f }
+			};
+
 			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
 			glTexImage2D (GL_TEXTURE_2D,
 				      0,
 				      GL_LUMINANCE,
-				      size[0] / 2,
-				      size[1] / 2,
+				      width[i],
+				      height[i],
 				      0,
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
 			glTexParameterfv (GL_TEXTURE_2D,
 					  GL_TEXTURE_BORDER_COLOR,
-					  borderUV);
+					  border[i]);
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
