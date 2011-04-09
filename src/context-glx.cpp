@@ -520,14 +520,11 @@ GLXContext::Blit (unsigned char *data,
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface *) ms;
-	Rect        clip;
 
 	ForceCurrent ();
 
-	Top ()->GetClip (&clip);
-
 	// no support for clipping
-	g_assert (r == clip);
+	g_assert (GetClip () == r);
 
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetGLXDrawable ());
@@ -567,15 +564,12 @@ GLXContext::BlitYV12 (unsigned char *data[],
 	int         width[] = { size[0], size[0] / 2, size[0] / 2 };
 	int         height[] = { size[1], size[1] / 2, size[1] / 2 };
 	GLuint      texture[3];
-	Rect        clip;
 	int         i;
 
 	ForceCurrent ();
 
-	Top ()->GetClip (&clip);
-
 	// no support for clipping
-	g_assert (r == clip);
+	g_assert (GetClip () == r);
 
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetGLXDrawable ());

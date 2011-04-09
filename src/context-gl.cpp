@@ -300,12 +300,9 @@ GLContext::Blit (unsigned char *data,
 	Rect            r = target->GetData (&ms);
 	GLSurface       *dst = (GLSurface *) ms;
 	GLuint          texture = dst->Texture ();
-	Rect            clip;
-
-	Top ()->GetClip (&clip);
 
 	// no support for clipping
-	g_assert (r == clip);
+	g_assert (GetClip () == r);
 
 	// row length must be the same as width
 	g_assert (PixelRowLength (stride, dst->Width (), 4) == dst->Width ());
@@ -339,13 +336,10 @@ GLContext::BlitYV12 (unsigned char *data[],
 	int             width[] = { size[0], size[0] / 2, size[0] / 2 };
 	int             height[] = { size[1], size[1] / 2, size[1] / 2 };
 	GLuint          texture[3];
-	Rect            clip;
 	int             i;
 
-	Top ()->GetClip (&clip);
-
 	// no support for clipping
-	g_assert (r == clip);
+	g_assert (GetClip () == r);
 
 	dst->AllocYUV ();
 
