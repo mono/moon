@@ -94,6 +94,7 @@ libmoon_include_headers = 	\
 	pal/capture/pal-linux-capture.h	\
 	pal/capture/pal-linux-audio-capture.h		\
 	pal/capture/v4l2/pal-v4l2-video-capture.h	\
+	pal/fonts/fontconfig/pal-fontconfig.h	\
 	pal/gtk/clipboard-gtk.h	\
 	pal/gtk/config-dialog-gtk.h\
 	pal/gtk/im-gtk.h	\
@@ -325,6 +326,7 @@ libmoon_la_SOURCES_PAL_GTK = \
 	pal/capture/pal-linux-capture.cpp	\
 	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
 	pal/capture/pal-linux-audio-capture.cpp 	\
+	pal/fonts/fontconfig/pal-fontconfig.cpp	\
 	pal/messaging/glib/pal-glib-msg.cpp	\
 	pal/network/dbus/pal-dbus-network.cpp	\
 	pal/network/pal-linux-network.cpp
@@ -344,6 +346,7 @@ libmoon_la_SOURCES_PAL_COCOA = \
 
 libmoon_la_SOURCES_PAL_ANDROID = \
 	pal/android/clipboard-android.cpp	\
+	pal/android/fonts-android.cpp	\
 	pal/android/pal-android.cpp	\
 	pal/android/pixbuf-android.cpp	\
 	pal/android/window-android.cpp

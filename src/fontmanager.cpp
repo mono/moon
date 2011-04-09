@@ -12,10 +12,10 @@
 
 #include <config.h>
 #include <glib.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <ctype.h>
-#include <sys/stat.h>
 
 #include "fontmanager.h"
 #include "font-utils.h"

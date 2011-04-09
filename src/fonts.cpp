@@ -130,11 +130,12 @@ strcase_hash (gconstpointer key)
 	return h;
 }
 
+// FIXME: Maybe the MoonFontService should provide this table...?
 static struct {
 	const char *lang;
-	const char *families[6];
+	const char *families[7];
 } default_fonts[] = {
-	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", NULL } },
+	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", "Droid Sans Fallback", NULL } },
 	{ "ja", { "MS Gothic", "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL } },
 	{ "ko", { "Gulim", "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL } },
 	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL, NULL } },
