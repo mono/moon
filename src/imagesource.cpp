@@ -67,4 +67,10 @@ ImageSource::GetImageSurface ()
 	return NULL;
 }
 
+MoonSurface *
+ImageSource::GetSurface (Context *ctx)
+{
+	return NULL;
+}
+
 };

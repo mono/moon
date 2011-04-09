@@ -18,6 +18,9 @@
 
 namespace Moonlight {
 
+class MoonSurface;
+class Context;
+
 /* @Namespace=System.Windows.Media */
 class ImageSource : public DependencyObject {
  protected:
@@ -36,6 +39,7 @@ class ImageSource : public DependencyObject {
 	virtual void SetPixelHeight (gint32 height);
 
 	virtual cairo_surface_t *GetImageSurface ();
+	virtual MoonSurface *GetSurface (Context *ctx);
 };
 
 };
