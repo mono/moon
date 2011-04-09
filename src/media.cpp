@@ -365,16 +365,67 @@ Image::SetSource (Downloader *downloader, const char *PartName)
 void
 Image::Render (Context *ctx, Region *region)
 {
-	ImageSource *source = GetSource ();
+	ImageSource    *source = GetSource ();
+	Stretch        stretch = GetStretch ();
+	Size           specified (GetActualWidth (), GetActualHeight ());
+	Size           stretched = ApplySizeConstraints (specified);
+	bool           adjust = specified != GetRenderSize ();
+	cairo_matrix_t matrix;
 
-	if (!source)
+	if (source == NULL)
 		return;
 
-	if (source->GetPixelWidth () && source->GetPixelHeight ()) {
-		cairo_t *cr = ctx->Push (Context::Cairo ());
-		Render (cr, region);
-		ctx->Pop ();
+	if (source->GetPixelWidth () == 0 || source->GetPixelHeight () == 0)
+		return;
+
+	if (stretch != StretchUniformToFill)
+		specified = specified.Min (stretched);
+
+	Rect paint = Rect (0, 0, specified.width, specified.height);
+	Rect image = Rect (0,
+			   0,
+			   source->GetPixelWidth (),
+			   source->GetPixelHeight ());
+
+	if (stretch == StretchNone)
+		paint = paint.Union (image);
+
+	Image::ComputeMatrix (&matrix,
+			      paint.width, paint.height,
+			      image.width, image.height,
+			      stretch,
+			      AlignmentXCenter,
+			      AlignmentYCenter);
+
+	if (adjust) {
+		// FIXME: Propagate this properly
+		MoonError error;
+		specified = MeasureOverrideWithError (specified, &error);
+		paint = Rect ((stretched.width - specified.width) * 0.5,
+			      (stretched.height - specified.height) * 0.5,
+			      specified.width,
+			      specified.height);
 	}
+
+	if (stretch == StretchUniformToFill || adjust) {
+		Region bounds = Region (paint.RoundOut ());
+		Rect   box = image.Transform (&matrix).RoundIn ();
+
+		if (bounds.RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
+			cairo_t *cr = ctx->Push (Context::Cairo ());
+			Render (cr, region);
+			ctx->Pop ();
+			return;
+		}
+	}
+
+	MoonSurface *src = source->GetSurface (ctx);
+	if (!src)
+		return;
+
+	ctx->Push (Context::Transform (matrix));
+	ctx->Paint (src, 1.0, 0, 0);
+	ctx->Pop ();
 }
 
 void
