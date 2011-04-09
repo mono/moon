@@ -379,6 +379,7 @@ cat <<EOF
         Capture Service: $pal_capture
 	    Video capture backends: $pal_video_capture
 	    Audio capture backends: $pal_audio_capture
+        Font Service: $pal_font_service
 EOF
 
 # blank line

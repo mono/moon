@@ -84,5 +84,16 @@ private:
 	bool emitting_sources;
 };
 
+class MoonFontServiceAndroid : public MoonFontService {
+	GPtrArray *system_fonts;
+	
+public:
+	MoonFontServiceAndroid ();
+	~MoonFontServiceAndroid ();
+	
+	virtual void ForeachFont (MoonForeachFontCallback foreach, gpointer user_data);
+	virtual MoonFont *FindFont (const FontStyleInfo *pattern);
+};
+
 };
 #endif /* MOON_PAL_ANDROID_H */

@@ -70,6 +70,9 @@
 #elif PAL_DBUS_NETWORKAVAILABILITY
 #include "pal/network/dbus/pal-dbus-network.h"
 #endif
+#if PAL_FONTCONFIG_FONTSERVICE
+#include "pal/fonts/fontconfig/pal-fontconfig.h"
+#endif
 
 #include "pipeline.h"
 #include "context.h"
@@ -2900,7 +2903,15 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 #else
 	g_warning ("This pal doesn't have a network service, you will crash, burn and die a fiery death.");
 #endif
-
+	
+#if PAL_FONTCONFIG_FONTSERVICE
+	font_service = new MoonFontServiceFontconfig ();
+#elif PAL_ANDROID_FONTSERVICE
+	font_service = new MoonFontServiceAndroid ();
+#else
+	g_warning ("This pal doesn't have a font service, you will crash, burn and die a fiery death.");
+#endif
+	
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
 	xaml_init ();
