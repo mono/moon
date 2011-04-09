@@ -569,6 +569,7 @@ public:
 	static MoonCaptureService *GetCaptureService ();
 	/* @GeneratePInvoke */
 	static MoonNetworkService *GetNetworkService ();
+	static MoonFontService *GetFontService ();
 	/* @GeneratePInvoke */
 	static void GFree (void *ptr);
 };

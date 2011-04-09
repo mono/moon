@@ -57,6 +57,7 @@ libmoon_include_headers = 	\
 	fontstretch.h		\
 	fontstyle.h		\
 	fontweight.h		\
+	font-utils.h		\
 	frameworkelement.h 	\
 	gchandle.h		\
 	geometry.h		\
@@ -74,7 +75,7 @@ libmoon_include_headers = 	\
 	managedtypeinfo.h	\
 	media.h			\
 	mediaelement.h		\
-	medialog.h			\
+	medialog.h		\
 	mediaplayer.h		\
 	messaging.h		\
 	moon-curves.h		\
@@ -215,6 +216,7 @@ dist_libmoon_la_SOURCES = 		\
 	eventargs.cpp		\
 	fontmanager.cpp		\
 	fonts.cpp		\
+	font-utils.cpp		\
 	frameworkelement.cpp	\
 	gchandle.cpp		\
 	geometry.cpp		\
@@ -305,6 +307,7 @@ dist_libmoon_la_SOURCES = 		\
 libmoon_la_SOURCES_GTK = 		\
 	pal/gtk/clipboard-gtk.cpp	\
 	pal/gtk/config-dialog-gtk.cpp	\
+	pal/gtk/fonts-gtk.cpp		\
 	pal/gtk/im-gtk.cpp		\
 	pal/gtk/install-dialog-gtk.cpp	\
 	pal/gtk/pal-gtk.cpp		\

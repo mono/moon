@@ -177,16 +177,18 @@ class FontManager {
 	friend class FontFace;
 	
 	GlyphTypefaceCollection *typefaces;
+	GHashTable *known_typefaces;
 	GHashTable *system_faces;
 	GHashTable *resources;
 	GHashTable *faces;
-	FT_Library libft2;
 	char *root;
-	double dpi;
 	
 	FontFace *OpenFontResource (const char *resource, const char *family, int index, FontStretches stretch, FontWeights weight, FontStyles style);
 	FontFace *OpenSystemFont (const char *family, FontStretches stretch, FontWeights weight, FontStyles style);
 	FontFace *OpenFontFace (const char *filename, const char *guid, int index);
+	
+	void AddTypeface (const char *path, int index);
+	static bool add_typeface (const char *path, int index, gpointer user_data);
 	
  public:
 	FontManager ();

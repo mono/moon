@@ -17,14 +17,14 @@
 #include <ctype.h>
 
 #include "fontmanager.h"
+#include "font-utils.h"
 #include "zip/unzip.h"
+#include "factory.h"
 #include "debug.h"
 #include "utils.h"
 #include "list.h"
-#include "factory.h"
+#include "pal.h"
 
-#include <fontconfig/fontconfig.h>
-#include <fontconfig/fcfreetype.h>
 #include FT_TRUETYPE_TABLES_H
 #include FT_TRUETYPE_IDS_H
 #include FT_SFNT_NAMES_H
@@ -74,317 +74,6 @@ static const FT_Matrix italicize = {
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | /*FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT |*/ FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_TARGET_NORMAL)
 
-
-
-//
-// Silverlight -> FontConfig enumeration conversion utilities
-//
-
-#ifndef FC_WEIGHT_EXTRABLACK
-#define FC_WEIGHT_EXTRABLACK 215
-#endif
-#ifndef FC_WEIGHT_ULTRABLACK
-#define FC_WEIGHT_ULTRABLACK FC_WEIGHT_EXTRABLACK
-#endif
-
-// Silverlight accepts negative values ]0,-475[ as bold and everything over 1023 as normal
-#define FONT_LOWER_BOLD_LIMIT	-475
-#define FONT_UPPER_BOLD_LIMIT	1024
-
-bool
-FontWeightIsBold (FontWeights weight)
-{
-	if (weight > FONT_LOWER_BOLD_LIMIT)
-		return weight < 0 || (weight >= FontWeightsSemiBold && weight < FONT_UPPER_BOLD_LIMIT);
-	
-	return false;
-}
-
-static int
-fc_weight (FontWeights weight)
-{
-	if ((weight < 0) && (weight > FONT_LOWER_BOLD_LIMIT))
-		return FC_WEIGHT_BLACK;
-	else if (weight < (FontWeightsThin + FontWeightsLight) / 2)
-		return FC_WEIGHT_ULTRALIGHT;
-	else if (weight < (FontWeightsLight + FontWeightsNormal) / 2)
-		return FC_WEIGHT_LIGHT;
-	else if (weight < (FontWeightsNormal + FontWeightsMedium) / 2)
-		return FC_WEIGHT_NORMAL;
-	else if (weight < (FontWeightsMedium + FontWeightsSemiBold) / 2)
-		return FC_WEIGHT_MEDIUM;
-	else if (weight < (FontWeightsSemiBold + FontWeightsBold) / 2)
-		return FC_WEIGHT_SEMIBOLD;
-	else if (weight < (FontWeightsBold + FontWeightsExtraBold) / 2)
-		return FC_WEIGHT_BOLD;
-	else if (weight < (FontWeightsExtraBold + FontWeightsBlack) / 2)
-		return FC_WEIGHT_ULTRABOLD;
-	else if (weight < FONT_UPPER_BOLD_LIMIT)
-		return FC_WEIGHT_BLACK;
-	else
-		return FC_WEIGHT_NORMAL;
-}
-
-static int
-fc_width (FontStretches stretch)
-{
-	switch (stretch) {
-	case FontStretchesUltraCondensed:
-		return FC_WIDTH_ULTRACONDENSED;
-	case FontStretchesExtraCondensed:
-		return FC_WIDTH_EXTRACONDENSED;
-	case FontStretchesCondensed:
-		return FC_WIDTH_CONDENSED;
-	case FontStretchesSemiCondensed:
-		return FC_WIDTH_SEMICONDENSED;
-	case FontStretchesNormal:
-		return FC_WIDTH_NORMAL;
-#if 0
-	case FontStretchesMedium:
-		return FC_WIDTH_NORMAL;
-#endif
-	case FontStretchesSemiExpanded:
-		return FC_WIDTH_SEMIEXPANDED;
-	case FontStretchesExpanded:
-		return FC_WIDTH_EXPANDED;
-	case FontStretchesExtraExpanded:
-		return FC_WIDTH_EXTRAEXPANDED;
-	case FontStretchesUltraExpanded:
-		return FC_WIDTH_ULTRAEXPANDED;
-	default:
-		return FC_WIDTH_NORMAL;
-	}
-}
-
-static int
-fc_slant (FontStyles style)
-{
-	switch (style) {
-	case FontStylesNormal:
-		return FC_SLANT_ROMAN;
-	// technically Olbique does not exists in SL 1.0 or 2.0 (it's in WPF) but the parser allows it
-	case FontStylesOblique:
-		return FC_SLANT_OBLIQUE;
-	case FontStylesItalic:
-	// Silverlight defaults bad values to Italic
-	default:
-		return FC_SLANT_ITALIC;
-	}
-}
-
-
-//
-// Font-style parser utils
-//
-
-#define Width  (1 << 0)
-#define Weight (1 << 1)
-#define Slant  (1 << 2)
-
-struct FontStyleInfo {
-	char *family_name;
-	FontStretches width;
-	FontWeights weight;
-	FontStyles slant;
-	int set;
-};
-
-static struct {
-	const char *name;
-	size_t len;
-	int type;
-	int value;
-} style_hints[] = {
-	// widths
-	{ "Ultra-Condensed", 15, Width,  FontStretchesUltraCondensed },
-	{ "Extra-Condensed", 15, Width,  FontStretchesExtraCondensed },
-	{ "Semi-Condensed",  14, Width,  FontStretchesSemiCondensed  },
-	{ "UltraCondensed",  14, Width,  FontStretchesUltraCondensed },
-	{ "ExtraCondensed",  14, Width,  FontStretchesExtraCondensed },
-	{ "SemiCondensed",   13, Width,  FontStretchesSemiCondensed  },
-	{ "Condensed",        9, Width,  FontStretchesCondensed      },
-	{ "Cond",             4, Width,  FontStretchesCondensed      },
-	{ "Ultra-Expanded",  14, Width,  FontStretchesUltraExpanded  },
-	{ "Extra-Expanded",  14, Width,  FontStretchesExtraExpanded  },
-	{ "Semi-Expanded",   13, Width,  FontStretchesSemiExpanded   },
-	{ "UltraExpanded",   13, Width,  FontStretchesUltraExpanded  },
-	{ "ExtraExpanded",   13, Width,  FontStretchesExtraExpanded  },
-	{ "SemiExpanded",    12, Width,  FontStretchesSemiExpanded   },
-	{ "Expanded",         8, Width,  FontStretchesExpanded       },
-	
-	// weights
-	{ "Thin",             4, Weight, FontWeightsThin             },
-	{ "Ultra-Light",     11, Weight, FontWeightsExtraLight       },
-	{ "Extra-Light",     11, Weight, FontWeightsExtraLight       },
-	{ "UltraLight",      10, Weight, FontWeightsExtraLight       },
-	{ "ExtraLight",      10, Weight, FontWeightsExtraLight       },
-	{ "Light",            5, Weight, FontWeightsLight            },
-	{ "Book",             4, Weight, FontWeightsNormal           },
-	{ "Medium",           6, Weight, FontWeightsMedium           },
-	{ "Demi-Bold",        9, Weight, FontWeightsSemiBold         },
-	{ "Semi-Bold",        9, Weight, FontWeightsSemiBold         },
-	{ "DemiBold",         8, Weight, FontWeightsSemiBold         },
-	{ "SemiBold",         8, Weight, FontWeightsSemiBold         },
-	{ "Bold",             4, Weight, FontWeightsBold             },
-	{ "Extra-Bold",      10, Weight, FontWeightsExtraBold        },
-	{ "Ultra-Bold",      10, Weight, FontWeightsExtraBold        },
-	{ "ExtraBold",        9, Weight, FontWeightsExtraBold        },
-	{ "UltraBold",        9, Weight, FontWeightsExtraBold        },
-	{ "Black",            5, Weight, FontWeightsBlack            },
-	{ "Heavy",            5, Weight, FontWeightsBlack            },
-	{ "Extra-Black",     11, Weight, FontWeightsExtraBlack       },
-	{ "Ultra-Black",     11, Weight, FontWeightsExtraBlack       },
-	{ "ExtraBlack",      10, Weight, FontWeightsExtraBlack       },
-	{ "UltraBlack",      10, Weight, FontWeightsExtraBlack       },
-	
-	// slants
-	{ "Oblique",          7, Slant,  FontStylesOblique           },
-	{ "Italic",           6, Slant,  FontStylesItalic            },
-	{ "Kursiv",           6, Slant,  FontStylesItalic            },
-	
-	// changes nothing
-	{ "Regular",          7, 0,      0                           },
-	{ "W3",               2, 0,      0                           },  // as in Hiragino Mincho Pro W3
-};
-
-static void
-style_info_parse (const char *style, FontStyleInfo *info, bool family)
-{
-	register const char *inptr = style;
-	const char *first_hint = NULL;
-	const char *token;
-	guint tokens = 0;
-	size_t len;
-	guint i;
-	
-	if (!style)
-		return;
-	
-	while (*inptr) {
-		while (*inptr && isspace ((int) ((unsigned char) *inptr)))
-			inptr++;
-		
-		if (*inptr == '\0')
-			break;
-		
-		token = inptr;
-		while (*inptr && !isspace ((int) ((unsigned char) *inptr)))
-			inptr++;
-		
-		tokens++;
-		
-		if (family && tokens == 1) {
-			// if parsing the family_name, first token must not be interpreted as a style hint
-			continue;
-		}
-		
-		len = (size_t) (inptr - token);
-		for (i = 0; i < G_N_ELEMENTS (style_hints); i++) {
-			if (style_hints[i].len == len && !strncmp (style_hints[i].name, token, len)) {
-				switch (style_hints[i].type) {
-				case Width:
-					info->width = (FontStretches) style_hints[i].value;
-					info->set |= Width;
-					break;
-				case Weight:
-					info->weight = (FontWeights) style_hints[i].value;
-					info->set |= Weight;
-					break;
-				case Slant:
-					info->slant = (FontStyles) style_hints[i].value;
-					info->set |= Slant;
-					break;
-				}
-				
-				if (!first_hint)
-					first_hint = token;
-				break;
-			}
-		}
-		
-		if (family && i == G_N_ELEMENTS (style_hints)) {
-			// if we come across an unknown style hint when
-			// parsing the family_name, assume that any previously
-			// found style hints were not actually style hints,
-			// but instead just part of the family name.
-			info->width = FontStretchesNormal;
-			info->weight = FontWeightsNormal;
-			info->slant = FontStylesNormal;
-			info->set = 0;
-			
-			first_hint = NULL;
-		}
-	}
-	
-	if (family) {
-		if (first_hint)
-			info->family_name = g_strndup (style, first_hint - style);
-		else
-			info->family_name = g_strdup (style);
-		
-		g_strstrip (info->family_name);
-	}
-}
-
-#ifdef LOGGING
-static const char *
-style_info_to_string (FontStretches stretch, FontWeights weight, FontStyles style)
-{
-	static char namebuf[256];
-	guint i = 0;
-	char *p;
-	
-	namebuf[0] = '\0';
-	p = namebuf;
-	
-	if (stretch != FontStretchesNormal) {
-		while (style_hints[i].type == Width) {
-			if (style_hints[i].value == stretch) {
-				p = g_stpcpy (p, style_hints[i].name);
-				break;
-			}
-			
-			i++;
-		}
-	}
-	
-	if (weight != FontWeightsNormal) {
-		while (style_hints[i].type != Weight)
-			i++;
-		
-		while (style_hints[i].type == Weight) {
-			if (style_hints[i].value == weight) {
-				if (p != namebuf)
-					*p++ = ' ';
-				
-				p = g_stpcpy (p, style_hints[i].name);
-				break;
-			}
-			
-			i++;
-		}
-	}
-	
-	if (style != FontStylesNormal) {
-		while (style_hints[i].type != Slant)
-			i++;
-		
-		while (i < G_N_ELEMENTS (style_hints)) {
-			if (style_hints[i].value == style) {
-				if (p != namebuf)
-					*p++ = ' ';
-				
-				p = g_stpcpy (p, style_hints[i].name);
-				break;
-			}
-			
-			i++;
-		}
-	}
-	
-	return namebuf;
-}
-#endif
 
 static bool
 is_odttf (const char *name)
@@ -581,22 +270,18 @@ FaceInfo::FaceInfo (FontFile *file, FT_Face face, int index)
 	LOG_FONT (stderr, "      * indexing %s[%d]: family=\"%s\"; style=\"%s\"\n",
 		  path_get_basename (file->path), index, face->family_name, face->style_name);
 	
-	style.width = FontStretchesNormal;
-	style.weight = FontWeightsNormal;
-	style.slant = FontStylesNormal;
-	style.family_name = NULL;
-	style.set = 0;
+	font_style_info_init (&style, NULL);
 	
 	// extract whatever little style info we can from the family name
-	style_info_parse (face->family_name, &style, true);
+	font_style_info_parse (&style, face->family_name, true);
 	
 	// style info parsed from style_name overrides anything we got from family_name
-	style_info_parse (face->style_name, &style, false);
+	font_style_info_parse (&style, face->style_name, false);
 	
 	family_name = style.family_name;
 	
 	LOG_FONT (stderr, "        * indexed as %s; %s\n", family_name,
-		  style_info_to_string (style.width, style.weight, style.slant));
+		  font_style_info_to_string (style.stretch, style.weight, style.style));
 	
 	this->index = index;
 	this->file = file;
@@ -714,17 +399,13 @@ GlyphTypeface::GlyphTypeface (const char *path, int index, FontFace *face)
 {
 	FontStyleInfo info;
 	
-	info.width = FontStretchesNormal;
-	info.weight = FontWeightsNormal;
-	info.slant = FontStylesNormal;
-	info.family_name = NULL;
-	info.set = 0;
+	font_style_info_init (&info, NULL);
 	
 	// extract whatever little style info we can from the family name
-	style_info_parse (face->GetFamilyName (), &info, true);
+	font_style_info_parse (&info, face->GetFamilyName (), true);
 	
 	// style info parsed from style_name overrides anything we got from family_name
-	style_info_parse (face->GetStyleName (), &info, false);
+	font_style_info_parse (&info, face->GetStyleName (), false);
 	
 	resource = g_strdup_printf ("%s%c%d", path, index > 0 ? '#' : '\0', index);
 	if (!face->GetVersion (&ver_major, &ver_minor)) {
@@ -733,9 +414,9 @@ GlyphTypeface::GlyphTypeface (const char *path, int index, FontFace *face)
 	}
 	
 	family_name = info.family_name;
-	stretch = info.width;
+	stretch = info.stretch;
 	weight = info.weight;
-	style = info.slant;
+	style = info.style;
 }
 
 GlyphTypeface::GlyphTypeface (const GlyphTypeface *typeface)
@@ -1015,13 +696,13 @@ FontFace::GetCharFromIndex (guint32 index)
 guint32
 FontFace::GetCharIndex (gunichar unichar)
 {
-	return FcFreeTypeCharIndex (face, unichar);
+	return Runtime::GetFontService ()->GetCharIndex (face, unichar);
 }
 
 bool
 FontFace::HasChar (gunichar unichar)
 {
-	return FcFreeTypeCharIndex (face, unichar) != 0;
+	return GetCharIndex (unichar) != 0;
 }
 
 void
@@ -1329,22 +1010,11 @@ FontResource::operator!= (const FontResource &v) const
 
 FontManager::FontManager ()
 {
-	FcPattern *pattern;
-	
 	resources = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, font_index_destroy);
 	faces = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, font_face_destroy);
 	system_faces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	
-	FT_Init_FreeType (&libft2);
-	
-	pattern = FcPatternBuild (NULL, FC_FAMILY, FcTypeString, "Sans",
-				  FC_SIZE, FcTypeDouble, 10.0, NULL);
-	
-	if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
-		dpi = 72.0;
-	
-	FcPatternDestroy (pattern);
-	
+	known_typefaces = NULL;
 	typefaces = NULL;
 	root = NULL;
 }
@@ -1357,7 +1027,6 @@ FontManager::~FontManager ()
 	g_hash_table_destroy (system_faces);
 	g_hash_table_destroy (resources);
 	g_hash_table_destroy (faces);
-	FT_Done_FreeType (libft2);
 	
 	if (root) {
 		RemoveDir (root);
@@ -1525,6 +1194,7 @@ IndexFontFile (FT_Library libft2, const char *name, const char *path)
 void
 FontManager::AddResource (const char *resource_id, const char *path)
 {
+	FT_Library libft2 = Runtime::GetFontService ()->libft2;
 	FontIndex *index;
 	struct stat st;
 	
@@ -1645,58 +1315,6 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	return resource;
 }
 
-static int
-style_diff (FontStyleInfo *actual, FontStyleInfo *desired)
-{
-#if 0
-	// we convert to FontConfig for 2 reasons:
-	// 1. negative values and values > 1023
-	// 2. smaller ranges
-	int weight = abs (fc_weight (actual->weight) - fc_weight (desired->weight));
-	
-	if (actual->slant == desired->slant)
-		return weight;
-	
-	if (actual->slant == FontStylesNormal) {
-		// we can emulate italic/oblique, but we would still prefer the real
-		// italic font if we can find it so apply a slight penalty
-		return 1000 + weight;
-	}
-	
-	// ouch, apply a huge penalty
-	return 1000000 + weight;
-#else
-	// convert to FontConfig values so that each style property fits within 8 bits
-	int weight = abs (fc_weight (actual->weight) - fc_weight (desired->weight));
-	int width = abs (fc_width (actual->width) - fc_width (desired->width));
-	int slant = abs (fc_slant (actual->slant) - fc_slant (desired->slant));
-	
-	// weight has the highest priority, followed by weight and then slant
-	return ((width & 0xff) << 16) | ((weight & 0xff) << 8) | (slant & 0xff);
-#endif
-}
-
-static void
-canon_font_family_and_style (FontStyleInfo *desired, const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
-{
-	desired->width = FontStretchesNormal;
-	desired->weight = FontWeightsNormal;
-	desired->slant = FontStylesNormal;
-	desired->family_name = NULL;
-	desired->set = 0;
-	
-	// extract whatever little style info we can from the family name
-	style_info_parse (family, desired, true);
-	
-	// override style with user-specified attributes
-	if (!(desired->set & Width))
-		desired->width = stretch;
-	if (!(desired->set & Weight))
-		desired->weight = weight;
-	if (!(desired->set & Slant))
-		desired->slant = style;
-}
-
 static FaceInfo *
 IndexMatchFace (FontIndex *index, const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
 {
@@ -1707,19 +1325,19 @@ IndexMatchFace (FontIndex *index, const char *family, FontStretches stretch, Fon
 	int diff;
 	guint i;
 	
-	LOG_FONT (stderr, "  * searching index for %s; %s\n", family, style_info_to_string (stretch, weight, style));
+	LOG_FONT (stderr, "  * searching index for %s; %s\n", family, font_style_info_to_string (stretch, weight, style));
 	
-	canon_font_family_and_style (&desired, family, stretch, weight, style);
+	font_style_info_hydrate (&desired, family, stretch, weight, style);
 	
 	LOG_FONT (stderr, "    * canonicalized family/style: %s; %s\n", desired.family_name,
-		  style_info_to_string (desired.width, desired.weight, desired.slant));
+		  font_style_info_to_string (desired.stretch, desired.weight, desired.style));
 	
 	while (file != NULL) {
 		for (i = 0; i < file->faces->len; i++) {
 			face = (FaceInfo *) file->faces->pdata[i];
 			
 			if (!g_ascii_strcasecmp (face->family_name, desired.family_name)) {
-				diff = style_diff (&face->style, &desired);
+				diff = font_style_info_diff (&face->style, &desired);
 				if (diff < closest) {
 					closest = diff;
 					best = face;
@@ -1738,6 +1356,7 @@ IndexMatchFace (FontIndex *index, const char *family, FontStretches stretch, Fon
 FontFace *
 FontManager::OpenFontFace (const char *filename, const char *guid, int index)
 {
+	FT_Library libft2 = Runtime::GetFontService ()->libft2;
 	FT_Open_Args args;
 	FT_Stream stream;
 	FontFace *ff;
@@ -1784,7 +1403,7 @@ FontManager::OpenFontResource (const char *resource, const char *family, int idx
 	FaceInfo *fi;
 	
 	LOG_FONT (stderr, "OpenFontResource (\"%s\", \"%s\", %d, %s)\n", resource ? resource : "(null)",
-		  family ? family : "(null)", idx, style_info_to_string (stretch, weight, style));
+		  family ? family : "(null)", idx, font_style_info_to_string (stretch, weight, style));
 	
 	if (!(index = (FontIndex *) g_hash_table_lookup (resources, resource))) {
 		LOG_FONT (stderr, "  * error: no such resource\n");
@@ -1822,16 +1441,14 @@ FontManager::OpenFontResource (const char *resource, const char *family, int idx
 FontFace *
 FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
 {
-	FcPattern *pattern, *matched;
 	FontStyleInfo desired;
-	FcChar8 *filename;
-	FcResult result;
+	MoonFont *matched;
 	FontFace *face;
-	int index;
 	char *key;
 	
 	key = g_strdup_printf ("%s:%d:%d:%d", family, stretch, weight, style);
-	LOG_FONT (stderr, "Attempting to open system font: %s %s ... ", family, style_info_to_string (stretch, weight, style));
+	LOG_FONT (stderr, "Attempting to open system font: %s %s ... ", family,
+		  font_style_info_to_string (stretch, weight, style));
 	if (g_hash_table_lookup_extended (system_faces, key, NULL, (gpointer *) &face)) {
 		LOG_FONT (stderr, "found!\n");
 		g_free (key);
@@ -1844,52 +1461,29 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	for (int attempt = 0; attempt < 2; attempt++) {
 		if (attempt == 0) {
 			desired.family_name = g_strdup (family);
-			desired.width = stretch;
+			desired.stretch = stretch;
 			desired.weight = weight;
-			desired.slant = style;
+			desired.style = style;
 		} else {
 			g_free (desired.family_name);
-			canon_font_family_and_style (&desired, family, stretch, weight, style);
+			font_style_info_hydrate (&desired, family, stretch, weight, style);
 		}
 		
 		LOG_FONT (stderr, "Attempting to load installed font: %s %s... ", desired.family_name,
-			  style_info_to_string (desired.width, desired.weight, desired.slant));
+			  font_style_info_to_string (desired.stretch, desired.weight, desired.style));
 		
-		pattern = FcPatternCreate ();
-		FcPatternAddDouble (pattern, FC_DPI, dpi);
-		FcPatternAddString (pattern, FC_FAMILY, (const FcChar8 *) desired.family_name);
-		FcPatternAddInteger (pattern, FC_WIDTH, fc_width (desired.width));
-		FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (desired.weight));
-		FcPatternAddInteger (pattern, FC_SLANT, fc_slant (desired.slant));
-		FcDefaultSubstitute (pattern);
-		
-		if (!(matched = FcFontMatch (NULL, pattern, &result))) {
+		if (!(matched = Runtime::GetFontService ()->FindFont (&desired))) {
 			LOG_FONT (stderr, "no matches\n");
-			FcPatternDestroy (pattern);
 			continue;
 		}
 		
-		FcPatternDestroy (pattern);
-		
-		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch) {
-			LOG_FONT (stderr, "no filename\n");
-			FcPatternDestroy (matched);
-			continue;
-		}
-		
-		if (FcPatternGetInteger (matched, FC_INDEX, 0, &index) != FcResultMatch) {
-			LOG_FONT (stderr, "no index\n");
-			FcPatternDestroy (matched);
-			continue;
-		}
-		
-		if ((face = OpenFontFace ((const char *) filename, NULL, index))) {
+		if ((face = OpenFontFace (matched->path, NULL, matched->index))) {
 			if (!g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name)) {
 				LOG_FONT (stderr, "got %s %s\n", face->GetFamilyName (), face->GetStyleName ());
 				face->ref ();
 				g_hash_table_insert (system_faces, key, face); // the key is freed when the hash table is destroyed
 				g_free (desired.family_name);
-				FcPatternDestroy (matched);
+				delete matched;
 				return face;
 			}
 			
@@ -1899,7 +1493,7 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 			LOG_FONT (stderr, "family not found\n");
 		}
 		
-		FcPatternDestroy (matched);
+		delete matched;
 	}
 	
 	g_hash_table_insert (system_faces, key, NULL); // the key is freed when the hash table is destroyed
@@ -2010,72 +1604,63 @@ typeface_free (gpointer typeface)
 	delete (GlyphTypeface *) typeface;
 }
 
+void
+FontManager::AddTypeface (const char *path, int index)
+{
+	GlyphTypeface *typeface;
+	const char *name;
+	FontFace *face;
+	char *key;
+	
+	if (!is_allowable_typeface (path))
+		return;
+	
+	// Note: avoid adding duplicate entries - FontConfig *should*
+	// be giving us a list of fonts in priority order, so fonts of
+	// the same name that come up first should be the preferred
+	// versions, at least theoretically. If we later find this to
+	// be untrue, we'll have to compare versions or something.
+	if (!(name = strrchr (path, '/')))
+		name = path;
+	else
+		name++;
+	
+	key = g_strdup_printf ("%s%c%d", name, index > 0 ? '#' : '\0', index);
+	typeface = (GlyphTypeface *) g_hash_table_lookup (known_typefaces, key);
+	g_free (key);
+	
+	if (typeface != NULL)
+		return;
+	
+	if (!(face = OpenFontFace (path, NULL, index)))
+		return;
+	
+	typeface = new GlyphTypeface (path, index, face);
+	g_hash_table_insert (known_typefaces, (void *) typeface->GetFontUri (), typeface);
+	typefaces->Add (Value (typeface));
+	face->unref ();
+}
+
+bool
+FontManager::add_typeface (const char *path, int index, gpointer user_data)
+{
+	((FontManager *) user_data)->AddTypeface (path, index);
+	return true;
+}
+
 GlyphTypefaceCollection *
 FontManager::GetSystemGlyphTypefaces ()
 {
-	GlyphTypeface *typeface;
-	const char *path, *name;
-	FcObjectSet *objects;
-	FcPattern *pattern;
-	GHashTable *hash;
-	FcFontSet *fonts;
-	FontFace *face;
-	int index, i;
-	char *key;
-	
-	if (typefaces)
+	if (typefaces != NULL)
 		return typefaces;
 	
 	typefaces = MoonUnmanagedFactory::CreateGlyphTypefaceCollection ();
 	typefaces->SetIsAttached (true);
 	
-	objects = FcObjectSetBuild (FC_FILE, FC_INDEX, NULL);
-	pattern = FcPatternCreate ();
-	
-	fonts = FcFontList (NULL, pattern, objects);
-	FcObjectSetDestroy (objects);
-	FcPatternDestroy (pattern);
-	
-	hash = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, typeface_free);
-	
-	for (i = 0; i < fonts->nfont; i++) {
-		if (FcPatternGetString (fonts->fonts[i], FC_FILE, 0, (FcChar8 **) &path) != FcResultMatch)
-			continue;
-		
-		if (!is_allowable_typeface (path))
-			continue;
-		
-		if (FcPatternGetInteger (fonts->fonts[i], FC_INDEX, 0, &index) != FcResultMatch)
-			continue;
-		
-		// Note: avoid adding duplicate entries - FontConfig *should*
-		// be giving us a list of fonts in priority order, so fonts of
-		// the same name that come up first should be the preferred
-		// versions, at least theoretically. If we later find this to
-		// be untrue, we'll have to compare versions or something.
-		if (!(name = strrchr (path, '/')))
-			name = path;
-		else
-			name++;
-		
-		key = g_strdup_printf ("%s%c%d", name, index > 0 ? '#' : '\0', index);
-		typeface = (GlyphTypeface *) g_hash_table_lookup (hash, key);
-		g_free (key);
-		
-		if (typeface != NULL)
-			continue;
-		
-		if (!(face = OpenFontFace (path, NULL, index)))
-			continue;
-		
-		typeface = new GlyphTypeface (path, index, face);
-		g_hash_table_insert (hash, (void *) typeface->GetFontUri (), typeface);
-		typefaces->Add (Value (typeface));
-		face->unref ();
-	}
-	
-	g_hash_table_destroy (hash);
-	FcFontSetDestroy (fonts);
+	known_typefaces = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, typeface_free);
+	Runtime::GetFontService ()->ForeachFont (FontManager::add_typeface, this);
+	g_hash_table_destroy (known_typefaces);
+	known_typefaces = NULL;
 	
 	return typefaces;
 }

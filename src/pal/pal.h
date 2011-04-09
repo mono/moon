@@ -32,6 +32,10 @@
 #include <time.h>
 #include <stdio.h>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#include "font-utils.h"
 #include "enums.h"
 #include "cairo.h"
 #include "list.h"
@@ -500,6 +504,34 @@ public:
 
 	/* @GeneratePInvoke */
 	virtual bool GetIsNetworkAvailable () = 0;
+};
+
+struct MoonFont {
+	char *path;
+	int index;
+	
+	MoonFont (const char *path, int index)
+	{
+		this->path = g_strdup (path);
+		this->index = index;
+	}
+	
+	~MoonFont () { g_free (path); }
+};
+
+typedef bool (* MoonForeachFontCallback) (const char *path, int index, gpointer user_data);
+
+class MoonFontService {
+public:
+	FT_Library libft2;
+	
+	MoonFontService ();
+	virtual ~MoonFontService ();
+	
+	virtual void ForeachFont (MoonForeachFontCallback foreach, gpointer user_data) = 0;
+	virtual MoonFont *FindFont (const FontStyleInfo *pattern) = 0;
+	
+	virtual guint32 GetCharIndex (FT_Face face, gunichar unichar);
 };
 
 };

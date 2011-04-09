@@ -904,4 +904,20 @@ MoonCaptureDevice::~MoonCaptureDevice ()
 {
 }
 
+MoonFontService::MoonFontService ()
+{
+	FT_Init_FreeType (&libft2);
+}
+
+MoonFontService::~MoonFontService ()
+{
+	FT_Done_FreeType (libft2);
+}
+
+guint32
+MoonFontService::GetCharIndex (FT_Face face, gunichar unichar)
+{
+	return FT_Get_Char_Index (face, unichar);
+}
+
 };

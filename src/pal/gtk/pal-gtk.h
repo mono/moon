@@ -85,5 +85,18 @@ public:
 	virtual bool Uninstall (Deployment *deployment);
 };
 
+class MoonFontServiceGtk : public MoonFontService {
+	double dpi;
+public:
+	MoonFontServiceGtk ();
+	~MoonFontServiceGtk ();
+	
+	virtual void ForeachFont (MoonForeachFontCallback foreach, gpointer user_data);
+	virtual MoonFont *FindFont (const FontStyleInfo *pattern);
+	
+	virtual guint32 GetCharIndex (FT_Face face, gunichar unichar);
 };
+
+};
+
 #endif /* MOON_PAL_GTK_H */

@@ -92,6 +92,7 @@ static MoonInstallerService *installer_service = NULL;
 static MoonMessagingService *messaging_service = NULL;
 static MoonCaptureService *capture_service = NULL;
 static MoonNetworkService *network_service = NULL;
+static MoonFontService *font_service = NULL;
 
 bool inited = false;
 bool g_type_inited = false;
@@ -2868,6 +2869,7 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 #if PAL_GTK_WINDOWING
 	windowing_system = new MoonWindowingSystemGtk (out_of_browser);
 	installer_service = new MoonInstallerServiceGtk ();
+	font_service = new MoonFontServiceGtk ();
 #elif PAL_COCOA_WINDOWING
 	windowing_system = new MoonWindowingSystemCocoa (out_of_browser);
 	installer_service = new MoonInstallerServiceCocoa ();
@@ -2929,6 +2931,12 @@ MoonNetworkService *
 Runtime::GetNetworkService ()
 {
 	return network_service;
+}
+
+MoonFontService *
+Runtime::GetFontService ()
+{
+	return font_service;
 }
 
 void
