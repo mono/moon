@@ -128,7 +128,7 @@ GLXSurface::Cairo ()
 bool
 GLXSurface::HasTexture ()
 {
-	return texture != 0;
+	return texture != 0 || IsPlanar ();
 }
 
 };
