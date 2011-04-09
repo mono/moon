@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * fonts-gtk.cpp: different types of collections
+ * pal-fontconfig.cpp: different types of collections
  *
  * Copyright 2011 Novell, Inc. (http://www.novell.com)
  *
@@ -21,7 +21,7 @@
 #include FT_SYSTEM_H
 #include FT_GLYPH_H
 
-#include "pal-gtk.h"
+#include "pal-fontconfig.h"
 
 namespace Moonlight {
 
@@ -40,8 +40,7 @@ namespace Moonlight {
 #define FONT_LOWER_BOLD_LIMIT	-475
 #define FONT_UPPER_BOLD_LIMIT	1024
 
-
-MoonFontServiceGtk::MoonFontServiceGtk ()
+MoonFontServiceFontconfig::MoonFontServiceFontconfig ()
 {
 	FcPattern *pattern;
 	
@@ -54,7 +53,7 @@ MoonFontServiceGtk::MoonFontServiceGtk ()
 	FcPatternDestroy (pattern);
 }
 
-MoonFontServiceGtk::~MoonFontServiceGtk ()
+MoonFontServiceFontconfig::~MoonFontServiceFontconfig ()
 {
 	// nothing to do...
 }
@@ -132,7 +131,7 @@ fc_slant (FontStyles style)
 }
 
 MoonFont *
-MoonFontServiceGtk::FindFont (const FontStyleInfo *desired)
+MoonFontServiceFontconfig::FindFont (const FontStyleInfo *desired)
 {
 	FcPattern *pattern, *matched;
 	FcChar8 *filename;
@@ -172,7 +171,7 @@ MoonFontServiceGtk::FindFont (const FontStyleInfo *desired)
 }
 
 void
-MoonFontServiceGtk::ForeachFont (MoonForeachFontCallback foreach, gpointer user_data)
+MoonFontServiceFontconfig::ForeachFont (MoonForeachFontCallback foreach, gpointer user_data)
 {
 	FcObjectSet *objects;
 	FcPattern *pattern;
@@ -202,7 +201,7 @@ MoonFontServiceGtk::ForeachFont (MoonForeachFontCallback foreach, gpointer user_
 }
 
 guint32
-MoonFontServiceGtk::GetCharIndex (FT_Face face, gunichar unichar)
+MoonFontServiceFontconfig::GetCharIndex (FT_Face face, gunichar unichar)
 {
 	return FcFreeTypeCharIndex (face, unichar);
 }

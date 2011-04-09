@@ -59,6 +59,7 @@ elif test "x$with_pal" = "xcocoa"; then
 	pal_capture="none"
 	pal_video_capture="none"
 	pal_audio_capture="none"
+	pal_font_service="none"
 
 	dnl We need to flesh out eglib enough to drop this dep
 	PKG_CHECK_MODULES(GLIB, glib-2.0)

@@ -312,7 +312,6 @@ dist_libmoon_la_SOURCES = 		\
 libmoon_la_SOURCES_GTK = 		\
 	pal/gtk/clipboard-gtk.cpp	\
 	pal/gtk/config-dialog-gtk.cpp	\
-	pal/gtk/fonts-gtk.cpp		\
 	pal/gtk/im-gtk.cpp		\
 	pal/gtk/install-dialog-gtk.cpp	\
 	pal/gtk/pal-gtk.cpp		\
@@ -326,7 +325,7 @@ libmoon_la_SOURCES_PAL_GTK = \
 	pal/capture/pal-linux-capture.cpp	\
 	pal/capture/v4l2/pal-v4l2-video-capture.cpp	\
 	pal/capture/pal-linux-audio-capture.cpp 	\
-	pal/fonts/fontconfig/pal-fontconfig.cpp	\
+	pal/fonts/fontconfig/pal-fontconfig.cpp		\
 	pal/messaging/glib/pal-glib-msg.cpp	\
 	pal/network/dbus/pal-dbus-network.cpp	\
 	pal/network/pal-linux-network.cpp
