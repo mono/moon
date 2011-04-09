@@ -992,7 +992,7 @@ Context::CreateFilterTable (double radius,
 void
 Context::Clear (Color *color)
 {
-	cairo_t *cr = Context::Push (Cairo ());
+	cairo_t *cr = Push (Cairo ());
 
 	cairo_save (cr);
 	cairo_set_operator (cr , CAIRO_OPERATOR_SOURCE);
@@ -1047,7 +1047,7 @@ Context::BlitYV12 (unsigned char *data[],
 void
 Context::Paint (Color *color)
 {
-	cairo_t *cr = Context::Push (Cairo ());
+	cairo_t *cr = Push (Cairo ());
 
 	cairo_set_source_rgba (cr, color->r, color->g, color->b, color->a);
 	cairo_paint (cr);
@@ -1062,7 +1062,7 @@ Context::Paint (MoonSurface *src,
 		double      y)
 {
 	cairo_surface_t *surface = src->Cairo ();
-	cairo_t         *cr = Context::Push (Cairo ());
+	cairo_t         *cr = Push (Cairo ());
 
 	cairo_set_source_surface (cr, surface, x, y);
 	cairo_paint_with_alpha (cr, alpha);
