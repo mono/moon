@@ -29,6 +29,9 @@ elif test "x$with_pal" = "xgtk"; then
 	dnl AC_DEFINE([PAL_PULSE_AUDIO_CAPTURE],1,[Hack in support for pal-pulse so we can start using it.])
 	pal_audio_capture="none"
 
+	AC_DEFINE([PAL_FONTCONFIG_FONTSERVICE],1,[Hack in support for fontconfig so we can start using it.])
+	pal_font_service="fontconfig"
+
 	PKG_CHECK_MODULES(GTK, gtk+-2.0 gthread-2.0 atk)
 	PKG_CHECK_MODULES(DBUS, dbus-1 dbus-glib-1)
 	PKG_CHECK_MODULES(XRANDR, xrandr, [
@@ -57,6 +60,7 @@ elif test "x$with_pal" = "xcocoa"; then
 	pal_capture="none"
 	pal_video_capture="none"
 	pal_audio_capture="none"
+	pal_font_service="none"
 
 	dnl We need to flesh out eglib enough to drop this dep
 	PKG_CHECK_MODULES(GLIB, glib-2.0)
