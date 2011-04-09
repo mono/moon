@@ -849,6 +849,16 @@ Context::GetMatrix (double *out)
 			  ctm.x0, ctm.y0);
 }
 
+Rect
+Context::GetClip ()
+{
+	Rect box;
+
+	Top ()->GetClip (&box);
+
+	return box;
+}
+
 void
 Context::GetDeviceMatrix (double *out)
 {
