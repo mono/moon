@@ -54,20 +54,10 @@ GLSurface::Cairo ()
 	int stride = size[0] * 4;
 
 	if (!data) {
-		if (texture) {
-			data = (unsigned char *) g_malloc (stride * size[1]);
+		data = (unsigned char *) g_malloc0 (stride * size[1]);
 
-			glBindTexture (GL_TEXTURE_2D, texture);
-			glGetTexImage (GL_TEXTURE_2D,
-				       0,
-				       GL_BGRA,
-				       GL_UNSIGNED_BYTE,
-				       data);
-			glBindTexture (GL_TEXTURE_2D, 0);
-		}
-		else {
-			data = (unsigned char *) g_malloc0 (stride * size[1]);
-		}
+		// derived class should implement read back of texture image
+		g_assert (texture == 0);
 	}
 
 	return cairo_image_surface_create_for_data (data,
