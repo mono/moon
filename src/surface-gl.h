@@ -34,9 +34,6 @@ public:
 	// Planar YUV
 	bool IsPlanar ();
 	GLint TextureYUV (int i);
-	GLuint TextureY ();
-	GLuint TextureU ();
-	GLuint TextureV ();
 
 	GLsizei Width ();
 	GLsizei Height ();

@@ -147,24 +147,6 @@ GLSurface::TextureYUV (int i)
 	return textureYUV[i];
 }
 
-GLuint
-GLSurface::TextureY ()
-{
-	return textureYUV[0];
-}
-
-GLuint
-GLSurface::TextureU ()
-{
-	return textureYUV[1];
-}
-
-GLuint
-GLSurface::TextureV ()
-{
-	return textureYUV[2];
-}
-
 GLsizei
 GLSurface::Width ()
 {
