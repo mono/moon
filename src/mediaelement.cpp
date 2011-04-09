@@ -754,55 +754,6 @@ MediaElement::GetQualityLevel (int min, int max)
 	return MIN (max, quality_level + min);
 }
 
-MoonSurface *
-MediaElement::GetSurface (Context *ctx)
-{
-	MoonSurface *native;
-	MediaFrame  *frame;
-	double      width;
-	double      height;
-
-	if (!mplayer || !(frame = mplayer->GetRenderedFrame ()))
-		return NULL;
-
-	if (frame->GetWidth () <= 0 || frame->GetWidth () <= 0)
-		return NULL;
-
-	width = frame->GetWidth ();
-	height = frame->GetHeight ();
-
-	native = ctx->Lookup (&cache);
-
-	if (!native || width != cacheSize.width || height != cacheSize.height) {
-		ctx->Push (Context::Group (Rect (0, 0, width, height)));
-		if (frame->IsPlanar ())
-			ctx->BlitYV12 (frame->data_stride, frame->srcStride);
-		else
-			ctx->Blit (frame->GetBuffer (), width * 4);
-		ctx->Pop (&native);
-
-		cacheSize = Size (width, height);
-		cacheDirty = false;
-
-		ctx->Replace (&cache, native);
-
-		return native;
-	}
-	
-	if (cacheDirty) {
-		ctx->Push (Context::Group (Rect (0, 0, width, height)), native);
-		if (frame->IsPlanar ())
-			ctx->BlitYV12 (frame->data_stride, frame->srcStride);
-		else
-			ctx->Blit (frame->GetBuffer (), width * 4);
-		ctx->Pop (&native);
-
-		cacheDirty = false;
-	}
-
-	return native->ref ();
-}
-
 void
 MediaElement::Render (Context *ctx, Region *region)
 {
@@ -856,15 +807,13 @@ MediaElement::Render (Context *ctx, Region *region)
 		}
 	}
 
-	MoonSurface *src = GetSurface (ctx);
+	MoonSurface *src = mplayer->GetSurface (ctx);
 	if (!src)
 		return;
 
 	ctx->Push (Context::Transform (matrix));
 	ctx->Paint (src, 1.0, 0, 0);
 	ctx->Pop ();
-
-	src->unref ();
 }
 
 void
@@ -1452,7 +1401,6 @@ MediaElement::MediaInvalidate ()
 {
 	Emit (MediaInvalidatedEvent);
 	Invalidate ();
-	cacheDirty = true;
 }
 
 void

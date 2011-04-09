@@ -477,6 +477,8 @@ MediaPlayer::Close ()
 		cairo_surface_destroy (surface);
 		surface = NULL;
 	}
+
+	cache.Release ();
 	
 	if (video_stream) {
 		video_stream->RemoveSafeHandlers (this);
@@ -526,7 +528,8 @@ MediaPlayer::SetRenderedFrame (MediaFrame *frame)
 	}
 
 	last_rendered_pts = frame->pts;
-	
+
+	cache.Release ();
 	SetBit (RenderedFrame);
 	RemoveBit (ConvertedFrame);
 	element->MediaInvalidate ();
@@ -905,6 +908,39 @@ MediaPlayer::GetCairoSurface ()
 
 	SetBit (ConvertedFrame);
 	return surface;
+}
+
+MoonSurface *
+MediaPlayer::GetSurface (Context *ctx)
+{
+	MediaFrame  *frame = rendered_frame;
+	MoonSurface *surface;
+
+	if (!frame)
+		return NULL;
+
+	if (frame->GetWidth () <= 0 || frame->GetWidth () <= 0)
+		return NULL;
+
+	surface = ctx->Lookup (&cache);
+	if (surface)
+		return surface;
+
+	ctx->Push (Context::Group (Rect (0,
+					 0,
+					 frame->GetWidth (),
+					 frame->GetHeight ())));
+
+	if (frame->IsPlanar ())
+		ctx->BlitYV12 (frame->data_stride, frame->srcStride);
+	else
+		ctx->Blit (frame->GetBuffer (), width * 4);
+
+	ctx->Pop (&surface);
+	ctx->Replace (&cache, surface);
+	surface->unref ();
+
+	return ctx->Lookup (&cache);
 }
 
 void

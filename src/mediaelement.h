@@ -42,10 +42,6 @@ class MediaElement : public FrameworkElement {
 	MediaPlayer *mplayer;
 	Playlist *playlist;
 
-	Context::Cache cache;
-	Size cacheSize;
-	bool cacheDirty;
-	
 	// 
 	guint32 marker_timeout;
 	// When checking if a marker has been reached, we need to 
@@ -137,8 +133,6 @@ class MediaElement : public FrameworkElement {
 		
 	void CreatePlaylist ();
 	void SetPlaylist (Playlist *playlist); // Adds/removes event handlers
-
-	MoonSurface *GetSurface (Context *ctx);
 
  protected:
 	virtual ~MediaElement () {}

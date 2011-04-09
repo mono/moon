@@ -19,6 +19,7 @@
 #include "pipeline.h"
 #include "audio.h"
 #include "mutex.h"
+#include "context.h"
 
 namespace Moonlight {
 
@@ -59,6 +60,7 @@ class MediaPlayer : public EventObject {
 	AudioSource *audio_unlocked; // mutex must be locked.
 	VideoStream *video_stream;
 	// rendering
+	Context::Cache cache; // native surface cache for current frame
 	cairo_surface_t *surface;
 	guint8 *rgb_buffer;
 	gint32 buffer_width;
@@ -167,8 +169,8 @@ class MediaPlayer : public EventObject {
 	bool GetCanSeek ();
 	void NotifySeek (guint64 pts /* 100-nanosecond units (pts) */);
 
-	MediaFrame *GetRenderedFrame () { return rendered_frame; }
 	cairo_surface_t *GetCairoSurface ();
+	MoonSurface *GetSurface (Context *ctx);
 	gint32 GetTimeoutInterval ();
 	
 	int GetAudioStreamCount () { return audio_stream_count; }
