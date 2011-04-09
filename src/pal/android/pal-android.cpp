@@ -472,8 +472,8 @@ public:
 
 		this->pressure = AMotionEvent_getPressure (event, 0);
 
-		this->x = AMotionEvent_getX (event, 0) * AMotionEvent_getXPrecision (event);
-		this->y = AMotionEvent_getY (event, 0) * AMotionEvent_getYPrecision (event);
+		this->x = AMotionEvent_getX (event, 0);
+		this->y = AMotionEvent_getY (event, 0);
 	}
 
 	MoonMotionEventAndroid (int32_t metastate, float pressure, float x, float y)
