@@ -57,7 +57,7 @@ GLSurface::Cairo ()
 		data = (unsigned char *) g_malloc0 (stride * size[1]);
 
 		// derived class should implement read back of texture image
-		g_assert (texture == 0);
+		g_assert (texture == 0 && !IsPlanar ());
 	}
 
 	return cairo_image_surface_create_for_data (data,
