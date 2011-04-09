@@ -277,6 +277,20 @@ GLContext::PixelAlignment (int stride)
 	return alignment;
 }
 
+int
+GLContext::PixelRowLength (int stride,
+			   int width,
+			   int size)
+{
+	int alignment = PixelAlignment (stride);
+	int bytes = width * size;
+
+	if ((bytes % alignment) != 0)
+                bytes += alignment - (bytes % alignment);
+
+	return width + (stride - bytes) / size;
+}
+
 void
 GLContext::Blit (unsigned char *data,
 		 int           stride)

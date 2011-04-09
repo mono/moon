@@ -117,6 +117,9 @@ protected:
 				double       dv);
 
 	static int PixelAlignment (int stride);
+	static int PixelRowLength (int stride,
+				   int width,
+				   int size);
 
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
