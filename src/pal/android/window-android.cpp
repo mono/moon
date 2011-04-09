@@ -347,11 +347,10 @@ MoonWindowAndroid::CreateCairoContext ()
 }
 
 void
-MoonWindowAndroid::Paint (gpointer data)
+MoonWindowAndroid::Paint (android_app *app)
 {
 	ANativeWindow_Buffer buffer;
 	unsigned char *pixels;
-	struct android_app *app = (struct android_app *) data;
 
 	SetCurrentDeployment ();
 
@@ -382,7 +381,7 @@ MoonWindowAndroid::Paint (gpointer data)
 
 		g_warning ("Blit damage(%d) = (%g,%g,%g,%g)", i, box.x, box.y, box.width, box.height);
 		if (ANativeWindow_lock (app->window, &buffer, &dirty) < 0)
-			continue;
+			return;
 		
 		pixels = (unsigned char *) buffer.bits;
 		convert_bgra_to_rgba (backing_image_data, pixels, stride, box.x, box.y, box.width, box.height);
