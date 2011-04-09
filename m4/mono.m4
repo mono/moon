@@ -59,7 +59,11 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	desktop_support=$enableval
 	if test "x$desktop_support" = xyes; then
 		if test "x$with_pal" = "xgtk"; then
-			PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0)
+			PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0, [
+				AM_CONDITIONAL(HAVE_GTK_SHARP, true)
+			], [
+				AM_CONDITIONAL(HAVE_GTK_SHARP, false)
+			])
 
 			PKG_CHECK_MODULES(WNCKSHARP, wnck-sharp-1.0)
 
@@ -77,9 +81,11 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			])
 		else
 			AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
+			AM_CONDITIONAL(HAVE_GTK_SHARP, false)
 		fi
 	else
 		AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
+		AM_CONDITIONAL(HAVE_GTK_SHARP, false)
 	fi
 
 	if test "x$desktop_support" = xno -a "x$browser_support" = xno; then
