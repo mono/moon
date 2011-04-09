@@ -103,10 +103,10 @@ GLSurface::IsPlanar ()
 	return (textureYUV[0] && textureYUV[1] && textureYUV[2]);
 }
 
-void
-GLSurface::AllocYUV ()
+GLint
+GLSurface::TextureYUV (int i)
 {
-	if (!textureYUV[0]) {
+	if (!textureYUV[i]) {
 		GLfloat borderY[] = { 0.0625f, 0.0625f, 0.0625f, 0.0625f };
 		GLfloat borderUV[] = { 0.5f , 0.5f, 0.5f, 0.5f };
 		int     i;
@@ -143,6 +143,8 @@ GLSurface::AllocYUV ()
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
+
+	return textureYUV[i];
 }
 
 GLuint

@@ -563,7 +563,6 @@ GLXContext::BlitYV12 (unsigned char *data[],
 	int         size[] = { dst->Width (), dst->Height () };
 	int         width[] = { size[0], size[0] / 2, size[0] / 2 };
 	int         height[] = { size[1], size[1] / 2, size[1] / 2 };
-	GLuint      texture[3];
 	int         i;
 
 	ForceCurrent ();
@@ -577,17 +576,11 @@ GLXContext::BlitYV12 (unsigned char *data[],
 	// mark target as initialized
 	target->SetInit (ms);
 
-	dst->AllocYUV ();
-
-	texture[0] = dst->TextureY ();
-	texture[1] = dst->TextureU ();
-	texture[2] = dst->TextureV ();
-
 	for (i = 0; i < 3; i++) {
 		glPixelStorei (GL_UNPACK_ROW_LENGTH,
 			       PixelRowLength (stride[i], width[i], 1));
 		glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
-		glBindTexture (GL_TEXTURE_2D, texture[i]);
+		glBindTexture (GL_TEXTURE_2D, dst->TextureYUV (i));
 		glTexSubImage2D (GL_TEXTURE_2D,
 				 0,
 				 0,

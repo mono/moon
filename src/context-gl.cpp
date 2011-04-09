@@ -335,24 +335,17 @@ GLContext::BlitYV12 (unsigned char *data[],
 	int             size[] = { dst->Width (), dst->Height () };
 	int             width[] = { size[0], size[0] / 2, size[0] / 2 };
 	int             height[] = { size[1], size[1] / 2, size[1] / 2 };
-	GLuint          texture[3];
 	int             i;
 
 	// no support for clipping
 	g_assert (GetClip () == r);
-
-	dst->AllocYUV ();
-
-	texture[0] = dst->TextureY ();
-	texture[1] = dst->TextureU ();
-	texture[2] = dst->TextureV ();
 
 	for (i = 0; i < 3; i++) {
 		// row length must be the same as width
 		g_assert (PixelRowLength (stride[i], width[i], 1) == width[i]);
 
 		glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
-		glBindTexture (GL_TEXTURE_2D, texture[i]);
+		glBindTexture (GL_TEXTURE_2D, dst->TextureYUV (i));
 		glTexSubImage2D (GL_TEXTURE_2D,
 				 0,
 				 0,
