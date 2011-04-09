@@ -307,10 +307,10 @@ GLContext::Blit (unsigned char *data,
 	// no support for clipping
 	g_assert (r == clip);
 
-	// need word alignment
-	g_assert ((stride % 4) == 0);
+	// row length must be the same as width
+	g_assert (PixelRowLength (stride, dst->Width (), 4) == dst->Width ());
 
-	glPixelStorei (GL_UNPACK_ROW_LENGTH, stride / 4);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride));
 	glBindTexture (GL_TEXTURE_2D, texture);
 	glTexSubImage2D (GL_TEXTURE_2D,
 			 0,
@@ -322,7 +322,7 @@ GLContext::Blit (unsigned char *data,
 			 GL_UNSIGNED_BYTE,
 			 data);
 	glBindTexture (GL_TEXTURE_2D, 0);
-	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
 
 	ms->unref ();
 }
@@ -335,6 +335,9 @@ GLContext::BlitYV12 (unsigned char *data[],
 	MoonSurface     *ms;
 	Rect            r = target->GetData (&ms);
 	GLSurface       *dst = (GLSurface *) ms;
+	int             size[] = { dst->Width (), dst->Height () };
+	int             width[] = { size[0], size[0] / 2, size[0] / 2 };
+	int             height[] = { size[1], size[1] / 2, size[1] / 2 };
 	GLuint          texture[3];
 	Rect            clip;
 	int             i;
@@ -350,32 +353,24 @@ GLContext::BlitYV12 (unsigned char *data[],
 	texture[1] = dst->TextureU ();
 	texture[2] = dst->TextureV ();
 
-	glPixelStorei (GL_UNPACK_ROW_LENGTH, stride[0]);
-	glBindTexture (GL_TEXTURE_2D, texture[0]);
-	glTexSubImage2D (GL_TEXTURE_2D,
-			 0,
-			 0,
-			 0,
-			 dst->Width (),
-			 dst->Height (),
-			 GL_LUMINANCE,
-			 GL_UNSIGNED_BYTE,
-			 data[0]);
-	for (i = 1; i < 3; i++) {
-		glPixelStorei (GL_UNPACK_ROW_LENGTH, stride[i]);
+	for (i = 0; i < 3; i++) {
+		// row length must be the same as width
+		g_assert (PixelRowLength (stride[i], width[i], 1) == width[i]);
+
+		glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
 		glBindTexture (GL_TEXTURE_2D, texture[i]);
 		glTexSubImage2D (GL_TEXTURE_2D,
 				 0,
 				 0,
 				 0,
-				 dst->Width () / 2,
-				 dst->Height () / 2,
+				 width[i],
+				 height[i],
 				 GL_LUMINANCE,
 				 GL_UNSIGNED_BYTE,
 				 data[i]);
 	}
 	glBindTexture (GL_TEXTURE_2D, 0);
-	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
 
 	ms->unref ();
 }
