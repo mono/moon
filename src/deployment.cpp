@@ -216,7 +216,6 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		Deployment::desktop_deployment = new Deployment ();
 		Deployment::desktop_deployment->InitializeDesktop (root_domain);
 		Deployment::SetCurrent (Deployment::desktop_deployment);
-		Deployment::desktop_deployment->EnsureManagedPeer ();
 
 		// we need to call this here so that the application's
 		// and surface's managed peer actually gets created.
@@ -469,6 +468,7 @@ Deployment::Deployment()
 	moon_exception = NULL;
 	moon_exception_message = NULL;
 	moon_exception_error_code = NULL;
+	moon_ensure_managed_peer = NULL;
 
 #if DEBUG
 	moon_sources = NULL;
