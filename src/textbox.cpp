@@ -1454,10 +1454,8 @@ TextBoxBase::Paste (MoonClipboard *clipboard, const char *str)
 	gunichar *text;
 	glong len, i;
 	
-#if PLUMB_ME
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
-#endif
 	
 	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
 		// paste cannot exceed MaxLength
@@ -1832,10 +1830,8 @@ TextBoxBase::Commit (const char *str)
 	if (is_read_only)
 		return;
 	
-#if PLUMB_ME
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
-#endif
 	
 	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
 		// paste cannot exceed MaxLength
@@ -2662,9 +2658,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			length = abs (selection_cursor - selection_anchor);
 			start = MIN (selection_anchor, selection_cursor);
 			
-#if PLUMB_ME
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
-#endif
 			{
 				if (length > 0) {
 					// replace the currently selected text
@@ -2691,11 +2685,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					SyncAndEmit ();
 				}
 			}
-#if PLUMB_ME
 			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
-#endif
 		}
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
@@ -2770,9 +2762,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			gunichar *text;
 			glong textlen;
 			
-#if PLUMB_ME
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
-#endif
 			{
 				if (buffer->len > 0) {
 					// replace the current text
@@ -2796,11 +2786,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				SyncAndEmit (false);
 			}
-#if PLUMB_ME
 			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
-#endif
 		}
 		
 		changed = TextBoxModelChangedText;
@@ -3071,9 +3059,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			gunichar *text;
 			glong textlen;
 			
-#if PLUMB_ME
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
-#endif
 			{
 				if (buffer->len > 0) {
 					// replace the current text
@@ -3107,11 +3093,9 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				
 				SyncAndEmit (false);
 			}
-#if PLUMB_ME
 			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
-#endif
 		}
 		
 		changed = TextBoxModelChangedText;
@@ -3126,9 +3110,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			length = abs (selection_cursor - selection_anchor);
 			start = MIN (selection_anchor, selection_cursor);
 			
-#if PLUMB_ME
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen)))
-#endif
 			{
 				if (length > 0) {
 					// replace the currently selected text
@@ -3156,11 +3138,9 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					SyncAndEmit ();
 				}
 			}
-#if PLUMB_ME
 			else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
-#endif
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
