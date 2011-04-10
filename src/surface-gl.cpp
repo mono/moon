@@ -79,6 +79,40 @@ GLSurface::Cairo ()
 						    stride);
 }
 
+static inline guint8
+convert_color_channel (guint8 src, guint8 alpha)
+{
+	return alpha ? src / (alpha / 255.0) : 0;
+}
+
+static inline void
+convert_bgra_to_rgba (guint8 const *src, guint8 *dst, gint stride, gint x, gint y, gint width, gint height)
+{
+	guint8 const *src_pixel = src;
+	guint8 * dst_pixel = dst;
+	guint8 const *src_row = src_pixel + (stride * y) + (x * 4);
+	guint8 *dst_row = dst_pixel + (stride * y) + (x * 4);
+	
+	for (int i = 0; i < height; i++)
+	{   
+		int j;
+		src_pixel = src_row;
+		dst_pixel = dst_row;
+		for (j = 0; j < width; j++)
+		{   
+			dst_pixel[0] = convert_color_channel (src_pixel[2], src_pixel[3]);
+			dst_pixel[1] = convert_color_channel (src_pixel[1], src_pixel[3]);
+			dst_pixel[2] = convert_color_channel (src_pixel[0], src_pixel[3]);
+			dst_pixel[3] = src_pixel[3];
+
+			dst_pixel += 4;
+			src_pixel += 4;
+		}
+		src_row += stride;
+		dst_row += stride;
+	}   
+}
+
 GLuint
 GLSurface::Texture ()
 {
@@ -88,6 +122,25 @@ GLSurface::Texture ()
 		glGenTextures (1, &texture);
 
 	if (name != texture || data) {
+#if defined(PLATFORM_ANDROID)
+		guint8 *dst = (guint8*) malloc (size[0] * size[1] * 4);
+
+		convert_bgra_to_rgba (data, dst, size[1]*4, 0, 0, size[0], size[1]);
+
+		glBindTexture (GL_TEXTURE_2D, texture);
+		glTexImage2D (GL_TEXTURE_2D,
+			      0,
+			      GL_RGBA,
+			      size[0],
+			      size[1],
+			      0,
+			      GL_RGBA,
+			      GL_UNSIGNED_BYTE,
+			      dst);
+		glBindTexture (GL_TEXTURE_2D, 0);
+
+		g_free (dst);
+#else
 		glBindTexture (GL_TEXTURE_2D, texture);
 		glTexImage2D (GL_TEXTURE_2D,
 			      0,
@@ -99,6 +152,7 @@ GLSurface::Texture ()
 			      GL_UNSIGNED_BYTE,
 			      data);
 		glBindTexture (GL_TEXTURE_2D, 0);
+#endif
 	}
 
 #if !USE_EGL
