@@ -336,9 +336,7 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 			break;
 		}
 		
-#if PLUMB_ME
 		btype = g_unichar_break_type (c);
-#endif
 		if (!BreakSpace (c, btype)) {
 			inptr = start;
 			break;
@@ -423,14 +421,10 @@ layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double 
 		
 		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
 			// ignore zero-width spaces
-#if PLUMB_ME
 			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
 				btype = G_UNICODE_BREAK_COMBINING_MARK;
-#endif
 		} else {
-#if PLUMB_ME
 			btype = g_unichar_break_type (c);
-#endif
 		}
 		
 		if (BreakSpace (c, btype)) {
@@ -521,17 +515,13 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		// check the previous break-type
 		if (btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION) {
 			// if anything other than an infix separator come after a close-punctuation, then the 'word' is done
-#if PLUMB_ME
 			btype = g_unichar_break_type (c);
-#endif
 			if (btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
 				inptr = start;
 				break;
 			}
 		} else if (btype == G_UNICODE_BREAK_INFIX_SEPARATOR) {
-#if PLUMB_ME
 			btype = g_unichar_break_type (c);
-#endif
 			if (word->type == WORD_TYPE_NUMERIC) {
 				// only accept numbers after the infix
 				if (btype != G_UNICODE_BREAK_NUMERIC) {
@@ -548,14 +538,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				fixed = true;
 			}
 		} else if (btype == G_UNICODE_BREAK_WORD_JOINER) {
-#if PLUMB_ME
 			btype = g_unichar_break_type (c);
-#endif
 			fixed = true;
 		} else {
-#if PLUMB_ME
 			btype = g_unichar_break_type (c);
-#endif
 		}
 		
 		if (BreakSpace (c, btype)) {
@@ -672,17 +658,13 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		}
 		
-#if PLUMB_ME
 		btype = g_unichar_break_type (c);
-#endif
 		if (BreakSpace (c, btype) || unichar_combining_class (c) == 0) {
 			inptr = start;
 			break;
 		}
 		
-#if PLUMB_ME
 		d(g_string_append_unichar (debug, c));
-#endif
 		word->count++;
 		
 		if ((glyph = word->font->GetGlyphInfo (c))) {

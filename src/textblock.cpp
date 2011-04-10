@@ -69,7 +69,9 @@ class TextBlockDynamicPropertyValueProvider : public FrameworkElementProvider {
 #endif
 		if (property->GetId () == TextBlock::BaselineOffsetProperty) {
 			delete baseline_offset_value;
+		g_warning ("3");
 			TextLayout *layout = ((TextBlock*)obj)->layout;
+		g_warning ("4");
 			baseline_offset_value = new Value (layout ? layout->GetBaselineOffset() : 0);
 			return baseline_offset_value;
 		}
@@ -542,7 +544,9 @@ TextBlock::Layout (Size constraint)
 		actual_width = 0.0;
 	} else {
 		layout->SetMaxWidth (constraint.width);
+		g_warning ("1");
 		layout->Layout ();
+		g_warning ("2");
 		
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}

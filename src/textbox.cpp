@@ -795,9 +795,7 @@ is_start_of_word (TextBuffer *buffer, int index)
 		return true;
 	case G_UNICODE_OTHER_PUNCTUATION:
 		// words cannot start with '.', but they can start with '&' or '*' (for example)
-#if PLUMB_ME
 		return g_unichar_break_type (buffer->text[index]) == G_UNICODE_BREAK_ALPHABETIC;
-#endif
 	default:
 		return false;
 	}
@@ -1758,9 +1756,7 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 		return true;
 	
 	// get the utf-8 pointers so that we can use them to get gunichar offsets
-#if PLUMB_ME
 	delete_start = g_utf8_offset_to_pointer (text, selection_cursor) + offset;
-#endif
 	delete_end = delete_start + n_chars;
 	
 	// get the character length/start index
@@ -1810,9 +1806,7 @@ TextBoxBase::RetrieveSurrounding ()
 	const char *text = GetActualText ();
 	const char *cursor;
 
-#if PLUMB_ME
 	cursor = g_utf8_offset_to_pointer (text, selection_cursor);
-#endif
 	
 	im_ctx->SetSurroundingText (text, -1, cursor - text);
 	
