@@ -1082,6 +1082,8 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 				emitting_sources = true;
 				GList *l = sources;
+				int max_priority = G_MAXINT;
+
 				//int num_sources_handled = 0;
 				//g_warning ("processing sources");
 				while (l) {
@@ -1092,6 +1094,21 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 						l = l->next;
 					}
 					else if (s->time_remaining + delta < 0) {
+						if (max_priority == G_MAXINT) {
+							// first time through here, so we do what glib does, and limit the sources we
+							// dispatch on to those at or above this priority.
+							max_priority = s->priority;
+						}
+						else {
+							if (s->priority > max_priority) {
+								s->time_remaining += delta;
+								if (s->time_remaining < 0)
+									s->time_remaining = 0;
+								l = l->next;
+								continue;
+							}
+						}
+
 						// we should invoke it
 						//g_warning ("invoking");
 						//num_sources_handled ++;
