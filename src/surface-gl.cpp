@@ -61,7 +61,11 @@ GLSurface::Cairo ()
 			glBindTexture (GL_TEXTURE_2D, texture);
 			glGetTexImage (GL_TEXTURE_2D,
 				       0,
+#if defined(PLATFORM_ANDROID)
+				       GL_RGBA,
+#else
 				       GL_BGRA,
+#endif
 				       GL_UNSIGNED_BYTE,
 				       data);
 			glBindTexture (GL_TEXTURE_2D, 0);
