@@ -547,12 +547,7 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 	}
 	else {
 #if defined(USE_EGL)
-		g_string_sprintfa (s, "float r, g, b, a;");
-		g_string_sprintfa (s, "r = texture2DProj(sampler0, v_TexCoord0.xyzw).b;");
-		g_string_sprintfa (s, "g = texture2DProj(sampler0, v_TexCoord0.xyzw).g;");
-		g_string_sprintfa (s, "b = texture2DProj(sampler0, v_TexCoord0.xyzw).r;");
-		g_string_sprintfa (s, "a = texture2DProj(sampler0, v_TexCoord0.xyzw).a;");
-		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, a)");
+		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw).bgra");
 #else
 		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
 #endif
