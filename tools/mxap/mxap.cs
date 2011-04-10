@@ -484,8 +484,11 @@ namespace Moonlight {
 				compiler_args.AppendFormat (" -r:{0} ", asm);
 			}
 
-			if (desktop && top_builddir == null)
-					compiler_args.Append (" -pkg:moonlight-gtk-2.0");
+			if (desktop && top_builddir == null) {
+// MOONLIGHT_FIXME
+				//compiler_args.Append (" -pkg:moonlight-gtk-2.0");
+				compiler_args.Append (" -r:/opt/moonlight-android/lib/mono/moonlight/System.Windows.dll -r:/opt/moonlight-android/lib/mono/moonlight/System.Windows.Browser.dll");
+			}
 
 			foreach (string cs in CSharpFiles) {
 				if (cs.EndsWith (".g.cs"))
