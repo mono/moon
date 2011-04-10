@@ -277,6 +277,9 @@ MoonWindowAndroid::Paint (android_app *app)
 		} else {
 			delete context;
 		}
+
+		// HACK HACK HACK Our size has 1,1 in EGL before, so lets force a resize
+		Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));
 	}
 	
 	if (damage->IsEmpty ()) {
@@ -289,8 +292,8 @@ MoonWindowAndroid::Paint (android_app *app)
 
 		egltarget->Reshape (width, height);
 
-		static_cast<Context *> (eglctx)->Push (Context::Clip (damage->GetExtents ()));
-		surface->Paint (eglctx, damage, GetTransparent (), true);
+		static_cast<Context *> (eglctx)->Push (Context::Clip (r0));
+		surface->Paint (eglctx, new Region (r0), GetTransparent (), true);
 		static_cast<Context *> (eglctx)->Pop ();
 
 		eglctx->Flush ();
