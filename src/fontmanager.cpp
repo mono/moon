@@ -527,9 +527,7 @@ FontFace::~FontFace ()
 {
 	FT_Stream stream;
 	
-#if PLUMB_ME
 	g_hash_table_steal (manager->faces, key);
-#endif
 	
 	stream = face->stream;
 	FT_Done_Face (face);
