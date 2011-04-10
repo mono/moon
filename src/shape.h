@@ -238,6 +238,7 @@ class Rectangle : public Shape {
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
 	virtual Rect ComputeStretchBounds ();
+	virtual void Paint (Context *ctx, const Rect &area);
 
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
