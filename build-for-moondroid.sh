@@ -6,7 +6,7 @@ alsa=no
 pulse=no
 ffmpeg=no
 gallium=no
-egl=no
+egl=yes
 glx=no
 
 PKG_CONFIG_PATH=$MOONLIGHT_PREFIX/lib/pkgconfig
