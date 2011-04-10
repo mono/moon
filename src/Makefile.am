@@ -117,6 +117,7 @@ libmoon_include_headers = 	\
 	pal/cocoa/window-cocoa.h	\
 	pal/cocoa/debug-ui-cocoa.h	\
 	pal/android/clipboard-android.h	\
+	pal/android/im-android.h	\
 	pal/android/pal-android.h	\
 	pal/android/pixbuf-android.h	\
 	pal/android/window-android.h	\
@@ -346,6 +347,7 @@ libmoon_la_SOURCES_PAL_COCOA = \
 libmoon_la_SOURCES_PAL_ANDROID = \
 	pal/android/clipboard-android.cpp	\
 	pal/android/fonts-android.cpp	\
+	pal/android/im-android.cpp	\
 	pal/android/pal-android.cpp	\
 	pal/android/pixbuf-android.cpp	\
 	pal/android/window-android.cpp

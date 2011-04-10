@@ -6,6 +6,7 @@
 #include "runtime.h"
 #include "window-android.h"
 #include "pixbuf-android.h"
+#include "im-android.h"
 #include "debug.h"
 
 #ifdef USE_GALLIUM
@@ -851,8 +852,7 @@ MoonWindowingSystemAndroid::RemoveIdle (guint idleId)
 MoonIMContext*
 MoonWindowingSystemAndroid::CreateIMContext ()
 {
-	// FIXME
-	return NULL;
+	return new MoonIMContextAndroid ();
 }
 
 MoonEvent*
