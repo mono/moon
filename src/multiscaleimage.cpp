@@ -849,18 +849,16 @@ MultiScaleImage::Render (Context *ctx, Region *region)
 	}
 #endif
 	
-	cairo_t *cr = ctx->Push (Context::Cairo ());
 	if (is_collection)
-		RenderCollection (cr, region);
+		RenderCollection (ctx, region);
 	else
-		RenderSingle (cr, region);
-	ctx->Pop ();
+		RenderSingle (ctx, region);
 	
 	UpdateIdleStatus ();
 }
 
 void
-MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
+MultiScaleImage::RenderCollection (Context *ctx, Region *region)
 {
 	MultiScaleTileSource *source = GetSource ();
 	DeepZoomImageTileSource *dzits;
@@ -891,6 +889,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	
 	if (msi_w <= 0.0 || msi_h <= 0.0 || !blur_factor_is_valid (blur_factor))
 		return; // invisible widget, nothing to render
+
+	cairo_t *cr = ctx->Push (Context::Cairo ());
 	
 	blur_offset = blur_factor_get_offset (blur_factor);
 	
@@ -1163,10 +1163,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			}
 		}
 	}
+
+	ctx->Pop ();
 }
 
 void
-MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
+MultiScaleImage::RenderSingle (Context *ctx, Region *region)
 {
 	MultiScaleTileSource *source = GetSource ();
 	double msi_w = GetActualWidth ();
@@ -1187,6 +1189,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	
 	if (msi_w <= 0.0 || msi_h <= 0.0 || !blur_factor_is_valid (blur_factor))
 		return; // invisible widget, nothing to render
+
+	cairo_t *cr = ctx->Push (Context::Cairo ());
 	
 	blur_offset = blur_factor_get_offset (blur_factor);
 	
@@ -1335,6 +1339,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	
 	cairo_restore (cr);
 	//cairo_pop_group_to_source (cr);
+
+	ctx->Pop ();
 	
 	if (!GetAllowDownloading () || !CanDownloadMoreTiles ())
 		return;
