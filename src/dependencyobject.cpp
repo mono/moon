@@ -913,7 +913,7 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(int token, 
 {
 	if (events == NULL) {
 #if SANITY
-		fprintf (stderr, "EventObject::RemoveMatchingHandlers (): no handlers have been registered.\n");
+		g_warning ("EventObject::RemoveMatchingHandlers (): no handlers have been registered.\n");
 #endif		
 		return;
 	}

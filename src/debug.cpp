@@ -472,7 +472,7 @@ void show_reftrace (void *obj)
 	object = (storable_stack_trace_object *) g_hash_table_lookup (stored_objects, obj);
 
 	if (object == NULL) {
-		fprintf (stderr, "show_reftrace (%p): Nothing found for '%s': %i\n", obj, tname, id);
+		g_warning ("show_reftrace (%p): Nothing found for '%s': %i\n", obj, tname, id);
 		return;
 	}
 
@@ -840,7 +840,7 @@ print_gdb_trace ()
 
 	close (stdout_pipe [1]);
 
-	fprintf (stderr, "\nDebug info from gdb:\n\n");
+	g_warning ("\nDebug info from gdb:\n\n");
 
 	while (1) {
 		int nread = read (stdout_pipe [0], buffer, 1024);
@@ -883,7 +883,7 @@ static moonlight_handle_native_sigsegv (int signal)
 	handling_sigsegv = true;
 
 	if (getenv ("MOONLIGHT_WAIT_ON_CRASH") != 0) {
-		fprintf (stderr, "Moonlight: A crash occurred. MOONLIGHT_WAIT_ON_CRASH is set, so we'll sleep waiting for you to attach gdb to pid %i\n", getpid ());
+		g_warning ("Moonlight: A crash occurred. MOONLIGHT_WAIT_ON_CRASH is set, so we'll sleep waiting for you to attach gdb to pid %i\n", getpid ());
 		sleep (1000000);
 	}
 	
@@ -904,7 +904,7 @@ static moonlight_handle_native_sigsegv (int signal)
 
 	print_gdb_trace ();		
 
-	fprintf (stderr, "\nDebug info from libmoon:\n\n");
+	g_warning ("\nDebug info from libmoon:\n\n");
 	print_stack_trace ();	
 	
 	if (signal != SIGQUIT) {

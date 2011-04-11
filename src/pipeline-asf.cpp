@@ -149,7 +149,7 @@ ASFFrameReader *
 ASFDemuxer::GetFrameReader (guint32 stream_index)
 {
 	if (stream_index <= 0 || stream_index >= 128) {
-		fprintf (stderr, "ASFDemuxer::GetFrameReader (%i): Invalid stream index.\n", stream_index);
+		g_warning ("ASFDemuxer::GetFrameReader (%i): Invalid stream index.\n", stream_index);
 		return NULL;
 	}
 
@@ -834,7 +834,7 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 	guint32 asf_stream_index = stream_to_asf_index [stream->GetIndex ()];
 
 	if (!IsValidStream (asf_stream_index)) {
-		fprintf (stderr, "ASFDemuxer::UpdateSelected (%i => %i): Invalid stream index\n", stream->GetIndex (), stream->GetSelected ());
+		g_warning ("ASFDemuxer::UpdateSelected (%i => %i): Invalid stream index\n", stream->GetIndex (), stream->GetSelected ());
 		return;
 	}
 
@@ -1404,7 +1404,7 @@ ASFDemuxerInfo::Supports (MemoryBuffer *source)
 	LOG_ASF ("ASFDemuxerInfo::Supports ()\n");
 
 	if (!guid.Read (source)) {
-		fprintf (stderr, "ASFDemuxerInfo::Supports (): Reading initial guid failed.\n");
+		g_warning ("ASFDemuxerInfo::Supports (): Reading initial guid failed.\n");
 		return MEDIA_FAIL;
 	}
 	
@@ -2035,7 +2035,7 @@ MmsSource::ProcessResponseHeader (const char *header, const char *value)
 	// check response code
 	HttpResponse *response = request->GetResponse ();
 	if (response != NULL && response->GetResponseStatus () != 200) {
-		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri->GetOriginalString (), response->GetResponseStatus ());
+		g_warning ("Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri->GetOriginalString (), response->GetResponseStatus ());
 		ReportDownloadFailure ();
 		goto cleanup;
 	}
@@ -2552,7 +2552,7 @@ MmsSource::ReportDownloadFailure ()
 	media = GetMediaReffed ();
 
 	if (media == NULL) {
-		fprintf (stderr, "Moonlight: mms downloader failed");
+		g_warning ("Moonlight: mms downloader failed");
 		return;
 	}
 
@@ -3045,7 +3045,7 @@ MmsPlaylistEntry::SeekToPts (guint64 pts)
 		ms->unref ();
 		return MEDIA_SUCCESS;
 	} else {
-		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%" G_GUINT64_FORMAT "): Could not seek to pts, no parent.\n", pts);
+		g_warning ("MmsPlaylistEntry::SeekToPts (%" G_GUINT64_FORMAT "): Could not seek to pts, no parent.\n", pts);
 		return MEDIA_FAIL;
 	}
 }

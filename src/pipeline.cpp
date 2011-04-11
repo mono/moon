@@ -362,7 +362,7 @@ Media::Initialize ()
 		if (CPU::HaveSSE2 ()) {
 			RegisterMSCodecs ();
 		} else {
-			fprintf (stderr, "Moonlight: The Media Codec Pack has been disabled since your cpu doesn't support SSE2 instructions.\n");
+			g_warning ("Moonlight: The Media Codec Pack has been disabled since your cpu doesn't support SSE2 instructions.\n");
 		}
 #endif
 	}
@@ -558,9 +558,9 @@ Media::ReportErrorOccurred (ErrorEventArgs *args)
 	LOG_PIPELINE ("Media::ReportErrorOccurred (%p %s)\n", args, args == NULL ? NULL : args->GetErrorMessage());
 	
 	if (args) {
-		fprintf (stderr, "Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->GetErrorType()), args->GetErrorCode(), args->GetErrorMessage(), args->GetExtendedMessage());
+		g_warning ("Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->GetErrorType()), args->GetErrorCode(), args->GetErrorMessage(), args->GetExtendedMessage());
 	} else {
-		fprintf (stderr, "Moonlight: Unspecified media error.\n");
+		g_warning ("Moonlight: Unspecified media error.\n");
 	}
 	
 	if (!error_reported) {
@@ -1461,7 +1461,7 @@ ManagedStreamSource::ReadAsyncInternal (MediaReadClosure *closure)
 	Media *media;
 
 	if (closure->GetOffset () >= G_MAXINT32 || closure->GetCount () >= G_MAXINT32) {
-		fprintf (stderr, "Moonlight: stream read overflow, offset: %llu, count: %u\n", closure->GetOffset (), closure->GetCount ());
+		g_warning ("Moonlight: stream read overflow, offset: %llu, count: %u\n", closure->GetOffset (), closure->GetCount ());
 		return;
 	}
 
@@ -2173,7 +2173,7 @@ ProgressiveSource::CheckReadRequests ()
 			SetRangeRequest (r);
 			r->unref ();
 		} else {
-			fprintf (stderr, "Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
+			g_warning ("Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
 		}
 	}
 }
@@ -2279,7 +2279,7 @@ ProgressiveSource::RangeStoppedHandler (HttpRequest *sender, HttpRequestStoppedE
 					SetRangeRequest (r);
 					r->unref ();
 				} else {
-					fprintf (stderr, "Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
+					g_warning ("Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
 				}
 			} else {
 				LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p): entire file downloaded!\n", sender, args);
@@ -2547,7 +2547,7 @@ MediaThreadPool::AddWork (MediaClosure *closure)
 				pthread_attr_destroy (&attribs);
 				
 				if (result != 0) {
-					fprintf (stderr, "Moonlight: could not create media thread: %s (%i)\n", strerror (result), result);
+					g_warning ("Moonlight: could not create media thread: %s (%i)\n", strerror (result), result);
 				} else {
 					valid [i] = true;
 				}
@@ -2746,9 +2746,9 @@ MediaThreadPool::WorkerLoop (void *data)
 	sigset_t signal_set;
 	int err = 0;
 	if ((err = sigemptyset (&signal_set)) != 0) {
-		fprintf (stderr, "Moonlight: Media thread pool was unable to create an empty set of signals: %s (%i).\n", strerror (err), err);
+		g_warning ("Moonlight: Media thread pool was unable to create an empty set of signals: %s (%i).\n", strerror (err), err);
 	} else if ((err = pthread_sigmask (SIG_SETMASK, &signal_set, NULL)) != 0) {
-		fprintf (stderr, "Moonlight: Media thread pool was unable to unblock all signals: %s (%i).\n", strerror (err), err);
+		g_warning ("Moonlight: Media thread pool was unable to unblock all signals: %s (%i).\n", strerror (err), err);
 	}
 	// Android has blocked signals we cannot unblock
 	// FIXME: Determine what they're blocking and why
@@ -2769,7 +2769,7 @@ MediaThreadPool::WorkerLoop (void *data)
 		}
 
 		if (any_blocked_signals) {
-			fprintf (stderr, "Moonlight: A media thread was started with blocked signals and could not unblock them. The media thread will exit (this may cause media playback to fail).\n");
+			g_warning ("Moonlight: A media thread was started with blocked signals and could not unblock them. The media thread will exit (this may cause media playback to fail).\n");
 			return NULL;
 		}
 	}
@@ -3000,12 +3000,12 @@ MediaGetFrameClosure::MediaGetFrameClosure (Media *media, MediaCallback *callbac
 	this->stream = stream;
 	// this->stream->ref ();
 	
-	//fprintf (stderr, "MediaGetFrameClosure::MediaGetFrameClosure ()  id: %i\n", GetId ());
+	//g_warning ("MediaGetFrameClosure::MediaGetFrameClosure ()  id: %i\n", GetId ());
 }
 
 MediaGetFrameClosure::~MediaGetFrameClosure ()
 {
-	//fprintf (stderr, "MediaGetFrameClosure::~MediaGetFrameClosure () id: %i\n", GetId ()); 
+	//g_warning ("MediaGetFrameClosure::~MediaGetFrameClosure () id: %i\n", GetId ()); 
 }
 
 void
@@ -3017,7 +3017,7 @@ MediaGetFrameClosure::Dispose ()
 	}
 	
 	MediaClosure::Dispose ();
-	//fprintf (stderr, "MediaGetFrameClosure::Dispose () id: %i\n", GetId ());
+	//g_warning ("MediaGetFrameClosure::Dispose () id: %i\n", GetId ());
 }
 
 /*
@@ -3702,7 +3702,7 @@ IMediaDemuxer::ReportOpenDemuxerCompleted ()
 			} else {
 				ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT")));
 			}
-			fprintf (stderr, "Moonlight: %s: Video stream size (width: %d, height: %d) outside limits (%d, %d)\n",
+			g_warning ("Moonlight: %s: Video stream size (width: %d, height: %d) outside limits (%d, %d)\n",
 				GetTypeName (), vs->GetHeight (), vs->GetWidth (), MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
 			return;
 		}
@@ -4299,7 +4299,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	
 		decoder = stream->GetDecoder ();
 		if (decoder == NULL) {
-			fprintf (stderr, "IMediaDemuxer::FillBuffersInternal () %s stream has no decoder (id: %i refcount: %i)\n", stream->GetTypeName (), GET_OBJ_ID (stream), stream->GetRefCount ());
+			g_warning ("IMediaDemuxer::FillBuffersInternal () %s stream has no decoder (id: %i refcount: %i)\n", stream->GetTypeName (), GET_OBJ_ID (stream), stream->GetRefCount ());
 			continue; // no decoder??
 		}
 	
