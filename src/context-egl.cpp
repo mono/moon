@@ -499,6 +499,68 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 }
 
 void
+MoonEGLContext::Paint (Color *color)
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	Rect        clip;
+
+	Top ()->GetClip (&clip);
+
+	if (!target->GetInit () && r == clip) {
+		// mark target as initialized
+		target->SetInit (ms);
+	}
+
+	ForceCurrent ();
+
+	GLContext::Paint (color);
+
+	ms->unref ();
+}
+
+void
+MoonEGLContext::Paint (MoonSurface *src,
+		       double      alpha,
+		       double      x,
+		       double      y)
+{
+	Target *target = Top ()->GetTarget ();
+	Rect   r = target->GetData (NULL);
+	Rect   clip;
+
+	Top ()->GetClip (&clip);
+
+	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
+		double m[16];
+		int    x0, y0;
+
+		GetMatrix (m);
+
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			MoonEGLSurface *surface = (MoonEGLSurface *) src;
+			Rect           r = Rect (x + x0,
+						 y + y0,
+						 surface->Width (),
+						 surface->Height ());
+
+			// matching dimensions and no transformation allow us
+			// to set source as initial state of target surface when
+			// it is not already initialized.
+			if (r == clip) {
+				target->SetInit (src);
+				return;
+			}
+		}
+	}
+
+	ForceCurrent ();
+
+	GLContext::Paint (src, alpha, x, y);
+}
+
+void
 MoonEGLContext::Project (MoonSurface  *src,
 		     const double *matrix,
 		     double       alpha,

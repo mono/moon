@@ -39,6 +39,13 @@ public:
 	void BlitYV12 (unsigned char *data[],
 		       int           stride[]);
 
+	void Paint (Color *color);
+
+	void Paint (MoonSurface *src,
+		    double      alpha,
+		    double      x,
+		    double      y);
+
 	void Project (MoonSurface  *src,
 		      const double *matrix,
 		      double       alpha,
