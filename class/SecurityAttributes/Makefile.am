@@ -62,12 +62,13 @@ LINKER_FLAGS =	\
 	-b true	\
 	-m secattrs .
 
-all: ivt-check detect.exe
-	mono --debug detect.exe -v -v -v -a ../lib/2.1/ .
+all: ivt-check.exe detect.exe
+	mono detect.exe ../lib/2.1/ .
 	for i in $(TRUSTED_ASSEMBLIES); do \
 		MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) -a $$i $(LINKER_FLAGS) $(LINKER_STEPS); \
 		sn -q -R $$i $(srcdir)/../mono.snk; \
 	done
+	mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
 	mcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)

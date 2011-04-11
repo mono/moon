@@ -124,5 +124,3 @@ install-test-plugin:
 	$(MAKE) -C plugin $@
 	$(MAKE) -C test/harness/shocker $@
 
-detect:
-	$(MAKE) -C class/tuning/SecurityAttributes/ $@
