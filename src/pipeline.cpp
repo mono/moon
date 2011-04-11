@@ -1856,7 +1856,7 @@ ProgressiveSource::Initialize ()
 	g_return_val_if_fail (write_fd == NULL, MEDIA_FAIL);
 	g_return_val_if_fail (read_fd == NULL, MEDIA_FAIL);
 
-	filename = g_build_filename (g_get_tmp_dir (), "MoonlightProgressiveStream.XXXXXX", NULL);
+	filename = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), "MoonlightProgressiveStream.XXXXXX", NULL);
 	
 	if ((tmp_fd = g_mkstemp (filename)) == -1) {
 		ReportErrorOccurred ("Could not create temporary filename for media file.\n");

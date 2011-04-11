@@ -59,6 +59,8 @@ public:
 	virtual guint32 GetScreenWidth (MoonWindow *moon_window);
 
 	virtual bool ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height);
+
+	virtual gchar *GetTemporaryFolder ();
 private:
 	Color *system_colors[NumSystemColors];
 

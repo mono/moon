@@ -781,7 +781,7 @@ const char *
 HttpHandler::GetDownloadDir ()
 {
 	if (download_dir == NULL) {
-		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-downloads.XXXXXX", NULL);
+		char *buf = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), "moonlight-downloads.XXXXXX", NULL);
 		// create a root temp directory for all files
 		download_dir = MakeTempDir (buf);
 		if (download_dir == NULL) {

@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 
 #include "utils.h"
+#include "runtime.h"
 #include "application.h"
 #include "deployment.h"
 
@@ -853,7 +854,7 @@ CreateTempDir (const char *filename)
 	if (Application::GetCurrent())
 		path = g_build_filename (Application::GetCurrent()->GetResourceRoot(), buf, NULL);
 	else {
-		path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+		path = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), buf, NULL);
 		Deployment::GetCurrent()->TrackPath (path);
 	}
 	g_free (buf);

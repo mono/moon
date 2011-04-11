@@ -374,7 +374,7 @@ const char*
 Application::GetResourceRoot ()
 {
 	if (!resource_root) {
-		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
+		char *buf = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), "moonlight-app.XXXXXX", NULL);
 		// create a root temp directory for all files
 		if (!(resource_root = MakeTempDir (buf)))
 			g_free (buf);

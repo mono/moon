@@ -1402,6 +1402,12 @@ cleanup:
 	return result;
 }
 
+bool
+MoonWindowingSystemGtk::GetTemporaryFolder ()
+{
+	return g_get_tmp_dir ();
+}
+
 MoonInstallerServiceGtk::MoonInstallerServiceGtk ()
 {
 	base_install_dir = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", NULL);
