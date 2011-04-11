@@ -75,8 +75,10 @@ public:
 
 	virtual gpointer GetPlatformWindow ();
 
-	// FIXME: This shouldn't be public
+	// FIXME: These shouldn't really be public
 	void Paint (android_app* app);
+	void ClearPlatformContext ();
+
 private:
 #if !USE_EGL
 	void CreateCairoContext ();

@@ -935,6 +935,7 @@ MoonWindowingSystemAndroid::OnAppCommand (android_app* app, int32_t cmd)
 		break;
 	case APP_CMD_TERM_WINDOW:
 		g_warning (" APP_CMD_TERM_WINDOW");
+		((MoonWindowAndroid*)window)->ClearPlatformContext ();
 		break;
 	case APP_CMD_WINDOW_RESIZED:
 		g_warning (" APP_CMD_WINDOW_RESIZED");

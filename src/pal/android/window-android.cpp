@@ -234,6 +234,20 @@ MoonWindowAndroid::SetStyle (WindowStyle style)
 	// FIXME
 }
 
+void
+MoonWindowAndroid::ClearPlatformContext ()
+{
+#ifdef USE_EGL
+	if (eglctx)
+		delete eglctx;
+	if (egltarget)
+		egltarget->unref ();
+
+	eglctx = NULL;
+	egltarget = NULL;
+#endif
+}
+
 #ifdef USE_EGL
 void
 MoonWindowAndroid::Paint (android_app *app)
