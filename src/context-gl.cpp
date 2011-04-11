@@ -602,15 +602,52 @@ GLContext::Project (MoonSurface  *src,
 
 	GetDeviceMatrix (m);
 	Matrix3D::Multiply (m, matrix, m);
-	if (!GetSourceMatrix (m, m, x, y))
-		return;
 
 	SetFramebuffer ();
 	SetViewport ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	{
+		Context::Target *target = Top ()->GetTarget ();
+		MoonSurface     *ms;
+		Rect            r = target->GetData (&ms);
+		GLSurface       *dst = (GLSurface *) ms;
+		double          dx = 2.0 / dst->Width ();
+		double          dy = 2.0 / dst->Height ();
+		double          p[4][4];
+
+		p[0][0] = x;
+		p[0][1] = y;
+		p[0][2] = 0.0;
+		p[0][3] = 1.0;
+
+		p[1][0] = x + width0;
+		p[1][1] = y;
+		p[1][2] = 0.0;
+		p[1][3] = 1.0;
+
+		p[2][0] = x + width0;
+		p[2][1] = y + height0;
+		p[2][2] = 0.0;
+		p[2][3] = 1.0;
+
+		p[3][0] = x;
+		p[3][1] = y + height0;
+		p[3][2] = 0.0;
+		p[3][3] = 1.0;
+
+		for (i = 0; i < 4; i++) {
+			Matrix3D::TransformPoint (p[i], m, p[i]);
+
+			vertices[i][0] = p[i][0] * dx - p[i][3];
+			vertices[i][1] = p[i][1] * dy - p[i][3];
+			vertices[i][2] = -p[i][2];
+			vertices[i][3] = p[i][3];
+		}
+
+		ms->unref ();
+	}
+	SetupTexCoordData ();
 
 	glUseProgram (program);
 
@@ -635,12 +672,10 @@ GLContext::Project (MoonSurface  *src,
 				 GL_LINEAR);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				 GL_LINEAR);
-#if PLUMB_ME // kangaroo
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				 GL_CLAMP_TO_BORDER);
+				 GL_CLAMP_TO_EDGE);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				 GL_CLAMP_TO_BORDER);
-#endif
+				 GL_CLAMP_TO_EDGE);
 
 		glUniform1i (sampler_location, i);
 	}
