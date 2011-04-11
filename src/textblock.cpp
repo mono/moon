@@ -544,9 +544,7 @@ TextBlock::Layout (Size constraint)
 		actual_width = 0.0;
 	} else {
 		layout->SetMaxWidth (constraint.width);
-		g_warning ("1");
 		layout->Layout ();
-		g_warning ("2");
 		
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}
