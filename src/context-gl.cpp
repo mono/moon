@@ -295,7 +295,7 @@ GLContext::Blit (unsigned char *data,
 			 0,
 			 dst->Width (),
 			 dst->Height (),
-			 GL_BGRA,
+			 GL_RGBA,
 			 GL_UNSIGNED_BYTE,
 			 data);
 	glBindTexture (GL_TEXTURE_2D, 0);
@@ -546,11 +546,7 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
 	}
 	else {
-#if defined(USE_EGL)
 		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw).bgra");
-#else
-		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
-#endif
 	}
 	if (alpha)
 		g_string_sprintfa (s, " * alpha");
@@ -779,7 +775,7 @@ GLContext::Blur (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-		      GL_BGRA,
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -990,7 +986,7 @@ GLContext::DropShadow (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-		      GL_BGRA,
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 

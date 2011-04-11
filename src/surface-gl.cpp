@@ -95,7 +95,7 @@ GLSurface::Texture ()
 			      size[0],
 			      size[1],
 			      0,
-			      GL_BGRA,
+			      GL_RGBA,
 			      GL_UNSIGNED_BYTE,
 			      data);
 		glBindTexture (GL_TEXTURE_2D, 0);
