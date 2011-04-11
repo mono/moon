@@ -79,7 +79,8 @@ public:
 	void Flush ();
 
 protected:
-	void SetupVertexData (double       x,
+	void SetupVertexData (const double *matrix,
+			      double       x,
 			      double       y,
 			      double       width,
 			      double       height);
