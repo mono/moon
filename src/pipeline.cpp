@@ -2750,6 +2750,9 @@ MediaThreadPool::WorkerLoop (void *data)
 	} else if ((err = pthread_sigmask (SIG_SETMASK, &signal_set, NULL)) != 0) {
 		fprintf (stderr, "Moonlight: Media thread pool was unable to unblock all signals: %s (%i).\n", strerror (err), err);
 	}
+	// Android has blocked signals we cannot unblock
+	// FIXME: Determine what they're blocking and why
+#if !defined(PLATFORM_ANDROID)
 	if (err != 0) {
 		/* Something failed. Check if all signals are unblocked, if not, exit
 		 * the thread. Exiting the thread might cause media playback to fail,
@@ -2770,6 +2773,7 @@ MediaThreadPool::WorkerLoop (void *data)
 			return NULL;
 		}
 	}
+#endif
 	
 	pthread_mutex_lock (&mutex);
 	for (int i = 0; i < count; i++) {
