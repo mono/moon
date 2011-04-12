@@ -268,7 +268,7 @@ struct FaceInfo {
 
 FaceInfo::FaceInfo (FontFile *file, FT_Face face, int index)
 {
-	LOG_FONT (, "      * indexing %s[%d]: family=\"%s\"; style=\"%s\"\n",
+	LOG_FONT ("      * indexing %s[%d]: family=\"%s\"; style=\"%s\"\n",
 		  path_get_basename (file->path), index, face->family_name, face->style_name);
 	
 	font_style_info_init (&style, NULL);
@@ -281,7 +281,7 @@ FaceInfo::FaceInfo (FontFile *file, FT_Face face, int index)
 	
 	family_name = style.family_name;
 	
-	LOG_FONT (, "        * indexed as %s; %s\n", family_name,
+	LOG_FONT ("        * indexed as %s; %s\n", family_name,
 		  font_style_info_to_string (style.stretch, style.weight, style.style));
 	
 	this->index = index;
@@ -360,7 +360,7 @@ FontIndex::CacheFontInfo (FT_Library libft2, const char *filename, FT_Stream str
 	FontFile *file;
 	FaceInfo *fi;
 	
-	LOG_FONT (, "    * caching font info for `%s'...\n", filename);
+	LOG_FONT ("    * caching font info for `%s'...\n", filename);
 	
 	file = new FontFile (filename, guid);
 	file->faces = g_ptr_array_new ();
@@ -1051,7 +1051,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 	if (!(dir = g_dir_open (path->str, 0, NULL)))
 		return fontdir != NULL;
 	
-	LOG_FONT (, "  * indexing font directory `%s'...\n", path->str);
+	LOG_FONT ("  * indexing font directory `%s'...\n", path->str);
 	
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
@@ -1151,7 +1151,7 @@ IndexFontFile (FT_Library libft2, const char *name, const char *path)
 	bool obfuscated;
 	FT_Face face;
 	
-	LOG_FONT (, "  * indexing font file `%s'...\n", path);
+	LOG_FONT ("  * indexing font file `%s'...\n", path);
 	
 	if (!(stream = font_stream_new (path, NULL)))
 		return NULL;
@@ -1199,7 +1199,7 @@ FontManager::AddResource (const char *resource_id, const char *path)
 	FontIndex *index;
 	struct stat st;
 	
-	LOG_FONT (, "Adding font resource '%s' at %s\n", resource_id, path);
+	LOG_FONT ("Adding font resource '%s' at %s\n", resource_id, path);
 	
 	if ((index = (FontIndex *) g_hash_table_lookup (resources, resource_id)))
 		return;
@@ -1326,11 +1326,11 @@ IndexMatchFace (FontIndex *index, const char *family, FontStretches stretch, Fon
 	int diff;
 	guint i;
 	
-	LOG_FONT (, "  * searching index for %s; %s\n", family, font_style_info_to_string (stretch, weight, style));
+	LOG_FONT ("  * searching index for %s; %s\n", family, font_style_info_to_string (stretch, weight, style));
 	
 	font_style_info_hydrate (&desired, family, stretch, weight, style);
 	
-	LOG_FONT (, "    * canonicalized family/style: %s; %s\n", desired.family_name,
+	LOG_FONT ("    * canonicalized family/style: %s; %s\n", desired.family_name,
 		  font_style_info_to_string (desired.stretch, desired.weight, desired.style));
 	
 	while (file != NULL) {
@@ -1403,18 +1403,18 @@ FontManager::OpenFontResource (const char *resource, const char *family, int idx
 	FontFace *face;
 	FaceInfo *fi;
 	
-	LOG_FONT (, "OpenFontResource (\"%s\", \"%s\", %d, %s)\n", resource ? resource : "(null)",
+	LOG_FONT ("OpenFontResource (\"%s\", \"%s\", %d, %s)\n", resource ? resource : "(null)",
 		  family ? family : "(null)", idx, font_style_info_to_string (stretch, weight, style));
 	
 	if (!(index = (FontIndex *) g_hash_table_lookup (resources, resource))) {
-		LOG_FONT (, "  * error: no such resource\n");
+		LOG_FONT ("  * error: no such resource\n");
 		return NULL;
 	}
 	
 	if (family != NULL) {
 		// open by family
 		if (!(fi = IndexMatchFace (index, family, stretch, weight, style))) {
-			LOG_FONT (, "  * error: resource does not contain requested font\n");
+			LOG_FONT ("  * error: resource does not contain requested font\n");
 			return NULL;
 		}
 	} else if (idx >= 0) {
@@ -1434,7 +1434,7 @@ FontManager::OpenFontResource (const char *resource, const char *family, int idx
 	if (!(face = OpenFontFace (fi->file->path, fi->file->guid, fi->index)))
 		return NULL;
 	
-	LOG_FONT (, "  * opened %s; %s\n", face->GetFamilyName (), face->GetStyleName ());
+	LOG_FONT ("  * opened %s; %s\n", face->GetFamilyName (), face->GetStyleName ());
 	
 	return face;
 }
@@ -1448,16 +1448,16 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	char *key;
 	
 	key = g_strdup_printf ("%s:%d:%d:%d", family, stretch, weight, style);
-	LOG_FONT (, "Attempting to open system font: %s %s ... ", family,
+	LOG_FONT ("Attempting to open system font: %s %s ... ", family,
 		  font_style_info_to_string (stretch, weight, style));
 	if (g_hash_table_lookup_extended (system_faces, key, NULL, (gpointer *) &face)) {
-		LOG_FONT (, "found!\n");
+		LOG_FONT ("found!\n");
 		g_free (key);
 		if (face)
 			face->ref ();
 		return face;
 	}
-	LOG_FONT (, "not found in cache.\n");
+	LOG_FONT ("not found in cache.\n");
 	
 	for (int attempt = 0; attempt < 2; attempt++) {
 		if (attempt == 0) {
@@ -1470,17 +1470,17 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 			font_style_info_hydrate (&desired, family, stretch, weight, style);
 		}
 		
-		LOG_FONT (, "Attempting to load installed font: %s %s... ", desired.family_name,
+		LOG_FONT ("Attempting to load installed font: %s %s... ", desired.family_name,
 			  font_style_info_to_string (desired.stretch, desired.weight, desired.style));
 		
 		if (!(matched = Runtime::GetFontService ()->FindFont (&desired))) {
-			LOG_FONT (, "no matches\n");
+			LOG_FONT ("no matches\n");
 			continue;
 		}
 		
 		if ((face = OpenFontFace (matched->path, NULL, matched->index))) {
 			if (!g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name)) {
-				LOG_FONT (, "got %s %s\n", face->GetFamilyName (), face->GetStyleName ());
+				LOG_FONT ("got %s %s\n", face->GetFamilyName (), face->GetStyleName ());
 				face->ref ();
 				g_hash_table_insert (system_faces, key, face); // the key is freed when the hash table is destroyed
 				g_free (desired.family_name);
@@ -1488,10 +1488,10 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 				return face;
 			}
 			
-			LOG_FONT (, "family mismatch\n");
+			LOG_FONT ("family mismatch\n");
 			face->unref ();
 		} else {
-			LOG_FONT (, "family not found\n");
+			LOG_FONT ("family not found\n");
 		}
 		
 		delete matched;
