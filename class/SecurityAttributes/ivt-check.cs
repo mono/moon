@@ -67,23 +67,22 @@ class Program {
 		Console.WriteLine (aname);
 		if (!HasTransparencyAttributes (assembly)) {
 			Console.WriteLine (" * special exception since no security attributes are present");
-			return true;
-		}
+		} else {
+			foreach (CustomAttribute ca in assembly.CustomAttributes) {
+				if (ca.AttributeType.FullName != InternalsVisibleTo)
+					continue;
 
-		foreach (CustomAttribute ca in assembly.CustomAttributes) {
-			if (ca.AttributeType.FullName != InternalsVisibleTo)
-				continue;
+				string fqn = ca.ConstructorArguments [0].Value as string;
+				string name = fqn.Substring (0, fqn.IndexOf (','));
+				if (Array.IndexOf<string> (PlatformCode.Assemblies, name) >= 0)
+					continue;
 
-			string fqn = ca.ConstructorArguments [0].Value as string;
-			string name = fqn.Substring (0, fqn.IndexOf (','));
-			if (Array.IndexOf<string> (PlatformCode.Assemblies, name) >= 0)
-				continue;
+				if (Filter (aname, fqn))
+					continue;
 
-			if (Filter (aname, fqn))
-				continue;
-
-			Console.WriteLine (" * unexpected: {0}{1}", fqn, Environment.NewLine);
-			retval = false;
+				Console.WriteLine (" * unexpected: {0}{1}", fqn, Environment.NewLine);
+				retval = false;
+			}
 		}
 
 		Console.WriteLine (" {0}{1}", retval ? "OK" : "FAIL!", Environment.NewLine);
