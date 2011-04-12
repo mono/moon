@@ -1101,7 +1101,7 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 		while ((ident = ALooper_pollAll (timeout,
 						 NULL, &events,
-						 (void**)&source)) >= 0) {
+						 (void**)&source))) {
 
 			// Process this event if there was one
 			if (source != NULL)
