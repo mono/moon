@@ -85,6 +85,7 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void NullableFontFamily()
 		{
 			SetValueToNull(DependencyProperty.RegisterAttached("asdadsgfdhf", typeof(FontFamily), typeof(Rectangle), new PropertyMetadata (ChangeFunc)), new FontFamily("ted"));

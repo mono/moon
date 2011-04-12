@@ -19,7 +19,7 @@
 namespace Moonlight {
 
 /* @IncludeInKinds */
-class FontFamily {
+struct FontFamily {
  public:
 	char *source;
 	
