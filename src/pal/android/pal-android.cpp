@@ -1075,6 +1075,8 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 	window->GetSurface ()->HandleUIWindowAvailable ();
 	window->GetSurface ()->HandleUIWindowAllocation (true);
 
+#define DEBUG_MAIN_LOOP 1
+
 	while (1) {
 		// Read all pending events.
 		int ident;
@@ -1082,10 +1084,12 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 		struct android_poll_source* source;
 		int timeout = -1;
 
+		sourceMutex.Lock ();
 		if (sources != NULL) {
 			AndroidSource *s = (AndroidSource*)sources->data;
 			timeout = s->time_remaining;
 		}
+		sourceMutex.Unlock ();
 
 		gint32 before_poll = get_now_in_millis ();
 
