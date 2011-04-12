@@ -135,8 +135,7 @@ namespace System.Windows.Browser {
 					}
 				}
 
-				var listOps = Activator.CreateInstance (Type.GetType ("System.Windows.Browser.ManagedObject+ListOps`1").MakeGenericType (listType), 
-					new object[] {(IList)ManagedObject});
+				var listOps = CreateListOpsInstance (listType);
 				Type listOpsType = listOps.GetType ();
 
 				if (type.GetProperty ("Item") != null)
@@ -164,6 +163,12 @@ namespace System.Windows.Browser {
 				cachedObjects.Remove (ManagedObject);
 		}
 
+		// extract small-ish [SecurityCritical] code from the .ctor code
+		object CreateListOpsInstance (Type listType)
+		{
+			return Activator.CreateInstance (Type.GetType ("System.Windows.Browser.ManagedObject+ListOps`1").
+				MakeGenericType (listType), new object[] { (IList) ManagedObject });
+		}
 
 		internal static ManagedObject GetManagedObject (object o)
 		{
