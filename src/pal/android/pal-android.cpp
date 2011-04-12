@@ -555,6 +555,7 @@ private:
 /// our windowing system
 
 MoonWindowingSystemAndroid::MoonWindowingSystemAndroid (bool out_of_browser)
+	: sourceMutex(false)
 {
 	if (out_of_browser) {
 		g_thread_init (NULL);
@@ -763,15 +764,15 @@ MoonWindowingSystemAndroid::GetSystemColor (SystemColor id)
 
 class AndroidSource {
 public:
-	AndroidSource (int source_id, int priority, int interval, MoonSourceFunc source_func, gpointer data, bool skip_initially)
+	AndroidSource (int source_id, int priority, int interval, MoonSourceFunc source_func, gpointer data)
 	{
 		this->source_id = source_id;
 		this->priority = priority;
 		this->interval = interval;
 		this->source_func = source_func;
 		this->data = data;
-		skip = skip_initially;
 		time_remaining = interval;
+		pending_destroy = false;
 	}
 
 	bool InvokeSourceFunc ()
@@ -793,11 +794,10 @@ public:
 		return source2->priority - source1->priority;
 	}
 
-	bool skip;
-
 	// this one must be signed
 	gint32 time_remaining;
 
+	bool pending_destroy;
 	guint source_id;
 	int priority;
 	gint32 interval;
@@ -809,24 +809,45 @@ public:
 guint
 MoonWindowingSystemAndroid::AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data)
 {
-	AndroidSource *new_source = new AndroidSource (source_id, priority, ms, timeout, data, emitting_sources);
+	sourceMutex.Lock ();
+
+	int new_source_id = source_id;
+
+	AndroidSource *new_source = new AndroidSource (new_source_id, priority, ms, timeout, data);
 
 	sources = g_list_insert_sorted (sources, new_source, AndroidSource::Compare);
 
-	return source_id++;
+	source_id ++;
+
+	sourceMutex.Unlock ();
+
+	g_debug ("MoonWindowSystemAndroid::AddTimeout %d", new_source_id);
+
+	return new_source_id;
 }
 
 void
 MoonWindowingSystemAndroid::RemoveSource (guint sourceId)
 {
+	g_debug ("removing source %d\n", sourceId);
+
+	sourceMutex.Lock ();
+
 	for (GList *l = sources; l; l = l->next) {
 		AndroidSource *s = (AndroidSource*)l->data;
 		if (s->source_id == sourceId) {
-			sources = g_list_delete_link (sources, l);
-			delete s;
-			return;
+			if (emitting_sources) {
+				s->pending_destroy = true;
+			}
+			else {
+				sources = g_list_delete_link (sources, l);
+				delete s;
+			}
+			break;
 		}
 	}
+
+	sourceMutex.Unlock ();
 }
 
 void
@@ -838,9 +859,17 @@ MoonWindowingSystemAndroid::RemoveTimeout (guint timeoutId)
 guint
 MoonWindowingSystemAndroid::AddIdle (MoonSourceFunc idle, gpointer data)
 {
-	AndroidSource *new_source = new AndroidSource (source_id, MOON_PRIORITY_DEFAULT_IDLE, 0, idle, data, emitting_sources);
+	sourceMutex.Lock ();
+
+	int new_source_id = source_id;
+
+	AndroidSource *new_source = new AndroidSource (new_source_id, MOON_PRIORITY_DEFAULT_IDLE, 0, idle, data);
 	sources = g_list_insert_sorted (sources, new_source, AndroidSource::Compare);
-	return source_id++;
+	source_id ++;
+
+	sourceMutex.Unlock ();
+	g_debug ("MoonWindowSystemAndroid::AddIdle, returning %d", new_source_id);
+	return new_source_id;
 }
 
 void
@@ -1060,7 +1089,9 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 		gint32 before_poll = get_now_in_millis ();
 
-		//		g_warning ("sleeping for at most %d milliseconds (until next timeout)", timeout);
+#if DEBUG_MAINLOOP
+		g_warning ("sleeping for at most %d milliseconds (until next timeout)", timeout);
+#endif
 
 		while ((ident = ALooper_pollAll (timeout,
 						 NULL, &events,
@@ -1078,82 +1109,75 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 
 			gint32 after_poll = get_now_in_millis ();
 
+			sourceMutex.Lock();
+			emitting_sources = true;
+
+			GList *sources_to_dispatch = NULL;
+
 			if (sources) {
-				gint32 delta = before_poll - after_poll;
-
-				emitting_sources = true;
-				GList *l = sources;
 				int max_priority = G_MAXINT;
+				gint32 delta = before_poll - after_poll;
+				GList *l = sources;
 
-				//int num_sources_handled = 0;
-				//g_warning ("processing sources");
 				while (l) {
 					AndroidSource *s = (AndroidSource*)l->data;
-					if (s->skip) {
-						//g_warning ("skipping");
-						// we've already invoked this source or it was added while we were already emitting sources, skip it
-						l = l->next;
-					}
-					else if (s->time_remaining + delta < 0) {
+
+					if (s->time_remaining + delta < 0) {
 						if (max_priority == G_MAXINT) {
 							// first time through here, so we do what glib does, and limit the sources we
 							// dispatch on to those at or above this priority.
 							max_priority = s->priority;
+							sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
 						}
 						else {
 							if (s->priority > max_priority) {
 								s->time_remaining += delta;
-								if (s->time_remaining < 0)
+								if (s->time_remaining < 0) {
 									s->time_remaining = 0;
-								l = l->next;
-								continue;
+									sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
+								}
 							}
 						}
-
-						// we should invoke it
-						//g_warning ("invoking");
-						//num_sources_handled ++;
-						bool keep = s->InvokeSourceFunc ();
-						if (keep) {
-							//g_warning ("we're keeping it, reinsert it into the list");
-							s->skip = true;
-							s->time_remaining = s->interval;
-							sources = g_list_insert_sorted (sources, s, AndroidSource::Compare);
-						}
-						else {
-							//g_warning ("we're not keeping it, delete it");
-							delete s;
-						}
-
-						GList *next = l->next;
-						sources = g_list_delete_link (sources, l);
-						l = next;
 					}
-					else {
-						s->time_remaining += delta;
-						if (s->time_remaining < 0)
-							s->time_remaining = 0;
-						l = l->next;
-					}
-				}
-				emitting_sources = false;
-				//g_warning ("  emitted %d AndroidSources this mainloop iteration", num_sources_handled);
 
-				l = sources;
-				while (l) {
-					AndroidSource *s = (AndroidSource*)sources->data;
-					s->skip = false;
 					l = l->next;
 				}
 
-				timeout = -1;
-				if (sources != NULL) {
-					AndroidSource *s = (AndroidSource*)sources->data;
-					timeout = s->time_remaining;
+				sources_to_dispatch = g_list_reverse (sources_to_dispatch);
+			}
+
+			sourceMutex.Unlock ();
+
+			for (GList *l = sources_to_dispatch; l; l = l->next) {
+				AndroidSource *s = (AndroidSource*)l->data;
+				if (!s->pending_destroy)
+					s->pending_destroy = !s->InvokeSourceFunc ();
+			}
+
+			g_list_free (sources_to_dispatch);
+
+			sourceMutex.Lock ();
+			for (GList *l = sources; l;) {
+				AndroidSource *s = (AndroidSource*)l->data;
+				if (s->pending_destroy) {
+					GList *next = l->next;
+					sources = g_list_delete_link (sources, l);
+					delete s;
+					l = next;
+				}
+				else {
+					l = l->next;
 				}
 			}
 
+			timeout = -1;
+			if (sources != NULL) {
+				AndroidSource *s = (AndroidSource*)sources->data;
+				timeout = s->time_remaining;
+			}
 
+			emitting_sources = false;
+			sourceMutex.Unlock();
 		}
 	}
 }

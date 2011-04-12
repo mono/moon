@@ -5,6 +5,8 @@
 
 #include "pal.h"
 
+#include "mutex.h"
+
 #ifdef USE_GALLIUM
 struct pipe_screen;
 #endif
@@ -84,6 +86,7 @@ private:
 	GList *sources;
 	guint source_id;
 	bool emitting_sources;
+	Mutex sourceMutex;
 };
 
 class MoonFontServiceAndroid : public MoonFontService {
