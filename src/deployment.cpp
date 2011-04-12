@@ -27,6 +27,7 @@ G_END_DECLS
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/appdomain.h>
+#include <mono/utils/mono-membar.h>
 
 #include "factory.h"
 #include "downloader.h"
@@ -1906,15 +1907,7 @@ Deployment::DrainUnrefs ()
 	
 loop:
 	// Get the list of objects to unref.
-#if PLUMB_ME
-	do {
-		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
-		
-		if (list == NULL)
-			break;
-		
-	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, NULL));
-#endif
+	list = (UnrefData *) InterlockedExchangePointer (&pending_unrefs, NULL);
 	
 	// Loop over all the objects in the list and unref them.
 	while (list != NULL) {
@@ -1927,9 +1920,9 @@ loop:
 		list = next;
 	}
 
-#if PLUMB_ME
-	list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
-#endif
+	mono_memory_barrier ();
+	list = (UnrefData *) pending_unrefs;
+
 	if (list != NULL)
 		goto loop;
 	
@@ -1977,12 +1970,11 @@ Deployment::UnrefDelayed (EventObject *obj)
 	item->obj = obj;
 	
 	// Prepend the list item into the list
-#if PLUMB_ME
 	do {
-		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+		mono_memory_barrier ();
+		list = (UnrefData *) pending_unrefs;
 		item->next = list;
-	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, item));
-#endif
+	} while (InterlockedExchangePointer (&pending_unrefs, item) != list);
 	
 	// If we created a new list instead of prepending to an existing one, add a idle tick call.
 	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
