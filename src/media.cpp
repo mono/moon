@@ -411,28 +411,29 @@ Image::Render (Context *ctx, Region *region)
 			      specified.height);
 	}
 
+	cairo_region_overlap_t overlap = CAIRO_REGION_OVERLAP_IN;
+
 	if (stretch == StretchUniformToFill || adjust) {
 		Region bounds = Region (paint.RoundOut ());
 		Rect   box = image.Transform (&matrix).RoundIn ();
 
-		if (bounds.RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
-			cairo_t *cr = ctx->Push (Context::Cairo ());
-			source->Unlock ();
-			Render (cr, region);
+		overlap = bounds.RectIn (box);
+	}
+
+	if (!HasLayoutClip () && overlap == CAIRO_REGION_OVERLAP_IN) {
+		MoonSurface *src = source->GetSurface (ctx);
+
+		if (src) {
+			ctx->Push (Context::Transform (matrix));
+			ctx->Paint (src, 1.0, 0, 0);
 			ctx->Pop ();
-			return;
 		}
 	}
-
-	MoonSurface *src = source->GetSurface (ctx);
-	if (!src) {
-		source->Unlock ();
-		return;
+	else {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		Render (cr, region);
+		ctx->Pop ();
 	}
-
-	ctx->Push (Context::Transform (matrix));
-	ctx->Paint (src, 1.0, 0, 0);
-	ctx->Pop ();
 
 	source->Unlock ();
 }
