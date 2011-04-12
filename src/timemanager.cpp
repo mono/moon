@@ -523,7 +523,7 @@ TimeManager::SourceTick ()
 	}
 
 	if (current_flags & TIME_MANAGER_RENDER) {
-		// fprintf (stderr, "rendering\n"); fflush (stderr);
+		// g_warning ("rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
 		rendering_args->SetRenderingTime (get_now());
 		rendering_args->ref (); // to keep Emit from destroying the object

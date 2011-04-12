@@ -548,11 +548,11 @@ static void
 print_parse_error (const char *in, const char *where, const char *reason)
 {
 	if (debug_flags & RUNTIME_DEBUG_TEXT) {
-		fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
-		fprintf (stderr, "                            ");
+		g_warning ("Glyph Indices parse error: \"%s\": %s\n", in, reason);
+		g_warning ("                            ");
 		for (int i = 0; i < (where - in); i++)
 			fputc (' ', stderr);
-		fprintf (stderr, "^\n");
+		g_warning ("^\n");
 	}
 }
 #endif

@@ -1172,6 +1172,17 @@ MoonWindowingSystemAndroid::GetScreenWidth (MoonWindow *moon_window)
 	return 100;
 }
 
+gchar *
+MoonWindowingSystemAndroid::GetTemporaryFolder ()
+{
+	android_app *app = (android_app *) system_data;
+
+	const gchar* path = app->activity->internalDataPath;
+	if (!path) // 2.3 has a bug, la de da
+		path = "/sdcard";
+	return (gchar*)path;
+}
+
 bool
 MoonWindowingSystemAndroid::ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height)
 {

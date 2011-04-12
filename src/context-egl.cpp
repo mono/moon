@@ -98,17 +98,52 @@ MoonEGLContext::ProgramPrecisionString ()
 }
 
 void
-MoonEGLContext::SetupVertexData (double       x,
-			     double       y,
-			     double       width,
-			     double       height)
+MoonEGLContext::SetupVertexData (const double *matrix,
+				 double       x,
+				 double       y,
+				 double       width,
+				 double       height)
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
+	Target          *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
 	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	double          dx = 2.0 / dst->Width ();
+	double          dy = 2.0 / dst->Height ();
+	double          p[4][4];
+	int             i;
 
-	GLContext::SetupVertexData (x, y, width, height);
+	p[0][0] = x;
+	p[0][1] = y;
+	p[0][2] = 0.0;
+	p[0][3] = 1.0;
+
+	p[1][0] = x + width;
+	p[1][1] = y;
+	p[1][2] = 0.0;
+	p[1][3] = 1.0;
+
+	p[2][0] = x + width;
+	p[2][1] = y + height;
+	p[2][2] = 0.0;
+	p[2][3] = 1.0;
+
+	p[3][0] = x;
+	p[3][1] = y + height;
+	p[3][2] = 0.0;
+	p[3][3] = 1.0;
+
+	if (matrix) {
+		for (i = 0; i < 4; i++)
+			Matrix3D::TransformPoint (p[i], matrix, p[i]);
+	}
+
+	for (i = 0; i < 4; i++) {
+		vertices[i][0] = p[i][0] * dx - p[i][3];
+		vertices[i][1] = p[i][1] * dy - p[i][3];
+		vertices[i][2] = -p[i][2];
+		vertices[i][3] = p[i][3];
+	}
 
 	if (dst->GetEGLDisplay ()) {
 		int i;
@@ -176,8 +211,8 @@ MoonEGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (0, 0, width0, height0);
-		SetupTexCoordData ();
+		SetupVertexData (NULL, 0, 0, width0, height0);
+		GLContext::SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -232,11 +267,12 @@ MoonEGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (rSrc.x - r.x,
+		SetupVertexData (NULL,
+				 rSrc.x - r.x,
 				 rSrc.y - r.y,
 				 width0,
 				 height0);
-		SetupTexCoordData ();
+		GLContext::SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -496,6 +532,68 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 	GLContext::BlitYV12 (data, stride);
 
 	ms->unref ();
+}
+
+void
+MoonEGLContext::Paint (Color *color)
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	Rect        clip;
+
+	Top ()->GetClip (&clip);
+
+	if (!target->GetInit () && r == clip) {
+		// mark target as initialized
+		target->SetInit (ms);
+	}
+
+	ForceCurrent ();
+
+	GLContext::Paint (color);
+
+	ms->unref ();
+}
+
+void
+MoonEGLContext::Paint (MoonSurface *src,
+		       double      alpha,
+		       double      x,
+		       double      y)
+{
+	Target *target = Top ()->GetTarget ();
+	Rect   r = target->GetData (NULL);
+	Rect   clip;
+
+	Top ()->GetClip (&clip);
+
+	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
+		double m[16];
+		int    x0, y0;
+
+		GetMatrix (m);
+
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			MoonEGLSurface *surface = (MoonEGLSurface *) src;
+			Rect           r = Rect (x + x0,
+						 y + y0,
+						 surface->Width (),
+						 surface->Height ());
+
+			// matching dimensions and no transformation allow us
+			// to set source as initial state of target surface when
+			// it is not already initialized.
+			if (r == clip) {
+				target->SetInit (src);
+				return;
+			}
+		}
+	}
+
+	ForceCurrent ();
+
+	GLContext::Paint (src, alpha, x, y);
 }
 
 void

@@ -191,7 +191,7 @@ moonlight_get_runtime_option (RuntimeInitFlag flag)
 #ifdef USE_GALLIUM
 #define GALLIUM_RUNTIME_INIT RUNTIME_INIT_INTERMEDIATE_SURFACES
 #else
-#define GALLIUM_RUNTIME_INIT 0
+#define GALLIUM_RUNTIME_INIT RUNTIME_INIT_INTERMEDIATE_SURFACES // EGL hack
 #endif
 
 #ifdef USE_GLX

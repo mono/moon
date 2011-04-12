@@ -92,7 +92,7 @@ Stroke::HitTestEndcapSegment (Point c,
 	Point op2 = p2;
 
 #if DEBUG_HITTEST
-	fprintf (stderr, "HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
+	g_warning ("HitTestEndcapSegment: (%g,%g / %g, %g) hits segment (%g,%g  - %g,%g)?\n",
 		c.x, c.y,
 		w, h,
 		p1.x, p1.y,
@@ -102,7 +102,7 @@ Stroke::HitTestEndcapSegment (Point c,
 	// handle dx == 0
 	if (p2.x == p1.x) {
 #if DEBUG_HITTEST
-		fprintf (stderr, "dx == 0, returning %d\n", p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2));
+		g_warning ("dx == 0, returning %d\n", p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2));
 #endif
  		if (p1.x >= (c.x - w/2) && p1.x <= (c.x + w/2)) {
 			if (p1.y < (c.y - h/2) && p2.y < (c.y - h/2))
@@ -158,7 +158,7 @@ Stroke::HitTestEndcapSegment (Point c,
 	double discr =  bq * bq - 4 * aq * cq;
 
 #if DEBUG_HITTEST
-	fprintf (stderr, "HitTestEndCapSegment: discr = %g\n", discr);
+	g_warning ("HitTestEndCapSegment: discr = %g\n", discr);
 #endif	
 
 	// if we have roots we need to check if they occur on the line
@@ -260,7 +260,7 @@ Stroke::HitTestSegmentSegment (Point stroke_p1, Point stroke_p2,
 			       Point p1, Point p2)
 {
 #if DEBUG_HITTEST
-	fprintf (stderr, "HitTestSegmentSegment: (%g,%g - %g,%g / %g, %g) hits segment (%g,%g - %g,%g) ?\n",
+	g_warning ("HitTestSegmentSegment: (%g,%g - %g,%g / %g, %g) hits segment (%g,%g - %g,%g) ?\n",
 		stroke_p1.x, stroke_p1.y,
 		stroke_p2.x, stroke_p2.y,
 		w, h,
@@ -287,7 +287,7 @@ Stroke::HitTestEndcapPoint (Point c,
 			    Point p)
 {
 #if DEBUG_HITTEST
-	fprintf (stderr, "HitTestEndcapPoint: (%g,%g / %g, %g) hits point %g,%g ?\n",
+	g_warning ("HitTestEndcapPoint: (%g,%g / %g, %g) hits point %g,%g ?\n",
 		c.x, c.y,
 		w, h,
 		p.x, p.y);
@@ -301,7 +301,7 @@ Stroke::HitTestEndcapPoint (Point c,
 
 	bool rv = ((dp.x * dp.x) / (a * a) + (dp.y * dp.y) / (b * b)) < 1;
 #if DEBUG_HITTEST
-	fprintf (stderr, " + %s\n", rv ? "TRUE" : "FALSE");
+	g_warning (" + %s\n", rv ? "TRUE" : "FALSE");
 #endif
 	return rv;
 }
@@ -353,7 +353,7 @@ Stroke::HitTestSegmentPoint (Point stroke_p1, Point stroke_p2,
 			     Point p)
 {
 #if DEBUG_HITTEST
-	fprintf (stderr, "HitTestSegment: (%g,%g - %g,%g / %g, %g) hits point (%g,%g) ?\n",
+	g_warning ("HitTestSegment: (%g,%g - %g,%g / %g, %g) hits point (%g,%g) ?\n",
 		stroke_p1.x, stroke_p1.y,
 		stroke_p2.x, stroke_p2.y,
 		w, h,
@@ -430,12 +430,12 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 				return true;
 			
 #if DEBUG_HITTEST
-			fprintf (stderr, "\t(%f, %f) EndcapPoint failed\n",
+			g_warning ("\t(%f, %f) EndcapPoint failed\n",
 				 cur.x, cur.y);
 #endif
 		} else {
 #if DEBUG_HITTEST
-			fprintf (stderr, "\t(%f, %f) is not within bounds\n",
+			g_warning ("\t(%f, %f) is not within bounds\n",
 				 cur.x, cur.y);
 #endif
 		}
@@ -450,7 +450,7 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 			return true;
 		
 #if DEBUG_HITTEST
-		fprintf (stderr, "\t(%f, %f) (%f, %f) EndcapSegment failed\n",
+		g_warning ("\t(%f, %f) (%f, %f) EndcapSegment failed\n",
 			 cur.x, cur.y, next.x, next.y);
 #endif
 		
@@ -469,7 +469,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 
 	if (myStylusPoints_count == 0) {
 #if DEBUG_HITTEST
-		fprintf (stderr, "no points in the collection, returning false!\n");
+		g_warning ("no points in the collection, returning false!\n");
 #endif
 		return false;
 	}
@@ -495,22 +495,22 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	}
 	
 #if DEBUG_HITTEST
-	fprintf (stderr, "Stroke::HitTest()\n");
-	fprintf (stderr, "\tInput points:\n");
+	g_warning ("Stroke::HitTest()\n");
+	g_warning ("\tInput points:\n");
 	
 	int stylusPoints_count = stylusPoints->GetCount ();
 	for (int i = 0; i < stylusPoints_count; i++) {
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
-		fprintf (stderr, "\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
+		g_warning ("\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
 	}
 	
-	fprintf (stderr, "\tStroke points:\n");
+	g_warning ("\tStroke points:\n");
 	
 	for (int i = 0; i < myStylusPoints_count; i++) {
 		sp = myStylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
-		fprintf (stderr, "\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
+		g_warning ("\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
 	}
 #endif	
 	if (!GetBounds ().IntersectsWith (stylusPoints->GetBounds ()))
@@ -522,7 +522,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	if (HitTestEndcap (Point (sp->GetX (), sp->GetY ()),
 			   width, height, stylusPoints)) {
 #if DEBUG_HITTEST
-		fprintf (stderr, "\tA point matched the beginning endcap\n");
+		g_warning ("\tA point matched the beginning endcap\n");
 #endif
 		return true;
 	}
@@ -536,7 +536,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 				    Point (sp->GetX (), sp->GetY ()),
 				    width, height, stylusPoints)) {
 #if DEBUG_HITTEST
-			fprintf (stderr, "\tA point matched an interior line segment\n");
+			g_warning ("\tA point matched an interior line segment\n");
 #endif
 			return true;
 		}
@@ -549,14 +549,14 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 		if (HitTestEndcap (Point (sp->GetX (), sp->GetY ()),
 				   width, height, stylusPoints)) {
 #if DEBUG_HITTEST
-			fprintf (stderr, "\tA point matched the ending endcap\n");
+			g_warning ("\tA point matched the ending endcap\n");
 #endif
 			return true;
 		}
 	}
 	
 #if DEBUG_HITTEST
-	fprintf (stderr, "\tso sad, no points intersected...\n");
+	g_warning ("\tso sad, no points intersected...\n");
 #endif
 	
 	return false;

@@ -130,17 +130,25 @@ GLContext::SetViewport ()
 void
 GLContext::SetupVertexData ()
 {
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
+	int i;
 
-	SetupVertexData (0.0, 0.0, r.width, r.height);
+	for (i = 0; i < 4; i++) {
+		const float vx[] = { -1.0f, 1.0f, 1.0f, -1.0f };
+		const float vy[] = { -1.0f, -1.0f, 1.0f, 1.0f };
+
+		vertices[i][0] = vx[i];
+		vertices[i][1] = vy[i];
+		vertices[i][2] = 0.0f;
+		vertices[i][3] = 1.0f;
+	}
 }
 
 void
-GLContext::SetupVertexData (double x,
-			    double y,
-			    double width,
-			    double height)
+GLContext::SetupVertexData (const double *matrix,
+			    double       x,
+			    double       y,
+			    double       width,
+			    double       height)
 {
 	Context::Target *target = Top ()->GetTarget ();
 	MoonSurface     *ms;
@@ -171,6 +179,9 @@ GLContext::SetupVertexData (double x,
 	p[3][2] = 0.0;
 	p[3][3] = 1.0;
 
+	for (i = 0; i < 4; i++)
+		Matrix3D::TransformPoint (p[i], matrix, p[i]);
+
 	for (i = 0; i < 4; i++) {
 		vertices[i][0] = p[i][0] * dx - p[i][3];
 		vertices[i][1] = p[i][1] * dy - p[i][3];
@@ -184,25 +195,17 @@ GLContext::SetupVertexData (double x,
 void
 GLContext::SetupTexCoordData ()
 {
-	texcoords[0][0] = 0.0f;
-	texcoords[0][1] = 0.0f;
-	texcoords[0][2] = 0.0f;
-	texcoords[0][3] = 1.0f;
+	int i;
 
-	texcoords[1][0] = 1.0f;
-	texcoords[1][1] = 0.0f;
-	texcoords[1][2] = 0.0f;
-	texcoords[1][3] = 1.0f;
+	for (i = 0; i < 4; i++) {
+		const float tx[] = { 0.0f, 1.0f, 1.0f, 0.0f };
+		const float ty[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-	texcoords[2][0] = 1.0f;
-	texcoords[2][1] = 1.0f;
-	texcoords[2][2] = 0.0f;
-	texcoords[2][3] = 1.0f;
-
-	texcoords[3][0] = 0.0f;
-	texcoords[3][1] = 1.0f;
-	texcoords[3][2] = 0.0f;
-	texcoords[3][3] = 1.0f;
+		texcoords[i][0] = tx[i];
+		texcoords[i][1] = ty[i];
+		texcoords[i][2] = 0.0f;
+		texcoords[i][3] = 1.0f;
+	}
 }
 
 void
@@ -210,39 +213,14 @@ GLContext::SetupTexCoordData (const double *matrix,
 			      double       du,
 			      double       dv)
 {
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
-	double          p[4][4];
-	int             i;
+	SetupTexCoordData ();
+}
 
-	p[0][0] = 0.0;
-	p[0][1] = 0.0;
-	p[0][2] = 0.0;
-	p[0][3] = 1.0;
-
-	p[1][0] = r.width;
-	p[1][1] = 0.0;
-	p[1][2] = 0.0;
-	p[1][3] = 1.0;
-
-	p[2][0] = r.width;
-	p[2][1] = r.height;
-	p[2][2] = 0.0;
-	p[2][3] = 1.0;
-
-	p[3][0] = 0.0;
-	p[3][1] = r.height;
-	p[3][2] = 0.0;
-	p[3][3] = 1.0;
-
-	for (i = 0; i < 4; i++) {
-		Matrix3D::TransformPoint (p[i], matrix, p[i]);
-
-		texcoords[i][0] = p[i][0] * du;
-		texcoords[i][1] = p[i][1] * dv;
-		texcoords[i][2] = p[i][2];
-		texcoords[i][3] = p[i][3];
-	}
+void
+GLContext::SetTextureWrap (GLenum target)
+{
+	glTexParameteri (target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri (target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 void
@@ -295,7 +273,7 @@ GLContext::Blit (unsigned char *data,
 			 0,
 			 dst->Width (),
 			 dst->Height (),
-			 GL_BGRA,
+			 GL_RGBA,
 			 GL_UNSIGNED_BYTE,
 			 data);
 	glBindTexture (GL_TEXTURE_2D, 0);
@@ -546,11 +524,7 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
 	}
 	else {
-#if defined(USE_EGL)
 		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw).bgra");
-#else
-		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
-#endif
 	}
 	if (alpha)
 		g_string_sprintfa (s, " * alpha");
@@ -588,6 +562,7 @@ GLContext::Project (MoonSurface  *src,
 	GLuint    program;
 	GLint     alpha_location;
 	double    m[16];
+	double    sm[16];
 
 	if (surface->TextureY () &&
 	    surface->TextureU () &&
@@ -606,15 +581,15 @@ GLContext::Project (MoonSurface  *src,
 
 	GetDeviceMatrix (m);
 	Matrix3D::Multiply (m, matrix, m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sm, m, x, y))
 		return;
 
 	SetFramebuffer ();
 	SetViewport ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sm, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -634,18 +609,11 @@ GLContext::Project (MoonSurface  *src,
 
 		glActiveTexture (GL_TEXTURE0 + i);
 		glBindTexture (GL_TEXTURE_2D, texture[i]);
-
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 				 GL_LINEAR);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				 GL_LINEAR);
-#if PLUMB_ME // kangaroo
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				 GL_CLAMP_TO_BORDER);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				 GL_CLAMP_TO_BORDER);
-#endif
-
+		SetTextureWrap (GL_TEXTURE_2D);
 		glUniform1i (sampler_location, i);
 	}
 
@@ -757,6 +725,7 @@ GLContext::Blur (MoonSurface *src,
 	Rect         r = Rect (0, 0, width0, height0);
 	int          size, i;
 	double       m[16];
+	double       sm[16];
 
 	size = ComputeGaussianSamples (radius, precision, values);
 	if (size == 0) {
@@ -768,7 +737,7 @@ GLContext::Blur (MoonSurface *src,
 	program = GetConvolveProgram (size);
 
 	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sm, m, x, y))
 		return;
 
 	glGenTextures (1, &texture1);
@@ -779,7 +748,7 @@ GLContext::Blur (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-		      GL_BGRA,
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -794,15 +763,7 @@ GLContext::Blur (MoonSurface *src,
 				0);
 	glViewport (0, 0, width0, height0);
 
-	for (i = 0; i < 4; i++) {
-		const float vx[] = { -1.0f, 1.0f, 1.0f, -1.0f };
-		const float vy[] = { -1.0f, -1.0f, 1.0f, 1.0f };
-
-		vertices[i][0] = vx[i];
-		vertices[i][1] = vy[i];
-		vertices[i][2] = 0.0f;
-		vertices[i][3] = 1.0f;
-	}
+	SetupVertexData ();
 	SetupTexCoordData ();
 
 	glUseProgram (program);
@@ -844,8 +805,8 @@ GLContext::Blur (MoonSurface *src,
 	SetViewport ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sm, 1.0 / width0, 1.0 / height0);
 
 	for (i = 0; i <= size; i++) {
 		cbuf[i][0][0] = 0.0f;
@@ -861,8 +822,7 @@ GLContext::Blur (MoonSurface *src,
 	glBindTexture (GL_TEXTURE_2D, texture1);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	SetTextureWrap (GL_TEXTURE_2D);
 	glUniform1i (glGetUniformLocation (program, "sampler0"), 0);
 
 	glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, vertices);
@@ -973,13 +933,14 @@ GLContext::DropShadow (MoonSurface *src,
 	Rect         r = Rect (0, 0, width0, height0);
 	int          size, i;
 	double       m[16];
+	double       sm[16];
 
 	size = ComputeGaussianSamples (radius, precision, values);
 
 	program = GetConvolveProgram (size);
 
 	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sm, m, x, y))
 		return;
 
 	glGenTextures (1, &texture1);
@@ -990,7 +951,7 @@ GLContext::DropShadow (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-		      GL_BGRA,
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -1005,15 +966,7 @@ GLContext::DropShadow (MoonSurface *src,
 				0);
 	glViewport (0, 0, width0, height0);
 
-	for (i = 0; i < 4; i++) {
-		const float vx[] = { -1.0f, 1.0f, 1.0f, -1.0f };
-		const float vy[] = { -1.0f, -1.0f, 1.0f, 1.0f };
-
-		vertices[i][0] = vx[i];
-		vertices[i][1] = vy[i];
-		vertices[i][2] = 0.0f;
-		vertices[i][3] = 1.0f;
-	}
+	SetupVertexData ();
 	SetupTexCoordData ();
 
 	glUseProgram (program);
@@ -1062,8 +1015,8 @@ GLContext::DropShadow (MoonSurface *src,
 	SetFramebuffer ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sm, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -1086,16 +1039,14 @@ GLContext::DropShadow (MoonSurface *src,
 	glBindTexture (GL_TEXTURE_2D, texture0);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	SetTextureWrap (GL_TEXTURE_2D);
 	glUniform1i (glGetUniformLocation (program, "sampler0"), 0);
 
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, texture1);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	SetTextureWrap (GL_TEXTURE_2D);
 	glUniform1i (glGetUniformLocation (program, "sampler1"), 1);
 
 	glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, vertices);
@@ -1699,13 +1650,14 @@ GLContext::ShaderEffect (MoonSurface *src,
 	GLfloat   cbuf[MAX_CONSTANTS][4];
 	GLint     constant_location;
 	double    m[16];
+	double    sm[16];
 	int       i;
 
 	g_assert (n_constant <= MAX_CONSTANTS);
 	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
 
 	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sm, m, x, y))
 		return;
 
 	SetFramebuffer ();
@@ -1726,8 +1678,8 @@ GLContext::ShaderEffect (MoonSurface *src,
 		cbuf[*ddxUvDdyUvPtr][3] = 1.0f / height0;
 	}
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sm, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -1797,10 +1749,7 @@ GLContext::ShaderEffect (MoonSurface *src,
 				break;
 		}
 
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				 GL_CLAMP_TO_EDGE);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				 GL_CLAMP_TO_EDGE);
+		SetTextureWrap (GL_TEXTURE_2D);
 
 		glUniform1i (sampler_location, i);
 	}

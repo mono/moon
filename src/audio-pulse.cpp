@@ -810,7 +810,7 @@ PulsePlayer::OnContextStateChanged () {
 		connected = ConnectionFailed;
 		pthread_cond_signal (&cond);
 		pthread_mutex_unlock (&mutex);
-		fprintf (stderr, "Moonlight: Connection failure while trying to connect to pulseaudio daemon: %s\n", pa_strerror (pa_context_errno (context)));
+		g_warning ("Moonlight: Connection failure while trying to connect to pulseaudio daemon: %s\n", pa_strerror (pa_context_errno (context)));
 		break;
 	}
 }

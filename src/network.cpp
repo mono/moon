@@ -214,7 +214,7 @@ HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, Downlo
 	is_cross_domain = !Uri::SameDomain (source_location, request_uri) || !Uri::SameScheme (source_location, request_uri);
 
 	if (request_uri->IsScheme ("file")) {
-		local_file = g_strdup (request_uri->GetUnescapedPath ());
+		local_file = g_strdup (Uri::Create (source_location, request_uri)->GetUnescapedPath ());
 		NotifyFinalUri (this->request_uri->ToString ());
 	}
 
@@ -781,7 +781,7 @@ const char *
 HttpHandler::GetDownloadDir ()
 {
 	if (download_dir == NULL) {
-		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-downloads.XXXXXX", NULL);
+		char *buf = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), "moonlight-downloads.XXXXXX", NULL);
 		// create a root temp directory for all files
 		download_dir = MakeTempDir (buf);
 		if (download_dir == NULL) {

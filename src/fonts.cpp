@@ -587,7 +587,7 @@ TextFont::GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index)
 		qsort (glyphs, n_glyphs, sizeof (GlyphInfo), glyphsort);
 		
 		for (i = 0; i < n_glyphs; i++)
-			fprintf (stderr, "glyphs[%d].atime = %" G_GINT64_FORMAT "\n", i, glyphs[i].atime);
+			g_warning ("glyphs[%d].atime = %" G_GINT64_FORMAT "\n", i, glyphs[i].atime);
 		
 		slot = &glyphs[n_glyphs - 1];
 		

@@ -75,34 +75,4 @@ MoonEGLSurface::HasTexture ()
 	return texture != 0;
 }
 
-GLuint
-MoonEGLSurface::Texture ()
-{
-	GLuint name = texture;
-
-	if (!texture)
-		glGenTextures (1, &texture);
-
-	if (name != texture || data) {
-		glBindTexture (GL_TEXTURE_2D, texture);
-		glTexImage2D (GL_TEXTURE_2D,
-			      0,
-			      GL_RGBA,
-			      size[0],
-			      size[1],
-			      0,
-			      GL_RGBA,
-			      GL_UNSIGNED_BYTE,
-			      data);
-		glBindTexture (GL_TEXTURE_2D, 0);
-	}
-
-	if (data) {
-		g_free (data);
-		data = NULL;
-	}
-
-	return texture;
-}
-
 };

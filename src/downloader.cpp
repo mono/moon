@@ -450,7 +450,7 @@ Downloader::ValidateDownloadPolicy (const Uri *source_location, const Uri *uri, 
 
 	/* The uri combine rules are complex, so ensure they're already executed when we validate (to not duplicate combining code) */
 	if (!uri->IsAbsolute ()) {
-		fprintf (stderr, "Moonlight: Can't validate relative uri '%s' - '%s'\n", uri->GetOriginalString (), uri->ToString ());
+		g_warning ("Moonlight: Can't validate relative uri '%s' - '%s'\n", uri->GetOriginalString (), uri->ToString ());
 		return false;
 	}
 	

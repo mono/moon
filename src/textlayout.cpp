@@ -1995,8 +1995,6 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 	
 	y = offset.y;
 
-	g_warning ("TextLayout::Render!");
-
 	Layout ();
 
 	for (guint i = 0; i < lines->len; i++) {
