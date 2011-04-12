@@ -1176,7 +1176,10 @@ MoonWindowingSystemAndroid::GetTemporaryFolder ()
 {
 	android_app *app = (android_app *) system_data;
 
-	return (gchar *) app->activity->internalDataPath;
+	const gchar* path = app->activity->internalDataPath;
+	if (!path) // 2.3 has a bug, la de da
+		path = "/sdcard";
+	return (gchar*)path;
 }
 
 bool
