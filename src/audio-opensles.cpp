@@ -32,7 +32,7 @@
 	} \
 } while (0)
 
-#define NUM_BUFFERS_IN_QUEUE 2
+#define NUM_BUFFERS_IN_QUEUE 3
 
 namespace Moonlight {
 
@@ -147,15 +147,17 @@ OpenSLESSource::InitializeOpenSLES ()
 	for (int i = 0; i < NUM_BUFFERS_IN_QUEUE; i ++)
 	  buffers[i] = g_malloc (4096);
 
+	g_debug ("channel count = %d\n", GetAudioStream()->GetChannels());
+
 	// configure audio source
-	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, NUM_BUFFERS_IN_QUEUE};
+	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_BUFFERQUEUE, NUM_BUFFERS_IN_QUEUE};
 
 	SLDataFormat_PCM format_pcm = {
 	  SL_DATAFORMAT_PCM, GetAudioStream()->GetChannels(),
-	  SL_SAMPLINGRATE_8 /* FIXME convert from audioStream->GetSampleRate() */,
-	  SL_PCMSAMPLEFORMAT_FIXED_16 /* FIXME convert from audioStream->GetBitsPerSample() */,
-	  SL_PCMSAMPLEFORMAT_FIXED_16 /* FIXME containerSize - not sure what to do here.. */,
-	  SL_SPEAKER_FRONT_CENTER,
+	  SL_SAMPLINGRATE_44_1 /* FIXME convert from audioStream->GetSampleRate() */,
+	  SL_PCMSAMPLEFORMAT_FIXED_8 /* FIXME convert from audioStream->GetBitsPerSample() */,
+	  SL_PCMSAMPLEFORMAT_FIXED_8 /* FIXME containerSize - not sure what to do here.. */,
+	  SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
 	  SL_BYTEORDER_LITTLEENDIAN};
 
 	SLDataSource audioSrc = {&loc_bufq, &format_pcm};
@@ -170,7 +172,7 @@ OpenSLESSource::InitializeOpenSLES ()
 	result = (*player->engineEngine)->CreateAudioPlayer(player->engineEngine,
 							    &playerObject,
 							    &audioSrc, &audioSnk,
-							    1, ids, req);
+							    0, ids, req);
 	CHECK_RESULT_BOOL ("engineEngine->CreateAudioPlayer");
 
 	// realize the player
@@ -300,20 +302,52 @@ OpenSLESPlayer::Initialize ()
 	SLresult result;
 	SLuint32 numSupportedInterfaces;
 
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
+	LOG_OSL ("********************************");
 	LOG_OSL ("OpenSLESPlayer::Initialize ()");
-
 
 	slQueryNumSupportedEngineInterfaces (&numSupportedInterfaces);
 
 	LOG_OSL ("  %d  supported engine interfaces:", numSupportedInterfaces);
 
-#if notyet
-	for (int i = 0; i < numSupportedInterfaces; i ++) {
+	for (SLuint32 i = 0; i < numSupportedInterfaces; i ++) {
 		SLInterfaceID interfaceId;
 		slQuerySupportedEngineInterfaces (i, &interfaceId);
-		LOG_OSL ("      %d: ", i);
+		LOG_OSL ("      interface = %s: ", 
+#define CHECK(x) interfaceId == (x) ? #x :
+#define DEFAULT(x) x
+			 CHECK(SL_IID_NULL)
+			 CHECK(SL_IID_OBJECT)
+			 CHECK(SL_IID_AUDIOIODEVICECAPABILITIES)
+			 CHECK(SL_IID_LED)
+			 CHECK(SL_IID_VIBRA)
+			 CHECK(SL_IID_METADATAEXTRACTION)
+			 CHECK(SL_IID_METADATATRAVERSAL)
+			 CHECK(SL_IID_DYNAMICSOURCE)
+			 CHECK(SL_IID_OUTPUTMIX)
+			 CHECK(SL_IID_PLAY)
+			 CHECK(SL_IID_PREFETCHSTATUS)
+			 CHECK(SL_IID_PLAYBACKRATE)
+			 CHECK(SL_IID_SEEK)
+			 CHECK(SL_IID_RECORD)
+			 CHECK(SL_IID_EQUALIZER)
+			 CHECK(SL_IID_VOLUME)
+			 CHECK(SL_IID_DEVICEVOLUME)
+			 CHECK(SL_IID_BUFFERQUEUE)
+			 CHECK(SL_IID_PRESETREVERB)
+			 CHECK(SL_IID_ENVIRONMENTALREVERB)
+			 CHECK(SL_IID_EFFECTSEND)
+			 CHECK(SL_IID_3DGROUPING)
+			 CHECK(SL_IID_3DCOMMIT)
+			 DEFAULT("Unknown"));
 	}
-#endif
 
 	result = slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
 	CHECK_RESULT_BOOL ("slCreateEngine");
@@ -323,6 +357,24 @@ OpenSLESPlayer::Initialize ()
 
 	result = (*engineObject)->GetInterface (engineObject, SL_IID_ENGINE, &engineEngine);
 	CHECK_RESULT_BOOL ("engine->GetInterface (SL_IID_ENGINE)");
+
+	{
+		SLEngineCapabilitiesItf capabilities;
+		SLuint16 profilesSupported;
+
+		result = (*engineObject)->GetInterface (engineObject, SL_IID_ENGINECAPABILITIES, &capabilities);
+		CHECK_RESULT_BOOL ("engineEngine->GetInterface (SL_IID_ENGINECAPABILITIES)");
+
+		result = (*capabilities)->QuerySupportedProfiles (capabilities, &profilesSupported);
+		CHECK_RESULT_BOOL ("capabilities->QuerySupportedProfiles");
+		g_debug ("supported profiles:");
+		if (profilesSupported & SL_PROFILES_PHONE)
+			g_debug ("   PHONE");
+		if (profilesSupported & SL_PROFILES_MUSIC)
+			g_debug ("   MUSIC");
+		if (profilesSupported & SL_PROFILES_GAME)
+			g_debug ("   GAME");
+	}
 
 	result = (*engineEngine)->CreateOutputMix (engineEngine, &outputMixObject, 0, NULL, NULL);
 	CHECK_RESULT_BOOL ("engine->CreateOutputMix");
