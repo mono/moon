@@ -111,6 +111,9 @@ namespace System.Windows.Controls {
 			DefaultStyleKey = typeof (ItemsControl);
 			ItemContainerGenerator = new ItemContainerGenerator (this);
 			ItemContainerGenerator.ItemsChanged += OnItemContainerGeneratorChanged;
+			// Ensure that the collection is created so it can be databound to without
+			// having to touch the CLR wrapper property first.
+			GC.KeepAlive (Items);
 		}
 
 		internal override UIElement GetDefaultTemplate ()
