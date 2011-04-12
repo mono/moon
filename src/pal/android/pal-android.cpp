@@ -1130,7 +1130,7 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 							sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
 						}
 						else {
-							if (s->priority > max_priority) {
+							if (s->priority >= max_priority) {
 								s->time_remaining += delta;
 								if (s->time_remaining < 0) {
 									s->time_remaining = 0;
