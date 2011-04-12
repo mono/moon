@@ -308,6 +308,9 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		mf->srcSlideY = 0;
 		mf->srcSlideH = context->height;
 		
+		mf->width = context->width;
+		mf->height = context->height;
+
 		int height = context->height;
 		int plane_bytes [4];
 		
