@@ -1088,6 +1088,8 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 		if (sources != NULL) {
 			AndroidSource *s = (AndroidSource*)sources->data;
 			timeout = s->time_remaining;
+			if (timeout < 0)
+				timeout = 0;
 		}
 		sourceMutex.Unlock ();
 
@@ -1134,13 +1136,9 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 							sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
 						}
 						else {
-							if (s->priority >= max_priority) {
-								s->time_remaining += delta;
-								if (s->time_remaining < 0) {
-									s->time_remaining = 0;
-									sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
-								}
-							}
+							s->time_remaining += delta;
+							if (s->priority >= max_priority && s->time_remaining < 0)
+								sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
 						}
 					}
 
@@ -1178,6 +1176,8 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 			if (sources != NULL) {
 				AndroidSource *s = (AndroidSource*)sources->data;
 				timeout = s->time_remaining;
+				if (timeout < 0)
+					timeout = 0;
 			}
 
 			emitting_sources = false;
