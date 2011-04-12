@@ -1141,6 +1141,9 @@ MoonWindowingSystemAndroid::RunMainLoop (MoonWindow *window, bool quit_on_window
 								sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
 						}
 					}
+					else {
+						s->time_remaining += delta;
+					}
 
 					l = l->next;
 				}
