@@ -284,13 +284,11 @@ Application::GetResourceAsPath (const Uri *resourceBase, const Uri *uri)
 	
 	// create the directory for our resource (keeping the relative path intact)
 	dirname = g_path_get_dirname (path);
-#if PLUMB_ME
 	if (g_mkdir_with_parents (dirname, 0700) == -1 && errno != EEXIST) {
 		g_free (dirname);
 		g_free (path);
 		return NULL;
 	}
-#endif
 	
 	g_free (dirname);
 	

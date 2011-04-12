@@ -1074,6 +1074,11 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	
 	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
 	
+	// toshok remove me
+#if defined (PLATFORM_ANDROID)
+	return NULL;
+#endif
+
 	if (moonlight_flags & RUNTIME_INIT_DISABLE_AUDIO) {
 		LOG_AUDIO ("AudioPlayer: audio is disabled.\n");
 		return NULL;

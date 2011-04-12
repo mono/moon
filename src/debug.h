@@ -76,11 +76,11 @@ G_END_DECLS
 #define LOG_PIPELINE_ERROR(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE_ERROR)) g_debug (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (G_UNLIKELY (x && debug_flags & PIPELINE_ERROR)) g_debug (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FRAMEREADERLOOP)) g_debug (__VA_ARGS__);
-#define LOG_FFMPEG(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FFMPEG)) printf(__VA_ARGS__);
+#define LOG_FFMPEG(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FFMPEG)) g_debug(__VA_ARGS__);
 #define LOG_CODECS(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_CODECS)) g_debug (__VA_ARGS__);
 #define LOG_DP(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DP)) g_debug (__VA_ARGS__);
 #define LOG_DOWNLOADER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DOWNLOADER)) g_debug (__VA_ARGS__);
-#define LOG_FONT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FONT)) fprintf (__VA_ARGS__);
+#define LOG_FONT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FONT)) g_debug (__VA_ARGS__);
 #define LOG_LAYOUT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_LAYOUT)) g_debug (__VA_ARGS__);
 #define LOG_MEDIA(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIA)) g_debug (__VA_ARGS__);
 #define LOG_MEDIAELEMENT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAELEMENT)) g_debug (__VA_ARGS__);
@@ -88,7 +88,7 @@ G_END_DECLS
 #define LOG_MSI(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) g_debug (__VA_ARGS__);
 #define LOG_BUFFERING(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_BUFFERING)) g_debug (__VA_ARGS__);
 #define LOG_PLAYLIST(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PLAYLIST)) g_debug (__VA_ARGS__);
-#define LOG_TEXT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_TEXT)) fprintf (__VA_ARGS__);
+#define LOG_TEXT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_TEXT)) g_debug (__VA_ARGS__);
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) g_debug (__VA_ARGS__);
 #define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) g_debug (__VA_ARGS__);
 #define LOG_MP3(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MP3)) g_debug (__VA_ARGS__);
