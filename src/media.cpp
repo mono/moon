@@ -790,11 +790,11 @@ Image::ComputeMatrix (cairo_matrix_t *matrix,
 		switch (stretch) {
 		case StretchUniform:
 			// fill without cuting the image, center the other axes
-			scale = (sx < sy) ? sy : sx;
+			scale = (sx < sy) ? sx : sy;
 			break;
 		case StretchUniformToFill:
 			// fill by, potentially, cuting the image on one axe, center on both axes
-			scale = (sx < sy) ? sx : sy;
+			scale = (sx < sy) ? sy : sx;
 			break;
 		case StretchNone:
 			break;
