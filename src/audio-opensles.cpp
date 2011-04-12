@@ -32,6 +32,8 @@
 	} \
 } while (0)
 
+#define NUM_BUFFERS_IN_QUEUE 2
+
 namespace Moonlight {
 
 static const char*
@@ -107,11 +109,16 @@ OpenSLESSource::NextBuffer ()
 	LOG_OSL ("OpenSLESSource::PlayBuffer");
 
 	// FIXME: allocate new buffer (or get it from a free list or something..)
-	void *pBuffer = NULL;
-	SLuint32 bufferSize = 0;
 	SLresult result;
 
-	Write (pBuffer, bufferSize);
+	SLAndroidSimpleBufferQueueState bufferQueueState;
+	result = (*playerBufferQueue)->GetState (playerBufferQueue, &bufferQueueState);
+	CHECK_RESULT ("playerBufferQueue->GetState");
+
+	void *pBuffer = buffers[(bufferQueueState.index+1) % NUM_BUFFERS_IN_QUEUE];
+	int bufferSize = 4096;
+
+        Write (pBuffer, bufferSize / GetOutputBytesPerFrame ());
 
         result = (*playerBufferQueue)->Enqueue(playerBufferQueue, pBuffer, bufferSize);
 	CHECK_RESULT("playerBufferQueue->Enqueue");
@@ -131,12 +138,17 @@ OpenSLESSource::InitializeOpenSLES ()
 
 	LOG_OSL ("OpenSLESSource::InitializeOpenSLES (%p) initialized: %i\n", this, initialized);
 
+	if (initialized)
+		return true;
+
 	SLresult result;
 
-	
+	buffers = (gpointer*)g_malloc(sizeof (gpointer) * NUM_BUFFERS_IN_QUEUE);
+	for (int i = 0; i < NUM_BUFFERS_IN_QUEUE; i ++)
+	  buffers[i] = g_malloc (4096);
 
 	// configure audio source
-	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2/*numbuffers*/};
+	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, NUM_BUFFERS_IN_QUEUE};
 
 	SLDataFormat_PCM format_pcm = {
 	  SL_DATAFORMAT_PCM, GetAudioStream()->GetChannels(),

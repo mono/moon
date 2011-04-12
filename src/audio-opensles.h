@@ -32,7 +32,7 @@ class OpenSLESSource : public AudioSource {
 	SLPlayItf playerPlay;
 	SLAndroidSimpleBufferQueueItf playerBufferQueue;
 
-	Mutex mutex;
+	gpointer* buffers;
 
 	bool is_ready;
 	bool initialized;
