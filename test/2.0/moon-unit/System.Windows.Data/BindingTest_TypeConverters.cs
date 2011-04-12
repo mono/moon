@@ -7,6 +7,143 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class ComputerConverter : TypeConverter {
+		public static Action ConstructorFunc;
+		public static Action<ITypeDescriptorContext, Type> CanConvertFromFunc;
+		public static Action<ITypeDescriptorContext, Type> CanConvertToFunc;
+
+		public static Action<ITypeDescriptorContext, CultureInfo, object> ConvertFromFunc;
+		public static Action<ITypeDescriptorContext, CultureInfo, object, Type> ConvertToFunc;
+
+		public ComputerConverter ()
+		{
+			if (ConstructorFunc != null)
+				ConstructorFunc ();
+		}
+
+		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+		{
+			if (CanConvertFromFunc != null)
+				CanConvertFromFunc (context, sourceType);
+
+			return sourceType == typeof (Robot);
+		}
+
+		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
+		{
+			if (CanConvertToFunc != null)
+				CanConvertToFunc (context, destinationType);
+
+			return destinationType == typeof (Robot);
+		}
+
+		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (ConvertFromFunc != null)
+				ConvertFromFunc (context, culture, value);
+
+			return new Computer { Name = ((Robot) value).Name };
+		}
+
+		public override object ConvertTo (ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			if (ConvertToFunc != null)
+				ConvertToFunc (context, culture, value, destinationType);
+
+			return new Robot { Name = ((Computer) value).Name };
+		}
+	}
+
+	public class RobotConverter : TypeConverter {
+		public static Action ConstructorFunc;
+		public static Action<ITypeDescriptorContext, Type> CanConvertFromFunc;
+		public static Action<ITypeDescriptorContext, Type> CanConvertToFunc;
+
+		public static Action<ITypeDescriptorContext, CultureInfo, object> ConvertFromFunc;
+		public static Action<ITypeDescriptorContext, CultureInfo, object, Type> ConvertToFunc;
+
+		public RobotConverter ()
+		{
+			if (ConstructorFunc != null)
+				ConstructorFunc ();
+		}
+
+		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+		{
+			if (CanConvertFromFunc != null)
+				CanConvertFromFunc (context, sourceType);
+
+			return sourceType == typeof (string);
+		}
+
+		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
+		{
+			if (CanConvertToFunc != null)
+				CanConvertToFunc (context, destinationType);
+
+			return destinationType == typeof (Robot);
+		}
+
+		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (ConvertFromFunc != null)
+				ConvertFromFunc (context, culture, value);
+
+			return new Robot { Name = (string) value };
+		}
+
+		public override object ConvertTo (ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+		{
+			if (ConvertToFunc != null)
+				ConvertToFunc (context, culture, value, destinationType);
+
+			return ((Robot) value).Name;
+		}
+	}
+
+	[TypeConverter (typeof (RobotConverter))]
+	public class Robot {
+		public string Name { get; set; }
+		public override string ToString ()
+		{
+			return string.Format ("Robot Name: {0}", Name);
+
+		}
+	}
+
+	[TypeConverter (typeof (ComputerConverter))]
+	public class Computer {
+		public string Name { get; set; }
+		public override string ToString ()
+		{
+			return string.Format ("Computer Name: {0}", Name);
+		}
+	}
+
+	public class Hybrid : DependencyObject {
+		public static readonly DependencyProperty MyNameProperty = DependencyProperty.Register ("MyName", typeof (string), typeof (Hybrid), null);
+		public static readonly DependencyProperty ComputerProperty = DependencyProperty.Register ("Computer", typeof (Computer), typeof (Hybrid), null);
+		public static readonly DependencyProperty RobotProperty = DependencyProperty.Register ("Robot", typeof (Robot), typeof (Hybrid), null);
+
+		public string MyName
+		{
+			get { return (string) GetValue (MyNameProperty); }
+			set { SetValue (MyNameProperty, value); }
+		}
+
+		public Computer Computer
+		{
+			get { return (Computer) GetValue (ComputerProperty); }
+			set { SetValue (ComputerProperty, value); }
+		}
+
+		public Robot Robot
+		{
+			get { return (Robot) GetValue (RobotProperty); }
+			set { SetValue (RobotProperty, value); }
+		}
+	}
+
 	public class HookedConverter : TypeConverter {
 
 		public static Func<ITypeDescriptorContext, Type, bool> CanConvertFromFunc;
@@ -58,7 +195,26 @@ namespace MoonTest.System.Windows.Data
 	}
 
 	[TestClass]
-	public partial class BindingTest {
+	public partial class BindingTest_TypeConverter {
+
+		[TestInitialize]
+		public void Initialize ()
+		{
+			HookedConverter.Reset ();
+
+			ComputerConverter.ConstructorFunc = null;
+			ComputerConverter.CanConvertFromFunc = null;
+			ComputerConverter.CanConvertToFunc = null;
+			ComputerConverter.ConvertFromFunc = null;
+			ComputerConverter.ConvertToFunc = null;
+
+			RobotConverter.ConstructorFunc = null;
+			RobotConverter.CanConvertFromFunc = null;
+			RobotConverter.CanConvertToFunc = null;
+			RobotConverter.ConvertFromFunc = null;
+			RobotConverter.ConvertToFunc = null;
+		}
+
 
 		public class IntPropNoConverter
 		{
@@ -166,12 +322,6 @@ namespace MoonTest.System.Windows.Data
 		public class ConvertedObjectDPClassConverterContainer
 		{
 			public ConvertedObjectDPClassConverter Value { get; set; }
-		}
-
-		[TestInitialize]
-		public void Setup()
-		{
-			HookedConverter.Reset();
 		}
 
 		[TestMethod]
@@ -347,6 +497,148 @@ namespace MoonTest.System.Windows.Data
 			HookedConverter.ConstructorFunc = () => created = true;
 			BindingOperations.SetBinding(target, IntDPNoConverter.IntDPProperty, new Binding("ConvertedObject") { Source = source });
 			Assert.IsFalse (created, "#1");
+		}
+
+		[TestMethod]
+		public void BindComputerToRobot_SetRobot ()
+		{
+			string failure = null;
+			RobotConverter.ConstructorFunc = () => {
+				failure = failure ?? "#1";
+			};
+			ComputerConverter.CanConvertFromFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#2";
+			};
+			ComputerConverter.CanConvertToFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#3";
+			};
+			ComputerConverter.ConvertToFunc = (context, culture, value, type) => {
+				if (!(value is Computer))
+					failure = failure ?? "#4";
+
+				if (typeof (Robot) != type)
+					failure = failure ?? "#5";
+			};
+
+			var h = new Hybrid ();
+			BindingOperations.SetBinding (h, Hybrid.RobotProperty, new Binding ("Computer") { Source = h });
+			h.Computer = new Computer { Name = "A" };
+
+			if (failure != null)
+				Assert.Fail (failure);
+
+			Assert.IsNotNull (h.Robot, "#1");
+			Assert.AreEqual ("A", h.Robot.Name, "#2");
+		}
+
+		[TestMethod]
+		public void BindComputerToRobot_SetComputer ()
+		{
+			string failure = null;
+			bool robotFirst = false;
+			RobotConverter.ConstructorFunc = () => {
+				robotFirst = true;
+			};
+			ComputerConverter.ConstructorFunc = () => {
+				if (!robotFirst)
+					failure = failure ?? "#1";
+			};
+			ComputerConverter.CanConvertFromFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#2";
+			};
+			ComputerConverter.CanConvertToFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#3";
+			};
+			ComputerConverter.ConvertFromFunc = (context, culture, value) => {
+				if (!(value is Robot))
+				failure = failure ?? "#4";
+			};
+
+			var h = new Hybrid ();
+			BindingOperations.SetBinding (h, Hybrid.RobotProperty, new Binding ("Computer") { Source = h, Mode = BindingMode.TwoWay });
+			h.Robot = new Robot { Name = "A" };
+
+			if (failure != null)
+				Assert.Fail (failure);
+
+			Assert.IsNotNull (h.Computer, "#5");
+			Assert.AreEqual ("A", h.Computer.Name, "#6");
+		}
+
+		[TestMethod]
+		public void BindRobotToComputer_SetRobot ()
+		{
+			string failure = null;
+			bool robotFirst = false;
+			RobotConverter.ConstructorFunc = () => {
+				robotFirst = true;
+			};
+			ComputerConverter.ConstructorFunc = () => {
+				if (!robotFirst)
+					failure = failure ?? "#1";
+			};
+			ComputerConverter.CanConvertFromFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#2";
+			};
+			ComputerConverter.CanConvertToFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#3";
+			};
+			ComputerConverter.ConvertFromFunc = (context, culture, value) => {
+				if (!(value is Robot))
+					failure = failure ?? "#4";
+			};
+
+			var h = new Hybrid ();
+			BindingOperations.SetBinding (h, Hybrid.ComputerProperty, new Binding ("Robot") { Source = h, Mode = BindingMode.TwoWay });
+			h.Robot = new Robot { Name = "A" };
+
+			if (failure != null)
+				Assert.Fail (failure);
+
+			Assert.IsNotNull (h.Computer, "#5");
+			Assert.AreEqual ("A", h.Computer.Name, "#6");
+		}
+
+		[TestMethod]
+		public void BindRobotToComputer_SetComputer ()
+		{
+			string failure = null;
+			bool computerFirst = false;
+			ComputerConverter.ConstructorFunc = () => {
+				computerFirst = true;
+			};
+			RobotConverter.ConstructorFunc = () => {
+				if (!computerFirst)
+					failure = failure ?? "#1";
+			};
+			ComputerConverter.CanConvertFromFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#2";
+			};
+			ComputerConverter.CanConvertToFunc = (context, type) => {
+				if (typeof (Robot) != type)
+					failure = failure ?? "#3";
+			};
+			ComputerConverter.ConvertFromFunc = (context, culture, value) => {
+				if (!(value is Robot))
+					failure = failure ?? "#4";
+			};
+
+			var h = new Hybrid ();
+			BindingOperations.SetBinding (h, Hybrid.ComputerProperty, new Binding ("Robot") { Source = h, Mode = BindingMode.TwoWay });
+			h.Computer = new Computer { Name = "A" };
+
+			if (failure != null)
+				Assert.Fail (failure);
+
+			Assert.IsNotNull (h.Robot, "#5");
+			Assert.AreEqual ("A", h.Robot.Name, "#6");
 		}
 	}
 }

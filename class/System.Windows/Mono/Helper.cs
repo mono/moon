@@ -175,6 +175,9 @@ namespace Mono {
 		// This method checks for a class level TypeConverter and returns it
 		public static Func<TypeConverter> GetConverterCreatorFor (Type type)
 		{
+			if (type == null)
+				return null;
+
 			Func<TypeConverter> creator;
 			if (classTypeConverters.TryGetValue (type, out creator))
 				return creator;
