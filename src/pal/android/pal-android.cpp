@@ -821,16 +821,12 @@ MoonWindowingSystemAndroid::AddTimeout (gint priority, gint ms, MoonSourceFunc t
 
 	sourceMutex.Unlock ();
 
-	g_debug ("MoonWindowSystemAndroid::AddTimeout %d", new_source_id);
-
 	return new_source_id;
 }
 
 void
 MoonWindowingSystemAndroid::RemoveSource (guint sourceId)
 {
-	g_debug ("removing source %d\n", sourceId);
-
 	sourceMutex.Lock ();
 
 	for (GList *l = sources; l; l = l->next) {
@@ -868,7 +864,6 @@ MoonWindowingSystemAndroid::AddIdle (MoonSourceFunc idle, gpointer data)
 	source_id ++;
 
 	sourceMutex.Unlock ();
-	g_debug ("MoonWindowSystemAndroid::AddIdle, returning %d", new_source_id);
 	return new_source_id;
 }
 
