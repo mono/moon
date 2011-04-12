@@ -214,7 +214,7 @@ HttpRequest::Open (const char *verb, const Uri *uri, const Uri *res_base, Downlo
 	is_cross_domain = !Uri::SameDomain (source_location, request_uri) || !Uri::SameScheme (source_location, request_uri);
 
 	if (request_uri->IsScheme ("file")) {
-		local_file = g_strdup (Uri::Create (source_location, request_uri)->GetUnescapedPath ());
+		local_file = g_strdup (request_uri->GetUnescapedPath ());
 		NotifyFinalUri (this->request_uri->ToString ());
 	}
 
