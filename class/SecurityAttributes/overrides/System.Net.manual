@@ -3,3 +3,6 @@
 # Calls Activator.CreateInstance to create IWebRequestCreate instance of the browser and client http stack creators
 +SSC-M: System.Void System.Net.WebRequest::.cctor()
 
+# only called from Dispose, which is already [SecuritySafeCritical]
++SC-M: System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
+
