@@ -364,6 +364,10 @@ libmoon_la_SOURCES_PULSEAUDIO =	\
 	audio-pulse.cpp		\
 	audio-pulse.h
 
+libmoon_la_SOURCES_OPENSLES =   \
+	audio-opensles.cpp	\
+	audio-opensles.h
+
 libmoon_la_SOURCES_CURL =	\
 	network-curl.cpp	\
 	network-curl.h
@@ -427,6 +431,10 @@ if INCLUDE_PULSEAUDIO
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PULSEAUDIO)
 endif
 
+if INCLUDE_OPENSLES
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_OPENSLES)
+endif
+
 if HAVE_CURL
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_CURL)
 endif
@@ -468,6 +476,7 @@ EXTRA_DIST = \
 	$(libmoon_la_SOURCES_FFMPEG) \
 	$(libmoon_la_SOURCES_ALSA) \
 	$(libmoon_la_SOURCES_PULSEAUDIO) \
+	$(libmoon_la_SOURCES_OPENSLES) \
 	$(libmoon_la_SOURCES_CURL) \
 	$(libmoon_la_SOURCES_GALLIUM) \
 	$(libmoon_la_SOURCES_GL) \

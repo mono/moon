@@ -307,6 +307,7 @@ cat <<EOF
 	FFmpeg: $with_ffmpeg $ffmpeg_reason
 	ALSA: $with_alsa $alsa_reason
 	PulseAudio: $with_pulseaudio $pulseaudio_reason
+	OpenSLES: $with_opensles $opensles_reason
 EOF
 
 # silverlight version info
