@@ -40,6 +40,7 @@ namespace MoonTest.System.Windows.Documents {
 	public partial class LineBreakTest {
 
 		[TestMethod]
+		[MoonlightBug]
 		public void NullifyFontFamily ()
 		{
 			LineBreak lb = new LineBreak ();
