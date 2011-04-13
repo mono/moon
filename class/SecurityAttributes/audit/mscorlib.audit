@@ -11,6 +11,10 @@ System.Boolean System.Array::InternalArray__ICollection_Contains<T>(T)
 	20110104	spouliot - no source change / compiler
 	r142142		spouliot - call GetGenericValueImpl<T> (icall without bounds checking) with non user-controlled, valid values (0, length)
 
+!SSC-0AA2AAEB2E1233BB4C0F6DE8B23BD72F
+System.Boolean System.Array::QSortArrange(System.Array,System.Array,System.Int32,System.Object&,System.Int32,System.Object&,System.Collections.IComparer)
+	20110413	spouliot - d97cdb0 - call swap [SecurityCritical] method
+
 !SSC-24EF0E738A5AAD6CE399A053856C73D1
 System.Boolean System.Array::System.Collections.IList.Contains(System.Object)
 	r142142		spouliot - call GetValueImpl (icall without bounds checking) with non user-controlled, valid values (0, length)
@@ -360,9 +364,9 @@ System.Collections.Generic.IList`1<System.Reflection.CustomAttributeData> System
 	20110104	spouliot - no source change -> compiler
 	r156891		spouliot - old code now required (and tuned). call GetCustomAttributesDataInternal (icall) with validated (non-null) parameter. Return results as a readonly IList<CustomAttributeData>
 
-!SSC-A71229084616484B75DC7F7AAB79EE64
-System.Collections.IEnumerator System.Array::GetEnumerator()
-	r144307		spouliot - create a new instance of internal SimpleEnumerator (SecurityCritical type)
+!SSC-CAE878DBAB8086F831B2175646CEC158
+System.Collections.IDictionaryEnumerator System.Resources.ResourceReader::GetEnumerator()
+	20110321	spouliot - create a new ResourceEnumerator, [SecurityCritical] .ctor, on 'this' if the 'reader' field is non-null
 
 !SSC-2856A64E86BCE1340FF17992256FC903
 System.DateTime System.DateTime::get_Now()
@@ -627,8 +631,9 @@ System.Int32 System.Enum::GetHashCode()
 System.Int32 System.Environment::get_ExitCode()
 	r144558		spouliot - visible icall (named mono_environment_exitcode_get in mono/metadata/environment.c). return static value
 
-!SSC-B8221BA742FA168E01E4AA47E2A185F6
+!SSC-0027F79B703C378884729E1C6737030A
 System.Int32 System.Environment::get_ProcessorCount()
+	20110321	spouliot - HasSecurity has been removed by the linker (since it caused peverify errors)
 	20110104	spouliot - compiler/linker change, HasSecurity is now present in attributes
 	r155836		spouliot - visible icall (named mono_cpu_count in mono/utils/mono-proclib.c).
 
@@ -718,8 +723,9 @@ System.Int32 System.Reflection.MonoModule::get_MetadataToken()
 	r154595		spouliot - not an icall anymore, call new icall "get_MetadataToken (Module module)" using 'this' (code moved to MonoModule.cs file)
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
-!SSC-BB54EB908F1CA7EC8BEBD908FA851DC3
+!SSC-1C7B49AE00ACDF9DBAF8A385C932CAB2
 System.Int32 System.Reflection.ParameterInfo::get_MetadataToken()
+	20110411	spouliot - f6426140 - API fix, property is virtual in Moonlight (and FX4)
 	r150954		spouliot - icall was replaced by managed code that call an internal GetMetadataToken (renamed, non-visible, icall) for MethodBase
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
@@ -909,6 +915,10 @@ System.Object System.Activator::CreateInstance(System.Type)
 System.Object System.Activator::CreateInstance(System.Type,System.Object[])
 	r143653		spouliot - call CreateInstance overload [SecurityCritical] with 'type' (later checked non-null), 'BindingFlags.Default', 'Binder.DefaultBinder', 'args', 'null' (Culture) and an empty object array.
 
+!SSC-BA7AF3F44A4151494016313A018C4F53
+System.Object System.Array/SimpleEnumerator::get_Current()
+	20110321	spouliot - call Array::GetValueImpl [SecurityCritical] using its validated 'currentpos' field
+
 !SSC-E589C1C390F8FC81B0AAE44DCAA35E84
 System.Object System.Array::Clone()
 	r144558		spouliot - visible icall (named mono_array_clone in object.c)
@@ -976,6 +986,18 @@ System.Object System.Reflection.MonoProperty::GetRawConstantValue()
 System.Object System.Runtime.CompilerServices.RuntimeHelpers::GetObjectValue(System.Object)
 	r144558		spouliot - visible icall. called with potentially null value
 
+!SSC-A5A40F8B54417C81927643BC9B779924
+System.Object System.Runtime.Remoting.Messaging.MethodDictionary::GetMethodProperty(System.String)
+	20110323	spouliot - switch on 'key' parameter and if equals to '__OutArgs' return the OutArgs property [SecurityCritical] of '_message' field
+
+!SSC-FF4A1FDFFE72B5F210767982FD5626F8
+System.Object System.Runtime.Remoting.Proxies.RealProxy::GetTransparentProxy()
+	20110323	spouliot - if '_objTP' is non-null then calls InternalGetProxyType (icall) with '_objTP'
+
+!SSC-4B8718051DD4377A0FFA39EE0486B23C
+System.Object System.Runtime.Serialization.FormatterServices::GetUninitializedObject(System.Type)
+	20110411	spouliot - check for non-null and non-string type then call ActivationServices.AllocateUninitializedClassInstance [SecurityCritical]
+
 !SSC-21AAD1F8690F6F6FC319813BAD1D6BC8
 System.Object System.Security.Cryptography.CryptoConfig::CreateFromName(System.String)
 	20101116	spouliot - 570ddb50 - handle fully qualified name for AES instead of just the "short" name
@@ -1031,6 +1053,10 @@ System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(Syst
 System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 	r143653		spouliot - call AppDomain.Load, which calls LoadAssembly (icall in mono/metadata/appdomain.c) with non-null, no-empty 'assemblyString'. This string is NOT a filename (but a fully qualified assembly name)
 
+!SSC-453A1CE0E74A141563B10C7357324EC9
+System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
+	20110411	spouliot - call GetAssemblies (icall) with 'false' to get all (not just reflection-only) loaded assemblies
+
 !SSC-EBF175BE1533923F77E8EF5D24EEA868
 System.Reflection.AssemblyName[] System.Reflection.Emit.AssemblyBuilder::GetReferencedAssemblies()
 	r159312		spouliot - call Assembly.GetReferencedAssembly (SecurityCritical icall) using 'this'
@@ -1052,8 +1078,9 @@ System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors(System.Refl
 System.Reflection.ConstructorInfo[] System.Reflection.MonoGenericClass::GetConstructors(System.Reflection.BindingFlags)
 	r142142		spouliot - call MonoType.GetConstructors_internal with parameter 'bf' and 'this'
 
-!SSC-673F8B2AB5C9868DB53EA47BAC3BB883
+!SSC-BB297087654CC6B2CCA7981E1B0E3239
 System.Reflection.Emit.AssemblyBuilder System.AppDomain::DefineDynamicAssembly(System.Reflection.AssemblyName,System.Reflection.Emit.AssemblyBuilderAccess,System.String,System.Security.Policy.Evidence,System.Security.PermissionSet,System.Security.PermissionSet,System.Security.PermissionSet,System.Boolean)
+	20110411	spouliot - no source change - compiler ?
 	r145113		spouliot - validate 'name' then call AssemblyBuilder ctor with 'name', 'dir' (always null from public api), 'access' and 'false'. *Permissions parameters (always null) are given to AddPermissionRequests but it does nothing with them (empty method)
 
 !SSC-FBE3965E8BE5AA8B13C46A9F3E4A9328
@@ -1182,6 +1209,14 @@ System.Reflection.MethodBase System.Reflection.MonoModule::ResolveMethod(System.
 	r159266		spouliot - code moved from Module to MonoModule to match FX4 behavior
 	r142142		spouliot - call ResolveMethodToken (icall w/FIXME)
 
+!SSC-FE7E9FBF37ACFD19FF03297EF6975171
+System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodCall::get_MethodBase()
+	20110411	spouliot - calls ResolveMethod [SecurityCritical] which will set '_methodBase' after validations
+
+!SSC-C767B2BEF665AAF82987990D825AC928
+System.Reflection.MethodBase System.Runtime.Remoting.Messaging.MethodResponse::get_MethodBase()
+	20110411	spouliot - call RemotingServices.GetMethodBaseFromMethodMessage [SecurityCritical] on 'this' if '_callMsg' field is null and if MethodName and TypeName are non-null
+
 !SSC-FC723161A9E71D2625D8255AA762760B
 System.Reflection.MethodInfo System.Delegate::get_Method()
 	r144337		spouliot - call MethodBase.GetMethodFromHandleNoGenericCheck [SecurityCritical] with non-null 'method' handle
@@ -1288,20 +1323,23 @@ System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
 System.Single System.BitConverter::ToSingle(System.Byte[],System.Int32)
 	r142142		spouliot - unsafe, call PutBytes giving the address of the type (float) instance and it's size (4)
 
-!SSC-5EA30C8E02F08C624A7D5FA8AE0ED909
+!SSC-61095064CEB0C21C99B08CE4413A8B77
 System.String System.AppDomain::get_FriendlyName()
+	20110411	spouliot - no source changes / compiler ?
 	r142338		spouliot - call getFriendlyName (icall in mono/metadata/appdomain.c)
 
-!SSC-13382C670A1DFFF4ED19B6B333466318
+!SSC-5F53CF2025DB3D9E4793FBA210828BD6
 System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
+	20110321	spouliot - no source changes / compiler ?
 	r142142		spouliot - call unsafe method ZeroPad [SecurityCritical]
 
 !SSC-B1BD0CC639EACD2079FCDBD27521CBF3
 System.String System.Diagnostics.StackFrame::GetSecureFileName()
 	r144538		spouliot - call SecurityManager.SecurityEnabled (icall in security-manager.c) and, if 'true', remove the path information from the source filename
 
-!SSC-D696C829BA0569E185355F2F1D4A5AF3
+!SSC-F6862FF036053BAF5D2F4E4D354CBD14
 System.String System.Environment::get_NewLine()
+	20110321	spouliot - eaadbeef - calls GetNewLine (icall) since the value is now cached per AppDomain for performance reasons
 	r144558		spouliot - visible icall - returns "\r\n" string (except on windows)
 
 !SSC-863FFB7AA09784877C13F597DA2671D9
@@ -1341,14 +1379,16 @@ System.String System.IO.IsolatedStorage.IsolatedStorageFileStream::Verify(System
 System.String System.IO.Path::GetFullPath(System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-8D0B93B40141DB01BED668C11DE9D136
+!SSC-A87B679BDA1D8D855402E51BDCBDA9FA
 System.String System.IO.Path::GetTempFileName()
+	20110321	spouliot - HasSecurity has been removed by the linker (since it caused peverify errors)
 	20110104	spouliot - compiler/linker change, HasSecurity is now present in attributes
 	r156704		spouliot - catch DirectoryNotFoundException in case TMPDIR does not exists (causing infinite loop)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-968256A4AB789ED9E6688FEF22E8290D
+!SSC-981D8F50BA27056536423B8865030117
 System.String System.IO.Path::GetTempPath()
+	20110321	spouliot - HasSecurity has been removed by the linker (since it caused peverify errors)
 	20110104	spouliot - compiler/linker change, HasSecurity is now present in attributes
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
@@ -1657,8 +1697,9 @@ System.Type System.MonoType::GetGenericTypeDefinition()
 System.Type System.MonoType::GetNestedType(System.String,System.Reflection.BindingFlags)
 	r155239		spouliot - indirectly visible instance icall. call ves_icall_Type_GetNestedType (icall.c) with 'name' and 'bflags' (validated in unmanaged code)
 
-!SSC-C44A44B08210F81CA8B410B44249AC17
+!SSC-09BA403A45E882A62A4F78302B95F59C
 System.Type System.Object::GetType()
+	20110411	spouliot - no source change / compiler ?
 	r144558		spouliot - visible icall. parameter-less (instance)
 
 !SSC-65333452FE07ACC03407AEFD1F316370
@@ -1823,6 +1864,10 @@ System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
 	r142142		spouliot - creates a static SimpleCollator instance for CultureInfo.InvariantCulture
 
+!SSC-A4F7F0E5C3191C641CE01CB9F93803F8
+System.Void Mono.MoonlightHelper::RunOnMainThread(System.Threading.SendOrPostCallback,System.EventArgs)
+	20110411	spouliot - code moved from System.ServiceModel.dll / use System.Windows.Threading.Dispatcher.Main.BeginInvoke (transparent) thru reflection
+
 !SSC-6629123EE9075F4D621D3525EC5797B2
 System.Void System.Array::CheckComparerAvailable(System.Array,System.Int32,System.Int32)
 	r160636		spouliot - renamed (and fixed) from MoveNullKeysToFront - same icall still called under same conditions
@@ -1890,9 +1935,14 @@ System.Void System.Collections.Generic.Comparer`1::.cctor()
 System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
 	r142142		spouliot - use Activator.CreateInstance to create (inaccessible) GenericEqualityComparer<T>
 
-!SSC-008B9D693A2050FDED6073364D310948
+!SSC-D8103812E882809EA52673ED3DEF5CF5
 System.Void System.Console::.cctor()
+	20110325	spouliot - 5a41149e - last part was splitted into SetupStreams so it could be reused (not the case for Moonlight)
 	r142142		spouliot - call Encoding.InternalCodePage (icall) to retrieve the code page (int32)
+
+!SSC-884A4440BDA61EF4C32F8D7E140C36D0
+System.Void System.Console::SetupStreams(System.Text.Encoding,System.Text.Encoding)
+	20110325	spouliot - 5a41149e - split from .cctor / call OpenStandard[Error|Input|Output], all [SecurityCritical], with '0' as argument
 
 !SSC-9B2A274ED22D31A8956F245F990E0C0D
 System.Void System.CurrentSystemTimeZone::.ctor(System.Int64)
@@ -1901,6 +1951,10 @@ System.Void System.CurrentSystemTimeZone::.ctor(System.Int64)
 !SSC-968DD3509179993679014651BA2584EE
 System.Void System.CurrentSystemTimeZone::OnDeserialization(System.Globalization.DaylightTime)
 	r142142		spouliot - call GetTimeZoneData (icall) with 'DateTime.Now.Year'
+
+!SSC-B6CB7B3E6FA5A212CCDB022F86737C62
+System.Void System.Decimal::.ctor(System.Double)
+	20110321	spouliot - 31c068ca - call double2decimal (icall) and throw an OverflowException if it returns an error
 
 !SSC-FA5EC5FBF94834E5C87444BFFAD6492D
 System.Void System.Diagnostics.StackTrace::.ctor()
@@ -2181,6 +2235,10 @@ System.Void System.Reflection.MonoMethod::.ctor(System.RuntimeMethodHandle)
 System.Void System.Reflection.MonoProperty::CachePropertyInfo(System.Reflection.PInfo)
 	r144449		spouliot - call get_property_info (icall) using 'this' and valid (non-user defined) 'flags'
 
+!SSC-B2BF1FA6817CA663F6864E95B2E1D790
+System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey7::<>m__4(System.Object,System.EventArgs)
+	20110411	spouliot - calls Marshal.FreeHGlobal on 'ptr' when the (local) UnmanagedMemoryStream instance is closed
+
 !SSC-21B32109D4C90131E4F154EB34234A8B
 System.Void System.Runtime.CompilerServices.ConditionalWeakTable`2::.ctor()
 	r156851		spouliot - new implementation. calls GC.register_ephemeron_array (icall) on a (field) array of Ephemeron
@@ -2197,14 +2255,29 @@ System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(Syst
 System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
 	r142142		spouliot - added validation, calls RunClassConstructor (icall)
 
+!SSC-244821ADE4858D0AE2116945968651CA
+System.Void System.Runtime.InteropServices.CriticalHandle::Dispose()
+	20110411	spouliot - call Dispose(true) which is [SecurityCritical] to match SL API
+
+!SSC-4A8A569F3A1B023C4BC65520FD1AC543
+System.Void System.Runtime.InteropServices.CriticalHandle::Finalize()
+	20110411	spouliot - call Dispose(false) which is [SecurityCritical] to match SL API
+
+!SSC-F1FFCBB1E9593A331B58704AA612F6F8
+System.Void System.Runtime.InteropServices.SafeHandle::Dispose()
+	20110411	spouliot - call Dispose(true) which is [SecurityCritical] to match SL API
+
+!SSC-C11B47C4EAA40306B71B1A0A3CE3D1EB
+System.Void System.Runtime.InteropServices.SafeHandle::Finalize()
+	20110411	spouliot - call IsInvalid property and ReleaseHandle method, both [SecurityCritical] to match SL API
+
+!SSC-0F050D70516F730836342DA1EB0B6B89
+System.Void System.Runtime.Remoting.Proxies.RealProxy::GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+	20110321	spouliot - call RemotingServices.GetObjectData [SecurityCritical] with GetTransparentProxy result and parameters
+
 !SSC-54140DD00DF503FEABD5E3014B057607
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 	r143412		spouliot - internal type (needed to serialize CultureInfo and friends between appdomain/threads). Access multiple fields of BinaryFormatter [SecurityCritical] paramater
-
-!SSC-2ABB4F3F718210B61E39B32794C7EC5A
-System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
-	20110208	spouliot - 0dfe460 - fix reading objects with missing primitive members
-	r143412		spouliot - call FormatterServices [SecurityCritical] Get[Safe]UninitializedObject to create objects based on 'metadata' parameter
 
 !SSC-F4BCA02E42DD2A8F460049FEF3ECC3E1
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
@@ -2366,14 +2439,10 @@ System.Void System.Threading.ThreadPool::GetMaxThreads(System.Int32&,System.Int3
 System.Void System.Threading.ThreadPool::GetMinThreads(System.Int32&,System.Int32&)
 	r144558		spouliot - visible icall (in threadpool.c)
 
-!SSC-BFD7822B3A044C0DBC224BB0F417FA01
+!SSC-3CC59D309535718A330526260C6550A6
 System.Void System.Threading.Timer/Scheduler::.cctor()
+	20110321	spouliot - a2cbc259 - a static WaitCallback over 'TimerCB' was created to be used to queue with ThreadPool
 	r144307		spouliot - creates a global Scheduler instance (SecurityCritical type)
-
-!SSC-45436BF1D27743081F860D9249060C83
-System.Void System.Threading.WaitHandle::Dispose(System.Boolean)
-	20101116	spouliot - no source change / compiler (lock) ?
-	r142142		spouliot - call SafeWaitHandle (SecurityCritical type) Dispose, eventually leading to NativeEventCalls.CloseEvent_internal (icall in threads.c)
 
 !SSC-AB18E59FD89AE38A91AC76D73E6CC5E7
 System.Void System.TimeZone::.cctor()

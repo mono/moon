@@ -164,10 +164,6 @@
 +SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadArrayOfObject(System.IO.BinaryReader,System.Int64&,System.Object&)
 +SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadArrayOfString(System.IO.BinaryReader,System.Int64&,System.Object&)
 
-+SC-M: System.Void System.Runtime.Remoting.Proxies.RemotingProxy::.ctor(System.Type,System.Runtime.Remoting.ClientIdentity)
-+SC-M: System.Void System.Runtime.Remoting.Proxies.RemotingProxy::AttachIdentity(System.Runtime.Remoting.Identity)
-+SC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Proxies.RemotingProxy::ActivateRemoteObject(System.Runtime.Remoting.Messaging.IMethodMessage)
-
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::.ctor(System.Runtime.Remoting.Messaging.IMethodCallMessage,System.Runtime.Remoting.Messaging.CADMethodReturnMessage)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodResponse::InitMethodProperty(System.String,System.Object)
@@ -177,11 +173,11 @@
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::ResolveMethod()
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Remoting.Messaging.Header[])
 +SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-+SC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::CopyFrom(System.Runtime.Remoting.Messaging.IMethodMessage)
 +SC-M: System.Boolean System.Runtime.Remoting.Messaging.MethodCall::get_HasVarArgs()
 +SC-M: System.String System.Runtime.Remoting.Messaging.MethodCall::GetArgName(System.Int32)
 +SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.MethodCall::get_Properties()
 
++SC-M: System.Void System.Runtime.Remoting.Messaging.ConstructionCall::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
 +SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ConstructionCall::get_Properties()
 
 +SC-M: System.Boolean System.Runtime.Remoting.Messaging.ErrorMessage::get_HasVarArgs()
@@ -199,6 +195,9 @@
 
 +SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::InternalGetTransparentProxy(System.String)
 +SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::PrivateInvoke(System.Runtime.Remoting.Proxies.RealProxy,System.Runtime.Remoting.Messaging.IMessage,System.Exception&,System.Object[]&)
++SC-M: System.Type System.Runtime.Remoting.Proxies.RealProxy::GetProxiedType()
++SC-M: System.Object System.Runtime.Remoting.Proxies.RealProxy::GetAppDomainTarget()
++SC-M: System.Object[] System.Runtime.Remoting.Proxies.RealProxy::ProcessResponse(System.Runtime.Remoting.Messaging.IMethodReturnMessage,System.Runtime.Remoting.Messaging.MonoMethodMessage)
 
 +SC-M: System.Object System.Runtime.Serialization.IObjectReference::GetRealObject(System.Runtime.Serialization.StreamingContext)
 
