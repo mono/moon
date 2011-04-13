@@ -1014,7 +1014,7 @@ MoonWindowingSystemAndroid::OnInputEvent (android_app* app, AInputEvent* aevent)
 	    && AKeyEvent_getKeyCode(aevent) == 	AKEYCODE_BACK) {
 
 		ANativeActivity_finish (app->activity);
-		return 1;
+		exit (1);
 	}
 
 	g_warning ("MoonWindowingSystemAndroid::OnInputEvent");
