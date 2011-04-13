@@ -143,7 +143,9 @@ Downloader::GetDownloadedFilename (const char *partname)
 		if (strchr (part, '/') != NULL) {
 			// create the directory path
 			dirname = g_path_get_dirname (path);
+#if PLUMB_ME
 			rv = g_mkdir_with_parents (dirname, 0700);
+#endif
 			g_free (dirname);
 			
 			if (rv == -1 && errno != EEXIST)
@@ -251,7 +253,9 @@ Downloader::GetUnzippedPath ()
 		if ((name = strrchr (filename, '/'))) {
 			// make sure the full directory path exists, if not create it
 			g_string_append_len (path, filename, name - filename);
+#if PLUMB_ME
 			g_mkdir_with_parents (path->str, 0700);
+#endif
 			g_string_append (path, name);
 		} else {
 			g_string_append (path, filename);

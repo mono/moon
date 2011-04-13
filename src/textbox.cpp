@@ -1758,8 +1758,10 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 	delete_end = delete_start + n_chars;
 	
 	// get the character length/start index
+#if PLUMB_ME
 	length = g_utf8_pointer_to_offset (delete_start, delete_end);
 	start = g_utf8_pointer_to_offset (text, delete_start);
+#endif
 	
 	if (length > 0) {
 		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
@@ -2556,7 +2558,9 @@ TextBox::SyncSelectedText ()
 		int start = MIN (selection_anchor, selection_cursor);
 		char *text;
 		
+#if PLUMB_ME
 		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
+#endif
 		
 		setvalue = false;
 		SetValue (TextBox::SelectedTextProperty, Value (text, Type::STRING, true));
@@ -2572,8 +2576,10 @@ void
 TextBox::SyncText ()
 {
 	char *text;
-	
+
+#if PLUMB_ME
 	text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+#endif
 	
 	setvalue = false;
 	SetValue (TextBox::TextProperty, Value (text, Type::STRING, true));
@@ -2952,7 +2958,9 @@ PasswordBox::SyncSelectedText ()
 		int start = MIN (selection_anchor, selection_cursor);
 		char *text;
 		
+#if PLUMB_ME
 		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
+#endif
 		
 		setvalue = false;
 		SetValue (PasswordBox::SelectedTextProperty, Value (text, Type::STRING, true));
@@ -2971,16 +2979,20 @@ PasswordBox::SyncDisplayText ()
 	
 	g_string_truncate (display, 0);
 	
+#if PLUMB_ME
 	for (int i = 0; i < buffer->len; i++)
 		g_string_append_unichar (display, c);
+#endif
 }
 
 void
 PasswordBox::SyncText ()
 {
 	char *text;
-	
+
+#if PLUMB_ME
 	text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+#endif
 	
 	SyncDisplayText ();
 	

@@ -564,7 +564,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		}
 		
+#if PLUMB_ME
 		d(g_string_append_unichar (debug, c));
+#endif
 		word->count++;
 		
 		// a Combining Class of 0 means start of a new glyph

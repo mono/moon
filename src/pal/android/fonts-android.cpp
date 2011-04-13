@@ -115,10 +115,10 @@ MoonFontServiceAndroid::FindFont (const FontStyleInfo *desired)
 	int diff, closest = G_MAXINT;
 	const char *family_name;
 	
-	if (!g_ascii_strcasecmp (desired->family_name, "Sans"))
-		family_name = "Droid Sans Fallback";
-	else
+	if (g_ascii_strcasecmp (desired->family_name, "Sans") != 0)
 		family_name = desired->family_name;
+	else
+		family_name = "Droid Sans";
 	
 	for (guint i = 0; i < system_fonts->len; i++) {
 		font = (AndroidFont *) system_fonts->pdata[i];
