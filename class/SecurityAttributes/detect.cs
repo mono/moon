@@ -77,8 +77,6 @@ public class AssemblyData {
 		case "System.IDisposable.Dispose":
 		case "Dispose":
 			return method.HasParameters;
-		case ".cctor":
-			return false;
 		default:
 			return true;
 		}

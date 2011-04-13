@@ -76,10 +76,6 @@ System.Void Mono.ScriptObjectEventInfo::Finalize()
 System.Void Mono.ScriptObjectHelper::.cctor()
 	20110411	spouliot - fa6f28a4 - call HtmlPage.get_UnsafeWindow [SecurityCritical] and get_UnsafeBrowserInformation [SecurityCritical] since some information is required internally even if EnableHtmlAccess is false
 
-!SSC-FE150C7E21B5298EA5C9AA8EB5BC7EAD
-System.Void Mono.ScriptObjectToggleRef::.cctor()
-	20110411	spouliot - creates a static instance of Mono.ToggleRef/ToggleNotifyHandler [SecurityCritical]
-
 !SSC-817A7D608E14172B80DD49513C03937F
 System.Void System.Windows.Browser.HtmlPage::.cctor()
 	20110125	spouliot - ec76419 - 'IsEnabled' is now determined (and cached) from here
