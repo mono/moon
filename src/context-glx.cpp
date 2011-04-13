@@ -520,8 +520,14 @@ GLXContext::Blit (unsigned char *data,
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface *) ms;
+	Rect        clip;
 
 	ForceCurrent ();
+
+	Top ()->GetClip (&clip);
+
+	// no support for clipping
+	g_assert (r == clip);
 
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetGLXDrawable ());
@@ -529,7 +535,22 @@ GLXContext::Blit (unsigned char *data,
 	// mark target as initialized
 	target->SetInit (ms);
 
-	GLContext::Blit (data, stride);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH,
+		       PixelRowLength (stride, dst->Width (), 4));
+	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride));
+	glBindTexture (GL_TEXTURE_2D, dst->Texture ());
+	glTexSubImage2D (GL_TEXTURE_2D,
+			 0,
+			 0,
+			 0,
+			 dst->Width (),
+			 dst->Height (),
+			 GL_BGRA,
+			 GL_UNSIGNED_BYTE,
+			 data);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
 
 	ms->unref ();
 }
@@ -542,8 +563,19 @@ GLXContext::BlitYV12 (unsigned char *data[],
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface *) ms;
+	int         size[] = { dst->Width (), dst->Height () };
+	int         width[] = { size[0], size[0] / 2, size[0] / 2 };
+	int         height[] = { size[1], size[1] / 2, size[1] / 2 };
+	GLuint      texture[3];
+	Rect        clip;
+	int         i;
 
 	ForceCurrent ();
+
+	Top ()->GetClip (&clip);
+
+	// no support for clipping
+	g_assert (r == clip);
 
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetGLXDrawable ());
@@ -551,7 +583,30 @@ GLXContext::BlitYV12 (unsigned char *data[],
 	// mark target as initialized
 	target->SetInit (ms);
 
-	GLContext::BlitYV12 (data, stride);
+	dst->AllocYUV ();
+
+	texture[0] = dst->TextureY ();
+	texture[1] = dst->TextureU ();
+	texture[2] = dst->TextureV ();
+
+	for (i = 0; i < 3; i++) {
+		glPixelStorei (GL_UNPACK_ROW_LENGTH,
+			       PixelRowLength (stride[i], width[i], 1));
+		glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
+		glBindTexture (GL_TEXTURE_2D, texture[i]);
+		glTexSubImage2D (GL_TEXTURE_2D,
+				 0,
+				 0,
+				 0,
+				 width[i],
+				 height[i],
+				 GL_LUMINANCE,
+				 GL_UNSIGNED_BYTE,
+				 data[i]);
+	}
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
 
 	ms->unref ();
 }
