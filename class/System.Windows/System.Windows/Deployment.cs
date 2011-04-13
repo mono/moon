@@ -62,7 +62,9 @@ namespace System.Windows {
 
 		static Deployment ()
 		{
-			Console.SetOut (new AndroidLogTextWriter ());
+			TextWriter androidWriter = new AndroidLogTextWriter ();
+			Console.SetOut (androidWriter);
+			Console.SetError (androidWriter);
 		}
 
 		internal int MajorVersion {
