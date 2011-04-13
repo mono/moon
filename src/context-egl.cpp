@@ -498,6 +498,8 @@ MoonEGLContext::Blit (unsigned char *data,
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	unsigned char *buffer = data;
+	int           buffer_stride = stride;
 
 	ForceCurrent ();
 
@@ -507,7 +509,21 @@ MoonEGLContext::Blit (unsigned char *data,
 	// mark target as initialized
 	target->SetInit (ms);
 
-	GLContext::Blit (data, stride);
+	if (PixelRowLength (stride, dst->Width (), 4) != dst->Width ()) {
+		buffer_stride = dst->Width () * 4;
+		buffer =  (unsigned char *)
+			g_malloc (buffer_stride * dst->Height ());
+
+		for (int y = 0; y < dst->Height (); y++)
+			memcpy (buffer + (y * buffer_stride),
+				data + (y * stride),
+				buffer_stride);
+	}
+
+	GLContext::Blit (buffer, buffer_stride);
+
+	if (buffer != data)
+		g_free (buffer);
 
 	ms->unref ();
 }
@@ -520,6 +536,11 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	int           size[] = { dst->Width (), dst->Height () };
+	int           width[] = { size[0], size[0] / 2, size[0] / 2 };
+	int           height[] = { size[1], size[1] / 2, size[1] / 2 };
+	unsigned char *buffer[] = { data[0], data[1], data[2] };
+	int           buffer_stride[] = { stride[0], stride[1], stride[2] };
 
 	ForceCurrent ();
 
@@ -529,7 +550,25 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 	// mark target as initialized
 	target->SetInit (ms);
 
-	GLContext::BlitYV12 (data, stride);
+	for (int i = 0; i < 3; i++) {
+		if (PixelRowLength (stride[i], width[i], 1) != width[i]) {
+			buffer_stride[i] = width[i];
+			buffer[i] = (unsigned char *)
+				g_malloc (buffer_stride[i] * height[i]);
+
+			for (int y = 0; y < height[i]; y++)
+				memcpy (buffer[i] + y * buffer_stride[i],
+					data[i] + y * stride[i],
+					buffer_stride[i]);
+		}
+	}
+
+	GLContext::BlitYV12 (buffer, buffer_stride);
+
+	for (int i = 0; i < 3; i++)
+		if (buffer[i] != data[i])
+			g_free (buffer[i]);
+
 
 	ms->unref ();
 }
