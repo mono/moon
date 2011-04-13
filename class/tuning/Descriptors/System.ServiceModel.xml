@@ -3,10 +3,12 @@
 	<assembly fullname="System.ServiceModel">
 		<type fullname="System.Runtime.CompilerServices.FriendAccessAllowedAttribute" preserve="all" />
 		<type fullname="System.ServiceModel.ClientRuntimeChannel" preserve="all" />
+		<type fullname="System.ServiceModel.IDuplexHelper" preserve="all" />
 		<type fullname="System.ServiceModel.Description.FaultDescription" preserve="all" />
 		<type fullname="System.ServiceModel.Description.ServiceReflector" preserve="all" />
 		<type fullname="System.ServiceModel.Description.XmlName" preserve="all" />
 		<type fullname="System.ServiceModel.Description.MessagePartDescription" preserve="all" />
+		<type fullname="System.ServiceModel.Description.OperationDescription" preserve="all" />
 		<type fullname="System.ServiceModel.Description.MessageDescription" preserve="all" />
 		<type fullname="System.ServiceModel.DiagnosticUtility" preserve="all" />
 		<type fullname="System.ServiceModel.DiagnosticUtility/ExceptionUtility" preserve="all" />
