@@ -93,7 +93,6 @@ FrameworkElement::Init ()
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
-	loaded_cb = NULL;
 	style_resource_changed_cb = NULL;
 	bounds_with_children = Rect ();
 	global_bounds_with_children = Rect ();
@@ -1050,13 +1049,12 @@ FrameworkElement::UpdateLayer (LayoutPass *pass, MoonError *error)
 
 void
 FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
-					    GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb,
+					    GetDefaultTemplateCallback get_default_template_cb,
 					    StyleResourceChangedCallback style_resource_changed_cb)
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
 	this->get_default_template_cb = get_default_template_cb;
-	this->loaded_cb = loaded_cb;
 	this->style_resource_changed_cb = style_resource_changed_cb;
 }
 
@@ -1076,11 +1074,9 @@ FrameworkElement::OnIsLoadedChanged (bool loaded)
 		ClearImplicitStyles (ImplicitStylePropertyValueProvider::StyleMaskVisualTree);
 
 	UIElement::OnIsLoadedChanged (loaded);
+
 	if (providers.inheriteddatacontext)
 		providers.inheriteddatacontext->EmitChanged ();
-
-	if (loaded && loaded_cb)
-		(*loaded_cb) (this);
 }
 
 bool

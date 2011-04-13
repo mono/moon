@@ -124,9 +124,13 @@ UIElement::OnIsLoadedChanged (bool loaded)
 		element->SetIsLoaded (loaded);
 
 	// Finally if we're loading, emit the Loaded event after the children
-	if (loaded && HasHandlers (UIElement::LoadedEvent)) {
-		GetDeployment ()->AddAllLoadedHandlers (this, true);
-		GetDeployment ()->EmitLoadedAsync ();
+	if (loaded) {
+		if (HasHandlers (UIElement::LoadedEvent, -1, true)) {
+			GetDeployment ()->AddAllLoadedHandlers (this, true);
+			GetDeployment ()->EmitLoadedAsync ();
+		} else {
+			EmitAsync (UIElement::LoadedEvent);
+		}
 	}
 }
 
