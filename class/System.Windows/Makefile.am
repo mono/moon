@@ -69,6 +69,7 @@ dist_system_windows_sources =							\
 	$(srcdir)/MS.Internal/InternalTransform.cs				\
 	$(srcdir)/MS.Internal/JoltHelper.cs					\
 	$(srcdir)/Mono/AnalyticsProvider.cs					\
+	$(srcdir)/Mono/AndroidLogTextWriter.cs					\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/DependencyObjectHandle.cs				\

@@ -60,6 +60,11 @@ namespace System.Windows {
 
 		static bool is_shutting_down;
 
+		static Deployment ()
+		{
+			Console.SetOut (new AndroidLogTextWriter ());
+		}
+
 		internal int MajorVersion {
 			get { return int.Parse (RuntimeVersion.Split ('.') [0]); }
 		}
