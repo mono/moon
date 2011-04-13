@@ -9,7 +9,7 @@ namespace Moonlight {
 
 class MoonPixbufAndroid : public MoonPixbuf {
 public:
-	MoonPixbufAndroid (/* FIXME GdkPixbuf *pixbuf,*/ bool crc_error);
+	MoonPixbufAndroid (cairo_surface_t *image, bool crc_error);
 	virtual ~MoonPixbufAndroid ();
 
 	virtual gint GetWidth ();
@@ -20,9 +20,11 @@ public:
 	virtual gboolean IsPremultiplied ();
 
 	virtual gpointer GetPlatformPixbuf ();
-
+	
 private:
 	bool crc_error;
+	cairo_surface_t *image_surface;
+	
 };
 
 class MoonPixbufLoaderAndroid : public MoonPixbufLoader {
@@ -36,7 +38,14 @@ public:
 	virtual MoonPixbuf *GetPixbuf ();
 
 private:
+	cairo_status_t ReadFunc (unsigned char *data, unsigned int len);
+	static cairo_status_t cairo_read_func (void *closure, unsigned char *data, unsigned int len);
+	
 	bool crc_error;
+	GByteArray *data;
+	const char *image_type;
+	guint offset;
+	MoonPixbufAndroid *pixbuf;
 };
 
 };

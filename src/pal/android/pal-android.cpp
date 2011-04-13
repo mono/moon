@@ -937,8 +937,7 @@ MoonWindowingSystemAndroid::GetCursorBlinkTimeout (MoonWindow *moon_window)
 MoonPixbufLoader*
 MoonWindowingSystemAndroid::CreatePixbufLoader (const char *imageType)
 {
-	// FIXME
-	return NULL;
+	return new MoonPixbufLoaderAndroid (imageType);
 }
 
 void
