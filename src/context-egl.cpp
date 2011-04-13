@@ -581,6 +581,14 @@ MoonEGLContext::Paint (Color *color)
 	Rect        r = target->GetData (&ms);
 	Rect        clip;
 
+	// avoid GL rendering to target without previously
+	// allocated hardware drawable	
+	if (!HasDrawable ()) {
+		Context::Paint (color);
+		ms->unref ();
+		return;
+	}
+
 	Top ()->GetClip (&clip);
 
 	if (!target->GetInit () && r == clip) {
