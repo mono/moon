@@ -1402,6 +1402,20 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
+void
+Rectangle::Paint (Context *ctx, const Rect &area)
+{
+	if (GetRadiusX () || GetRadiusY ())
+	{
+		Shape::Paint (ctx, area);
+	}
+	else {	
+		ctx->Push (Context::Transform (stretch_transform));
+		fill->Paint (ctx, area);
+		ctx->Pop ();
+	}
+}
+
 //
 // Line
 //
