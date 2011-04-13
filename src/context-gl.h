@@ -121,6 +121,11 @@ protected:
 
 	virtual void SetTextureWrap (GLenum target);
 
+	static int PixelAlignment (int stride);
+	static int PixelRowLength (int stride,
+				   int width,
+				   int size);
+
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
 			     const GLchar **str);
