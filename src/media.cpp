@@ -375,8 +375,12 @@ Image::Render (Context *ctx, Region *region)
 	if (source == NULL)
 		return;
 
-	if (source->GetPixelWidth () == 0 || source->GetPixelHeight () == 0)
+	source->Lock ();
+
+	if (source->GetPixelWidth () == 0 || source->GetPixelHeight () == 0) {
+		source->Unlock ();
 		return;
+	}
 
 	if (stretch != StretchUniformToFill)
 		specified = specified.Min (stretched);
@@ -413,6 +417,7 @@ Image::Render (Context *ctx, Region *region)
 
 		if (bounds.RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
 			cairo_t *cr = ctx->Push (Context::Cairo ());
+			source->Unlock ();
 			Render (cr, region);
 			ctx->Pop ();
 			return;
@@ -420,12 +425,16 @@ Image::Render (Context *ctx, Region *region)
 	}
 
 	MoonSurface *src = source->GetSurface (ctx);
-	if (!src)
+	if (!src) {
+		source->Unlock ();
 		return;
+	}
 
 	ctx->Push (Context::Transform (matrix));
 	ctx->Paint (src, 1.0, 0, 0);
 	ctx->Pop ();
+
+	source->Unlock ();
 }
 
 void
