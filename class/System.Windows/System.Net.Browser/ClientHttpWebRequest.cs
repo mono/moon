@@ -143,6 +143,10 @@ namespace System.Net.Browser {
 
 		protected override void CheckProtocolViolation ()
 		{
+#if ANDROID_HACK
+			return;
+#endif
+
 			bool is_get = (String.Compare (Method, "GET", StringComparison.OrdinalIgnoreCase) == 0);
 
 			foreach (string header in Headers) {
