@@ -7,7 +7,7 @@ SUBDIRS = .
 endif
 SUBDIRS += System.Windows.Browser System.Windows
 if INCLUDE_BROWSER_MANAGED_CODE
-SUBDIRS += SecurityAttributes
+#SUBDIRS += SecurityAttributes
 endif
 SUBDIRS += System.Windows.Controls System.Windows.Controls.Data
 if INCLUDE_DESKTOP_MANAGED_CODE
