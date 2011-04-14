@@ -125,6 +125,8 @@ namespace WebPolicies {
 			{ "http://flash-35.moonlight.test/", CheckSecurityException },	// <allow-access-from>
 			{ "http://flash-36.moonlight.test/", CheckSecurityException },	// <allow-http-request-headers-from>
 			{ "http://flash-37.moonlight.test/", CheckSecurityException },	// <site-control>
+			// extra text elements between tags
+			{ "http://flash-38.moonlight.test/", CheckOk },
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)
@@ -218,6 +220,8 @@ namespace WebPolicies {
 			{ "http://silverlight-36.moonlight.test/", CheckSecurityException },	// <policy>
 			{ "http://silverlight-37.moonlight.test/", CheckSecurityException },	// <allow-from>
 			{ "http://silverlight-38.moonlight.test/", CheckSecurityException },	// <grant-to>
+			// extra text elements between tags
+			{ "http://silverlight-39.moonlight.test/", CheckOk },
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file

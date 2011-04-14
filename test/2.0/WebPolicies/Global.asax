@@ -410,6 +410,15 @@
 				Default (path);
 			}
 			break;
+		case "flash-38.moonlight.test":
+			// Description:	Extra text element between tags
+			// Result:	Ok
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy>-<site-control permitted-cross-domain-policies='all'/>- -<allow-access-from domain='*'/>- - - </cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
 
 		case "silverlight-1.moonlight.test":
 			// Description:	simplest, allow everything, silverlight policy
@@ -996,6 +1005,17 @@
 			} else if (path == "crossdomain.xml") {
 				// valid flash policy that should not be reached
 				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-39.moonlight.test":
+			// Description:	Extra text element between tags
+			// Result:	Ok
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy>- -<cross-domain-access>- - -<policy>- - - -<allow-from>- - - - -
+					<domain uri='*'/>- - - - - -</allow-from>- - - - - - -<grant-to>- - - - - -<resource path='/' include-subpaths='true'/>- - - - -
+					</grant-to>- - - -</policy>- - -</cross-domain-access>- -</access-policy>");
 			} else {
 				Default (path);
 			}
