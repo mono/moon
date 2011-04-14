@@ -1,6 +1,50 @@
+!SSC-B675C10CB31463D5AF72373711674BCF
+System.IAsyncResult System.IO.Compression.DeflateStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	20110321	spouliot - not user accessible, used by the client http stack if compression is used
+
+!SSC-B6DEB565FEAD9BD795D4FED1EB7AE4B6
+System.IAsyncResult System.IO.Compression.DeflateStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	20110321	spouliot - not user accessible, used by the client http stack if compression is used
+
+!SSC-F7235693B42B835C7EFA96C84C54585E
+System.IAsyncResult System.Net.Sockets.NetworkStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-44C086E985B573BA13D90AFE8903A65C
+System.IAsyncResult System.Net.Sockets.NetworkStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-AF6F28EEEA1A085450CE68A1D09B52CE
+System.IAsyncResult System.Net.WebConnectionStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-43EACF0D6507D4936E13CBBB57508602
+System.IAsyncResult System.Net.WebConnectionStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	20110321	spouliot - not user accessible, used by the client http stack
+
 !SSC-434F9855702D163FB1142EF5D380D543
 System.Int32 Mono.Security.Protocol.Tls.SslStreamBase::EndRead(System.IAsyncResult)
 	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
+
+!SSC-1A3EE1823819EC7808E76D70D6F118FC
+System.Int32 System.IO.Compression.DeflateStream::Read(System.Byte[],System.Int32,System.Int32)
+	20110321	spouliot - not user accessible, used by the client http stack if compression is used
+
+!SSC-4B83E44D38F805AF33E57E3D1DD93A9F
+System.Int32 System.Net.Sockets.NetworkStream::EndRead(System.IAsyncResult)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-9BD86D1D23103D1F04D8507E22C57D85
+System.Int32 System.Net.Sockets.NetworkStream::Read(System.Byte[],System.Int32,System.Int32)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-518BFE6429E6F4CDFE57EABE4F6E8C66
+System.Int32 System.Net.WebConnectionStream::EndRead(System.IAsyncResult)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-53B43AF241F7683706C6E34C13BC96D5
+System.Int32 System.Net.WebConnectionStream::Read(System.Byte[],System.Int32,System.Int32)
+	20110321	spouliot - not user accessible, used by the client http stack
 
 !SSC-A8C6BAEC7FEECECD78A42AD716BCAED1
 System.Net.Authorization Mono.Http.NtlmSession::Authenticate(System.String,System.Net.WebRequest,System.Net.ICredentials)
@@ -26,7 +70,71 @@ System.Void Mono.Security.Protocol.Tls.HttpsClientStream::.ctor(System.IO.Stream
 System.Void Mono.Security.Protocol.Tls.SslStreamBase::EndWrite(System.IAsyncResult)
 	r58433		spouliot - call WaitHandle.WaitOne(int,bool) [SecurityCritical] with 'false'
 
+!SSC-25597798C8395E0AF3AA7674FBC2E840
+System.Void System.IO.Compression.DeflateStream::Dispose(System.Boolean)
+	20110321	spouliot - not user accessible, used by the client http stack if compression is used
+
+!SSC-38A61387865403E06605C2E7D6790201
+System.Void System.IO.Compression.DeflateStream::Flush()
+	20110321	spouliot - not user accessible, used by the client http stack if compression is used
+
+!SSC-B75C49FE1692F8F2D3898981CADCA70D
+System.Void System.IO.Compression.DeflateStream::Write(System.Byte[],System.Int32,System.Int32)
+	20110321	spouliot - not user accessible, used by the client http stack if compression is used
+
+!SSC-74271EA28FEAB4154C4602CD99468D3D
+System.Void System.Net.HttpWebResponse::System.IDisposable.Dispose()
+	20110411	spouliot - not user accessible, used by the client http stack
+
+!SSC-F74053846E0D57C3F15E39EE2BDC3923
+System.Void System.Net.Sockets.NetworkStream::Dispose(System.Boolean)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-EEB8E0E62136978875961FF948A76101
+System.Void System.Net.Sockets.NetworkStream::EndWrite(System.IAsyncResult)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-7B3693EEE15D7B4FB6B94760A53B9F5F
+System.Void System.Net.Sockets.NetworkStream::Write(System.Byte[],System.Int32,System.Int32)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-A4EE010BF57FB42E9EC005B1A41E9F0C
+System.Void System.Net.Sockets.Socket/SocketAsyncResult::Dispose()
+	20110411	spouliot - not user accessible (see System.Net.dll for public ML sockets), used by the client http stack
+
+!SSC-1BE49980777734C8B75C13EAAC733EBD
+System.Void System.Net.Sockets.Socket::Dispose()
+	20110411	spouliot - not user accessible (see System.Net.dll for public ML sockets), used by the client http stack
+
+!SSC-857FC9D306DA94CCC095B4E1CA2220C0
+System.Void System.Net.Sockets.Socket::Finalize()
+	20110411	spouliot - not user accessible (see System.Net.dll for public ML sockets), used by the client http stack
+
+!SSC-2D97F9F3A8EA6B84BE8C13993483EE78
+System.Void System.Net.Sockets.SocketAsyncEventArgs::Dispose()
+	20110411	spouliot - not user accessible (see System.Net.dll for public ML sockets), used by the client http stack
+
+!SSC-121A5E5A9FB3BCF93FA760CA367C9936
+System.Void System.Net.Sockets.SocketAsyncEventArgs::Finalize()
+	20110411	spouliot - not user accessible (see System.Net.dll for public ML sockets), used by the client http stack
+
 !SSC-59455E83C25494CA468EC35CE4EF26C3
 System.Void System.Net.Sockets.SocketException::.ctor()
 	r153971		spouliot - call WSAGetLastError_internal (icall) to set the error code
+
+!SSC-13B4DFDB1387BD5C01A2A9E21AAC84AA
+System.Void System.Net.WebConnectionStream::Close()
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-D80ED613ABB36CFE00A057F0E22199B3
+System.Void System.Net.WebConnectionStream::EndWrite(System.IAsyncResult)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-7FD32DA28E43F2E4434ACC50101E2AD9
+System.Void System.Net.WebConnectionStream::Write(System.Byte[],System.Int32,System.Int32)
+	20110321	spouliot - not user accessible, used by the client http stack
+
+!SSC-40AC2F2E8F2BCC390CFDAB42F6AA9D54
+System.Void System.Net.WebResponse::System.IDisposable.Dispose()
+	20110411	spouliot - not user accessible, used by the client http stack
 
