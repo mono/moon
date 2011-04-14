@@ -14,7 +14,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:AGCLR -unsafe -r:System.Core.dll
+CSCFLAGS = /codepage:65001 -d:ANDROID_HACK -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:AGCLR -unsafe -r:System.Core.dll
 if DEBUG
 CSCFLAGS += -d:DEBUG
 endif

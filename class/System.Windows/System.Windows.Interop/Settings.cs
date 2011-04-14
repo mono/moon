@@ -48,7 +48,11 @@ namespace System.Windows.Interop {
 
 		public bool EnableHTMLAccess {
 			get {
-				return NativeMethods.plugin_instance_get_enable_html_access (XamlLoader.PluginInDomain);
+#if ANDROID_HACK
+				return true;
+#else
+			    	return NativeMethods.plugin_instance_get_enable_html_access (XamlLoader.PluginInDomain);
+#endif
 			}
 		}
 
@@ -74,11 +78,18 @@ namespace System.Windows.Interop {
 
 		public int MaxFrameRate {
 			get {
+#if ANDROID_HACK
+				return 60;
+#else
 				return NativeMethods.plugin_instance_get_max_frame_rate (XamlLoader.PluginInDomain);
+#endif
 			}
 			set {
 				// note: does not throw on invalid (< 1) values - but does not change the value
+#if ANDROID_HACK
+#else
 				NativeMethods.plugin_instance_set_max_frame_rate (XamlLoader.PluginInDomain, value);
+#endif
 			}
 		}
 

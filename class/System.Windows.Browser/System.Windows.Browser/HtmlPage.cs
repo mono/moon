@@ -86,7 +86,11 @@ namespace System.Windows.Browser {
 				CheckHtmlAccess();
 
 				if (document == null)
+#if ANDROID_HACK
+					document = new HtmlDocument ();
+#else
 					document = (HtmlDocument) HtmlObject.GetPropertyInternal (IntPtr.Zero, "document");
+#endif
 
 				return document;
 			}
@@ -129,6 +133,7 @@ namespace System.Windows.Browser {
 
 		public static void RegisterCreateableType (string scriptAlias, Type type)
 		{
+#if !ANDROID_HACK
 			CheckThread ();
 			// no call to CheckHtmlAccess(); -- see DRT365
 			CheckName (scriptAlias, "scriptAlias");
@@ -142,6 +147,7 @@ namespace System.Windows.Browser {
 				throw new ArgumentException ("scriptAlias");
 
 			HostServices.Current.CreateableTypes [scriptAlias] = type;
+#endif
 		}
 
 		public static void UnregisterCreateableType (string scriptAlias)
