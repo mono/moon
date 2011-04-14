@@ -5812,9 +5812,8 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 	this->instance = instance;
 	
 	can_seek = true;
-#if PLUMB_ME
+
 	pthread_rwlock_init (&rwlock, NULL);
-#endif
 	
 	g_return_if_fail (instance != NULL);
 	g_return_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
@@ -5822,9 +5821,7 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 
 ExternalDemuxer::~ExternalDemuxer ()
 {
-#if PLUMB_ME
 	pthread_rwlock_destroy (&rwlock);
-#endif
 }
 
 void
@@ -5837,9 +5834,7 @@ ExternalDemuxer::Dispose ()
 void
 ExternalDemuxer::ClearCallbacks ()
 {
-#if PLUMB_ME
 	pthread_rwlock_wrlock (&rwlock);
-#endif
 	close_demuxer_callback = NULL;
 	get_diagnostic_async_callback = NULL;
 	get_sample_async_callback = NULL;
@@ -5847,9 +5842,7 @@ ExternalDemuxer::ClearCallbacks ()
 	seek_async_callback = NULL;
 	switch_media_stream_async_callback = NULL;
 	instance = NULL;
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 
 void
@@ -5867,9 +5860,7 @@ ExternalDemuxer::AddStream (IMediaStream *stream)
 void 
 ExternalDemuxer::CloseDemuxerInternal ()
 {
-#if PLUMB_ME
 	pthread_rwlock_rdlock (&rwlock);
-#endif
 	if (close_demuxer_callback != NULL) {
 		close_demuxer_callback (instance);
 	} else {
@@ -5877,17 +5868,13 @@ ExternalDemuxer::CloseDemuxerInternal ()
 		printf ("ExternalDemuxer::CloseDemuxerInternal (): no function pointer.\n");
 #endif
 	}
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 
 void 
 ExternalDemuxer::GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticsKind)
 {
-#if PLUMB_ME
 	pthread_rwlock_rdlock (&rwlock);
-#endif
 	if (get_diagnostic_async_callback != NULL) {	
 		get_diagnostic_async_callback (instance, diagnosticsKind);
 	} else {
@@ -5895,9 +5882,7 @@ ExternalDemuxer::GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind dia
 		printf ("ExternalDemuxer::GetDiagnosticsAsyncInternal (): no function pointer.\n");
 #endif
 	}
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 
 void 
@@ -5905,9 +5890,7 @@ ExternalDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
 	g_return_if_fail (stream != NULL);
 	
-#if PLUMB_ME
 	pthread_rwlock_rdlock (&rwlock);
-#endif
 	if (get_sample_async_callback != NULL) {
 		get_sample_async_callback (instance, stream->GetStreamType ());
 	} else {
@@ -5915,17 +5898,13 @@ ExternalDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		printf ("ExternalDemuxer::GetFrameAsyncInternal (): no function pointer.\n");
 #endif
 	}
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 
 void 
 ExternalDemuxer::OpenDemuxerAsyncInternal ()
 {
-#if PLUMB_ME
 	pthread_rwlock_rdlock (&rwlock);
-#endif
 	if (open_demuxer_async_callback != NULL) {	
 		open_demuxer_async_callback (instance, this);
 	} else {
@@ -5933,17 +5912,13 @@ ExternalDemuxer::OpenDemuxerAsyncInternal ()
 		printf ("ExternalDemuxer::OpenDemuxerAsyncInternal (): no function pointer.\n");
 #endif
 	}
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 
 void 
 ExternalDemuxer::SeekAsyncInternal (guint64 seekToTime)
 {
-#if PLUMB_ME
 	pthread_rwlock_rdlock (&rwlock);
-#endif
 	if (seek_async_callback != NULL) {
 		seek_async_callback (instance, seekToTime);
 	} else {
@@ -5951,9 +5926,7 @@ ExternalDemuxer::SeekAsyncInternal (guint64 seekToTime)
 		printf ("ExternalDemuxer::SeekAsyncInternal (): no function pointer.\n");
 #endif
 	}
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 
 void 
@@ -5961,9 +5934,7 @@ ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescri
 {
 	g_return_if_fail (mediaStreamDescription != NULL);
 	
-#if PLUMB_ME
 	pthread_rwlock_rdlock (&rwlock);
-#endif
 	if (switch_media_stream_async_callback != NULL) {
 		switch_media_stream_async_callback (instance, mediaStreamDescription);
 	} else {
@@ -5971,9 +5942,7 @@ ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescri
 		printf ("ExternalDemuxer::SwitchMediaStreamAsyncInternal (): no function pointer.\n");
 #endif
 	}
-#if PLUMB_ME
 	pthread_rwlock_unlock (&rwlock);
-#endif
 }
 	
 	

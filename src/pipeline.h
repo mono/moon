@@ -1694,13 +1694,20 @@ typedef void (* SeekAsyncCallback) (void *instance, guint64 seekToTime);
 /* @CBindingRequisite */
 typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *mediaStreamDescription);
 
+#define pthread_rwlock_init pthread_mutex_init
+#define pthread_rwlock_destroy pthread_mutex_destroy
+#define pthread_rwlock_unlock pthread_mutex_unlock
+#define pthread_rwlock_wrlock pthread_mutex_lock
+#define pthread_rwlock_rdlock pthread_mutex_lock
+#define pthread_rwlock_t pthread_mutex_t
+
 class ExternalDemuxer : public IMediaDemuxer {
 private:
 	void *instance;
 	bool can_seek;
-#if PLUMB_ME
+
 	pthread_rwlock_t rwlock;
-#endif
+
 	CloseDemuxerCallback close_demuxer_callback;
 	GetDiagnosticAsyncCallback get_diagnostic_async_callback;
 	GetFrameAsyncCallback get_sample_async_callback;
