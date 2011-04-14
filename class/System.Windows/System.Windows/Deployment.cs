@@ -335,7 +335,7 @@ namespace System.Windows {
 				}
 #else
 				// This is a horrible horrible hack for android to let us hit the isostor for the demo
-				AppDomain.CurrentDomain.SetData ("xap_uri", "moondroid");
+				AppDomain.CurrentDomain.SetData ("xap_uri", Environment.GetEnvironmentVariable("XAP_URI"));
 #endif
 			}
 			else {
