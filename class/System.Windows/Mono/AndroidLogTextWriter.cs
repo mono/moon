@@ -89,9 +89,11 @@ namespace Mono {
 	    bufferedLine.AppendFormat (format, arg0, arg1);
 	}
 
+#if !NET_2_1
 	public override void Write (string format, object arg0, object arg1, object arg2) {
 	    bufferedLine.AppendFormat (format, arg0, arg1, arg2);
 	}
+#endif
 
 	public override void Write (string format, params object [] arg) {
 	    bufferedLine.AppendFormat (format, arg);
@@ -174,10 +176,12 @@ namespace Mono {
 	    FlushLineToLog();
 	}
 
+#if !NET_2_1
 	public override void WriteLine (string format, object arg0, object arg1, object arg2) {
 	    Write(format, arg0, arg1, arg2);
 	    FlushLineToLog();
 	}
+#endif
 
 	public override void WriteLine (string format, params object [] arg) {
 	    Write(format, arg);
