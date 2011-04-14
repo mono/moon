@@ -62,7 +62,10 @@ namespace System.Windows.Controls {
 			if (panel == null || !panel.IsItemsHost)
 				return null;
 
-			return panel.TemplateOwner as ItemsControl;
+			var owner = panel.TemplateOwner as ItemsPresenter;
+			if (owner != null)
+				return owner.TemplateOwner as ItemsControl;
+			return null;
 		}
 
 		public static ItemsControl ItemsControlFromItemContainer (DependencyObject container)
