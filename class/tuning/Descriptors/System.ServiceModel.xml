@@ -4,6 +4,7 @@
 		<type fullname="System.Runtime.CompilerServices.FriendAccessAllowedAttribute" preserve="all" />
 		<type fullname="System.ServiceModel.ClientRuntimeChannel" preserve="all" />
 		<type fullname="System.ServiceModel.IDuplexHelper" preserve="all" />
+		<type fullname="System.ServiceModel.Channels.UrlUtility" preserve="all" />
 		<type fullname="System.ServiceModel.Description.FaultDescription" preserve="all" />
 		<type fullname="System.ServiceModel.Description.ServiceReflector" preserve="all" />
 		<type fullname="System.ServiceModel.Description.XmlName" preserve="all" />
