@@ -61,7 +61,7 @@ namespace System.Windows.Controls
 				return _elementRoot;
 
 			if (c.ItemsPanel != null) {
-				DependencyObject root = c.ItemsPanel.GetVisualTree (this);
+				DependencyObject root = c.ItemsPanel.GetVisualTree (c);
 				if (root != null && !(root is Panel))
 					throw new InvalidOperationException ("The root element of an ItemsPanelTemplate must be a Panel subclass");
 				_elementRoot = (Panel) root;
@@ -76,11 +76,15 @@ namespace System.Windows.Controls
 			}
 #else
 			if (_elementRoot == null) {
-				_elementRoot = (Panel) (c is ListBox ? VirtualizingStackPanelFallbackTemplate : StackPanelFallbackTemplate).GetVisualTree (this);
+				_elementRoot = (Panel) (c is ListBox ? VirtualizingStackPanelFallbackTemplate : StackPanelFallbackTemplate).GetVisualTree (c);
 			}
 #endif
-
+			
 			_elementRoot.IsItemsHost = true;
+#if SANITY
+			if (_elementRoot.TemplateOwner != c)
+				Console.WriteLine ("Error: TemplateOwner was not set on ItemsPresenter root element");
+#endif
 			return _elementRoot;
 		}
 
