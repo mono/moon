@@ -333,6 +333,9 @@ namespace System.Windows {
 					// to initialize it's application and site directory storage. WebClient is another user of this
 					AppDomain.CurrentDomain.SetData ("xap_uri", PluginHost.GetApplicationIdentity (source_uri));
 				}
+#else
+				// This is a horrible horrible hack for android to let us hit the isostor for the demo
+				AppDomain.CurrentDomain.SetData ("xap_uri", "moondroid");
 #endif
 			}
 			else {

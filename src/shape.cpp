@@ -381,8 +381,8 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 	}
 }
 
-void
-Shape::Clip (cairo_t *cr)
+bool
+Shape::ClipBounds (Rect *rect)
 {
 	Rect specified = Rect (0, 0, GetWidth (), GetHeight ());
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
@@ -413,11 +413,35 @@ Shape::Clip (cairo_t *cr)
 		}
 	       
 		if (clip_bounds) {
-			paint.Draw (cr);
-			cairo_clip (cr);
+			*rect = paint;
+			return true;
 		}
 	}
+
+	return false;
+}
+
+void
+Shape::Clip (cairo_t *cr)
+{
+	Rect paint;
+
+	if (ClipBounds (&paint)) {
+		paint.Draw (cr);
+		cairo_clip (cr);
+	}
 	RenderLayoutClip (cr);
+}
+
+void
+Shape::Paint (Context *ctx, const Rect &area)
+{
+	cairo_t *cr = ctx->Push (Context::Cairo ());
+	Draw (cr);
+	fill->SetupBrush (cr, area);
+	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
+	fill->Fill (cr, true);
+	ctx->Pop ();
 }
 
 //
@@ -550,11 +574,46 @@ cleanpath:
 void
 Shape::Render (Context *ctx, Region *region)
 {
-	if (!IsEmpty ()) {
+	Rect   area = GetStretchExtents ();
+	double m[16];
+	int    x0, y0;
+
+	if (IsEmpty ())
+		return;
+
+	if (stroke) {
 		cairo_t *cr = ctx->Push (Context::Cairo ());
 		Render (cr, region);
 		ctx->Pop ();
-        }
+		return;
+	}
+
+	if (!fill) return;
+
+	ctx->GetMatrix (m);
+
+	if (!HasLayoutClip () && Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+		Rect r = Rect (area.x + x0,
+			       area.y + y0,
+			       area.width,
+			       area.height);
+		Rect clip;
+
+		if (ClipBounds (&clip))
+			r = r.Intersection (Rect (clip.x + x0,
+						  clip.y + y0,
+						  clip.width,
+						  clip.height));
+
+		ctx->Push (Context::Clip (r));
+		Paint (ctx, area);
+		ctx->Pop ();
+	}
+	else {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		Render (cr, region);
+		ctx->Pop ();
+	}
 }	
 
 void
@@ -1341,6 +1400,20 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 	Invalidate ();
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
+Rectangle::Paint (Context *ctx, const Rect &area)
+{
+	if (GetRadiusX () || GetRadiusY ())
+	{
+		Shape::Paint (ctx, area);
+	}
+	else {	
+		ctx->Push (Context::Transform (stretch_transform));
+		fill->Paint (ctx, area);
+		ctx->Pop ();
+	}
 }
 
 //

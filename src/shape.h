@@ -59,9 +59,11 @@ class Shape : public FrameworkElement {
 	bool SetupDashes (cairo_t *cr, double thickness);
 	bool SetupDashes (cairo_t *cr, double thickness, double offset);
 	bool Fill (cairo_t *cr, bool do_op);
+	bool ClipBounds (Rect *rect);
 	void Clip (cairo_t *cr);
 	virtual bool DrawShape (cairo_t *cr, bool do_op) { g_warning ("%s does not implement DrawShape ().", GetTypeName ()); return false; }
 //	virtual bool DrawDegenerateShape (cairo_t *cr, bool do_op) = 0;
+	virtual void Paint (Context *ctx, const Rect &area);
 
 	moon_path *path;
 	virtual void InvalidatePathCache (bool free = false);
@@ -236,6 +238,7 @@ class Rectangle : public Shape {
 	virtual bool DrawShape (cairo_t *cr, bool do_op);
 	virtual Rect ComputeShapeBounds (bool logical);
 	virtual Rect ComputeStretchBounds ();
+	virtual void Paint (Context *ctx, const Rect &area);
 
  public:
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */

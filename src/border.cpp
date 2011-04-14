@@ -72,10 +72,41 @@ Border::ArrangeOverrideWithError (Size finalSize, MoonError *error)
 void 
 Border::Render (Context *ctx, Region *region)
 {
-	Brush *background = GetBackground ();
-	Brush *border_brush = GetBorderBrush ();
+	Brush        *background = GetBackground ();
+	Brush        *border_brush = GetBorderBrush ();
+	CornerRadius radius = *GetCornerRadius ();
+	Thickness    thickness = *GetBorderThickness ();
+	Rect         paint_border = extents;
+	Rect         paint_background = paint_border.GrowBy (-thickness);
+	double       m[16];
+	int          x0, y0;
 
-	if (background || border_brush) {
+	if (!background && !border_brush)
+		return;
+
+	if (paint_border.IsEmpty ())
+		return;
+
+	if (border_brush || radius != CornerRadius ()) {
+		cairo_t *cr = ctx->Push (Context::Cairo ());
+		Render (cr, region);
+		ctx->Pop ();
+		return;
+	}
+
+	ctx->GetMatrix (m);
+
+	if (!HasLayoutClip () && Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+		Rect r = Rect (paint_background.x + x0,
+			       paint_background.y + y0,
+			       paint_background.width,
+			       paint_background.height);
+
+		ctx->Push (Context::Clip (r));
+		background->Paint (ctx, paint_background);
+		ctx->Pop ();
+	}
+	else {
 		cairo_t *cr = ctx->Push (Context::Cairo ());
 		Render (cr, region);
 		ctx->Pop ();
