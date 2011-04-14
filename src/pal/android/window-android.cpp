@@ -313,7 +313,7 @@ MoonWindowAndroid::Paint (android_app *app)
 		egltarget = new MoonEGLSurface (native_display, native_surface);
 		context = new MoonEGLContext (egltarget);
 
-		if (eglSetSwapRectangleANDROID(native_display, native_surface, 0, 0, native_width, native_height) == EGL_TRUE) {
+		if (eglSetSwapRectangleANDROID (native_display, native_surface, 0, 0, native_width, native_height) == EGL_TRUE) {
 			has_swap_rect = TRUE;
 		} else {
 			g_warning ("Disabling eglSetSwapRectangleANDROID");

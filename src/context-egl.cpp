@@ -73,6 +73,7 @@ MoonEGLContext::Initialize ()
 	g_warning ("Moonlight: OpenGL vendor string: %s\n", glGetString (GL_VENDOR));
 	g_warning ("Moonlight: OpenGL renderer string: %s\n", glGetString (GL_RENDERER));
 	g_warning ("Moonlight: OpenGL version string: %s\n", glGetString (GL_VERSION));
+	g_warning ("Moonlight: OpenGL version string: %s\n", glGetString (GL_EXTENSIONS));
 
 	return true;
 }
