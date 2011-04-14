@@ -291,12 +291,12 @@ MoonWindowAndroid::Paint (android_app *app)
 		eglGetConfigAttrib(native_display, config, EGL_BLUE_SIZE,  &b);
 		eglGetConfigAttrib(native_display, config, EGL_ALPHA_SIZE, &a);
 
-		eglQuerySurface(native_display, native_surface, EGL_WIDTH,  &native_width);
-		eglQuerySurface(native_display, native_surface, EGL_HEIGHT, &native_height);
-
 		ANativeWindow_setBuffersGeometry (app->window, 0, 0, format);
 
 		native_surface = eglCreateWindowSurface (native_display, config, app->window, NULL);
+
+		eglQuerySurface(native_display, native_surface, EGL_WIDTH,  &native_width);
+		eglQuerySurface(native_display, native_surface, EGL_HEIGHT, &native_height);
 
 		const char* const egl_extensions = eglQueryString (native_display, EGL_EXTENSIONS);
 			    
