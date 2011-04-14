@@ -92,6 +92,7 @@ private:
 #if USE_EGL
 	MoonEGLSurface *egltarget;
 	MoonEGLContext *eglctx;
+	bool has_swap_rect;
 #endif
 
 	int left;
