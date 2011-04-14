@@ -1380,6 +1380,15 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				 reg.writemask & 0x4 ? "z" : "",
 				 reg.writemask & 0x8 ? "w" : "");
 
+#if USE_EGL	
+			if (op.type == D3DSIO_TEX)
+				sprintf (writemask, "%s%s%s%s",
+					 reg.writemask & 0x1 ? "z" : "",
+					 reg.writemask & 0x2 ? "y" : "",
+					 reg.writemask & 0x4 ? "x" : "",
+					 reg.writemask & 0x8 ? "w" : "");
+#endif
+
 			ERROR_IF (reg.writemask == 0);
 
 			switch (reg.dstmod) {
