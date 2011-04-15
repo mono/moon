@@ -50,3 +50,4 @@ test-plugin install-test-plugin: libshocker.la install
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libshocker.so
 	cp $(prefix)/lib/libshocker.so ~/.mozilla/plugins
+	cp $(prefix)/lib/libshocker.so $(prefix)/lib/moonlight/plugin
