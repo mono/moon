@@ -124,9 +124,20 @@ namespace System.Windows.Data {
 				// DRT 233 and a moon-unit test check that this is
 				// how the lookup is done. See comment on the moon-unit
 				// 'ElementName_DataTemplate_DoNotUseVisualParent' test.
-				if (source == null)
+
+				// Note: The only time we appear to use the Mentor is so
+				// we can find the ItemsPanel expanded by an ItemsControl
+				// from it's ItemsPanelTemplate. This allows us to walk up
+				// from a ListBoxItem (LBI), through the Panel and up to the
+				// ItemsControl itself. Otherwise we'd stop at the LBI.
+				if (source == null && fe.TemplateOwner != null)
 					fe = (UIElement) fe.TemplateOwner;
+				else if (fe.Mentor != null && ItemsControl.GetItemsOwner (fe.Mentor) != null)
+					fe = fe.Mentor;
+				else
+					fe = null;
 			}
+
 			return source;
 		}
 
