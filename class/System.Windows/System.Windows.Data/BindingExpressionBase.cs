@@ -291,6 +291,12 @@ namespace System.Windows.Data {
 				SetDataContextSource (null);
 			}
 
+			targetFE = targetFE ?? Target.Mentor;
+			if (targetFE != null && CurrentError != null) {
+				Validation.RemoveError (targetFE, CurrentError);
+				CurrentError = null;
+			}
+
 			if (updateDataSourceCallback != null) {
 				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
 				updateDataSourceCallback = null;
