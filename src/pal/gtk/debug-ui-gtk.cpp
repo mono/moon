@@ -973,8 +973,13 @@ struct debug_media_data {
 		GString *fmt = g_string_new ("");
 		g_string_append_printf (fmt, "MediaElement\n");
 		const Uri *uri = element->GetSource ();
-		g_string_append_printf (fmt, "\tSource: %s\n", uri != NULL ? uri->ToString () : NULL);
-		g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", (entry != NULL && entry->GetFullSourceName () != NULL) ? entry->GetFullSourceName ()->GetOriginalString () : NULL);
+		char *markup;
+		markup = uri ? g_markup_escape_text (uri->ToString (), -1) : NULL;
+		g_string_append_printf (fmt, "\tSource: %s\n", markup);
+		g_free (markup);
+		markup = (entry != NULL && entry->GetFullSourceName () != NULL) ? g_markup_escape_text (entry->GetFullSourceName ()->GetOriginalString (), -1) : NULL;
+		g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", markup);
+		g_free (markup);
 		g_string_append_printf (fmt, "\tState: %s\n", MediaElement::GetStateName (element->GetState ()));
 		g_string_append_printf (fmt, "\tFlags: %s\n", MediaElement::GetFlagNames (element->GetFlags ()));
 		g_string_append_printf (fmt, "\tPosition: %" G_GUINT64_FORMAT " ms NaturalDuration: %" G_GUINT64_FORMAT " AutoPlay: %i Balance: %.2f\n", 
@@ -1092,7 +1097,7 @@ struct debug_media_data {
 	
 			char *fmt = fetch_info (element);
 
-			gtk_label_set_text (GTK_LABEL (labels [i]), fmt);
+			gtk_label_set_markup (GTK_LABEL (labels [i]), fmt);
 			if (copy)
 				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt, strlen (fmt) );
 			g_free (fmt);
@@ -1169,6 +1174,9 @@ debug_media (MoonWindowGtk *window)
 	GHashTableIter iter;
 	gpointer key;
 	gpointer value;
+	GtkWidget *label_scrollwindow;
+	GtkWidget *label_evtbox;
+	GdkColor white = {0, 65535, 65535, 65535};
 	
 	if (deployment == NULL) {
 		fprintf (stderr, "Moonlight: plugin hasn't created a deployment yet.\n");
@@ -1181,6 +1189,9 @@ debug_media (MoonWindowGtk *window)
 	data->dialog = gtk_dialog_new_with_buttons ("MediaElements", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      "Copy", 16, "Play", 2, "Pause", 4, "Stop", 8, "FillBuffers", 1, GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+	gtk_object_set (GTK_OBJECT (data->dialog), "resizable", true, NULL);
+	gtk_window_set_type_hint (GTK_WINDOW (data->dialog), GDK_WINDOW_TYPE_HINT_NORMAL); // to show the maximize button
+
 	gtk_container_set_border_width (GTK_CONTAINER (data->dialog), 8);
 	
 	vbox = GTK_BOX (GTK_DIALOG (data->dialog)->vbox);
@@ -1199,9 +1210,22 @@ debug_media (MoonWindowGtk *window)
 		data->elements [data->count - 1] = (MediaElement *) key;
 		data->elements [data->count - 1]->AddHandler (EventObject::DestroyedEvent, debug_media_data::deleted_handler, data);
 		data->labels [data->count - 1] = gtk_label_new (NULL);
+		gtk_label_set_selectable (GTK_LABEL (data->labels [data->count - 1]), TRUE);
+		gtk_label_set_line_wrap (GTK_LABEL (data->labels [data->count - 1]), FALSE);
 	
 		gtk_misc_set_alignment (GTK_MISC (data->labels [data->count - 1]), 0.0, 0.5);
-		gtk_box_pack_start (vbox, data->labels [data->count - 1], FALSE, FALSE, 0);
+
+		label_scrollwindow = gtk_scrolled_window_new (NULL, NULL);
+		label_evtbox = gtk_event_box_new ();
+
+		gtk_widget_modify_bg (GTK_WIDGET (label_evtbox), GTK_STATE_NORMAL, &white);
+		gtk_container_add (GTK_CONTAINER (label_evtbox), data->labels [data->count - 1]);
+
+		gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (label_scrollwindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (label_scrollwindow), GTK_SHADOW_IN);
+		gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (label_scrollwindow), label_evtbox);
+		gtk_widget_set_size_request (label_scrollwindow, -1, 225);
+		gtk_box_pack_start (vbox, label_scrollwindow, TRUE, TRUE, 0);
 	}
 	pthread_mutex_unlock (&deployment->objects_alive_mutex);
 	
