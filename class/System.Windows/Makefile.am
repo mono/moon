@@ -851,23 +851,14 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	$(AM_V_GEN)resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-LINKER = monolinker
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
-
 $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblysl): $(assemblysl_raw)
 	cp $(assemblysl_raw) $(assemblysl)
+	cp $(assemblysl_raw).mdb $(assemblysl).mdb
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
@@ -882,7 +873,6 @@ bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
 $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
 		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblysl): $(bootstrap_assemblysl_raw)
 	cp $(bootstrap_assemblysl_raw) $(bootstrap_assemblysl)
@@ -897,14 +887,6 @@ clean-local:
 	-rm -rf *.exe *.mdb tester.cs
 	-rm -rf $(assembly).g.resources
 
-if INCLUDE_BROWSER_MANAGED_CODE
-install-sl:
-	$(INSTALL) -c -m 755  $(assemblysl) $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll
-	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.mdb
-else
-install-sl:
-endif
-
 if INCLUDE_DESKTOP_MANAGED_CODE
 install-desktop:
 	$(GACUTIL) /i $(assemblydesktop) /f /package moonlight
@@ -912,7 +894,7 @@ else
 install-desktop:
 endif
 
-install-data-local: install-sl install-desktop
+install-data-local: install-desktop
 
 uninstall-local:
 	$(GACUTIL) /u $(assembly)

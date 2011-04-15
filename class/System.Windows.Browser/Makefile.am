@@ -79,22 +79,10 @@ $(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/cl
 	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -r:System.ServiceModel.Web \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(assembly).g.resources
-	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
-
-LINKER = monolinker
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-o ../lib/2.1/	\
-	-d ../lib/2.1/ -d ../lib/2.1-bootstrap \
-	-a $(assemblysl_raw)	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
 
 $(assemblysl): $(assemblysl_raw) 
 	cp $(assemblysl_raw) $(assemblysl)
+	cp $(assemblysl_raw).mdb $(assemblysl).mdb
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:DESKTOP -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \
@@ -107,14 +95,6 @@ clean-local:
 	-rm -rf *.dll *.mdb tester.cs
 	-rm -rf $(assembly).g.resources
 
-if INCLUDE_BROWSER_MANAGED_CODE
-install-sl:
-	$(INSTALL) -c -m 755  $(assemblysl) $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll
-	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.mdb
-else
-install-sl:
-endif
-
 if INCLUDE_DESKTOP_MANAGED_CODE
 install-desktop:
 	$(GACUTIL) /i $(assemblydesktop) /f /package moonlight
@@ -122,7 +102,7 @@ else
 install-desktop:
 endif
 
-install-data-local: install-sl install-desktop
+install-data-local: install-desktop
 
 uninstall-local:
 	$(GACUTIL) /u $(assembly)
