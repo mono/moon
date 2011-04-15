@@ -71,6 +71,14 @@ Shocker_FailTestFast (const char *msg)
 {
 	const char *results_file = getenv ("MOONLIGHT_HARNESS_RESULT_FILE");
 	bool crash = true;
+	guint8 *buffer = NULL;
+	guint32 buflen;
+
+	LogProvider::GetInstance ()->LogError (g_strdup_printf ("[%i shocker] libshocker requested a fast test failure: %s\n", getpid (), msg));
+	Harness::SendMessage ("TestDefinition.FailFast", &buffer, &buflen);
+	g_free (buffer);
+
+	// If FailFast returns, it means it failed. So just exit.
 
 	if (results_file != NULL && results_file [0] != 0) {
 		FILE *fd = fopen (results_file, "a");
@@ -81,7 +89,6 @@ Shocker_FailTestFast (const char *msg)
 			fclose (fd);
 		}
 	}
-	LogProvider::GetInstance ()->LogError (g_strdup_printf ("[%i shocker] libshocker requested a fast test failure: %s\n", getpid (), msg));
 	exit (crash ? 1 : 0);
 }
 
