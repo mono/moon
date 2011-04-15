@@ -149,6 +149,8 @@ namespace System.Windows.Data {
 				ICollectionViewFactory factory = source as ICollectionViewFactory;
 				if (factory != null) {
 					View = factory.CreateView ();
+					if (View == null)
+						throw new InvalidOperationException (string.Format ("ICollectionViewFactory.CreateView must not return null", source.GetType ().Name));
 				} else {
 					ICollectionView view = null;
 					if (CachedViews.TryGetValue (source, out view)) {
