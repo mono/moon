@@ -110,11 +110,11 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	MOON_ARG_ENABLED_BY_DEFAULT([sdk], [Disable installation of the monodevelop sdk])
 	enable_sdk=$enableval
 	if test "x$enable_sdk" = xyes -a "x$browser_support" = xno; then
-	   enabled_sdk=no
+	   enable_sdk=no
 	   sdk_reason="(SDK requires browser support)"
 	fi
 	if test "x$enable_sdk" = xyes -a "x$with_mono_basic_path" = "xno"; then
-	   enabled_sdk=no
+	   enable_sdk=no
 	   sdk_reason="(SDK requires mono-basic support)"
 	fi
 
