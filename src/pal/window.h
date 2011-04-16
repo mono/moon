@@ -29,11 +29,11 @@ class MoonWindowingSystem;
 class MoonWindow {
 public:
 	// FIXME: do something with parentWindow here.
-	MoonWindow (MoonWindowType windowType, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL)
-	: width(width), height(height), surface(s), windowType (windowType), transparent(false), windowingSystem(NULL) { }
+	MoonWindow (MoonWindowType windowType, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL, MoonWindowingSystem *windowingSystem = NULL)
+	: width(width), height(height), surface(s), windowType (windowType), transparent(false), windowingSystem(windowingSystem) { }
 
-	MoonWindow (int width = -1, int height = -1, PluginInstance *plugin = NULL)
-	: width(width), height(height), surface(NULL), windowType (MoonWindowType_Plugin), transparent(false), windowingSystem(NULL) { }
+	MoonWindow (int width = -1, int height = -1, PluginInstance *plugin = NULL, MoonWindowingSystem *windowingSystem = NULL)
+	: width(width), height(height), surface(NULL), windowType (MoonWindowType_Plugin), transparent(false), windowingSystem(windowingSystem) { }
 
 	virtual ~MoonWindow () { }
 
@@ -98,6 +98,8 @@ public:
 
 	/* @GeneratePInvoke */
 	virtual gpointer GetPlatformWindow () = 0;
+
+	MoonWindowingSystem* GetWindowingSystem () { return windowingSystem; }
 
 protected:
 	int width;
