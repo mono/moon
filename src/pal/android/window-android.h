@@ -35,7 +35,7 @@ class MoonEGLContext;
 /* @Namespace=System.Windows */
 class MoonWindowAndroid : public MoonWindow {
 public:
-	MoonWindowAndroid (MoonWindowType windowType, int w = -1, int h = -1, MoonWindow* parent = NULL, Surface *surface = NULL);
+	MoonWindowAndroid (MoonWindowType windowType, int w = -1, int h = -1, MoonWindow* parent = NULL, Surface *surface = NULL, MoonWindowingSystem *windowingSystem = NULL);
 
 	virtual ~MoonWindowAndroid ();
 

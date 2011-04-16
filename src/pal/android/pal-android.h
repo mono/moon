@@ -87,6 +87,7 @@ private:
 	guint source_id;
 	bool emitting_sources;
 	Mutex sourceMutex;
+	JNIEnv *jnienv;
 };
 
 class MoonFontServiceAndroid : public MoonFontService {

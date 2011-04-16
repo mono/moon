@@ -33,8 +33,8 @@
 
 using namespace Moonlight;
 
-MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
-	: MoonWindow (windowType, w, h, parent, surface)
+MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface, MoonWindowingSystem *windowingSystem)
+	: MoonWindow (windowType, w, h, parent, surface, windowingSystem)
 {
 	this->width = w;
 	this->height = h;
@@ -291,9 +291,6 @@ MoonWindowAndroid::Paint (android_app *app)
 		} else {
 			delete context;
 		}
-
-		// HACK HACK HACK Our size has 1,1 in EGL before, so lets force a resize
-		Resize (ANativeWindow_getWidth (app->window), ANativeWindow_getHeight (app->window));
 	}
 	
 	if (damage->IsEmpty ()) {
