@@ -417,7 +417,7 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		}  
 	}
 
-	if (cgltarget && cglctx) {
+	if (cgltarget && cglctx && 0) {
 		Rect r0 = Rect (0, 0, width, height);
 		Region *region = new Region (r0); 
 
