@@ -74,7 +74,7 @@ public:
 	void Flush ();
 
 protected:
-#if !defined(USE_EGL)
+#if !defined(USE_EGL) && !defined(USE_CGL)
 	PFNGLCREATESHADERPROC glCreateShader;
 	PFNGLSHADERSOURCEPROC glShaderSource;
 	PFNGLCOMPILESHADERPROC glCompileShader;

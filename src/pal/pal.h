@@ -56,6 +56,16 @@ extern "C" {
 }
 #endif
 
+#if SANITY
+#define glError() { \
+	GLenum err = glGetError(); \
+	if (err != GL_NO_ERROR) { \
+		g_warning ("glError: %i caught at %s:%u\n", err, __FILE__, __LINE__); \
+	} \
+}
+#else
+#define glError()
+#endif
 
 // the default for MoonWindowingSystem::GetCursorBlinkTimeout
 #define CURSOR_BLINK_TIMEOUT_DEFAULT  900

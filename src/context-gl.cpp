@@ -289,7 +289,9 @@ GLContext::Blit (unsigned char *data,
 	g_assert (PixelRowLength (stride, dst->Width (), 4) == dst->Width ());
 
 	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride));
+	glError ();
 	glBindTexture (GL_TEXTURE_2D, texture);
+	glError ();
 	glTexSubImage2D (GL_TEXTURE_2D,
 			 0,
 			 0,
@@ -299,8 +301,11 @@ GLContext::Blit (unsigned char *data,
 			 GL_RGBA,
 			 GL_UNSIGNED_BYTE,
 			 data);
+	glError ();
 	glBindTexture (GL_TEXTURE_2D, 0);
+	glError ();
 	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
+	glError ();
 
 	ms->unref ();
 }

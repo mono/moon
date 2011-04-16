@@ -99,7 +99,6 @@ elif test "x$with_pal" = "xandroid"; then
 			[Include support for freetype2 in the font manager])
         ])
 else
-
 	AC_MSG_ERROR([unknown PAL specified])
 
 fi

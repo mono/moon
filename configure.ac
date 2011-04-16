@@ -67,8 +67,7 @@ MOONLIGHT_CHECK_SOUND
 MOONLIGHT_CHECK_CAIRO
 MOONLIGHT_CHECK_LLVM
 MOONLIGHT_CHECK_GALLIUM
-MOONLIGHT_CHECK_GLX
-MOONLIGHT_CHECK_EGL
+MOONLIGHT_CHECK_GL
 
 MOONLIGHT_CHECK_MOZILLA
 
@@ -244,6 +243,8 @@ Moonlight configuration
 	Using LLVM: $enable_llvm
 	Using GLX: $with_glx
 	Using EGL: $with_egl
+	Using CGL: $with_cgl
+	OpenGL Support: $with_gl
 	Test Harness: $with_testing $testing_reason
 	Performance Suite: $with_performance $performance_reason
 	MonoDevelop SDK: $enable_sdk $sdk_reason

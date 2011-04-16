@@ -26,39 +26,58 @@
 
 #include "MLEvent.h"
 #include "MLView.h"
+#include "MLWindow.h"
 #include <AppKit/AppKit.h>
 
 #include <cairo.h>
 #include "cairo-quartz.h"
 
-#define PLUGIN_OURNAME      "Novell Moonlight"
+#ifdef USE_CGL
+#define __MOON_CGL__
+#include "context-cgl.h"
+#endif
 
-// FIXME: We have a lot of horrible hacks here since we dont subclass NSWindow yet and proxy its events
+// FIXME: We have a lot of horrible hacks here since altho we now subclass NSWindow, I havn't fixed some proxy stuff
 
 using namespace Moonlight;
 
 MoonWindowCocoa::MoonWindowCocoa (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (windowType, w, h, parent, surface)
 {
+	MLWindow *window;
+	MLView *view;
+
 	native = NULL;
 	ctx = NULL;
-	NSWindow *window = [[NSWindow alloc] initWithContentRect: NSMakeRect (0, 0, w, h) styleMask: NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask backing: NSBackingStoreBuffered defer: YES];
-	MLView *view = [[[MLView alloc] initWithFrame: NSMakeRect (0, 0, w, h)] autorelease];
+
+	window = [[NSWindow alloc] initWithContentRect: NSMakeRect (0, 0, w, h) styleMask: NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask backing: NSBackingStoreBuffered defer: YES];
+	view = [[[MLView alloc] initWithFrame: NSMakeRect (0, 0, w, h)] autorelease];
 
 	window.acceptsMouseMovedEvents = YES;
 	window.contentView = view;
 	view.moonwindow = this;
 
-	[view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+	[(MLView *)view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 
 	this->width = w;
 	this->height = h;
 	this->window = window;
 	this->view = view;
+
+#ifdef USE_CGL
+	cgltarget = NULL;
+	cglctx = NULL;
+#endif
 }
 
 MoonWindowCocoa::~MoonWindowCocoa ()
 {
+#ifdef USE_CGL
+	if (cglctx)
+		delete cglctx;
+	if (cgltarget)
+		cgltarget->unref ();
+#endif
 }
 
 void
@@ -81,12 +100,12 @@ MoonWindowCocoa::GetPlatformWindow ()
 void
 MoonWindowCocoa::Resize (int width, int height)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.size.width = width;
 	frame.size.height = height;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 
 	this->width = width;
 	this->height = height;
@@ -108,7 +127,7 @@ MoonWindowCocoa::Invalidate (Rect r)
 //	NSRect frame = [view frame];
 
 //	[view setNeedsDisplayInRect: NSMakeRect (r.x, frame.size.height - r.y - r.height, r.width, r.height)];
-	[view setNeedsDisplayInRect: [view frame]];
+	[(MLView *)view setNeedsDisplayInRect: [(MLView *)view frame]];
 }
 
 void
@@ -127,7 +146,7 @@ MoonWindowCocoa::HandleEvent (gpointer platformEvent)
 void
 MoonWindowCocoa::Show ()
 {
-	[window makeKeyAndOrderFront:nil];
+	[(MLWindow *)window makeKeyAndOrderFront:nil];
 	// FIXME: We need to subclass NSWindow as well to do this properly.
 	this->surface->HandleUIWindowAvailable ();
 	this->surface->HandleUIWindowAllocation (true);
@@ -165,17 +184,17 @@ MoonWindowCocoa::HasFocus ()
 void
 MoonWindowCocoa::SetLeft (double left)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.origin.x = left;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 }
 
 double
 MoonWindowCocoa::GetLeft ()
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	return frame.origin.x;
 }
@@ -183,17 +202,17 @@ MoonWindowCocoa::GetLeft ()
 void
 MoonWindowCocoa::SetTop (double top)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.origin.y = top;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 }
 
 double
 MoonWindowCocoa::GetTop ()
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	return frame.origin.y;
 }
@@ -201,11 +220,11 @@ MoonWindowCocoa::GetTop ()
 void
 MoonWindowCocoa::SetWidth (double width)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.size.width = width;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 
 	this->width = width;
 }
@@ -213,11 +232,11 @@ MoonWindowCocoa::SetWidth (double width)
 void
 MoonWindowCocoa::SetHeight (double height)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.size.height = height;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 
 	this->height = height;
 }
@@ -238,6 +257,21 @@ MoonWindowCocoa::SetStyle (WindowStyle style)
 {
 	g_assert_not_reached ();
 }
+
+void
+MoonWindowCocoa::ClearPlatformContext ()
+{
+#ifdef USE_CGL
+	if (cglctx)
+		delete cglctx;
+	if (cgltarget)
+		cgltarget->unref ();
+
+	cglctx = NULL;
+	cgltarget = NULL;
+#endif
+}
+
 
 cairo_surface_t *
 MoonWindowCocoa::CreateCairoSurface ()
@@ -356,6 +390,52 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 	SetCurrentDeployment ();
 
 	Region *region = new Region (r);
+
+#if USE_CGL
+	if (!cgltarget) {
+		const NSOpenGLPixelFormatAttribute attr[] = {
+			NSOpenGLPFAWindow,
+			NSOpenGLPFADoubleBuffer,
+			NSOpenGLPFAColorSize, (NSOpenGLPixelFormatAttribute) 32,
+			(NSOpenGLPixelFormatAttribute) nil
+		};
+
+		NSOpenGLPixelFormat *format;
+		CGLContext *context;
+
+		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes: attr] autorelease];
+		nsoglcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
+
+		((NSOpenGLContext *)nsoglcontext).view = (MLView *) view;
+
+		g_warning ("CGLContextObj: %p\n", (CGLContextObj) [(NSOpenGLContext *)nsoglcontext CGLContextObj]);
+
+		cgltarget = new CGLSurface ((CGLContextObj) [(NSOpenGLContext *)nsoglcontext CGLContextObj], width, height);
+		context = new CGLContext (cgltarget);
+
+		if (context->Initialize ()) {
+			cglctx = context;
+		} else {
+			delete context;
+		}  
+	}
+
+	if (cgltarget && cglctx) {
+		Region *region = new Region (r); 
+
+		cgltarget->Reshape (width, height);
+
+		static_cast<Context *> (cglctx)->Push (Context::Clip (r));
+		surface->Paint (cglctx, region, GetTransparent (), true);
+		static_cast<Context *> (cglctx)->Pop ();
+
+		cglctx->Flush ();
+		cgltarget->SwapBuffers ();
+
+		return;
+	}
+#endif
+				
 	cairo_surface_t *native = CreateCairoSurface ();
 	CairoSurface *target = new CairoSurface (width, height);
 	Context *ctx = new CairoContext (target);
