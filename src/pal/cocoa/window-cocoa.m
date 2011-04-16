@@ -362,6 +362,11 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 
 	surface->Paint (ctx, region, GetTransparent (), NO);
 
+	cairo_t *cr = cairo_create (native);
+	cairo_set_source_surface (cr, target->Cairo (), 0, 0);
+	cairo_paint (cr);
+	cairo_destroy (cr);
+
 	cairo_surface_destroy (native);
 
 	target->unref ();
