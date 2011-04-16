@@ -390,7 +390,7 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 	Region *region = new Region (r);
 
 #if USE_CGL
-	if (!cgltarget) {
+	if (!cgltarget && 0) {
 		const NSOpenGLPixelFormatAttribute attr[] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
