@@ -357,7 +357,7 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 
 	Region *region = new Region (r);
 	cairo_surface_t *native = CreateCairoSurface ();
-	CairoSurface *target = new CairoSurface (1, 1);
+	CairoSurface *target = new CairoSurface (width, height);
 	Context *ctx = new CairoContext (target);
 
 	surface->Paint (ctx, region, GetTransparent (), NO);
