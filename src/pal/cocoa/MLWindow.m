@@ -3,4 +3,15 @@
 
 @implementation MLWindow
 
+@synthesize moonwindow;
+
+-(void) makeKeyAndOrderFront: (id) sender
+{
+	[super makeKeyAndOrderFront: sender];
+
+	if (moonwindow->GetSurface ()) {
+		moonwindow->GetSurface ()->HandleUIWindowAvailable ();
+		moonwindow->GetSurface ()->HandleUIWindowAllocation (true);
+	}
+}
 @end

@@ -37,8 +37,6 @@
 #include "context-cgl.h"
 #endif
 
-// FIXME: We have a lot of horrible hacks here since altho we now subclass NSWindow, I havn't fixed some proxy stuff
-
 using namespace Moonlight;
 
 MoonWindowCocoa::MoonWindowCocoa (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
@@ -50,12 +48,14 @@ MoonWindowCocoa::MoonWindowCocoa (MoonWindowType windowType, int w, int h, MoonW
 	native = NULL;
 	ctx = NULL;
 
-	window = [[NSWindow alloc] initWithContentRect: NSMakeRect (0, 0, w, h) styleMask: NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask backing: NSBackingStoreBuffered defer: YES];
+	window = [[MLWindow alloc] initWithContentRect: NSMakeRect (0, 0, w, h) styleMask: NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask backing: NSBackingStoreBuffered defer: YES];
 	view = [[[MLView alloc] initWithFrame: NSMakeRect (0, 0, w, h)] autorelease];
+
+	window.moonwindow = this;
+	view.moonwindow = this;
 
 	window.acceptsMouseMovedEvents = YES;
 	window.contentView = view;
-	view.moonwindow = this;
 
 	[(MLView *)view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 
@@ -147,9 +147,7 @@ void
 MoonWindowCocoa::Show ()
 {
 	[(MLWindow *)window makeKeyAndOrderFront:nil];
-	// FIXME: We need to subclass NSWindow as well to do this properly.
-	this->surface->HandleUIWindowAvailable ();
-	this->surface->HandleUIWindowAllocation (true);
+
 }
 
 void
@@ -396,7 +394,7 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		const NSOpenGLPixelFormatAttribute attr[] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
-			NSOpenGLPFAColorSize, (NSOpenGLPixelFormatAttribute) 32,
+			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute) 32,
 			(NSOpenGLPixelFormatAttribute) nil
 		};
 
@@ -406,9 +404,8 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes: attr] autorelease];
 		nsoglcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
 
+		[(NSOpenGLContext *)nsoglcontext makeCurrentContext];
 		((NSOpenGLContext *)nsoglcontext).view = (MLView *) view;
-
-		g_warning ("CGLContextObj: %p\n", (CGLContextObj) [(NSOpenGLContext *)nsoglcontext CGLContextObj]);
 
 		cgltarget = new CGLSurface ((CGLContextObj) [(NSOpenGLContext *)nsoglcontext CGLContextObj], width, height);
 		context = new CGLContext (cgltarget);
@@ -421,11 +418,15 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 	}
 
 	if (cgltarget && cglctx) {
-		Region *region = new Region (r); 
+		Rect r0 = Rect (0, 0, width, height);
+		Region *region = new Region (r0); 
 
 		cgltarget->Reshape (width, height);
 
-		static_cast<Context *> (cglctx)->Push (Context::Clip (r));
+		glClearColor (0.0, 0.0, 0.0, 0.0);
+		glClear (GL_COLOR_BUFFER_BIT);
+
+		static_cast<Context *> (cglctx)->Push (Context::Clip (r0));
 		surface->Paint (cglctx, region, GetTransparent (), true);
 		static_cast<Context *> (cglctx)->Pop ();
 
