@@ -288,98 +288,105 @@ void
 MoonWindowCocoa::ButtonPressEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIButtonPress (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::KeyDownEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIKeyPress (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::KeyUpEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIKeyRelease (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::ButtonReleaseEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIButtonRelease (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::MotionEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonMotionEvent *mevent = (MoonMotionEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIMotion (mevent);
+		MoonMotionEvent *mevent = (MoonMotionEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::MouseEnteredEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUICrossing (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::MouseExitedEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUICrossing (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void

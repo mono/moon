@@ -20,6 +20,11 @@
 	moonwindow->ButtonReleaseEvent (event);
 }
 
+- (void) mouseDragged: (NSEvent *) event
+{
+	moonwindow->MotionEvent (event);
+}
+
 - (void) mouseMoved: (NSEvent *) event
 {
 	moonwindow->MotionEvent (event);

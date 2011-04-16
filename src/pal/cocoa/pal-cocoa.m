@@ -506,6 +506,9 @@ MoonWindowingSystemCocoa::CreateEventFromPlatformEvent (gpointer platformEvent)
 		case NSMouseExited:
 			return new MoonCrossingEventExitedCocoa (evt);
 			break;
+		case NSLeftMouseDragged:
+		case NSRightMouseDragged:
+		case NSOtherMouseDragged:
 		case NSMouseMoved:
 			return new MoonMotionEventCocoa (evt);
 		case NSLeftMouseUp:
