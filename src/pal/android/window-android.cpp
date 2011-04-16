@@ -26,6 +26,7 @@
 #include "context-cairo.h"
 
 #define __MOON_EGL__
+#define EGL_EGLEXT_PROTOTYPES 1
 
 #ifdef USE_EGL
 #include "context-egl.h"
@@ -43,6 +44,7 @@ MoonWindowAndroid::MoonWindowAndroid (MoonWindowType windowType, int w, int h, M
 #ifdef USE_EGL
 	egltarget = NULL;
 	eglctx = NULL;
+	has_swap_rect = FALSE;
 #else
 	CreateCairoContext ();
 #endif
@@ -249,6 +251,7 @@ MoonWindowAndroid::ClearPlatformContext ()
 }
 
 #ifdef USE_EGL
+
 void
 MoonWindowAndroid::Paint (android_app *app)
 {
@@ -265,12 +268,16 @@ MoonWindowAndroid::Paint (android_app *app)
 			EGL_NONE
 		};
 
+		EGLDisplay native_display;
+		EGLSurface native_surface;
 		EGLint format;
 		EGLint numConfigs;
 		EGLConfig config;
-		EGLDisplay native_display;
-		EGLSurface native_surface;
+
 		MoonEGLContext *context;
+		EGLint r,g,b,a;
+		EGLint native_width;
+		EGLint native_height;
 
 		native_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
@@ -279,12 +286,38 @@ MoonWindowAndroid::Paint (android_app *app)
 		eglChooseConfig (native_display, attribs, &config, 1, &numConfigs);
 		eglGetConfigAttrib (native_display, config, EGL_NATIVE_VISUAL_ID, &format);
 
+		eglGetConfigAttrib(native_display, config, EGL_RED_SIZE,   &r);
+		eglGetConfigAttrib(native_display, config, EGL_GREEN_SIZE, &g);
+		eglGetConfigAttrib(native_display, config, EGL_BLUE_SIZE,  &b);
+		eglGetConfigAttrib(native_display, config, EGL_ALPHA_SIZE, &a);
+
 		ANativeWindow_setBuffersGeometry (app->window, 0, 0, format);
 
 		native_surface = eglCreateWindowSurface (native_display, config, app->window, NULL);
 
+		eglQuerySurface(native_display, native_surface, EGL_WIDTH,  &native_width);
+		eglQuerySurface(native_display, native_surface, EGL_HEIGHT, &native_height);
+
+		const char* const egl_extensions = eglQueryString (native_display, EGL_EXTENSIONS);
+			    
+		g_warning ("EGL informations:");
+		g_warning ("# of configs : %d", numConfigs);
+		g_warning ("vendor    : %s", eglQueryString (native_display, EGL_VENDOR));
+		g_warning ("version   : %s", eglQueryString (native_display, EGL_VERSION));
+		g_warning ("extensions: %s", egl_extensions);
+		g_warning ("Client API: %s", eglQueryString (native_display, EGL_CLIENT_APIS) ?: "Not Supported");
+		g_warning ("EGLSurface: %d-%d-%d-%d, config=%p", r, g, b, a, config);
+		g_warning ("Display: %p\n", native_display);
+		g_warning ("Surface: %p\n", native_surface);
+
 		egltarget = new MoonEGLSurface (native_display, native_surface);
 		context = new MoonEGLContext (egltarget);
+
+		if (eglSetSwapRectangleANDROID (native_display, native_surface, 0, 0, native_width, native_height) == EGL_TRUE) {
+			has_swap_rect = TRUE;
+		} else {
+			g_warning ("Disabling eglSetSwapRectangleANDROID");
+		}
 
 		if (context->Initialize ()) {
 			eglctx = context;
@@ -299,16 +332,29 @@ MoonWindowAndroid::Paint (android_app *app)
 	}
 
 	if (egltarget && eglctx) {
-		Rect r0 = Rect (0, 0, width, height);
+		if (has_swap_rect) {
+			damage->Intersect (Rect (0, 0, width, height));
+			Rect extents = damage->GetExtents ();
 
-		egltarget->Reshape (width, height);
+			egltarget->Reshape (width, height);
 
-		static_cast<Context *> (eglctx)->Push (Context::Clip (r0));
-		surface->Paint (eglctx, new Region (r0), GetTransparent (), true);
-		static_cast<Context *> (eglctx)->Pop ();
+			static_cast<Context *> (eglctx)->Push (Context::Clip (extents));
+			surface->Paint (eglctx, damage, GetTransparent (), true);
+			static_cast<Context *> (eglctx)->Pop ();
+
+			eglSetSwapRectangleANDROID (egltarget->GetEGLDisplay (), egltarget->GetEGLSurface (), extents.x, extents.y, extents.width, extents.height);
+		} else {
+			Rect r0 = Rect (0, 0, width, height);
+			Region r1 = Region (r0);
+
+			egltarget->Reshape (width, height);
+
+			static_cast<Context *> (eglctx)->Push (Context::Clip (r0));
+			surface->Paint (eglctx, &r1, GetTransparent (), true);
+			static_cast<Context *> (eglctx)->Pop ();
+		}
 
 		eglctx->Flush ();
-
 		egltarget->SwapBuffers ();
 	} else {
 		g_warning ("uhoh");

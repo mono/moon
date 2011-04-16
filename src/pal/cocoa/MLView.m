@@ -20,6 +20,11 @@
 	moonwindow->ButtonReleaseEvent (event);
 }
 
+- (void) mouseDragged: (NSEvent *) event
+{
+	moonwindow->MotionEvent (event);
+}
+
 - (void) mouseMoved: (NSEvent *) event
 {
 	moonwindow->MotionEvent (event);
@@ -49,12 +54,12 @@
 	[super setFrame: frame];
 	[self removeTrackingRect: trackingrect];
 	trackingrect = [self addTrackingRect: frame owner: self userData: NULL assumeInside: NO];
-}
- 
-- (void) setBounds: (NSRect) bounds {
-	[super setBounds: bounds];
-	[self removeTrackingRect: trackingrect];
-	trackingrect = [self addTrackingRect: self.frame owner: self userData: NULL assumeInside: NO];
+
+	moonwindow->SetWidthInternal (frame.size.width);
+	moonwindow->SetHeightInternal (frame.size.height);
+
+	if (moonwindow->GetSurface ())
+		moonwindow->GetSurface ()->HandleUIWindowAllocation (true);
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent *) event

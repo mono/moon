@@ -519,7 +519,7 @@ FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *
 	read_closure = NULL;
 	current_buffer = initial_buffer;
 	current_buffer->ref ();
-	byte_context = NULL;
+	io_context = NULL;
 
 	pthread_mutex_init (&wait_mutex, NULL);
 	pthread_cond_init (&wait_cond, NULL);
@@ -585,9 +585,9 @@ FfmpegDemuxer::~FfmpegDemuxer ()
 		av_free (format_context);
 	}
 
-	if (byte_context) {
-		g_free (byte_context->buffer);
-		av_free (byte_context);
+	if (io_context) {
+		g_free (io_context->buffer);
+		av_free (io_context);
 	}
 
 	pthread_mutex_destroy (&wait_mutex);
@@ -851,10 +851,10 @@ FfmpegDemuxer::Open ()
 	current_buffer->SeekSet (0);
 
 	/* Create the byte context */
-	byte_context = av_alloc_put_byte ((unsigned char *) g_malloc (1024), 1024, false, this, ReadCallback, NULL, SeekCallback);
+	io_context = avio_alloc_context ((unsigned char *) g_malloc (1024), 1024, false, this, ReadCallback, NULL, SeekCallback);
 
 	/* Open the stream */
-	if (av_open_input_stream (&format_context, byte_context, "Moonlight stream", input_format, NULL) != 0) {
+	if (av_open_input_stream (&format_context, io_context, "Moonlight stream", input_format, NULL) != 0) {
 		ReportErrorOccurred ("FfmpegDemuxer: Input stream could not be opened");
 		goto cleanup;
 	}

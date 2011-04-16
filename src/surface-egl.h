@@ -14,6 +14,7 @@
 #include "surface-gl.h"
 
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 #include <GLES/gl.h>
 
 #ifdef __MOON_EGL__

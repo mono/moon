@@ -7,8 +7,8 @@
 	MLView *view;
 }
 
-@property(assign) NSEvent *event;
-@property(assign) MLView *view;
+@property(retain) NSEvent *event;
+@property(retain) MLView *view;
 
 - (id) initWithEvent: (NSEvent *) event view: (MLView *) view;
 @end

@@ -13,9 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define __MOON_EGL__
+#define __MOON_CGL__
 
-#include "context-egl.h"
+#include "context-cgl.h"
 #include "projection.h"
 #include "effect.h"
 #include "region.h"
@@ -24,46 +24,21 @@
 
 namespace Moonlight {
 
-MoonEGLContext::MoonEGLContext (MoonEGLSurface *surface) : GLContext (surface)
+CGLContext::CGLContext (CGLSurface *surface) : GLContext (surface)
 {
-	this->display = surface->GetEGLDisplay ();
-	this->surface = surface->GetEGLSurface ();
+	this->context = surface->GetContext ();
 }
 
-MoonEGLContext::~MoonEGLContext ()
+CGLContext::~CGLContext ()
 {
 	if (context)
-		eglDestroyContext (display, context);
+		CGLDestroyContext (context);
 }
 
 bool
-MoonEGLContext::Initialize ()
+CGLContext::Initialize ()
 {
-	const EGLint attribs[] = {
-		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-		EGL_BLUE_SIZE, 8,
-		EGL_GREEN_SIZE, 8,
-		EGL_RED_SIZE, 8,
-		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-		EGL_NONE
-	};
-
-	const EGLint context_attribs[] = {
-		EGL_CONTEXT_CLIENT_VERSION, 2,
-		EGL_NONE
-	};
-
-	EGLint numConfigs;
-	EGLConfig config;
-
-	eglChooseConfig(display, attribs, &config, 1, &numConfigs);
-
-	context = eglCreateContext(display, config, NULL, context_attribs);
-
-	if (eglMakeCurrent (display, surface, surface, context) == EGL_FALSE) {
-		g_warning ("Failed to make MoonEGL context current");
-		return false;
-	}
+	CGLSetCurrentContext (context);
 
 	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
@@ -79,27 +54,27 @@ MoonEGLContext::Initialize ()
 }
 
 void
-MoonEGLContext::MakeCurrent ()
+CGLContext::MakeCurrent ()
 {
 	g_assert (context);
-	eglMakeCurrent (display, surface, surface, context);
+	CGLSetCurrentContext (context);
 }
 
 void
-MoonEGLContext::ForceCurrent ()
+CGLContext::ForceCurrent ()
 {
-	if (eglGetCurrentContext () != context)
+	if (CGLGetCurrentContext () != context)
 		MakeCurrent ();
 }
 
 const char *
-MoonEGLContext::ProgramPrecisionString ()
+CGLContext::ProgramPrecisionString ()
 {
-	return "precision mediump float;";
+	return "";
 }
 
 void
-MoonEGLContext::SetupVertexData (const double *matrix,
+CGLContext::SetupVertexData (const double *matrix,
 				 double       x,
 				 double       y,
 				 double       width,
@@ -108,7 +83,7 @@ MoonEGLContext::SetupVertexData (const double *matrix,
 	Target          *target = Top ()->GetTarget ();
 	MoonSurface     *ms;
 	Rect            r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	CGLSurface  *dst = (CGLSurface *) ms;
 	double          dx = 2.0 / dst->Width ();
 	double          dy = 2.0 / dst->Height ();
 	double          p[4][4];
@@ -146,7 +121,7 @@ MoonEGLContext::SetupVertexData (const double *matrix,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (dst->GetEGLDisplay ()) {
+	if (context) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -160,15 +135,14 @@ MoonEGLContext::SetupVertexData (const double *matrix,
 }
 
 gboolean
-MoonEGLContext::HasDrawable ()
+CGLContext::HasDrawable ()
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
 	gboolean    status = FALSE;
 
-	if (dst->GetEGLDisplay () || dst->HasTexture ())
+	if (context)
 		status = TRUE;
 
 	ms->unref ();
@@ -177,18 +151,16 @@ MoonEGLContext::HasDrawable ()
 }
 
 void
-MoonEGLContext::SyncDrawable ()
+CGLContext::SyncDrawable ()
 {
 	Target      *target = Top ()->GetTarget ();
 	Target      *cairo = target->GetCairoTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface  *) ms;
 
 	// clear target contents
 	if (!target->GetInit ()) {
-		if (!dst->GetEGLDisplay ())
-			GLContext::SetFramebuffer ();
+		GLContext::SetFramebuffer ();
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
 		glClear (GL_COLOR_BUFFER_BIT);
@@ -199,14 +171,13 @@ MoonEGLContext::SyncDrawable ()
 
 	// initialize target contents with surface
 	if (target->GetInit () != ms) {
-		MoonEGLSurface *src = (MoonEGLSurface  *) target->GetInit ();
+		CGLSurface *src = (CGLSurface  *) target->GetInit ();
 		GLuint     texture0 = src->Texture ();
 		GLuint     program = GetProjectProgram (1.0, 0);
 		GLsizei    width0 = src->Width ();
 		GLsizei    height0 = src->Height ();
 
-		if (!dst->GetEGLDisplay ())
-			GLContext::SetFramebuffer ();
+		GLContext::SetFramebuffer ();
 
 		SetViewport ();
 
@@ -255,14 +226,13 @@ MoonEGLContext::SyncDrawable ()
 	if (cairo) {
 		MoonSurface *mSrc;
 		Rect        rSrc = cairo->GetData (&mSrc);
-		MoonEGLSurface  *src = (MoonEGLSurface  *) mSrc;
+		CGLSurface  *src = (CGLSurface  *) mSrc;
 		GLuint      texture0 = src->Texture ();
 		GLuint      program = GetProjectProgram (1.0, 0);
 		GLsizei     width0 = src->Width ();
 		GLsizei     height0 = src->Height ();
 
-		if (!dst->GetEGLDisplay ())
-			GLContext::SetFramebuffer ();
+		GLContext::SetFramebuffer ();
 
 		SetViewport ();
 
@@ -321,7 +291,7 @@ MoonEGLContext::SyncDrawable ()
 }
 
 Rect
-MoonEGLContext::GroupBounds (Group extents)
+CGLContext::GroupBounds (Group extents)
 {
 	if (extents.r.width  > maxTextureSize ||
 	    extents.r.height > maxTextureSize)
@@ -331,13 +301,13 @@ MoonEGLContext::GroupBounds (Group extents)
 }
 
 void
-MoonEGLContext::Push (Group extents)
+CGLContext::Push (Group extents)
 {
 	Rect r = GroupBounds (extents);
 
 	if (!r.IsEmpty ()) {
 		cairo_matrix_t matrix;
-		MoonEGLSurface     *surface = new MoonEGLSurface (r.width, r.height);
+		CGLSurface     *surface = new CGLSurface (r.width, r.height);
 		Target         *target = new Target (surface, extents.r);
 
 		Top ()->GetMatrix (&matrix);
@@ -356,7 +326,7 @@ MoonEGLContext::Push (Group extents)
 }
 
 cairo_t *
-MoonEGLContext::Push (Cairo extents)
+CGLContext::Push (Cairo extents)
 {
 	Target *target = Top ()->GetTarget ();
 	Target *cairo = target->GetCairoTarget ();
@@ -386,7 +356,7 @@ MoonEGLContext::Push (Cairo extents)
 		Rect        r = target->GetData (&ms);
 
 		if (HasDrawable ()) {
-			MoonEGLSurface *surface = new MoonEGLSurface (box.width,
+			CGLSurface *surface = new CGLSurface (box.width,
 							      box.height);
 			Target     *cairo = new Target (surface, box);
 
@@ -407,7 +377,7 @@ MoonEGLContext::Push (Cairo extents)
 }
 
 Rect
-MoonEGLContext::Pop (MoonSurface **ref)
+CGLContext::Pop (MoonSurface **ref)
 {
 	Context::Node *prev = (Context::Node *) Top ()->prev;
 
@@ -441,28 +411,26 @@ MoonEGLContext::Pop (MoonSurface **ref)
 }
 
 void
-MoonEGLContext::SetFramebuffer ()
+CGLContext::SetFramebuffer ()
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
 
 	SyncDrawable ();
 
-	if (!dst->GetEGLDisplay ())
-		GLContext::SetFramebuffer ();
+	GLContext::SetFramebuffer ();
 
 	ms->unref ();
 }
 
 void
-MoonEGLContext::SetScissor ()
+CGLContext::SetScissor ()
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	CGLSurface  *dst = (CGLSurface *) ms;
 	Rect        clip;
 
 	Top ()->GetClip (&clip);
@@ -470,7 +438,7 @@ MoonEGLContext::SetScissor ()
 	clip.x -= r.x;
 	clip.y -= r.y;
 
-	if (dst->GetEGLDisplay ()) {
+	if (context) {
 		glScissor (clip.x,
 			   dst->Height () - (clip.y + clip.height),
 			   clip.width,
@@ -484,7 +452,7 @@ MoonEGLContext::SetScissor ()
 }
 
 void
-MoonEGLContext::Clear (Color *color)
+CGLContext::Clear (Color *color)
 {
 	ForceCurrent ();
 
@@ -492,20 +460,17 @@ MoonEGLContext::Clear (Color *color)
 }
 
 void
-MoonEGLContext::Blit (unsigned char *data,
+CGLContext::Blit (unsigned char *data,
 		  int           stride)
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	CGLSurface  *dst = (CGLSurface *) ms;
 	unsigned char *buffer = data;
 	int           buffer_stride = stride;
 
 	ForceCurrent ();
-
-	// no support for blit to drawable at the moment
-	g_assert (!dst->GetEGLDisplay ());
 
 	// mark target as initialized
 	target->SetInit (ms);
@@ -530,13 +495,13 @@ MoonEGLContext::Blit (unsigned char *data,
 }
 
 void
-MoonEGLContext::BlitYV12 (unsigned char *data[],
+CGLContext::BlitYV12 (unsigned char *data[],
 		     int           stride[])
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	CGLSurface  *dst = (CGLSurface *) ms;
 	int           size[] = { dst->Width (), dst->Height () };
 	int           width[] = { size[0], size[0] / 2, size[0] / 2 };
 	int           height[] = { size[1], size[1] / 2, size[1] / 2 };
@@ -544,9 +509,6 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 	int           buffer_stride[] = { stride[0], stride[1], stride[2] };
 
 	ForceCurrent ();
-
-	// no support for blit to drawable at the moment
-	g_assert (!dst->GetEGLDisplay ());
 
 	// mark target as initialized
 	target->SetInit (ms);
@@ -575,7 +537,7 @@ MoonEGLContext::BlitYV12 (unsigned char *data[],
 }
 
 void
-MoonEGLContext::Paint (Color *color)
+CGLContext::Paint (Color *color)
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
@@ -605,7 +567,7 @@ MoonEGLContext::Paint (Color *color)
 }
 
 void
-MoonEGLContext::Paint (MoonSurface *src,
+CGLContext::Paint (MoonSurface *src,
 		       double      alpha,
 		       double      x,
 		       double      y)
@@ -623,7 +585,7 @@ MoonEGLContext::Paint (MoonSurface *src,
 		GetMatrix (m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			MoonEGLSurface *surface = (MoonEGLSurface *) src;
+			CGLSurface *surface = (CGLSurface *) src;
 			Rect           r = Rect (x + x0,
 						 y + y0,
 						 surface->Width (),
@@ -645,13 +607,13 @@ MoonEGLContext::Paint (MoonSurface *src,
 }
 
 void
-MoonEGLContext::Project (MoonSurface  *src,
+CGLContext::Project (MoonSurface  *src,
 		     const double *matrix,
 		     double       alpha,
 		     double       x,
 		     double       y)
 {
-	MoonEGLSurface *surface = (MoonEGLSurface *) src;
+	CGLSurface *surface = (CGLSurface *) src;
 
 	if (!HasDrawable () && !surface->HasTexture ()) {
 		double m[16];
@@ -691,7 +653,7 @@ MoonEGLContext::Project (MoonSurface  *src,
 }
 
 void
-MoonEGLContext::Blur (MoonSurface *src,
+CGLContext::Blur (MoonSurface *src,
 		  double      radius,
 		  double      x,
 		  double      y)
@@ -702,7 +664,7 @@ MoonEGLContext::Blur (MoonSurface *src,
 }
 
 void
-MoonEGLContext::DropShadow (MoonSurface *src,
+CGLContext::DropShadow (MoonSurface *src,
 			double      dx,
 			double      dy,
 			double      radius,
@@ -716,7 +678,7 @@ MoonEGLContext::DropShadow (MoonSurface *src,
 }
 
 void
-MoonEGLContext::ShaderEffect (MoonSurface *src,
+CGLContext::ShaderEffect (MoonSurface *src,
 			  PixelShader *shader,
 			  Brush       **sampler,
 			  int         *sampler_mode,
@@ -738,7 +700,7 @@ MoonEGLContext::ShaderEffect (MoonSurface *src,
 }
 
 void
-MoonEGLContext::Flush ()
+CGLContext::Flush ()
 {
 	ForceCurrent ();
 	SyncDrawable ();

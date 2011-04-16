@@ -14,6 +14,7 @@ public:
 
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface ();
+	virtual void ExitApplication ();
 
 	MoonWindow *CreateWindow (MoonWindowType windowType, int width, int height, MoonWindow *parentWindow, Surface *surface);
 	MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
@@ -45,6 +46,15 @@ public:
 
 	void UnregisterWindow (MoonWindow *window);
 
+	virtual void ShowCodecsUnavailableMessage ();
+
+	virtual guint32 GetScreenHeight (MoonWindow *moon_window);
+
+	virtual guint32 GetScreenWidth (MoonWindow *moon_window);
+
+	virtual bool ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height);
+
+	virtual gchar *GetTemporaryFolder ();
 private:
 	void *pool;
 	int stride;
@@ -64,5 +74,15 @@ public:
 	virtual bool Uninstall (Deployment *deployment);
 };
 
+class MoonFontServiceCocoa : public MoonFontService {
+	GPtrArray *system_fonts;
+	
+public:
+	MoonFontServiceCocoa ();
+	~MoonFontServiceCocoa ();
+	
+	virtual void ForeachFont (MoonForeachFontCallback foreach, gpointer user_data);
+	virtual MoonFont *FindFont (const FontStyleInfo *pattern);
+};
 };
 #endif /* MOON_PAL_COCOA_H */

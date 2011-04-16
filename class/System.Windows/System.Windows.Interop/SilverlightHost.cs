@@ -114,9 +114,13 @@ namespace System.Windows.Interop {
 					char [] param_separator = new char [] { ',' };
 
 #if ANDROID_HACK
-					StreamReader sr = File.OpenText ("/data/local/tmp/AdaptiveStreaming.xap/initParams");
-//					StreamReader sr = new StreamReader (Application.GetResourceStream(new Uri("initParams")).Stream);
-					string param_string = sr.ReadToEnd();
+					var paramFile = "/data/local/tmp/AdaptiveStreaming.xap/initParams";
+					string param_string = "";
+					if (File.Exists (paramFile)) {
+						StreamReader sr = File.OpenText ("/data/local/tmp/AdaptiveStreaming.xap/initParams");
+//						StreamReader sr = new StreamReader (Application.GetResourceStream(new Uri("initParams")).Stream);
+						param_string = sr.ReadToEnd();
+					}
 					Console.WriteLine ("param_string = {0}", param_string);
 #else
 					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);

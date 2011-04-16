@@ -108,6 +108,7 @@ libmoon_include_headers = 	\
 	pal/cocoa/MLEvent.h	\
 	pal/cocoa/MLTimer.h	\
 	pal/cocoa/MLView.h		\
+	pal/cocoa/MLWindow.h		\
 	pal/cocoa/clipboard-cocoa.h	\
 	pal/cocoa/config-dialog-cocoa.h\
 	pal/cocoa/im-cocoa.h	\
@@ -333,6 +334,7 @@ libmoon_la_SOURCES_PAL_GTK = \
 
 libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/MLView.m		\
+	pal/cocoa/MLWindow.m		\
 	pal/cocoa/MLEvent.m	\
 	pal/cocoa/MLTimer.m	\
 	pal/cocoa/clipboard-cocoa.m	\
@@ -342,6 +344,7 @@ libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/pal-cocoa.m	\
 	pal/cocoa/pixbuf-cocoa.m	\
 	pal/cocoa/window-cocoa.m	\
+	pal/cocoa/fonts-cocoa.cpp	\
 	pal/cocoa/debug-ui-cocoa.m
 
 libmoon_la_SOURCES_PAL_ANDROID = \
@@ -391,6 +394,12 @@ libmoon_la_SOURCES_GLX = 	\
 	surface-glx.h	\
 	context-glx.cpp	\
 	context-glx.h
+
+libmoon_la_SOURCES_CGL = 	\
+	surface-cgl.cpp	\
+	surface-cgl.h	\
+	context-cgl.cpp	\
+	context-cgl.h
 
 libmoon_la_SOURCES_EGL = 	\
 	surface-egl.cpp	\
@@ -451,6 +460,10 @@ if HAVE_GLX
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GLX)
 endif
 
+if HAVE_CGL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_CGL)
+endif
+
 if HAVE_EGL
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_EGL)
 endif
@@ -481,12 +494,13 @@ EXTRA_DIST = \
 	$(libmoon_la_SOURCES_GALLIUM) \
 	$(libmoon_la_SOURCES_GL) \
 	$(libmoon_la_SOURCES_GLX) \
+	$(libmoon_la_SOURCES_CGL)
 	$(libmoon_la_SOURCES_EGL)
 
-libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(CGL_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
-libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(CGL_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 dist_libmoonxpi_la_SOURCES = $(dist_libmoon_la_SOURCES)
 nodist_libmoonxpi_la_SOURCES = $(nodist_libmoon_la_SOURCES)
 

@@ -615,8 +615,9 @@ FloatTryParse (const char *str, double *val)
 	
 	/* Android implements localeconv, but doesn't have the structure, we're presuming
 	 * its always "." there
+	 * OSX Doesn't have stpcpy
 	 */
-#if !defined (PLATFORM_ANDROID)
+#if !defined (PLATFORM_ANDROID) && !defined (__APPLE__)
 	if (decimal && (locale = localeconv ()) && strcmp (locale->decimal_point, ".") != 0) {
 		/* locale doesn't use '.' as decimal point so we need to munge
 		 * the string into the locale's formatting */
