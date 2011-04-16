@@ -55,11 +55,13 @@ elif test "x$with_pal" = "xcocoa"; then
 	AC_DEFINE([PAL_OSX_MESSAGING],1,[Hack in support for the pal-osx so we can start using it.])
 	pal_messaging="cocoa"
 
+	AC_DEFINE([PAL_COCOA_FONTSERVICE],1,[Hack in support for the pal-cocoa so we can start using it.])
+	pal_font_service="cocoa"
+
 	pal_networking="none"
 	pal_capture="none"
 	pal_video_capture="none"
 	pal_audio_capture="none"
-	pal_font_service="none"
 
 	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src'
 	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 

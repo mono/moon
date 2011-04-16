@@ -342,6 +342,7 @@ libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/pal-cocoa.m	\
 	pal/cocoa/pixbuf-cocoa.m	\
 	pal/cocoa/window-cocoa.m	\
+	pal/cocoa/fonts-cocoa.cpp	\
 	pal/cocoa/debug-ui-cocoa.m
 
 libmoon_la_SOURCES_PAL_ANDROID = \

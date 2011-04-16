@@ -2912,6 +2912,8 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 	font_service = new MoonFontServiceFontconfig ();
 #elif PAL_ANDROID_FONTSERVICE
 	font_service = new MoonFontServiceAndroid ();
+#elif PAL_COCOA_FONTSERVICE
+	font_service = new MoonFontServiceCocoa ();
 #else
 	g_warning ("This pal doesn't have a font service, you will crash, burn and die a fiery death.");
 #endif
