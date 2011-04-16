@@ -74,5 +74,15 @@ public:
 	virtual bool Uninstall (Deployment *deployment);
 };
 
+class MoonFontServiceCocoa : public MoonFontService {
+	GPtrArray *system_fonts;
+	
+public:
+	MoonFontServiceCocoa ();
+	~MoonFontServiceCocoa ();
+	
+	virtual void ForeachFont (MoonForeachFontCallback foreach, gpointer user_data);
+	virtual MoonFont *FindFont (const FontStyleInfo *pattern);
+};
 };
 #endif /* MOON_PAL_COCOA_H */
