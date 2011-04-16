@@ -61,10 +61,15 @@ elif test "x$with_pal" = "xcocoa"; then
 	pal_audio_capture="none"
 	pal_font_service="none"
 
-	dnl We need to flesh out eglib enough to drop this dep
-	PKG_CHECK_MODULES(GLIB, glib-2.0)
+	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src'
+	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 
 
 	PAL=cocoa
+
+	PKG_CHECK_MODULES(FREETYPE2, freetype2, [
+		AC_DEFINE([HAVE_FREETYPE2], [1], 
+			[Include support for freetype2 in the font manager])
+        ])
 
 elif test "x$with_pal" = "xandroid"; then
 

@@ -1402,10 +1402,10 @@ cleanup:
 	return result;
 }
 
-bool
+gchar *
 MoonWindowingSystemGtk::GetTemporaryFolder ()
 {
-	return g_get_tmp_dir ();
+	return (gchar *) g_get_tmp_dir ();
 }
 
 MoonInstallerServiceGtk::MoonInstallerServiceGtk ()

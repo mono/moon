@@ -2311,7 +2311,7 @@ class Generator {
 		header.AppendLine ();
 		header.AppendLine ("#include \"pal.h\"");
 		header.AppendLine ("#if PAL_COCOA_WINDOWING");
-		header.AppendLine ("#  include \"pal/coca/window-cocoa.h\"");
+		header.AppendLine ("#  include \"pal/cocoa/window-cocoa.h\"");
 		header.AppendLine ("#elif PAL_GTK_WINDOWING");
 		header.AppendLine ("#  include \"pal/gtk/window-gtk.h\"");
 		header.AppendLine ("#elif PAL_ANDROID_WINDOWING");

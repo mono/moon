@@ -1,33 +1,3 @@
-Install the following from macports
-
-1) cairo 1.10
-
-   sudo /opt/local/bin/port install cairo +quartz
-
-2) automake/autoconf/libtool
-
-   sudo /opt/local/bin/port install automake libtool
-
-3) glib
-
-   sudo /opt/local/bin/port install glib2
-
-4) curl
-
-   sudo /opt/local/bin/port install curl
-
-You can then make a moon/mono/mono-basic parallel checkout and run with:
-
-PATH=/opt/local/bin/:$PATH ./autogen.sh --prefix=/opt/darwoon --with-pal=cocoa --with-curl=system --host=i386-apple-darwin10 --with-cairo=system CFLAGS="-arch i386" CXXFLAGS="-arch i386" LDFLAGS="-arch i386"
-
-You need to symlink /opt/darwoon/lib/moonlight/plugin/libmoonplugin.dylib -> /opt/darwoon/lib/moonlight/plugin/libmoon.dylib
-
-To run the hacked up lunar-launcher use something like this:
-
-DYLD_FALLBACK_LIBRARY_PATH=/opt/darwoon/lib/moonlight/plugin/ DYLD_INSERT_LIBRARIES=/usr/lib/libiconv.dylib MOON_TRACE=E:all MOONLIGHT_DEBUG=deployment /opt/darwoon/lib/moonlight/plugin/lunar-launcher 1
-
-Put an xap in /tmp/Application.xap
-
 TODO: 
 	1> Subclass NSWindow to properly deliver window realized, resize, et all events
 	2> Figure out why Invalidate is upside down on the MoonNSView

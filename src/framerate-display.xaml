@@ -13,16 +13,16 @@
 		<ColumnDefinition Width="32"/>
 		<ColumnDefinition Width="32"/>
 	</Grid.ColumnDefinitions>
-	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="0">
+	<Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF000000" Padding="1" Grid.Column="0">
 		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000" x:Name="framerate"/>
 	</Border>
-	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="1">
+	<Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF000000" Padding="1" Grid.Column="1">
 		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000000" x:Name="videomemoryused"/>
 	</Border>
-	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="2">
+	<Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF000000" Padding="1" Grid.Column="2">
 		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000" x:Name="gpuenabledsurfaces"/>
 	</Border>
-	<Border HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF000000" Padding="1" Grid.Column="3">
+	<Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF000000" Padding="1" Grid.Column="3">
 		<TextBlock Foreground="#FFFFFFFF" FontSize="12" Text="000" x:Name="intermediatesurfaces"/>
 	</Border>
 </Grid>

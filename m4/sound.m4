@@ -51,7 +51,7 @@ AC_DEFUN([MOONLIGHT_CHECK_SOUND],
 
 	AC_ARG_WITH(opensles, AC_HELP_STRING([--with-opensles=yes|no], 
 		[If you want to enable opensles sound support]),
-		[], [with_opensles=yes])
+		[], [with_opensles=no])
 
 	if test x$with_opensles = xyes; then
 		AC_DEFINE([INCLUDE_OPENSLES], [1], [Include opensles sound support])

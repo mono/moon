@@ -14,7 +14,6 @@
 #include "config.h"
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include "window-cocoa.h"
 #include "clipboard-cocoa.h"
@@ -355,10 +354,11 @@ void
 MoonWindowCocoa::ExposeEvent (Rect r)
 {
 	SetCurrentDeployment ();
+
 	Region *region = new Region (r);
 	cairo_surface_t *native = CreateCairoSurface ();
-	CairoSurface *target = new CairoSurface (native);
-	CairoContext *ctx = new CairoContext (target);
+	CairoSurface *target = new CairoSurface (1, 1);
+	Context *ctx = new CairoContext (target);
 
 	surface->Paint (ctx, region, GetTransparent (), NO);
 

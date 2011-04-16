@@ -2745,6 +2745,7 @@ MediaThreadPool::WorkerLoop (void *data)
 	
 	sigset_t signal_set;
 	int err = 0;
+#if !defined(__APPLE__)
 	if ((err = sigemptyset (&signal_set)) != 0) {
 		g_warning ("Moonlight: Media thread pool was unable to create an empty set of signals: %s (%i).\n", strerror (err), err);
 	} else if ((err = pthread_sigmask (SIG_SETMASK, &signal_set, NULL)) != 0) {
@@ -2773,6 +2774,7 @@ MediaThreadPool::WorkerLoop (void *data)
 			return NULL;
 		}
 	}
+#endif
 #endif
 	
 	pthread_mutex_lock (&mutex);

@@ -10,7 +10,6 @@
 #include "debug.h"
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include <cairo.h>
 
@@ -78,6 +77,18 @@ public:
 		return NO;
 	}
 
+	bool IsRelease ()
+	{
+		g_assert_not_reached ();
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsRelease () ? window->GetSurface()->HandleUIKeyRelease (this) : window->GetSurface()->HandleUIKeyPress (this);
+	}
 private:
 	MLEvent *event;
 };
@@ -133,6 +144,14 @@ public:
 		return YES;
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUICrossing (this);
+	}
+
 private:
 	MLEvent *event;
 };
@@ -186,6 +205,14 @@ public:
 	virtual bool IsEnter ()
 	{
 		return NO;
+	}
+
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUICrossing (this);
 	}
 
 private:
@@ -257,6 +284,15 @@ public:
 		return [event.event clickCount];
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return IsRelease() ? window->GetSurface()->HandleUIButtonRelease (this) : window->GetSurface()->HandleUIButtonPress (this);
+	}
+
+
 private:
 	MLEvent *event;
 };
@@ -308,6 +344,14 @@ public:
 		g_assert_not_reached ();
 	}
 
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
+	{
+		if (!window || !window->GetSurface())
+			return MoonEventNotHandled;
+
+		return window->GetSurface()->HandleUIMotion (this);
+	}
+
 private:
 	MLEvent *event;
 };
@@ -329,12 +373,23 @@ MoonWindowingSystemCocoa::~MoonWindowingSystemCocoa ()
 	[((NSAutoreleasePool *)pool) release];
 }
 
+void
+MoonWindowingSystemCocoa::ShowCodecsUnavailableMessage ()
+{
+	g_assert_not_reached ();
+}
 
 cairo_surface_t *
 MoonWindowingSystemCocoa::CreateSurface ()
 {
-	// FIXME...
 	g_assert_not_reached ();
+}
+
+void
+MoonWindowingSystemCocoa::ExitApplication ()
+{
+	// FIXME
+	exit (1);
 }
 
 MoonWindow *
@@ -490,6 +545,33 @@ MoonWindowingSystemCocoa::RunMainLoop (MoonWindow *window, bool quit_on_window_c
 	[NSApp run];
 }
 
+gchar *
+MoonWindowingSystemCocoa::GetTemporaryFolder ()
+{
+	return (gchar *) g_get_tmp_dir ();
+}
+
+guint32
+MoonWindowingSystemCocoa::GetScreenHeight (MoonWindow *moon_window)
+{
+	MLView *view = (MLView *) moon_window->GetPlatformWindow ();
+
+	return view.frame.size.height;
+}
+
+guint32
+MoonWindowingSystemCocoa::GetScreenWidth (MoonWindow *moon_window)
+{
+	MLView *view = (MLView *) moon_window->GetPlatformWindow ();
+
+	return view.frame.size.width;
+}
+
+bool
+MoonWindowingSystemCocoa::ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height)
+{
+	g_assert_not_reached ();
+}
 
 MoonInstallerServiceCocoa::MoonInstallerServiceCocoa ()
 {

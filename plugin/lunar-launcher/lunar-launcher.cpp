@@ -14,7 +14,6 @@
 #include <config.h>
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include <signal.h>
 
