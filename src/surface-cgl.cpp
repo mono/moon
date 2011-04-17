@@ -58,6 +58,8 @@ CGLSurface::Reshape (int width, int height)
 cairo_surface_t *
 CGLSurface::Cairo ()
 {
+	g_assert (context == NULL);
+
 	return GLSurface::Cairo ();
 }
 
