@@ -181,6 +181,7 @@ bool
 MoonWindowCocoa::HasFocus ()
 {
 	g_warning ("implement me: HasFocus");
+	return YES;
 }
 
 void
