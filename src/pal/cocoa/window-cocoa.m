@@ -162,25 +162,25 @@ MoonWindowCocoa::Hide ()
 void
 MoonWindowCocoa::EnableEvents (bool first)
 {
-	g_warning ("implement me");
+	g_warning ("implement me: EnableEvents");
 }
 
 void
 MoonWindowCocoa::DisableEvents ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: DisableEvents");
 }
 
 void
 MoonWindowCocoa::GrabFocus ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: GrabFocus");
 }
 
 bool
 MoonWindowCocoa::HasFocus ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: HasFocus");
 }
 
 void

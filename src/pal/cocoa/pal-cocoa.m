@@ -465,6 +465,7 @@ MoonWindowingSystemCocoa::RemoveTimeout (guint timeoutId)
 guint
 MoonWindowingSystemCocoa::AddIdle (MoonSourceFunc idle, gpointer data)
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	/* This is horrible, what we probably want is 1 timer we run at a low resolution that will pump some idle events we track in a seperate queue */
 	MLTimer *mtimer = [[MLTimer alloc] init];
 	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (500/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
@@ -474,6 +475,7 @@ MoonWindowingSystemCocoa::AddIdle (MoonSourceFunc idle, gpointer data)
 
 	[[NSRunLoop mainRunLoop] addTimer: timer forMode: NSRunLoopCommonModes];
 
+	[pool release];
 	// FIXME: 64-bit evil
 	return (guint) timer;
 }
