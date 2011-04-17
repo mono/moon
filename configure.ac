@@ -61,6 +61,7 @@ MOONLIGHT_CHECK_MONO
 MOONLIGHT_CHECK_PAL
 
 MOONLIGHT_CHECK_FFMPEG
+MOONLIGHT_CHECK_VDA
 MOONLIGHT_CHECK_CODECS
 MOONLIGHT_CHECK_SOUND
 
@@ -306,6 +307,7 @@ cat <<EOF
 
   Media Support: $media_warning
 	FFmpeg: $with_ffmpeg $ffmpeg_reason
+	VDA: $with_vda
 	ALSA: $with_alsa $alsa_reason
 	PulseAudio: $with_pulseaudio $pulseaudio_reason
 	OpenSLES: $with_opensles $opensles_reason

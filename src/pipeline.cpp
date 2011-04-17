@@ -21,6 +21,7 @@
 #include "audio.h"
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
+#include "pipeline-vda.h"
 #include "mp3.h"
 #include "uri.h"
 #include "media.h"
@@ -370,6 +371,9 @@ Media::Initialize ()
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
 		register_ffmpeg ();
 	}
+#endif
+#ifdef INCLUDE_VDA
+	register_vda ();
 #endif
 	
 	Media::RegisterDecoder (new PassThroughDecoderInfo ());
