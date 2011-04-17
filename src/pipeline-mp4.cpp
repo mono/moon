@@ -607,6 +607,7 @@ Mp4Demuxer::Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initia
 	get_frame_stream = NULL;
 	last_buffer = false;
 	ftyp_validated = false;
+	needs_raw_frames = false;
 	moov = NULL;
 	buffer_position = 0;
 	nal_size_length = 0;
@@ -1036,6 +1037,17 @@ Mp4Demuxer::ParseAVCFrame (MediaFrame *frame, MemoryBuffer *memory_buffer, guint
 		return true;
 	}
 
+	if (needs_raw_frames) {
+		if (!frame->AllocateBuffer (sample_size)) {
+			ReportErrorOccurred ("Mp4Demuxer: could not allocate frame buffer");
+			return false;
+		}
+		if (!memory_buffer->Read (frame->GetBuffer (), sample_size)) {
+			ReportErrorOccurred ("Mp4Demuxer: could not read from memory buffer");
+			return false;
+		}
+		return true;
+	}
 
 	guint8 *out;
 	guint8 *in = buffer;

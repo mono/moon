@@ -23,6 +23,7 @@
 #include <pthread.h>
 
 #include "pipeline-vda.h"
+#include "pipeline-mp4.h"
 #include "pipeline.h"
 #include "mp3.h"
 #include "clock.h"
@@ -196,6 +197,12 @@ MoonVDADecoderInfo::Supports (const char* codec)
 IMediaDecoder*
 MoonVDADecoderInfo::Create (Media* media, IMediaStream* stream)
 {
+	Mp4Demuxer *demuxer = (Mp4Demuxer *) stream->GetDemuxerReffed ();
+
+	g_warning ("Telling demuxer we need raw frames");
+	demuxer->SetNeedsRawFrames (true);
+
+	demuxer->unref ();
 	return new MoonVDADecoder (media, stream);
 }
 
