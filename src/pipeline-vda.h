@@ -31,19 +31,19 @@ void register_vda ();
 /*
  * VDADecoder
  */
-class VDADecoder : public IMediaDecoder {
+class MoonVDADecoder : public IMediaDecoder {
 private:
 	void *decoder;
 	void *callback;
 
 protected:
-	virtual ~VDADecoder () {}
+	virtual ~MoonVDADecoder () {}
 	virtual void DecodeFrameAsyncInternal (MediaFrame* frame);
 	virtual void OpenDecoderAsyncInternal ();
 	
 public:
 	/* @SkipFactories */
-	VDADecoder (Media* media, IMediaStream* stream);
+	MoonVDADecoder (Media* media, IMediaStream* stream);
 	virtual void Dispose ();	
 	virtual void Cleanup (MediaFrame* frame);
 	virtual void CleanState ();
@@ -54,11 +54,11 @@ public:
 /*
  * VDADecoderInfo
  */
-class VDADecoderInfo : public DecoderInfo {
+class MoonVDADecoderInfo : public DecoderInfo {
 public:
 	virtual bool Supports (const char* codec);
 	virtual IMediaDecoder* Create (Media* media, IMediaStream* stream);
-	virtual const char* GetName () { return "VDADecoder"; }
+	virtual const char* GetName () { return "MoonVDADecoder"; }
 };
 
 };

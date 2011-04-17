@@ -7,7 +7,7 @@
  * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 /*
@@ -34,20 +34,21 @@ namespace Moonlight {
 void
 register_vda ()
 {
-	Media::RegisterDecoder (new VDADecoderInfo ());
+	Media::RegisterDecoder (new MoonVDADecoderInfo ());
 }
 
 /*
- * VDADecoder
+ * MoonVDADecoder
  */
 
-VDADecoder::VDADecoder (Media* media, IMediaStream* stream) 
-	: IMediaDecoder (Type::VDADECODER, media, stream)
+MoonVDADecoder::MoonVDADecoder (Media* media, IMediaStream* stream)
+	: IMediaDecoder (Type::MOONVDADECODER, media, stream)
 {
+	this->decoder = NULL;
 }
 
 void
-VDADecoder::InputEnded ()
+MoonVDADecoder::InputEnded ()
 {
 	GetStream ()->SetOutputEnded (true);
 }
@@ -55,8 +56,8 @@ VDADecoder::InputEnded ()
 static void
 VDADecoderCallback (void *decompressionOutputRefCon, CFDictionaryRef frameInfo, OSStatus status, uint32_t infoFlags, CVImageBufferRef imageBuffer)
 {
-	VDADecoder *decoder = (VDADecoder *) decompressionOutputRefCon;
-		
+	MoonVDADecoder *decoder = (MoonVDADecoder *) decompressionOutputRefCon;
+
 	if (imageBuffer == NULL) {
 		return;
 	}
@@ -66,75 +67,105 @@ VDADecoderCallback (void *decompressionOutputRefCon, CFDictionaryRef frameInfo, 
 		g_warning ("Mismatched format in VDA");
 		return;
 	}
-		
+
 	g_warning ("Decoder: %p\n", decoder);
 }
 
+static OSStatus
+CreateDecoder (SInt32 inHeight, SInt32 inWidth, OSType inSourceFormat, CFDataRef inAVCCData, MoonVDADecoder *userData, VDADecoder *decoderOut)
+{
+	decoderOut = NULL;
+
+	OSStatus status;
+
+	CFMutableDictionaryRef decoderConfiguration = NULL;
+	CFMutableDictionaryRef destinationImageBufferAttributes = NULL;
+	CFDictionaryRef emptyDictionary;
+
+	CFNumberRef height = NULL;
+	CFNumberRef width= NULL;
+	CFNumberRef sourceFormat = NULL;
+	CFNumberRef pixelFormat = NULL;
+
+	// source must be H.264
+	if (inSourceFormat != 'avc1') {
+		fprintf (stderr, "Source format is not H.264!\n");
+		return paramErr;
+	}
+
+	// the avcC data chunk from the bitstream must be present
+	if (inAVCCData == NULL) {
+		fprintf (stderr, "avc1 decoder configuration data cannot be NULL!\n");
+		return paramErr;
+	}
+
+	decoderConfiguration = CFDictionaryCreateMutable (kCFAllocatorDefault, 4, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+	height = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &inHeight);
+	width = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &inWidth);
+	sourceFormat = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &inSourceFormat);
+
+	CFDictionarySetValue (decoderConfiguration, kVDADecoderConfiguration_Height, height);
+	CFDictionarySetValue (decoderConfiguration, kVDADecoderConfiguration_Width, width);
+	CFDictionarySetValue (decoderConfiguration, kVDADecoderConfiguration_SourceFormat, sourceFormat);
+	CFDictionarySetValue (decoderConfiguration, kVDADecoderConfiguration_avcCData, inAVCCData);
+
+	destinationImageBufferAttributes = CFDictionaryCreateMutable (kCFAllocatorDefault, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+	OSType cvPixelFormatType = kCVPixelFormatType_422YpCbCr8;
+	pixelFormat = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &cvPixelFormatType);
+	emptyDictionary = CFDictionaryCreate (kCFAllocatorDefault, NULL, NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+	CFDictionarySetValue (destinationImageBufferAttributes, kCVPixelBufferPixelFormatTypeKey, pixelFormat);
+	CFDictionarySetValue (destinationImageBufferAttributes, kCVPixelBufferIOSurfacePropertiesKey, emptyDictionary);
+
+	status = VDADecoderCreate (decoderConfiguration, destinationImageBufferAttributes, (VDADecoderOutputCallback*) VDADecoderCallback, (void *) userData, decoderOut);
+
+	if (kVDADecoderNoErr != status) {
+		fprintf (stderr, "VDADecoderCreate failed. err: %i\n", (int) status);
+	}
+
+	if (decoderConfiguration) CFRelease (decoderConfiguration);
+	if (destinationImageBufferAttributes) CFRelease (destinationImageBufferAttributes);
+	if (emptyDictionary) CFRelease (emptyDictionary);
+
+	return status;
+}
+
 void
-VDADecoder::OpenDecoderAsyncInternal ()
+MoonVDADecoder::OpenDecoderAsyncInternal ()
 {
 	IMediaStream *stream = GetStream ();
-
-	int w = ((VideoStream *) stream)->GetWidth ();
-	int h = ((VideoStream *) stream)->GetHeight ();
+	VideoStream *vs = (VideoStream *) stream;
+	VDADecoder hardwareDecoder = NULL;
 	int format = 'avc1';
 
-	CFMutableDictionaryRef config = CFDictionaryCreateMutable (kCFAllocatorDefault, 4, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	CFDataRef avcCData = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) stream->GetExtraData (), stream->GetExtraDataSize ());
+	OSStatus status = CreateDecoder ((SInt32) vs->GetHeight (), (SInt32) vs->GetWidth (), (OSType) format, avcCData, this, &hardwareDecoder);
 
-	CFDataRef cfData = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) stream->GetExtraData (), stream->GetExtraDataSize ());
-	CFNumberRef cfWidth  = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &w);
-	CFNumberRef cfHeight = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &h);
-	CFNumberRef cfFormat = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &format);
-
-	CFDictionarySetValue (config, kVDADecoderConfiguration_Height, cfHeight);
-	CFDictionarySetValue (config, kVDADecoderConfiguration_Width,  cfWidth);
-	CFDictionarySetValue (config, kVDADecoderConfiguration_SourceFormat, cfFormat);
-	CFDictionarySetValue (config, kVDADecoderConfiguration_avcCData, cfData);
-
-	CFRelease (cfWidth);
-	CFRelease (cfHeight);
-	CFRelease (cfFormat);
-	CFRelease (cfData);
-									
-	CFMutableDictionaryRef attr = CFDictionaryCreateMutable (kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-									
-	OSType cvPixelFormatType = kCVPixelFormatType_422YpCbCr8;
-	CFNumberRef pixelFormat  = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &cvPixelFormatType);
-	CFDictionarySetValue (attr, kCVPixelBufferPixelFormatTypeKey, pixelFormat);
-									
-	callback = (void *) VDADecoderCallback;
-	g_warning ("callback: %p width: %i height: %i format: %i\n", callback, w, h, format);
-	OSStatus status = VDADecoderCreate (config, attr, (VDADecoderOutputCallback *) &callback, this, (OpaqueVDADecoder**) &decoder);
-
-	CFRelease (config);
-	CFRelease (attr);
-
-	if (status != kVDADecoderNoErr) {
-		g_warning ("VDADecoderCreate returned an error: %i", status);
-		return;
-	}
+	if (avcCData) CFRelease (avcCData);
 }
 
 void
-VDADecoder::Dispose ()
+MoonVDADecoder::Dispose ()
 {
 	g_assert_not_reached ();
 }
 
 void
-VDADecoder::Cleanup (MediaFrame *frame)
+MoonVDADecoder::Cleanup (MediaFrame *frame)
 {
 	g_assert_not_reached ();
 }
 
 void
-VDADecoder::CleanState ()
+MoonVDADecoder::CleanState ()
 {
 	g_assert_not_reached ();
 }
 
 void
-VDADecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
+MoonVDADecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 {
 	g_assert_not_reached ();
 }
@@ -144,15 +175,15 @@ VDADecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
  */
 
 bool
-VDADecoderInfo::Supports (const char* codec)
+MoonVDADecoderInfo::Supports (const char* codec)
 {
 	return codec != NULL && strcmp (codec, "h264") == 0;
 }
 
 IMediaDecoder*
-VDADecoderInfo::Create (Media* media, IMediaStream* stream)
+MoonVDADecoderInfo::Create (Media* media, IMediaStream* stream)
 {
-	return new VDADecoder (media, stream);
+	return new MoonVDADecoder (media, stream);
 }
 
 };

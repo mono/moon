@@ -376,7 +376,7 @@ MoonWindowingSystemCocoa::~MoonWindowingSystemCocoa ()
 void
 MoonWindowingSystemCocoa::ShowCodecsUnavailableMessage ()
 {
-	g_assert_not_reached ();
+	//g_assert_not_reached ();
 }
 
 cairo_surface_t *
