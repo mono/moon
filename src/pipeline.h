@@ -490,6 +490,8 @@ private:
 
 	void *extra_data;
 	gint32 extra_data_size;
+	void *raw_extra_data;
+	gint32 raw_extra_data_size;
 	gint32 codec_id;
 	guint64 duration; // 100-nanosecond units (pts)
 	char *codec; // freed upon destruction
@@ -573,11 +575,19 @@ public:
 	/* @GenerateCBinding */
 	gint32 GetExtraDataSize () { return extra_data_size; }
 	/* @GenerateCBinding */
+	gint32 GetRawExtraDataSize () { return raw_extra_data_size; }
+	/* @GenerateCBinding */
 	void SetExtraDataSize (gint32 value) { extra_data_size = value; }
+	/* @GenerateCBinding */
+	void SetRawExtraDataSize (gint32 value) { raw_extra_data_size = value; }
 	/* @GenerateCBinding */
 	void *GetExtraData () { return extra_data; }
 	/* @GenerateCBinding */
+	void *GetRawExtraData () { return raw_extra_data; }
+	/* @GenerateCBinding */
 	void SetExtraData (void *value) { extra_data = value; }
+	/* @GenerateCBinding */
+	void SetRawExtraData (void *value) { raw_extra_data = value; }
 	/* @GenerateCBinding */
 	gint32 GetCodecId () { return codec_id; }
 	/* @GenerateCBinding */

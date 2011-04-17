@@ -71,11 +71,9 @@ VDADecoderCallback (void *decompressionOutputRefCon, CFDictionaryRef frameInfo, 
 	g_warning ("Decoder: %p\n", decoder);
 }
 
-static OSStatus
-CreateDecoder (SInt32 inHeight, SInt32 inWidth, OSType inSourceFormat, CFDataRef inAVCCData, MoonVDADecoder *userData, VDADecoder *decoderOut)
+OSStatus
+MoonVDADecoder::CreateDecoder (SInt32 inHeight, SInt32 inWidth, OSType inSourceFormat, CFDataRef inAVCCData)
 {
-	decoderOut = NULL;
-
 	OSStatus status;
 
 	CFMutableDictionaryRef decoderConfiguration = NULL;
@@ -119,11 +117,7 @@ CreateDecoder (SInt32 inHeight, SInt32 inWidth, OSType inSourceFormat, CFDataRef
 	CFDictionarySetValue (destinationImageBufferAttributes, kCVPixelBufferPixelFormatTypeKey, pixelFormat);
 	CFDictionarySetValue (destinationImageBufferAttributes, kCVPixelBufferIOSurfacePropertiesKey, emptyDictionary);
 
-	status = VDADecoderCreate (decoderConfiguration, destinationImageBufferAttributes, (VDADecoderOutputCallback*) VDADecoderCallback, (void *) userData, decoderOut);
-
-	if (kVDADecoderNoErr != status) {
-		fprintf (stderr, "VDADecoderCreate failed. err: %i\n", (int) status);
-	}
+	status = VDADecoderCreate (decoderConfiguration, destinationImageBufferAttributes, (VDADecoderOutputCallback*) VDADecoderCallback, this, (VDADecoder*) &decoder);
 
 	if (decoderConfiguration) CFRelease (decoderConfiguration);
 	if (destinationImageBufferAttributes) CFRelease (destinationImageBufferAttributes);
@@ -137,13 +131,20 @@ MoonVDADecoder::OpenDecoderAsyncInternal ()
 {
 	IMediaStream *stream = GetStream ();
 	VideoStream *vs = (VideoStream *) stream;
-	VDADecoder hardwareDecoder = NULL;
 	int format = 'avc1';
 
-	CFDataRef avcCData = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) stream->GetExtraData (), stream->GetExtraDataSize ());
-	OSStatus status = CreateDecoder ((SInt32) vs->GetHeight (), (SInt32) vs->GetWidth (), (OSType) format, avcCData, this, &hardwareDecoder);
+	CFDataRef avcCData = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) stream->GetRawExtraData (), stream->GetRawExtraDataSize ());
+	OSStatus status = CreateDecoder ((SInt32) vs->GetHeight (), (SInt32) vs->GetWidth (), (OSType) format, avcCData);
 
 	if (avcCData) CFRelease (avcCData);
+
+	if (status == kVDADecoderNoErr) {
+		ReportOpenDecoderCompleted ();
+	} else {
+		char *str = g_strdup_printf ("MoonVDADecoder failed to open codec (result: %d)", status);
+		ReportErrorOccurred (str);
+		g_free (str);
+	}
 }
 
 void

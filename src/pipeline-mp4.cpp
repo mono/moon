@@ -1425,6 +1425,7 @@ Mp4Demuxer::ParseAVCExtraData (IMediaStream *stream, SampleEntry *entry)
 		return;
 	}
 
+
 	if (stream->IsAudio ()) {
 		stream->SetExtraDataSize (extradata_size);
 		stream->SetExtraData (g_memdup (extradata, extradata_size));
@@ -1437,6 +1438,9 @@ Mp4Demuxer::ParseAVCExtraData (IMediaStream *stream, SampleEntry *entry)
 		g_free (msg);
 		return;
 	}
+
+	stream->SetRawExtraDataSize (extradata_size);
+	stream->SetRawExtraData (g_memdup (extradata, extradata_size));
 
 	guint8 *cur_ptr = extradata;
 

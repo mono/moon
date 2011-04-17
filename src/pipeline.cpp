@@ -3090,7 +3090,9 @@ IMediaStream::IMediaStream (Type::Kind kind, Media *media) : IMediaObject (kind,
 	
 	extra_data_size = 0;
 	extra_data = NULL;
-	
+	raw_extra_data_size = 0;
+	raw_extra_data = NULL;
+
 	duration = 0;
 	pts_per_frame = 0;
 	
@@ -3122,6 +3124,8 @@ IMediaStream::Dispose ()
 	}
 	g_free (extra_data);
 	extra_data = NULL;
+	g_free (raw_extra_data);
+	raw_extra_data = NULL;
 	g_free (codec);
 	codec = NULL;
 
