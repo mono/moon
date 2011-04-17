@@ -28,6 +28,7 @@ CGLSurface::CGLSurface (CGLContextObj context, GLsizei w, GLsizei h) : GLSurface
 
 CGLSurface::CGLSurface (GLsizei w, GLsizei h) : GLSurface (w, h)
 {
+	this->context = NULL;
 }
 
 void

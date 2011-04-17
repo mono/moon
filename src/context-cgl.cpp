@@ -140,9 +140,10 @@ CGLContext::HasDrawable ()
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface *) ms;
 	gboolean    status = FALSE;
 
-	if (context)
+	if (context || dst->HasTexture ())
 		status = TRUE;
 
 	ms->unref ();
@@ -160,7 +161,8 @@ CGLContext::SyncDrawable ()
 
 	// clear target contents
 	if (!target->GetInit ()) {
-		GLContext::SetFramebuffer ();
+		if (!context)
+			GLContext::SetFramebuffer ();
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
 		glClear (GL_COLOR_BUFFER_BIT);
@@ -177,7 +179,8 @@ CGLContext::SyncDrawable ()
 		GLsizei    width0 = src->Width ();
 		GLsizei    height0 = src->Height ();
 
-		GLContext::SetFramebuffer ();
+		if (!context)
+			GLContext::SetFramebuffer ();
 
 		SetViewport ();
 
@@ -232,7 +235,8 @@ CGLContext::SyncDrawable ()
 		GLsizei     width0 = src->Width ();
 		GLsizei     height0 = src->Height ();
 
-		GLContext::SetFramebuffer ();
+		if (!context)
+			GLContext::SetFramebuffer ();
 
 		SetViewport ();
 
@@ -419,7 +423,8 @@ CGLContext::SetFramebuffer ()
 
 	SyncDrawable ();
 
-	GLContext::SetFramebuffer ();
+	if (!context)
+		GLContext::SetFramebuffer ();
 
 	ms->unref ();
 }
@@ -472,6 +477,9 @@ CGLContext::Blit (unsigned char *data,
 
 	ForceCurrent ();
 
+	// no support for blit to drawable at the moment
+	g_assert (!dst->GetContext ());
+
 	// mark target as initialized
 	target->SetInit (ms);
 
@@ -509,6 +517,9 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	int           buffer_stride[] = { stride[0], stride[1], stride[2] };
 
 	ForceCurrent ();
+
+	// no support for blit to drawable at the moment
+	g_assert (!dst->GetContext ());
 
 	// mark target as initialized
 	target->SetInit (ms);

@@ -442,6 +442,8 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		surface->Paint (cglctx, region, GetTransparent (), true);
 		static_cast<Context *> (cglctx)->Pop ();
 
+		cglctx->Flush ();
+
 		[glcontext flushBuffer];
 
 		return;
