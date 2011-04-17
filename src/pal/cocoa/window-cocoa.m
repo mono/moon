@@ -106,7 +106,11 @@ MoonWindowCocoa::Resize (int width, int height)
 	frame.size.height = height;
 
 	[(MLWindow *)window setFrame: frame display: YES];
+}
 
+void
+MoonWindowCocoa::ResizeInternal (int width, int height)
+{
 	this->width = width;
 	this->height = height;
 }
@@ -397,7 +401,7 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 	Region *region = new Region (r);
 
 #if USE_CGL
-	if (!cgltarget && 0) {
+	if (!cgltarget) {
 		const NSOpenGLPixelFormatAttribute attr[] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
@@ -405,40 +409,48 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 			(NSOpenGLPixelFormatAttribute) nil
 		};
 
+		NSOpenGLContext *glcontext;
 		NSOpenGLPixelFormat *format;
 		CGLContext *context;
+		MLView *mlview = (MLView *) view;
 
 		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes: attr] autorelease];
-		nsoglcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
+		glcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
 
-		[(NSOpenGLContext *)nsoglcontext makeCurrentContext];
-		((NSOpenGLContext *)nsoglcontext).view = (MLView *) view;
+		[glcontext makeCurrentContext];
+		[mlview setOpenGLContext: glcontext];
 
-		cgltarget = new CGLSurface ((CGLContextObj) [(NSOpenGLContext *)nsoglcontext CGLContextObj], width, height);
+		for (int i = 0; i < 2; i++) {
+			glClearColor (0.0, 0.0, 0.0, 0.0);
+			glClear (GL_COLOR_BUFFER_BIT);
+			[glcontext flushBuffer];
+		}
+
+		cgltarget = new CGLSurface ((CGLContextObj) [glcontext CGLContextObj], width, height);
 		context = new CGLContext (cgltarget);
 
 		if (context->Initialize ()) {
-			cglctx = context;
+			this->cglctx = context;
+			this->nsoglcontext = glcontext;
 		} else {
 			delete context;
 		}  
 	}
 
-	if (cgltarget && cglctx && 0) {
+	if (cgltarget && cglctx) {
+		NSOpenGLContext *glcontext = (NSOpenGLContext *) nsoglcontext;
 		Rect r0 = Rect (0, 0, width, height);
 		Region *region = new Region (r0); 
 
-		cgltarget->Reshape (width, height);
+		[glcontext makeCurrentContext];
 
-		glClearColor (0.0, 0.0, 0.0, 0.0);
-		glClear (GL_COLOR_BUFFER_BIT);
+		cgltarget->Reshape (width, height);
 
 		static_cast<Context *> (cglctx)->Push (Context::Clip (r0));
 		surface->Paint (cglctx, region, GetTransparent (), true);
 		static_cast<Context *> (cglctx)->Pop ();
 
-		cglctx->Flush ();
-		cgltarget->SwapBuffers ();
+		[glcontext flushBuffer];
 
 		return;
 	}
