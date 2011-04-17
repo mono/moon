@@ -1350,6 +1350,8 @@ Mp4Demuxer::OpenMoov ()
 		entry = stsd->entries [0];
 
 		switch (hdlr->handler_type) {
+			/* This is a hack to disable aac audio so we can test vda decoder until we have a audio pipeline */
+#if !defined (__APPLE__)
 		case SOUN_4CC:
 			audio = new AudioStream (media);
 			stream = audio;
@@ -1364,6 +1366,7 @@ Mp4Demuxer::OpenMoov ()
 			audio->SetBlockAlign (0);
 			LOG_MP4 ("Mp4Demuxer::OpenMoov (): added audio track with channels: %i sample rate: %ihz bits per sample: %i\n", audio->GetChannels (), audio->GetSampleRate (), audio->GetBitsPerSample ());
 			break;
+#endif
 		case VIDE_4CC:
 			video = new VideoStream (media);
 			stream = video;
@@ -2641,10 +2644,13 @@ Mp4Demuxer::ReadStsd (guint32 type, guint64 start, guint64 size, StblBox *stbl)
 
 	for (guint32 i = 0; i < stsd->entry_count; i++) {
 		switch (current_handler_type) {
+			/* This is a hack to disable aac audio so we can test vda decoder until we have a audio pipeline */
+#if !defined (__APPLE__)
 		case SOUN_4CC:
 			if (!ReadAudioSampleEntry ((AudioSampleEntry **) &stsd->entries [i]))
 				return false;
 			break;
+#endif
 		case VIDE_4CC:
 			if (!ReadVisualSampleEntry ((VisualSampleEntry **) &stsd->entries [i]))
 				return false;
