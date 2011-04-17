@@ -405,8 +405,9 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		const NSOpenGLPixelFormatAttribute attr[] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
-			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute) 32,
-			(NSOpenGLPixelFormatAttribute) nil
+			NSOpenGLPFAColorSize, 24,
+			NSOpenGLPFAAlphaSize, 8,
+			0
 		};
 
 		NSOpenGLContext *glcontext;
@@ -417,14 +418,7 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes: attr] autorelease];
 		glcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
 
-		[glcontext makeCurrentContext];
 		[mlview setOpenGLContext: glcontext];
-
-		for (int i = 0; i < 2; i++) {
-			glClearColor (0.0, 0.0, 0.0, 0.0);
-			glClear (GL_COLOR_BUFFER_BIT);
-			[glcontext flushBuffer];
-		}
 
 		cgltarget = new CGLSurface ((CGLContextObj) [glcontext CGLContextObj], width, height);
 		context = new CGLContext (cgltarget);
@@ -441,8 +435,6 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		NSOpenGLContext *glcontext = (NSOpenGLContext *) nsoglcontext;
 		Rect r0 = Rect (0, 0, width, height);
 		Region *region = new Region (r0); 
-
-		[glcontext makeCurrentContext];
 
 		cgltarget->Reshape (width, height);
 

@@ -80,6 +80,15 @@ GLContext::SetFramebuffer ()
 	GLuint          texture = dst->Texture ();
 	GLenum          status;
 
+	/* This is a horrible horrible workaround until I con figure out
+	 * why the framebuffer is corrupting our rendering
+	 * We at least render some contexts with this, with some flicker.
+	 */
+#if USE_CGL
+	ms->unref ();
+
+	return;
+#endif
 	if (!framebuffer)
 		glGenFramebuffers (1, &framebuffer);
 
