@@ -434,7 +434,8 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 	if (cgltarget && cglctx) {
 		NSOpenGLContext *glcontext = (NSOpenGLContext *) nsoglcontext;
 		Rect r0 = Rect (0, 0, width, height);
-		Region *region = new Region (r0); 
+		Region *region = new Region (r); 
+		int y = height - (r.y + r.height);
 
 		cgltarget->Reshape (width, height);
 
@@ -444,7 +445,23 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 
 		cglctx->Flush ();
 
-		[glcontext flushBuffer];
+		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
+			[glcontext flushBuffer];
+		} else {
+			cglctx->MakeCurrent ();
+
+			glDrawBuffer (GL_FRONT);
+			glViewport (-1, -1, 2, 2);
+			glRasterPos2f (0, 0);
+			glViewport (0, 0, width, height);
+
+			glBitmap (0, 0, 0, 0, r.x, y, NULL);
+
+			glCopyPixels (r.x, y, r.width, r.height, GL_COLOR);
+
+			glDrawBuffer (GL_BACK);
+			glFlush ();
+		}
 
 		return;
 	}
