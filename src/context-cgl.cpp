@@ -121,7 +121,7 @@ CGLContext::SetupVertexData (const double *matrix,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (context) {
+	if (dst->GetContext ()) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -143,7 +143,7 @@ CGLContext::HasDrawable ()
 	CGLSurface  *dst = (CGLSurface *) ms;
 	gboolean    status = FALSE;
 
-	if (context || dst->HasTexture ())
+	if (dst->GetContext () || dst->HasTexture ())
 		status = TRUE;
 
 	ms->unref ();
@@ -158,10 +158,11 @@ CGLContext::SyncDrawable ()
 	Target      *cairo = target->GetCairoTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface  *) ms;
 
 	// clear target contents
 	if (!target->GetInit ()) {
-		if (!context)
+		if (!dst->GetContext ())
 			GLContext::SetFramebuffer ();
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -179,7 +180,7 @@ CGLContext::SyncDrawable ()
 		GLsizei    width0 = src->Width ();
 		GLsizei    height0 = src->Height ();
 
-		if (!context)
+		if (!dst->GetContext ())
 			GLContext::SetFramebuffer ();
 
 		SetViewport ();
@@ -235,7 +236,7 @@ CGLContext::SyncDrawable ()
 		GLsizei     width0 = src->Width ();
 		GLsizei     height0 = src->Height ();
 
-		if (!context)
+		if (!dst->GetContext ())
 			GLContext::SetFramebuffer ();
 
 		SetViewport ();
@@ -420,10 +421,11 @@ CGLContext::SetFramebuffer ()
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface *) ms;
 
 	SyncDrawable ();
 
-	if (!context)
+	if (!dst->GetContext ())
 		GLContext::SetFramebuffer ();
 
 	ms->unref ();
@@ -443,7 +445,7 @@ CGLContext::SetScissor ()
 	clip.x -= r.x;
 	clip.y -= r.y;
 
-	if (context) {
+	if (dst->GetContext ()) {
 		glScissor (clip.x,
 			   dst->Height () - (clip.y + clip.height),
 			   clip.width,
