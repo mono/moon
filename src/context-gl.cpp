@@ -80,6 +80,15 @@ GLContext::SetFramebuffer ()
 	GLuint          texture = dst->Texture ();
 	GLenum          status;
 
+	/* This is a horrible horrible workaround until I con figure out
+	 * why the framebuffer is corrupting our rendering
+	 * We at least render some contexts with this, with some flicker.
+	 */
+#if USE_CGL
+	ms->unref ();
+
+	return;
+#endif
 	if (!framebuffer)
 		glGenFramebuffers (1, &framebuffer);
 
@@ -545,11 +554,7 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
 	}
 	else {
-#if USE_EGL
 		g_string_sprintfa (s, "gl_FragColor = texture2D(sampler0, v_TexCoord0.xy).bgra");
-#else
-		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
-#endif
 	}
 	if (alpha)
 		g_string_sprintfa (s, " * alpha");

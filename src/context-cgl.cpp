@@ -121,7 +121,7 @@ CGLContext::SetupVertexData (const double *matrix,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (context) {
+	if (dst->GetContext ()) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -140,9 +140,10 @@ CGLContext::HasDrawable ()
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface *) ms;
 	gboolean    status = FALSE;
 
-	if (context)
+	if (dst->GetContext () || dst->HasTexture ())
 		status = TRUE;
 
 	ms->unref ();
@@ -157,10 +158,12 @@ CGLContext::SyncDrawable ()
 	Target      *cairo = target->GetCairoTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface  *) ms;
 
 	// clear target contents
 	if (!target->GetInit ()) {
-		GLContext::SetFramebuffer ();
+		if (!dst->GetContext ())
+			GLContext::SetFramebuffer ();
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
 		glClear (GL_COLOR_BUFFER_BIT);
@@ -177,7 +180,8 @@ CGLContext::SyncDrawable ()
 		GLsizei    width0 = src->Width ();
 		GLsizei    height0 = src->Height ();
 
-		GLContext::SetFramebuffer ();
+		if (!dst->GetContext ())
+			GLContext::SetFramebuffer ();
 
 		SetViewport ();
 
@@ -232,7 +236,8 @@ CGLContext::SyncDrawable ()
 		GLsizei     width0 = src->Width ();
 		GLsizei     height0 = src->Height ();
 
-		GLContext::SetFramebuffer ();
+		if (!dst->GetContext ())
+			GLContext::SetFramebuffer ();
 
 		SetViewport ();
 
@@ -416,10 +421,12 @@ CGLContext::SetFramebuffer ()
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface *) ms;
 
 	SyncDrawable ();
 
-	GLContext::SetFramebuffer ();
+	if (!dst->GetContext ())
+		GLContext::SetFramebuffer ();
 
 	ms->unref ();
 }
@@ -438,7 +445,7 @@ CGLContext::SetScissor ()
 	clip.x -= r.x;
 	clip.y -= r.y;
 
-	if (context) {
+	if (dst->GetContext ()) {
 		glScissor (clip.x,
 			   dst->Height () - (clip.y + clip.height),
 			   clip.width,
@@ -471,6 +478,9 @@ CGLContext::Blit (unsigned char *data,
 	int           buffer_stride = stride;
 
 	ForceCurrent ();
+
+	// no support for blit to drawable at the moment
+	g_assert (!dst->GetContext ());
 
 	// mark target as initialized
 	target->SetInit (ms);
@@ -509,6 +519,9 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	int           buffer_stride[] = { stride[0], stride[1], stride[2] };
 
 	ForceCurrent ();
+
+	// no support for blit to drawable at the moment
+	g_assert (!dst->GetContext ());
 
 	// mark target as initialized
 	target->SetInit (ms);

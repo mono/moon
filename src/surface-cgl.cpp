@@ -28,6 +28,7 @@ CGLSurface::CGLSurface (CGLContextObj context, GLsizei w, GLsizei h) : GLSurface
 
 CGLSurface::CGLSurface (GLsizei w, GLsizei h) : GLSurface (w, h)
 {
+	this->context = NULL;
 }
 
 void
@@ -57,6 +58,8 @@ CGLSurface::Reshape (int width, int height)
 cairo_surface_t *
 CGLSurface::Cairo ()
 {
+	g_assert (context == NULL);
+
 	return GLSurface::Cairo ();
 }
 

@@ -5,6 +5,20 @@
 
 @synthesize moonwindow;
 
+- (void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSViewGlobalFrameDidChangeNotification object:self];
+
+	[super dealloc];
+}
+
+-(void) setOpenGLContext: (NSOpenGLContext *) context
+{
+	openGLContext = context;
+	openGLContext.view = self;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_surfaceUpdate:)  name:NSViewGlobalFrameDidChangeNotification object:self];
+}
+
 -(void) drawRect: (NSRect) rect
 {
 	moonwindow->ExposeEvent (Moonlight::Rect (rect.origin.x, rect.origin.y, rect.size.width, rect.size.height));
@@ -50,13 +64,13 @@
 	moonwindow->KeyUpEvent (event);
 }
 
-- (void) setFrame: (NSRect) frame {
+- (void) setFrame: (NSRect) frame
+{
 	[super setFrame: frame];
 	[self removeTrackingRect: trackingrect];
 	trackingrect = [self addTrackingRect: frame owner: self userData: NULL assumeInside: NO];
 
-	moonwindow->SetWidthInternal (frame.size.width);
-	moonwindow->SetHeightInternal (frame.size.height);
+	moonwindow->ResizeInternal (frame.size.width, frame.size.height);
 
 	if (moonwindow->GetSurface ())
 		moonwindow->GetSurface ()->HandleUIWindowAllocation (true);
@@ -72,4 +86,13 @@
 	return YES;
 }
 
+- (void) update
+{
+	[openGLContext update];
+}
+
+- (void) _surfaceUpdate: (NSNotification *) notification
+{
+	[self update];
+}
 @end

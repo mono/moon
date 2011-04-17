@@ -106,7 +106,11 @@ MoonWindowCocoa::Resize (int width, int height)
 	frame.size.height = height;
 
 	[(MLWindow *)window setFrame: frame display: YES];
+}
 
+void
+MoonWindowCocoa::ResizeInternal (int width, int height)
+{
 	this->width = width;
 	this->height = height;
 }
@@ -158,25 +162,26 @@ MoonWindowCocoa::Hide ()
 void
 MoonWindowCocoa::EnableEvents (bool first)
 {
-	g_warning ("implement me");
+	g_warning ("implement me: EnableEvents");
 }
 
 void
 MoonWindowCocoa::DisableEvents ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: DisableEvents");
 }
 
 void
 MoonWindowCocoa::GrabFocus ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: GrabFocus");
 }
 
 bool
 MoonWindowCocoa::HasFocus ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: HasFocus");
+	return YES;
 }
 
 void
@@ -397,48 +402,67 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 	Region *region = new Region (r);
 
 #if USE_CGL
-	if (!cgltarget && 0) {
+	if (!cgltarget) {
 		const NSOpenGLPixelFormatAttribute attr[] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
-			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute) 32,
-			(NSOpenGLPixelFormatAttribute) nil
+			NSOpenGLPFAColorSize, 24,
+			NSOpenGLPFAAlphaSize, 8,
+			0
 		};
 
+		NSOpenGLContext *glcontext;
 		NSOpenGLPixelFormat *format;
 		CGLContext *context;
+		MLView *mlview = (MLView *) view;
 
 		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes: attr] autorelease];
-		nsoglcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
+		glcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
 
-		[(NSOpenGLContext *)nsoglcontext makeCurrentContext];
-		((NSOpenGLContext *)nsoglcontext).view = (MLView *) view;
+		[mlview setOpenGLContext: glcontext];
 
-		cgltarget = new CGLSurface ((CGLContextObj) [(NSOpenGLContext *)nsoglcontext CGLContextObj], width, height);
+		cgltarget = new CGLSurface ((CGLContextObj) [glcontext CGLContextObj], width, height);
 		context = new CGLContext (cgltarget);
 
 		if (context->Initialize ()) {
-			cglctx = context;
+			this->cglctx = context;
+			this->nsoglcontext = glcontext;
 		} else {
 			delete context;
 		}  
 	}
 
-	if (cgltarget && cglctx && 0) {
+	if (cgltarget && cglctx) {
+		NSOpenGLContext *glcontext = (NSOpenGLContext *) nsoglcontext;
 		Rect r0 = Rect (0, 0, width, height);
-		Region *region = new Region (r0); 
+		Region *region = new Region (r); 
+		int y = height - (r.y + r.height);
 
 		cgltarget->Reshape (width, height);
-
-		glClearColor (0.0, 0.0, 0.0, 0.0);
-		glClear (GL_COLOR_BUFFER_BIT);
 
 		static_cast<Context *> (cglctx)->Push (Context::Clip (r0));
 		surface->Paint (cglctx, region, GetTransparent (), true);
 		static_cast<Context *> (cglctx)->Pop ();
 
 		cglctx->Flush ();
-		cgltarget->SwapBuffers ();
+
+		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
+			[glcontext flushBuffer];
+		} else {
+			cglctx->MakeCurrent ();
+
+			glDrawBuffer (GL_FRONT);
+			glViewport (-1, -1, 2, 2);
+			glRasterPos2f (0, 0);
+			glViewport (0, 0, width, height);
+
+			glBitmap (0, 0, 0, 0, r.x, y, NULL);
+
+			glCopyPixels (r.x, y, r.width, r.height, GL_COLOR);
+
+			glDrawBuffer (GL_BACK);
+			glFlush ();
+		}
 
 		return;
 	}

@@ -36,6 +36,8 @@ public:
 	virtual void ConnectToContainerPlatformWindow (gpointer container_window);
 
 	virtual void Resize (int width, int height);
+	void ResizeInternal (int width, int height);
+
 	virtual void SetCursor (CursorType cursor);
 	virtual void SetBackgroundColor (Color *color);
 	virtual void Invalidate (Rect r);
@@ -53,14 +55,8 @@ public:
 	virtual double GetTop ();
 
 	virtual void SetWidth (double width);
-	void SetWidthInternal (int width) {
-		this->width = width;
-	}
 
 	virtual void SetHeight (double height);
-	void SetHeightInternal (int height) {
-		this->height = height;
-	}
 
 	virtual void SetTitle (const char *title);
 

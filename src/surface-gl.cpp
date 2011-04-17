@@ -98,6 +98,7 @@ GLSurface::Texture ()
 			      GL_RGBA,
 			      GL_UNSIGNED_BYTE,
 			      data);
+		glError ();
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
 

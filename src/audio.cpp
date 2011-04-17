@@ -1075,7 +1075,7 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
 	
 	// toshok remove me
-#if defined (PLATFORM_ANDROID)
+#if defined (PLATFORM_ANDROID) || defined (__APPLE__)
 	return NULL;
 #endif
 

@@ -359,6 +359,10 @@ libmoon_la_SOURCES_FFMPEG = 	\
 	pipeline-ffmpeg.cpp	\
 	pipeline-ffmpeg.h
 
+libmoon_la_SOURCES_VDA = 	\
+	pipeline-vda.cpp	\
+	pipeline-vda.h
+
 libmoon_la_SOURCES_ALSA =	\
 	audio-alsa.cpp		\
 	audio-alsa.h
@@ -432,6 +436,10 @@ if INCLUDE_FFMPEG
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_FFMPEG)
 endif
 
+if INCLUDE_VDA
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_VDA)
+endif
+
 if INCLUDE_ALSA
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_ALSA)
 endif
@@ -487,6 +495,7 @@ EXTRA_DIST = \
 	$(libmoon_la_SOURCES_PAL_GTK) \
 	$(libmoon_la_SOURCES_PAL_COCOA) \
 	$(libmoon_la_SOURCES_FFMPEG) \
+	$(libmoon_la_SOURCES_VDA) \
 	$(libmoon_la_SOURCES_ALSA) \
 	$(libmoon_la_SOURCES_PULSEAUDIO) \
 	$(libmoon_la_SOURCES_OPENSLES) \

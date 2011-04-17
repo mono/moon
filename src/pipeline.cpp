@@ -21,6 +21,7 @@
 #include "audio.h"
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
+#include "pipeline-vda.h"
 #include "mp3.h"
 #include "uri.h"
 #include "media.h"
@@ -370,6 +371,9 @@ Media::Initialize ()
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
 		register_ffmpeg ();
 	}
+#endif
+#ifdef INCLUDE_VDA
+	register_vda ();
 #endif
 	
 	Media::RegisterDecoder (new PassThroughDecoderInfo ());
@@ -3086,7 +3090,9 @@ IMediaStream::IMediaStream (Type::Kind kind, Media *media) : IMediaObject (kind,
 	
 	extra_data_size = 0;
 	extra_data = NULL;
-	
+	raw_extra_data_size = 0;
+	raw_extra_data = NULL;
+
 	duration = 0;
 	pts_per_frame = 0;
 	
@@ -3118,6 +3124,8 @@ IMediaStream::Dispose ()
 	}
 	g_free (extra_data);
 	extra_data = NULL;
+	g_free (raw_extra_data);
+	raw_extra_data = NULL;
 	g_free (codec);
 	codec = NULL;
 
