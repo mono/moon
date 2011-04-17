@@ -139,6 +139,8 @@ MoonVDADecoder::OpenDecoderAsyncInternal ()
 	if (avcCData) CFRelease (avcCData);
 
 	if (status == kVDADecoderNoErr) {
+		SetPixelFormat (MoonPixelFormat422YpCbCr8);
+
 		ReportOpenDecoderCompleted ();
 	} else {
 		char *str = g_strdup_printf ("MoonVDADecoder failed to open codec (result: %d)", status);
@@ -150,25 +152,35 @@ MoonVDADecoder::OpenDecoderAsyncInternal ()
 void
 MoonVDADecoder::Dispose ()
 {
-	g_assert_not_reached ();
+	VDADecoderDestroy (decoder);
 }
 
 void
 MoonVDADecoder::Cleanup (MediaFrame *frame)
 {
-	g_assert_not_reached ();
+	g_warning ("Fixme");
 }
 
 void
 MoonVDADecoder::CleanState ()
 {
-	g_assert_not_reached ();
+	VDADecoderFlush (decoder, 0);
 }
 
 void
 MoonVDADecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 {
-	g_assert_not_reached ();
+	CFMutableDictionaryRef frameInfo = CFDictionaryCreateMutable (kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	CFDataRef compressedBuffer = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) mf->GetBuffer (), mf->GetBufLen ());
+	CFDataRef mediaFrameBuffer = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) &mf, sizeof (&mf));
+	
+	CFDictionarySetValue (frameInfo, CFSTR ("MoonMediaFram"), mediaFrameBuffer);
+
+	OSStatus status = VDADecoderDecode (decoder, 0, compressedBuffer, frameInfo);
+
+	if (status != kVDADecoderNoErr) {
+		g_warning ("VDADecoderDecode returned: %i\n", status);
+	}
 }
 
 /*

@@ -34,8 +34,7 @@ void register_vda ();
 class MoonVDADecoder : public IMediaDecoder {
 private:
 	OSStatus CreateDecoder (SInt32 inHeight, SInt32 inWidth, OSType inSourceFormat, CFDataRef inAVCCData);
-	void *decoder;
-	void *callback;
+	VDADecoder decoder;
 
 protected:
 	virtual ~MoonVDADecoder () {}
