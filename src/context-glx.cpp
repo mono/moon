@@ -159,17 +159,50 @@ GLXContext::ForceCurrent ()
 }
 
 void
-GLXContext::SetupVertexData (double x,
-			     double y,
-			     double width,
-			     double height)
+GLXContext::SetupVertexData (const double *matrix,
+			     double       x,
+			     double       y,
+			     double       width,
+			     double       height)
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	GLXSurface  *dst = (GLXSurface *) ms;
+	double      dx = 2.0 / dst->Width ();
+	double      dy = 2.0 / dst->Height ();
+	double      p[4][4];
+	int         i;
 
-	GLContext::SetupVertexData (x, y, width, height);
+	p[0][0] = x;
+	p[0][1] = y;
+	p[0][2] = 0.0;
+	p[0][3] = 1.0;
+
+	p[1][0] = x + width;
+	p[1][1] = y;
+	p[1][2] = 0.0;
+	p[1][3] = 1.0;
+
+	p[2][0] = x + width;
+	p[2][1] = y + height;
+	p[2][2] = 0.0;
+	p[2][3] = 1.0;
+
+	p[3][0] = x;
+	p[3][1] = y + height;
+	p[3][2] = 0.0;
+	p[3][3] = 1.0;
+
+	for (i = 0; i < 4; i++) {
+		if (matrix)
+			Matrix3D::TransformPoint (p[i], matrix, p[i]);
+
+		vertices[i][0] = p[i][0] * dx - p[i][3];
+		vertices[i][1] = p[i][1] * dy - p[i][3];
+		vertices[i][2] = -p[i][2];
+		vertices[i][3] = p[i][3];
+	}
 
 	if (dst->GetGLXDrawable ()) {
 		int i;
@@ -237,7 +270,7 @@ GLXContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (0, 0, width0, height0);
+		SetupVertexData (NULL, 0, 0, width0, height0);
 		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
@@ -293,7 +326,7 @@ GLXContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (rSrc.x - r.x, rSrc.y - r.y, width0, height0);
+		SetupVertexData (NULL, rSrc.x - r.x, rSrc.y - r.y, width0, height0);
 		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,

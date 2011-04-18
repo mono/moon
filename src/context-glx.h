@@ -79,10 +79,11 @@ public:
 	void Flush ();
 
 protected:
-	void SetupVertexData (double x,
-			      double y,
-			      double width,
-			      double height);
+	void SetupVertexData (const double *matrix,
+			      double       x,
+			      double       y,
+			      double       width,
+			      double       height);
 	void SetFramebuffer ();
 	void SetScissor ();
 	void ForceCurrent ();

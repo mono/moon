@@ -106,10 +106,11 @@ protected:
 	void SetViewport ();
 
 	void SetupVertexData ();
-	virtual void SetupVertexData (double x,
-				      double y,
-				      double width,
-				      double height);
+	virtual void SetupVertexData (const double *matrix,
+				      double       x,
+				      double       y,
+				      double       width,
+				      double       height);
 
 	void SetupTexCoordData ();
 	void SetupTexCoordData (const double *matrix,

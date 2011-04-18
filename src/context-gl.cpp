@@ -132,15 +132,19 @@ GLContext::SetupVertexData ()
 {
 	Context::Target *target = Top ()->GetTarget ();
 	Rect            r = target->GetData (NULL);
+	double          m[16];
 
-	SetupVertexData (0.0, 0.0, r.width, r.height);
+	Matrix3D::Identity (m);
+
+	SetupVertexData (m, 0.0, 0.0, r.width, r.height);
 }
 
 void
-GLContext::SetupVertexData (double x,
-			    double y,
-			    double width,
-			    double height)
+GLContext::SetupVertexData (const double *matrix,
+			    double       x,
+			    double       y,
+			    double       width,
+			    double       height)
 {
 	Context::Target *target = Top ()->GetTarget ();
 	MoonSurface     *ms;
@@ -172,6 +176,8 @@ GLContext::SetupVertexData (double x,
 	p[3][3] = 1.0;
 
 	for (i = 0; i < 4; i++) {
+		Matrix3D::TransformPoint (p[i], matrix, p[i]);
+
 		vertices[i][0] = p[i][0] * dx - p[i][3];
 		vertices[i][1] = p[i][1] * dy - p[i][3];
 		vertices[i][2] = -p[i][2];
