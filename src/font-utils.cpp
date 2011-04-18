@@ -185,9 +185,7 @@ font_style_info_to_string (FontStretches stretch, FontWeights weight, FontStyles
 	if (stretch != FontStretchesNormal) {
 		while (style_hints[i].type == FontPropertyStretch) {
 			if (style_hints[i].value == stretch) {
-#if PLUMB_ME
 				p = g_stpcpy (p, style_hints[i].name);
-#endif
 				break;
 			}
 			
@@ -204,9 +202,7 @@ font_style_info_to_string (FontStretches stretch, FontWeights weight, FontStyles
 				if (p != namebuf)
 					*p++ = ' ';
 				
-#if PLUMB_ME
 				p = g_stpcpy (p, style_hints[i].name);
-#endif
 				break;
 			}
 			
@@ -223,9 +219,7 @@ font_style_info_to_string (FontStretches stretch, FontWeights weight, FontStyles
 				if (p != namebuf)
 					*p++ = ' ';
 
-#if PLUMB_ME
 				p = g_stpcpy (p, style_hints[i].name);
-#endif
 				break;
 			}
 			
