@@ -115,7 +115,7 @@ CGLContext::SetupVertexData (double x,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (dst->GetCGLDrawable ()) {
+	if (dst->GetContext ()) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -171,7 +171,7 @@ CGLContext::SetupVertexData (const double *matrix,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (dst->GetCGLDrawable ()) {
+	if (dst->GetContext ()) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -288,7 +288,7 @@ CGLContext::SyncDrawable ()
 		glUseProgram (program);
 
 		SetupVertexData (0, 0, width0, height0);
-		SetupTexCoordData ();
+		GLContext::SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -344,7 +344,7 @@ CGLContext::SyncDrawable ()
 		glUseProgram (program);
 
 		SetupVertexData (rSrc.x - r.x, rSrc.y - r.y, width0, height0);
-		SetupTexCoordData ();
+		GLContext::SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
