@@ -58,18 +58,48 @@ static void
 VDADecoderCallback (void *decompressionOutputRefCon, CFDictionaryRef frameInfo, OSStatus status, uint32_t infoFlags, CVImageBufferRef imageBuffer)
 {
 	MoonVDADecoder *decoder = (MoonVDADecoder *) decompressionOutputRefCon;
+	VideoStream *vs = (VideoStream *) decoder->GetStream ();
+
+	// FIXME: Is this always 1 thread?  Can we optimize this
+	decoder->GetDeployment ()->RegisterThread ();
+
+	Deployment::SetCurrent (decoder->GetDeployment ());
 
 	if (imageBuffer == NULL) {
 		return;
 	}
 
-	OSType format_type = CVPixelBufferGetPixelFormatType(imageBuffer);
+	OSType format_type = CVPixelBufferGetPixelFormatType (imageBuffer);
 	if (format_type != kCVPixelFormatType_422YpCbCr8) {
 		g_warning ("Mismatched format in VDA");
 		return;
 	}
 
-	g_warning ("Decoder: %p\n", decoder);
+	MediaFrame *mf = (MediaFrame *) CFDictionaryGetValue (frameInfo, CFSTR ("MoonMediaFrame"));
+
+	mf->AddState (MediaFramePlanar);
+	mf->FreeBuffer ();
+	mf->SetBufLen (0);
+
+	mf->srcSlideY = 0;
+	mf->srcSlideH = vs->GetHeight ();
+
+	mf->width = vs->GetWidth ();
+	mf->height = vs->GetHeight ();
+
+	CVPixelBufferLockBaseAddress (imageBuffer, 0);
+
+	mf->data_stride [0] = (uint8_t *) CVPixelBufferGetBaseAddress (imageBuffer);
+	mf->srcStride [0] = CVPixelBufferGetBytesPerRow (imageBuffer);
+
+	mf->AddState (MediaFrameDecoded);
+
+	mf->decoder_specific_data = imageBuffer;
+	CVPixelBufferRetain (imageBuffer);
+
+	decoder->ReportDecodeFrameCompleted (mf);
+
+	mf->unref ();
 }
 
 OSStatus
@@ -159,7 +189,8 @@ MoonVDADecoder::Dispose ()
 void
 MoonVDADecoder::Cleanup (MediaFrame *frame)
 {
-	g_warning ("Fixme");
+	CVPixelBufferUnlockBaseAddress ((CVPixelBufferRef) frame->decoder_specific_data, 0);
+	CVPixelBufferRelease ((CVPixelBufferRef) frame->decoder_specific_data);
 }
 
 void
@@ -171,17 +202,22 @@ MoonVDADecoder::CleanState ()
 void
 MoonVDADecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 {
-	CFMutableDictionaryRef frameInfo = CFDictionaryCreateMutable (kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	CFDictionaryValueCallBacks valueCallbacks = {0, 0, 0, 0, 0};
+	CFMutableDictionaryRef frameInfo = CFDictionaryCreateMutable (kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &valueCallbacks);
 	CFDataRef compressedBuffer = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) mf->GetBuffer (), mf->GetBufLen ());
-	CFDataRef mediaFrameBuffer = CFDataCreate (kCFAllocatorDefault, (const uint8_t*) &mf, sizeof (&mf));
 	
-	CFDictionarySetValue (frameInfo, CFSTR ("MoonMediaFram"), mediaFrameBuffer);
+	CFDictionarySetValue (frameInfo, CFSTR ("MoonMediaFrame"), mf);
 
 	OSStatus status = VDADecoderDecode (decoder, 0, compressedBuffer, frameInfo);
 
 	if (status != kVDADecoderNoErr) {
 		g_warning ("VDADecoderDecode returned: %i\n", status);
 	}
+
+	if (compressedBuffer) CFRelease (compressedBuffer);
+	if (frameInfo) CFRelease (frameInfo);
+
+	mf->ref ();
 }
 
 /*
@@ -199,7 +235,6 @@ MoonVDADecoderInfo::Create (Media* media, IMediaStream* stream)
 {
 	Mp4Demuxer *demuxer = (Mp4Demuxer *) stream->GetDemuxerReffed ();
 
-	g_warning ("Telling demuxer we need raw frames");
 	demuxer->SetNeedsRawFrames (true);
 
 	demuxer->unref ();

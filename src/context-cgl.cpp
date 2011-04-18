@@ -512,11 +512,8 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	CGLSurface  *dst = (CGLSurface *) ms;
-	int           size[] = { dst->Width (), dst->Height () };
-	int           width[] = { size[0], size[0] / 2, size[0] / 2 };
-	int           height[] = { size[1], size[1] / 2, size[1] / 2 };
-	unsigned char *buffer[] = { data[0], data[1], data[2] };
-	int           buffer_stride[] = { stride[0], stride[1], stride[2] };
+	GLuint      texture = dst->Texture ();
+	int         size[] = { dst->Width (), dst->Height () };
 
 	ForceCurrent ();
 
@@ -526,25 +523,10 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	// mark target as initialized
 	target->SetInit (ms);
 
-	for (int i = 0; i < 3; i++) {
-		if (PixelRowLength (stride[i], width[i], 1) != width[i]) {
-			buffer_stride[i] = width[i];
-			buffer[i] = (unsigned char *)
-				g_malloc (buffer_stride[i] * height[i]);
-
-			for (int y = 0; y < height[i]; y++)
-				memcpy (buffer[i] + y * buffer_stride[i],
-					data[i] + y * stride[i],
-					buffer_stride[i]);
-		}
-	}
-
-	GLContext::BlitYV12 (buffer, buffer_stride);
-
-	for (int i = 0; i < 3; i++)
-		if (buffer[i] != data[i])
-			g_free (buffer[i]);
-
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTextureRangeAPPLE (GL_TEXTURE_2D, size [0] * size [1] * 2, data [0]);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size [0], size [1], 0, GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_APPLE, data [0]);
+	glBindTexture (GL_TEXTURE_2D, 0);
 
 	ms->unref ();
 }
