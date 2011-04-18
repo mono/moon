@@ -74,52 +74,17 @@ CGLContext::ProgramPrecisionString ()
 }
 
 void
-CGLContext::SetupVertexData (const double *matrix,
-				 double       x,
+CGLContext::SetupVertexData (double       x,
 				 double       y,
 				 double       width,
 				 double       height)
 {
-	Target          *target = Top ()->GetTarget ();
-	MoonSurface     *ms;
-	Rect            r = target->GetData (&ms);
-	CGLSurface  *dst = (CGLSurface *) ms;
-	double          dx = 2.0 / dst->Width ();
-	double          dy = 2.0 / dst->Height ();
-	double          p[4][4];
-	int             i;
+	Target      *target = Top ()->GetTarget (); 
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface *) ms; 
 
-	p[0][0] = x;
-	p[0][1] = y;
-	p[0][2] = 0.0;
-	p[0][3] = 1.0;
-
-	p[1][0] = x + width;
-	p[1][1] = y;
-	p[1][2] = 0.0;
-	p[1][3] = 1.0;
-
-	p[2][0] = x + width;
-	p[2][1] = y + height;
-	p[2][2] = 0.0;
-	p[2][3] = 1.0;
-
-	p[3][0] = x;
-	p[3][1] = y + height;
-	p[3][2] = 0.0;
-	p[3][3] = 1.0;
-
-	if (matrix) {
-		for (i = 0; i < 4; i++)
-			Matrix3D::TransformPoint (p[i], matrix, p[i]);
-	}
-
-	for (i = 0; i < 4; i++) {
-		vertices[i][0] = p[i][0] * dx - p[i][3];
-		vertices[i][1] = p[i][1] * dy - p[i][3];
-		vertices[i][2] = -p[i][2];
-		vertices[i][3] = p[i][3];
-	}
+	GLContext::SetupVertexData (x, y, width, height);
 
 	if (dst->GetContext ()) {
 		int i;
@@ -128,10 +93,10 @@ CGLContext::SetupVertexData (const double *matrix,
 			GLfloat v = vertices[i][1] + vertices[i][3];
 
 			vertices[i][1] = vertices[i][3] - v;
-		}
-	}
+		}   
+	}   
 
-	ms->unref ();
+	ms->unref (); 
 }
 
 gboolean
@@ -187,8 +152,8 @@ CGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (NULL, 0, 0, width0, height0);
-		GLContext::SetupTexCoordData ();
+		SetupVertexData (0, 0, width0, height0);
+		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -243,12 +208,8 @@ CGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (NULL,
-				 rSrc.x - r.x,
-				 rSrc.y - r.y,
-				 width0,
-				 height0);
-		GLContext::SetupTexCoordData ();
+		SetupVertexData (rSrc.x - r.x, rSrc.y - r.y, width0, height0);
+		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -474,10 +435,12 @@ CGLContext::Blit (unsigned char *data,
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	CGLSurface  *dst = (CGLSurface *) ms;
-	unsigned char *buffer = data;
-	int           buffer_stride = stride;
+	Rect        clip;
 
 	ForceCurrent ();
+
+	// no support for clipping
+	g_assert (GetClip () == r);
 
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetContext ());
@@ -485,22 +448,23 @@ CGLContext::Blit (unsigned char *data,
 	// mark target as initialized
 	target->SetInit (ms);
 
-	if (PixelRowLength (stride, dst->Width (), 4) != dst->Width ()) {
-		buffer_stride = dst->Width () * 4;
-		buffer =  (unsigned char *)
-			g_malloc (buffer_stride * dst->Height ());
-
-		for (int y = 0; y < dst->Height (); y++)
-			memcpy (buffer + (y * buffer_stride),
-				data + (y * stride),
-				buffer_stride);
-	}
-
-	GLContext::Blit (buffer, buffer_stride);
-
-	if (buffer != data)
-		g_free (buffer);
-
+	glPixelStorei (GL_UNPACK_ROW_LENGTH,
+			PixelRowLength (stride, dst->Width (), 4));
+	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride));
+	glBindTexture (GL_TEXTURE_2D, dst->Texture ());
+	glTexSubImage2D (GL_TEXTURE_2D,
+			0,
+			0,
+			0,
+			dst->Width (),
+			dst->Height (),
+			GL_BGRA,
+			GL_UNSIGNED_BYTE,
+			data);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
+	 
 	ms->unref ();
 }
 
@@ -516,6 +480,9 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	int         size[] = { dst->Width (), dst->Height () };
 
 	ForceCurrent ();
+
+	// no support for clipping
+	g_assert (GetClip () == r);
 
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetContext ());
@@ -566,38 +533,7 @@ CGLContext::Paint (MoonSurface *src,
 		       double      x,
 		       double      y)
 {
-	Target *target = Top ()->GetTarget ();
-	Rect   r = target->GetData (NULL);
-	Rect   clip;
-
-	Top ()->GetClip (&clip);
-
-	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
-		double m[16];
-		int    x0, y0;
-
-		GetMatrix (m);
-
-		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			CGLSurface *surface = (CGLSurface *) src;
-			Rect           r = Rect (x + x0,
-						 y + y0,
-						 surface->Width (),
-						 surface->Height ());
-
-			// matching dimensions and no transformation allow us
-			// to set source as initial state of target surface when
-			// it is not already initialized.
-			if (r == clip) {
-				target->SetInit (src);
-				return;
-			}
-		}
-	}
-
-	ForceCurrent ();
-
-	GLContext::Paint (src, alpha, x, y);
+	CGLContext::Project (src, NULL, alpha, x, y);
 }
 
 void
@@ -608,42 +544,67 @@ CGLContext::Project (MoonSurface  *src,
 		     double       y)
 {
 	CGLSurface *surface = (CGLSurface *) src;
+	Target     *target = Top ()->GetTarget (); 
+	Rect       r = target->GetData (NULL);
+	Rect       clip = GetClip (); 
+	double     m[16];
 
-	if (!HasDrawable () && !surface->HasTexture ()) {
-		double m[16];
-		int    x0, y0;
+	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
+		int x0, y0; 
 
 		GetMatrix (m);
-		Matrix3D::Multiply (m, matrix, m);
+		if (matrix)
+			Matrix3D::Multiply (m, matrix, m); 
+
+		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
+			CGLSurface *surface = (CGLSurface *) src;
+			Rect       r = Rect (x + x0, 
+						y + y0, 
+						surface->Width (), 
+						surface->Height ());
+
+			// matching dimensions and no transformation allow us
+			// to set source as initial state of target surface when
+			// it is not already initialized.
+
+			if (r == clip) {
+				target->SetInit (src);
+				return;
+			}   
+		}   
+	}   
+
+	if (!HasDrawable () && !surface->HasTexture ()) {
+		int x0, y0; 
+
+		GetMatrix (m);
+		if (matrix)
+			Matrix3D::Multiply (m, matrix, m); 
 
 		// avoid GL rendering to target without previously
 		// allocated hardware drawable
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			Target          *target = Top ()->GetTarget ();
-			Rect            r = Rect (x + x0,
-						  y + y0,
-						  surface->Width (),
-						  surface->Height ());
-			cairo_surface_t *cs = src->Cairo ();
-			cairo_t         *cr = Push (Cairo (r));
+			cairo_matrix_t m;
 
-			cairo_identity_matrix (cr);
-			cairo_translate (cr, x0, y0);
-			cairo_set_operator (cr, target->GetInit () ?
-					    CAIRO_OPERATOR_OVER :
-					    CAIRO_OPERATOR_SOURCE);
-			cairo_set_source_surface (cr, cs, x, y);
-			cairo_paint_with_alpha (cr, alpha);
-			cairo_surface_destroy (cs);
+			cairo_matrix_init_translate (&m, x0, y0);
 
-			Context::Pop ();
+			Context::Push (Context::AbsoluteTransform (m));
+			Context::Paint (src, alpha, x, y); 
+			Context::Pop (); 
 			return;
 		}
 	}
 
+	GetDeviceMatrix (m);
+	if (matrix)
+		Matrix3D::Multiply (m, matrix, m);
+
+	if (!GetSourceMatrix (m, m, x, y))
+		return;
+
 	ForceCurrent ();
 
-	GLContext::Project (src, matrix, alpha, x, y);
+	GLContext::Paint (src, m, alpha);
 }
 
 void

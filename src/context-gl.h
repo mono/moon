@@ -74,7 +74,7 @@ public:
 	void Flush ();
 
 protected:
-#if !defined(USE_EGL) && !defined(USE_CGL)
+#if !USE_CGL && !USE_EGL
 	PFNGLCREATESHADERPROC glCreateShader;
 	PFNGLSHADERSOURCEPROC glShaderSource;
 	PFNGLCOMPILESHADERPROC glCompileShader;
@@ -108,23 +108,15 @@ protected:
 	void SetViewport ();
 
 	void SetupVertexData ();
-	virtual void SetupVertexData (const double *matrix,
-				      double       x,
-				      double       y,
-				      double       width,
-				      double       height);
+	virtual void SetupVertexData (double x,
+				      double y,
+				      double width,
+				      double height);
 
 	void SetupTexCoordData ();
-	virtual void SetupTexCoordData (const double *matrix,
-					double       du,
-					double       dv);
-
-	virtual void SetTextureWrap (GLenum target);
-
-	static int PixelAlignment (int stride);
-	static int PixelRowLength (int stride,
-				   int width,
-				   int size);
+	void SetupTexCoordData (const double *matrix,
+				double       du,
+				double       dv);
 
 	static int PixelAlignment (int stride);
 	static int PixelRowLength (int stride,
