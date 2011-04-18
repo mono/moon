@@ -524,7 +524,6 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	target->SetInit (ms);
 
 	glBindTexture (GL_TEXTURE_2D, texture);
-	glTextureRangeAPPLE (GL_TEXTURE_2D, size [0] * size [1] * 2, data [0]);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size [0], size [1], 0, GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_APPLE, data [0]);
 	glBindTexture (GL_TEXTURE_2D, 0);
 
