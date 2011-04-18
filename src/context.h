@@ -149,6 +149,8 @@ public:
 	virtual void Blit (unsigned char *data,
 			   int           stride);
 
+	virtual void BlitVUY2 (unsigned char *data);
+	
 	virtual void BlitYV12 (unsigned char *data[],
 			       int           stride[]);
 

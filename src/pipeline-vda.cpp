@@ -77,7 +77,7 @@ VDADecoderCallback (void *decompressionOutputRefCon, CFDictionaryRef frameInfo, 
 
 	MediaFrame *mf = (MediaFrame *) CFDictionaryGetValue (frameInfo, CFSTR ("MoonMediaFrame"));
 
-	mf->AddState (MediaFramePlanar);
+	mf->AddState (MediaFrameVUY2);
 	mf->FreeBuffer ();
 	mf->SetBufLen (0);
 

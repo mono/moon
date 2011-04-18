@@ -1011,6 +1011,12 @@ Context::Blit (unsigned char *data,
 }
 
 void
+Context::BlitVUY2 (unsigned char *data)
+{
+	g_warning ("Context::BlitVUY2 has been called. The derived class should have overridden it.");
+}
+
+void
 Context::BlitYV12 (unsigned char *data[],
 		   int           stride[])
 {

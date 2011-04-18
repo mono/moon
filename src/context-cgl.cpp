@@ -79,10 +79,10 @@ CGLContext::SetupVertexData (double       x,
 				 double       width,
 				 double       height)
 {
-	Target      *target = Top ()->GetTarget (); 
+	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	CGLSurface  *dst = (CGLSurface *) ms; 
+	CGLSurface  *dst = (CGLSurface *) ms;
 
 	GLContext::SetupVertexData (x, y, width, height);
 
@@ -93,10 +93,10 @@ CGLContext::SetupVertexData (double       x,
 			GLfloat v = vertices[i][1] + vertices[i][3];
 
 			vertices[i][1] = vertices[i][3] - v;
-		}   
-	}   
+		}
+	}
 
-	ms->unref (); 
+	ms->unref ();
 }
 
 gboolean
@@ -299,21 +299,21 @@ CGLContext::Push (Cairo extents)
 	Rect   box;
 
 	Top ()->GetClip (&box);
- 
+
 	box = box.Intersection (extents.r);
 
 	if (box.IsEmpty ())
 		return Context::Push (extents);
- 
+
 	if (cairo) {
 		Rect   r = cairo->GetData (NULL);
 		Region *region = new Region (r);
- 
+
 		if (region->RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
 			ForceCurrent ();
 			SyncDrawable ();
 		}
- 
+
 		delete region;
 	}
 
@@ -372,7 +372,7 @@ CGLContext::Pop (MoonSurface **ref)
 			SyncDrawable ();
 		}
 	}
- 
+
 	return GLContext::Pop (ref);
 }
 
@@ -464,7 +464,35 @@ CGLContext::Blit (unsigned char *data,
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
 	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
-	 
+
+	ms->unref ();
+}
+
+void
+CGLContext::BlitVUY2 (unsigned char *data)
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	CGLSurface  *dst = (CGLSurface *) ms;
+	int         size[] = { dst->Width (), dst->Height () };
+	GLuint texture = dst->Texture ();
+
+	ForceCurrent ();
+
+	// no support for clipping
+	g_assert (GetClip () == r);
+
+	// no support for blit to drawable at the moment
+	g_assert (!dst->GetContext ());
+
+	// mark target as initialized
+	target->SetInit (ms);
+
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size [0], size [1], 0, GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_APPLE, data);
+	glBindTexture (GL_TEXTURE_2D, 0);
+
 	ms->unref ();
 }
 
@@ -492,33 +520,24 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	// mark target as initialized
 	target->SetInit (ms);
 
-	// Check if we have real planar data, or GL_YCBCR_422_APPLE from VDA
-	if (data [0] != NULL && data [1] != NULL && data [2] != NULL) {
-		for (i = 0; i < 3; i++) {
-			glPixelStorei (GL_UNPACK_ROW_LENGTH,
-			PixelRowLength (stride[i], width[i], 1));
-			glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
-			glBindTexture (GL_TEXTURE_2D, dst->TextureYUV (i));
-			glTexSubImage2D (GL_TEXTURE_2D,
-						0,  
-						0,  
-						0,  
-						width[i],
-						height[i],
-						GL_LUMINANCE,
-						GL_UNSIGNED_BYTE,
-						data[i]);
-		}   
-		glBindTexture (GL_TEXTURE_2D, 0); 
-		glPixelStorei (GL_UNPACK_ALIGNMENT, 4); 
-		glPixelStorei (GL_UNPACK_ROW_LENGTH, 0); 
-	} else {
-		GLuint texture = dst->Texture ();
-
-		glBindTexture (GL_TEXTURE_2D, texture);
-		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size [0], size [1], 0, GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_APPLE, data [0]);
-		glBindTexture (GL_TEXTURE_2D, 0);
+	for (i = 0; i < 3; i++) {
+		glPixelStorei (GL_UNPACK_ROW_LENGTH,
+		PixelRowLength (stride[i], width[i], 1));
+		glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
+		glBindTexture (GL_TEXTURE_2D, dst->TextureYUV (i));
+		glTexSubImage2D (GL_TEXTURE_2D,
+					0,
+					0,
+					0,
+					width[i],
+					height[i],
+					GL_LUMINANCE,
+					GL_UNSIGNED_BYTE,
+					data[i]);
 	}
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
+	glPixelStorei (GL_UNPACK_ROW_LENGTH, 0);
 
 	ms->unref ();
 }
@@ -570,23 +589,23 @@ CGLContext::Project (MoonSurface  *src,
 		     double       y)
 {
 	CGLSurface *surface = (CGLSurface *) src;
-	Target     *target = Top ()->GetTarget (); 
+	Target     *target = Top ()->GetTarget ();
 	Rect       r = target->GetData (NULL);
-	Rect       clip = GetClip (); 
+	Rect       clip = GetClip ();
 	double     m[16];
 
 	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
-		int x0, y0; 
+		int x0, y0;
 
 		GetMatrix (m);
 		if (matrix)
-			Matrix3D::Multiply (m, matrix, m); 
+			Matrix3D::Multiply (m, matrix, m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
 			CGLSurface *surface = (CGLSurface *) src;
-			Rect       r = Rect (x + x0, 
-						y + y0, 
-						surface->Width (), 
+			Rect       r = Rect (x + x0,
+						y + y0,
+						surface->Width (),
 						surface->Height ());
 
 			// matching dimensions and no transformation allow us
@@ -596,16 +615,16 @@ CGLContext::Project (MoonSurface  *src,
 			if (r == clip) {
 				target->SetInit (src);
 				return;
-			}   
-		}   
-	}   
+			}
+		}
+	}
 
 	if (!HasDrawable () && !surface->HasTexture ()) {
-		int x0, y0; 
+		int x0, y0;
 
 		GetMatrix (m);
 		if (matrix)
-			Matrix3D::Multiply (m, matrix, m); 
+			Matrix3D::Multiply (m, matrix, m);
 
 		// avoid GL rendering to target without previously
 		// allocated hardware drawable
@@ -615,8 +634,8 @@ CGLContext::Project (MoonSurface  *src,
 			cairo_matrix_init_translate (&m, x0, y0);
 
 			Context::Push (Context::AbsoluteTransform (m));
-			Context::Paint (src, alpha, x, y); 
-			Context::Pop (); 
+			Context::Paint (src, alpha, x, y);
+			Context::Pop ();
 			return;
 		}
 	}

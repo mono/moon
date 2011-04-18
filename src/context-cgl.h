@@ -36,6 +36,8 @@ public:
 	void Blit (unsigned char *data,
 		   int           stride);
 
+	void BlitVUY2 (unsigned char *data);
+
 	void BlitYV12 (unsigned char *data[],
 		       int           stride[]);
 

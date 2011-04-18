@@ -3411,7 +3411,7 @@ IMediaStream::EnqueueDecodedFrame (MediaFrame *frame)
 	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
 	
-	if (frame->GetBuffer () == NULL && !frame->IsPlanar ()) {
+	if (frame->GetBuffer () == NULL && !frame->IsPlanar () && !frame->IsVUY2 ()) {
 		/* for some reason there is no output from the decoder, possibly because it needs more data from the demuxer before outputting anything */
 		LOG_PIPELINE ("IMediaStream::EnqueueDecodedFrame (%p): No data in frame, not storing it.\n", frame);
 		goto cleanup;

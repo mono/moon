@@ -441,7 +441,7 @@ guint
 MoonWindowingSystemCocoa::AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data)
 {
 	MLTimer *mtimer = [[MLTimer alloc] init];
-	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (ms/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
+	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (ms/2000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
 
 	mtimer.timeout = timeout;
 	mtimer.userInfo = data;
@@ -467,7 +467,7 @@ MoonWindowingSystemCocoa::AddIdle (MoonSourceFunc idle, gpointer data)
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	/* This is horrible, what we probably want is 1 timer we run at a low resolution that will pump some idle events we track in a seperate queue */
 	MLTimer *mtimer = [[MLTimer alloc] init];
-	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (500/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
+	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (500/2000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
 
 	mtimer.timeout = idle;
 	mtimer.userInfo = data;

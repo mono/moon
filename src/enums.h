@@ -593,6 +593,7 @@ enum MediaFrameState {
 	MediaFrameKeyFrame  = 1 << 4,
 	MediaFrameMarker    = 1 << 5,
 	MediaFramePosixAlloc= 1 << 6,
+	MediaFrameVUY2      = 1 << 7,
 };
 
 /* @IncludeInKinds */

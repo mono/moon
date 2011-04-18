@@ -933,6 +933,8 @@ MediaPlayer::GetSurface (Context *ctx)
 
 	if (frame->IsPlanar ())
 		ctx->BlitYV12 (frame->data_stride, frame->srcStride);
+	else if (frame->IsVUY2 ())
+		ctx->BlitVUY2 (frame->data_stride [0]);
 	else
 		ctx->Blit (frame->GetBuffer (), width * 4);
 
