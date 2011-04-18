@@ -113,9 +113,9 @@ protected:
 				      double       height);
 
 	void SetupTexCoordData ();
-	void SetupTexCoordData (const double *matrix,
-				double       du,
-				double       dv);
+	virtual void SetupTexCoordData (const double *matrix,
+					double       du,
+					double       dv);
 
 	static int PixelAlignment (int stride);
 	static int PixelRowLength (int stride,
@@ -136,7 +136,9 @@ protected:
 
 	void Paint (MoonSurface  *src,
 		    const double *matrix,
-		    double       alpha);
+		    double       alpha,
+		    double       x,
+		    double       y);
 
 	float vertices[4][4];
 	float texcoords[4][4];

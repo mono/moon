@@ -130,13 +130,17 @@ GLContext::SetViewport ()
 void
 GLContext::SetupVertexData ()
 {
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
-	double          m[16];
+	int i;
 
-	Matrix3D::Identity (m);
+	for (i = 0; i < 4; i++) {
+		const float vx[] = { -1.0f, 1.0f, 1.0f, -1.0f };
+		const float vy[] = { -1.0f, -1.0f, 1.0f, 1.0f };
 
-	SetupVertexData (m, 0.0, 0.0, r.width, r.height);
+		vertices[i][0] = vx[i];
+		vertices[i][1] = vy[i];
+		vertices[i][2] = 0.0f;
+		vertices[i][3] = 1.0f;
+	}
 }
 
 void
@@ -190,25 +194,17 @@ GLContext::SetupVertexData (const double *matrix,
 void
 GLContext::SetupTexCoordData ()
 {
-	texcoords[0][0] = 0.0f;
-	texcoords[0][1] = 0.0f;
-	texcoords[0][2] = 0.0f;
-	texcoords[0][3] = 1.0f;
+	int i;
 
-	texcoords[1][0] = 1.0f;
-	texcoords[1][1] = 0.0f;
-	texcoords[1][2] = 0.0f;
-	texcoords[1][3] = 1.0f;
+	for (i = 0; i < 4; i++) {
+		const float tx[] = { 0.0f, 1.0f, 1.0f, 0.0f };
+		const float ty[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-	texcoords[2][0] = 1.0f;
-	texcoords[2][1] = 1.0f;
-	texcoords[2][2] = 0.0f;
-	texcoords[2][3] = 1.0f;
-
-	texcoords[3][0] = 0.0f;
-	texcoords[3][1] = 1.0f;
-	texcoords[3][2] = 0.0f;
-	texcoords[3][3] = 1.0f;
+		texcoords[i][0] = tx[i];
+		texcoords[i][1] = ty[i];
+		texcoords[i][2] = 0.0f;
+		texcoords[i][3] = 1.0f;
+	}
 }
 
 void
@@ -216,39 +212,7 @@ GLContext::SetupTexCoordData (const double *matrix,
 			      double       du,
 			      double       dv)
 {
-	Context::Target *target = Top ()->GetTarget ();
-	Rect            r = target->GetData (NULL);
-	double          p[4][4];
-	int             i;
-
-	p[0][0] = 0.0;
-	p[0][1] = 0.0;
-	p[0][2] = 0.0;
-	p[0][3] = 1.0;
-
-	p[1][0] = r.width;
-	p[1][1] = 0.0;
-	p[1][2] = 0.0;
-	p[1][3] = 1.0;
-
-	p[2][0] = r.width;
-	p[2][1] = r.height;
-	p[2][2] = 0.0;
-	p[2][3] = 1.0;
-
-	p[3][0] = 0.0;
-	p[3][1] = r.height;
-	p[3][2] = 0.0;
-	p[3][3] = 1.0;
-
-	for (i = 0; i < 4; i++) {
-		Matrix3D::TransformPoint (p[i], matrix, p[i]);
-
-		texcoords[i][0] = p[i][0] * du;
-		texcoords[i][1] = p[i][1] * dv;
-		texcoords[i][2] = p[i][2];
-		texcoords[i][3] = p[i][3];
-	}
+	GLContext::SetupTexCoordData ();
 }
 
 void
@@ -562,7 +526,9 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 void
 GLContext::Paint (MoonSurface  *src,
 		  const double *matrix,
-		  double       alpha)
+		  double       alpha,
+		  double       x,
+		  double       y)
 {
 	GLSurface *surface = (GLSurface *) src;
 	GLsizei   width0 = surface->Width ();
@@ -571,6 +537,10 @@ GLContext::Paint (MoonSurface  *src,
 	int       n_sampler, i;
 	GLuint    program;
 	GLint     alpha_location;
+	double    sourceMatrix[16];
+
+	if (!GetSourceMatrix (sourceMatrix, matrix, x, y))
+		return;
 
 	if (surface->IsPlanar ()) {
 		program = GetProjectProgram (alpha, 1);
@@ -590,8 +560,8 @@ GLContext::Paint (MoonSurface  *src,
 	SetViewport ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (matrix, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (matrix, x, y, width0, height0);
+	SetupTexCoordData (sourceMatrix, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -664,10 +634,8 @@ GLContext::Paint (MoonSurface *src,
 	double m[16];
 
 	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
-		return;
 
-	GLContext::Paint (src, m, alpha);
+	GLContext::Paint (src, m, alpha, x, y);
 }
 
 void
@@ -681,10 +649,8 @@ GLContext::Project (MoonSurface  *src,
 
 	GetDeviceMatrix (m);
 	Matrix3D::Multiply (m, matrix, m);
-	if (!GetSourceMatrix (m, m, x, y))
-		return;
 
-	GLContext::Paint (src, m, alpha);
+	GLContext::Paint (src, m, alpha, x, y);
 }
 
 GLuint
@@ -764,11 +730,13 @@ GLContext::Blur (MoonSurface *src,
 	Rect         r = Rect (0, 0, width0, height0);
 	int          size, i;
 	double       m[16];
+	double       sourceMatrix[16];
+
+	GetDeviceMatrix (m);
 
 	size = ComputeGaussianSamples (radius, precision, values);
 	if (size == 0) {
-		Matrix3D::Identity (m);
-		Project (src, m, 1.0, x, y);
+		GLContext::Paint (src, m, 1.0, x, y);
 		return;
 	}
 
@@ -777,8 +745,7 @@ GLContext::Blur (MoonSurface *src,
 
 	program = GetConvolveProgram (size);
 
-	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sourceMatrix, m, x, y))
 		return;
 
 	glGenTextures (1, &texture1);
@@ -804,15 +771,7 @@ GLContext::Blur (MoonSurface *src,
 				0);
 	glViewport (0, 0, width0, height0);
 
-	for (i = 0; i < 4; i++) {
-		const float vx[] = { -1.0f, 1.0f, 1.0f, -1.0f };
-		const float vy[] = { -1.0f, -1.0f, 1.0f, 1.0f };
-
-		vertices[i][0] = vx[i];
-		vertices[i][1] = vy[i];
-		vertices[i][2] = 0.0f;
-		vertices[i][3] = 1.0f;
-	}
+	SetupVertexData ();
 	SetupTexCoordData ();
 
 	glUseProgram (program);
@@ -854,8 +813,8 @@ GLContext::Blur (MoonSurface *src,
 	SetViewport ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sourceMatrix, 1.0 / width0, 1.0 / height0);
 
 	for (i = 0; i <= size; i++) {
 		cbuf[i][0][0] = 0.0f;
@@ -983,6 +942,7 @@ GLContext::DropShadow (MoonSurface *src,
 	Rect         r = Rect (0, 0, width0, height0);
 	int          size, i;
 	double       m[16];
+	double       sourceMatrix[16];
 
 	size = ComputeGaussianSamples (radius, precision, values);
 
@@ -992,7 +952,7 @@ GLContext::DropShadow (MoonSurface *src,
 	program = GetConvolveProgram (size);
 
 	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sourceMatrix, m, x, y))
 		return;
 
 	glGenTextures (1, &texture1);
@@ -1018,15 +978,7 @@ GLContext::DropShadow (MoonSurface *src,
 				0);
 	glViewport (0, 0, width0, height0);
 
-	for (i = 0; i < 4; i++) {
-		const float vx[] = { -1.0f, 1.0f, 1.0f, -1.0f };
-		const float vy[] = { -1.0f, -1.0f, 1.0f, 1.0f };
-
-		vertices[i][0] = vx[i];
-		vertices[i][1] = vy[i];
-		vertices[i][2] = 0.0f;
-		vertices[i][3] = 1.0f;
-	}
+	SetupVertexData ();
 	SetupTexCoordData ();
 
 	glUseProgram (program);
@@ -1075,8 +1027,8 @@ GLContext::DropShadow (MoonSurface *src,
 	SetFramebuffer ();
 	SetScissor ();
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sourceMatrix, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -1712,6 +1664,7 @@ GLContext::ShaderEffect (MoonSurface *src,
 	GLfloat   cbuf[MAX_CONSTANTS][4];
 	GLint     constant_location;
 	double    m[16];
+	double    sourceMatrix[16];
 	int       i;
 
 	g_assert (n_constant <= MAX_CONSTANTS);
@@ -1721,7 +1674,7 @@ GLContext::ShaderEffect (MoonSurface *src,
 	g_assert (!surface->IsPlanar ());
 
 	GetDeviceMatrix (m);
-	if (!GetSourceMatrix (m, m, x, y))
+	if (!GetSourceMatrix (sourceMatrix, m, x, y))
 		return;
 
 	SetFramebuffer ();
@@ -1742,8 +1695,8 @@ GLContext::ShaderEffect (MoonSurface *src,
 		cbuf[*ddxUvDdyUvPtr][3] = 1.0f / height0;
 	}
 
-	SetupVertexData ();
-	SetupTexCoordData (m, 1.0 / width0, 1.0 / height0);
+	SetupVertexData (m, x, y, width0, height0);
+	SetupTexCoordData (sourceMatrix, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
