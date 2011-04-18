@@ -91,6 +91,7 @@ protected:
 	void SetupTexCoordData (const double *matrix,
 				double       du,
 				double       dv);
+	void SetupTexUnit (GLenum target, GLint texture);
 	void SetFramebuffer ();
 	void SetScissor ();
 	void ForceCurrent ();

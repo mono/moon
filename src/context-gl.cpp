@@ -221,8 +221,8 @@ GLContext::SetupTexUnit (GLenum target, GLint texture)
 	glBindTexture (target, texture);
 	glTexParameteri (target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri (target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri (target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri (target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri (target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 void
