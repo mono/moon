@@ -83,7 +83,11 @@ GLSurface::Texture ()
 			      size[0],
 			      size[1],
 			      0,
+#if USE_EGL
+			      GL_RGBA,
+#else
 			      GL_BGRA,
+#endif
 			      GL_UNSIGNED_BYTE,
 			      data);
 		glBindTexture (GL_TEXTURE_2D, 0);
@@ -130,9 +134,11 @@ GLSurface::TextureYUV (int i)
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
+#if !USE_EGL
 			glTexParameterfv (GL_TEXTURE_2D,
 					  GL_TEXTURE_BORDER_COLOR,
 					  border[i]);
+#endif
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}

@@ -315,7 +315,11 @@ GLContext::Blit (unsigned char *data,
 			 0,
 			 dst->Width (),
 			 dst->Height (),
+#if USE_EGL
+			 GL_RGBA,
+#else
 			 GL_BGRA,
+#endif
 			 GL_UNSIGNED_BYTE,
 			 data);
 	glBindTexture (GL_TEXTURE_2D, 0);
@@ -518,9 +522,15 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 	g_string_sprintfa (s, "{");
 	if (yuv) {
 		g_string_sprintfa (s, "float r, g, b, y, u, v;");
+#if USE_EGL
+		g_string_sprintfa (s, "y = texture2D(sampler0, v_TexCoord0.xy).r;");
+		g_string_sprintfa (s, "u = texture2D(sampler1, v_TexCoord0.xy).r;");
+		g_string_sprintfa (s, "v = texture2D(sampler2, v_TexCoord0.xy).r;");
+#else
 		g_string_sprintfa (s, "y = texture2DProj(sampler0, v_TexCoord0.xyzw).r;");
 		g_string_sprintfa (s, "u = texture2DProj(sampler1, v_TexCoord0.xyzw).r;");
 		g_string_sprintfa (s, "v = texture2DProj(sampler2, v_TexCoord0.xyzw).r;");
+#endif
 		g_string_sprintfa (s, "y = 1.1643 * (y - 0.0625);");
 		g_string_sprintfa (s, "u = u - 0.5;");
 		g_string_sprintfa (s, "v = v - 0.5;");
@@ -530,7 +540,11 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
 	}
 	else {
+#if USE_EGL
+		g_string_sprintfa (s, "gl_FragColor = texture2D(sampler0, v_TexCoord0.xy).bgra");
+#else
 		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
+#endif
 	}
 	if (alpha)
 		g_string_sprintfa (s, " * alpha");
@@ -610,10 +624,12 @@ GLContext::Paint (MoonSurface  *src,
 				 GL_LINEAR);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				 GL_LINEAR);
+#if !USE_EGL
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
 				 GL_CLAMP_TO_BORDER);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
 				 GL_CLAMP_TO_BORDER);
+#endif
 
 		glUniform1i (sampler_location, i);
 	}
@@ -783,7 +799,11 @@ GLContext::Blur (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
+#if USE_EGL
+			  GL_RGBA,
+#else
 		      GL_BGRA,
+#endif
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -997,7 +1017,11 @@ GLContext::DropShadow (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
+#if USE_EGL
+			  GL_RGBA,
+#else
 		      GL_BGRA,
+#endif
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -1415,6 +1439,15 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				 reg.writemask & 0x2 ? "y" : "",
 				 reg.writemask & 0x4 ? "z" : "",
 				 reg.writemask & 0x8 ? "w" : "");
+
+#if USE_EGL
+			if (op.type == D3DSIO_TEX)
+				sprintf (writemask, "%s%s%s%s",
+					reg.writemask & 0x1 ? "z" : "",
+					reg.writemask & 0x2 ? "y" : "",
+					reg.writemask & 0x4 ? "x" : "",
+					reg.writemask & 0x8 ? "w" : "");
+#endif
 
 			ERROR_IF (reg.writemask == 0);
 
