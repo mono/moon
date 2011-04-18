@@ -124,9 +124,20 @@ namespace System.Windows.Data {
 				// DRT 233 and a moon-unit test check that this is
 				// how the lookup is done. See comment on the moon-unit
 				// 'ElementName_DataTemplate_DoNotUseVisualParent' test.
-				if (source == null)
+
+				// Note: The only time we appear to use the Mentor is so
+				// we can find the ItemsPanel expanded by an ItemsControl
+				// from it's ItemsPanelTemplate. This allows us to walk up
+				// from a ListBoxItem (LBI), through the Panel and up to the
+				// ItemsControl itself. Otherwise we'd stop at the LBI.
+				if (source == null && fe.TemplateOwner != null)
 					fe = (UIElement) fe.TemplateOwner;
+				else if (fe.Mentor != null && ItemsControl.GetItemsOwner (fe.Mentor) != null)
+					fe = fe.Mentor;
+				else
+					fe = null;
 			}
+
 			return source;
 		}
 
@@ -278,6 +289,12 @@ namespace System.Windows.Data {
 				SetDataContextSource (null);
 			} else if (IsSelfDataContextBound) {
 				SetDataContextSource (null);
+			}
+
+			targetFE = targetFE ?? Target.Mentor;
+			if (targetFE != null && CurrentError != null) {
+				Validation.RemoveError (targetFE, CurrentError);
+				CurrentError = null;
 			}
 
 			if (updateDataSourceCallback != null) {
@@ -458,39 +475,46 @@ namespace System.Windows.Data {
 			return Helper.DefaultCulture;
 		}
 
-		TypeConverter GetConverterFrom ()
+		object ConvertFromSourceToTarget (object value)
 		{
-			if (PropertyPathWalker.IsPathBroken)
-				return null;
+			var sourceType = PropertyPathWalker.FinalNode.ValueType;
+			var targetType = Property.PropertyType;
+			if (targetType.IsAssignableFrom (sourceType))
+				return value;
 
+			// Note, we only call the ConvertTo/ConvertFrom methods if the TypeConverter supports *both
+			// the forward conversion and reverse conversion. A type converter which returns 'false' for
+			// either CanConvertTo or CanConvertFrom is not used.
+			var converter = Helper.GetConverterFor (sourceType);
+			if (converter != null && converter.CanConvertFrom (targetType) && converter.CanConvertTo (targetType))
+				return converter.ConvertTo (null, GetConverterCulture (), value, targetType);
+
+			converter = Helper.GetConverterFor (targetType);
+			if (converter != null && converter.CanConvertFrom (sourceType) && converter.CanConvertTo (sourceType))
+				return converter.ConvertFrom (null, GetConverterCulture (), value);
+
+			return MoonlightTypeConverter.ConvertObject (Property, value, Target.GetType (), true);
+		}
+
+		object ConvertFromTargetToSource (object value)
+		{
 			var sourceType = Property.PropertyType;
-			var destType = PropertyPathWalker.FinalNode.ValueType;
-			if (destType.IsAssignableFrom (sourceType)) {
-				return null;
-			}
+			var targetType = PropertyPathWalker.FinalNode.ValueType;
+			if (targetType.IsAssignableFrom (sourceType))
+				return value;
 
-			return GetConverter (destType, String.Empty, destType);
-		}
+			// Note, we only call the ConvertTo/ConvertFrom methods if the TypeConverter supports *both
+			// the forward conversion and reverse conversion. A type converter which returns 'false' for
+			// either CanConvertTo or CanConvertFrom is not used.
+			var converter = Helper.GetConverterFor (sourceType);
+			if (converter != null && converter.CanConvertFrom (targetType) && converter.CanConvertTo (targetType))
+				return converter.ConvertTo (null, GetConverterCulture (), value, targetType);
 
-		TypeConverter GetConverterTo (Type sourceType)
-		{
-			if (PropertyPathWalker.IsPathBroken)
-				return null;
+			converter = Helper.GetConverterFor (targetType);
+			if (converter != null && converter.CanConvertFrom (sourceType) && converter.CanConvertTo (sourceType))
+				return converter.ConvertFrom (null, GetConverterCulture (), value);
 
-			var destType = Property.PropertyType;
-			if (destType.IsAssignableFrom (sourceType))
-				return null;
-
-			return GetConverter (sourceType, Property.Name, Property.PropertyType);
-		}
-
-		// refactor to reduce [SSC] code duplication
-		TypeConverter GetConverter (Type type, string name, Type propertyType)
-		{
-			TypeConverter converter = Helper.GetConverterFor (type);
-			if (converter == null)
-				converter = new MoonlightTypeConverter (name, propertyType);
-			return converter;
+			return MoonlightTypeConverter.ConvertObject (PropertyPathWalker.FinalNode.PropertyInfo, value, Target.GetType ());
 		}
 
 		internal override object GetValue (DependencyProperty dp)
@@ -543,15 +567,7 @@ namespace System.Windows.Data {
 				}
 
 				if (value != null) {
-					var converter = GetConverterTo (value.GetType ());
-					if (converter == null) {
-						if (PropertyPathWalker.IsPathBroken) {
-							value = MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
-						}
-					}
-					else {
-						value = converter.ConvertTo (null, GetConverterCulture (), value, dp.PropertyType);
-					}
+					value = ConvertFromSourceToTarget (value);
 				}
 			} catch (Exception ex) {
 				return MoonlightTypeConverter.ConvertObject (dp, Binding.FallbackValue, Target.GetType (), true);
@@ -680,13 +696,12 @@ namespace System.Windows.Data {
 				}
 				
 				try {
-					if (value != null) {
-						var converter = GetConverterFrom ();
-						value = converter == null ? value : converter.ConvertFrom (null, GetConverterCulture (), value);
-					}
+					if (value != null)
+						value = ConvertFromTargetToSource (value);
 				} catch {
 					return;
 				}
+
 				if (cachedValue == null) {
 					if (value == null) {
 						return;

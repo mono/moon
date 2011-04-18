@@ -3,36 +3,42 @@ System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvail
 	20110208	spouliot - a7e40bc - pinvoke renamed (now prefixed with _moonlight_cbinding_*)
 	r156737		spouliot - pinvoke into NetworkChange.runtime_get_network_service and NetworkChange.moon_network_service_get_is_network_available (libmoon)
 
-!SSC-F61AE2B9D142E4296EDF51534C9E41A2
-System.Boolean System.Net.Sockets.Socket::get_NoDelay()
-	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
+!SSC-215E6676FF50B39A6FC8EECA5182B582
+System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
+	20110411	spouliot - validate arguments for before calling Poll_internal (icall) and convert its return value, on error, into a SocketException
 
-!SSC-4B80C751D33CB8C1CD30624F1ECE95E4
+!SSC-A220A097363AC1B57D54F7195F45F06D
 System.Boolean System.Net.Sockets.Socket::ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)
+	20110321	spouliot - 36d63134 / 1a264619 / cc3d2b03 - avoid Worker creation and minimize delegate allocations
 	20101108	spouliot - no source change / compiler (lock related) change?
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Receive [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
 
-!SSC-0158EB0F6249C372D6E6C4232259B28A
+!SSC-BE7EEB3EC42A26C84E9C793DA9994A2E
 System.Boolean System.Net.Sockets.Socket::SendAsync(System.Net.Sockets.SocketAsyncEventArgs)
+	20110321	spouliot - 36d63134 / 1a264619 / cc3d2b03 - avoid Worker creation and minimize delegate allocations
 	20101108	spouliot - no source change / compiler (lock related) change?
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Send [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
 
-!SSC-270CF85D0C43A450B5D9C24E31780123
-System.Int16 System.Net.Sockets.Socket::get_Ttl()
-	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
+!SSC-EC6FF98D85748B926E04257E3A474606
+System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
+	20110411	spouliot - validate buffers, pin their memory locations, calls Receive_internal (icall) convert its return value, on error, into a SocketException
 
-!SSC-656B66D1FC0E1254FA280EBA3DC03ED1
-System.Int32 System.Net.Sockets.Socket::get_ReceiveBufferSize()
-	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
-
-!SSC-96C93F132D01AD307055A0B7978E00AB
-System.Int32 System.Net.Sockets.Socket::get_SendBufferSize()
-	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
+!SSC-35110336CAC64E90A4BBF40B94D4E80B
+System.Int32 System.Net.Sockets.Socket::Send(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
+	20110411	spouliot - validate buffers, pin their memory locations, calls Send_internal (icall) convert its return value, on error, into a SocketException
 
 !SSC-4675134D0FE0CC4145F066994356C9AF
 System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 	20101203	spouliot - ba9d007 - the 'address_family' field is now passed to the call to the RemoteEndPoint_internal icall
 	r142142		spouliot - calls into RemoteEndPoint_internal (icall) to retrieve a SocketAddress
+
+!SSC-479023F6B97566841F4FF0020FC0A847
+System.Net.IPAddress[] System.Net.Dns::GetHostAddresses(System.String)
+	20110411	spouliot - validate argument then call GetHostByName_internal (icall) and throw a SocketException on error
+
+!SSC-C2CBA7627371E1DD1902947C97C2D89F
+System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
+	20110411	spouliot - check is instance is closed or disposed then call GetSocketOption_obj_internal (icall). Convert its error (if any) into a SocketException or cast the data into the proper type before returning it
 
 !SSC-09165E5417642F46D731F1474161E4A1
 System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
@@ -43,12 +49,21 @@ System.Void System.Net.NetworkInformation.NetworkChange::.cctor()
 System.Void System.Net.Policy.BaseDomainPolicy::.cctor()
 	r153396		spouliot - call AppDomain.GetData [SecurityCritical] to retrive the XAP URI
 
-!SSC-62AFB8E0076D1EF0E6379E7FB112F48B
+!SSC-33F238A6533FDD73BD5EC77EF91FAC1A
 System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
+	20110321	spouliot - 36d63134 - if not disposed use Worker.Dispatcher for 'sac' (SocketAsyncCall) instead of calling GetDelegate
 	20101108	spouliot - no source change / compiler (lock related) change?
 	20101019	spouliot - aad016f - warning cleanup (an always null variable, req, was removed)
 	20101013	spouliot - 936c28a - only call queue.Dequeue if queue.Count > 0
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on non-null 'sac' which represents the queued delegate returned by Socket/SocketAsyncResult::GetDelegate [SecurityCritical]
+
+!SSC-A878A65839BD50B4206AF10DF599EF48
+System.Void System.Net.Sockets.Socket/Worker::Connect()
+	20110411	spouliot - connect to an IPEndPoint or a list of IPAddress, for the later case it calls Connect_internal [SecurityCritical] on the serialized address until one can connect
+
+!SSC-1CA1DEF92148258BDF457B8C9C529EA1
+System.Void System.Net.Sockets.Socket/Worker::Send()
+	20110411	spouliot - cc3d2b03 - if there's no error (==0) and some data available (Size >0) then call socket_pool_queue (icall) using 'Worker.Dispatcher' and 'result'
 
 !SSC-056907E31ADB86183CA8E2309741AB83
 System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
@@ -68,31 +83,13 @@ System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
 System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 	r142142		spouliot - calls into Close_internal (icall) and calls Thread.Abort on the socket blocking_thread
 
-!SSC-242B271B5BC9047EF8A4DD0EEC4C8C29
-System.Void System.Net.Sockets.Socket::set_NoDelay(System.Boolean)
-	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
-
-!SSC-D65D75C9EBCC04D475F2CD5916A89526
-System.Void System.Net.Sockets.Socket::set_ReceiveBufferSize(System.Int32)
-	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
-
-!SSC-C6BDB05A0F8680EDF0C04D4467BE04CC
-System.Void System.Net.Sockets.Socket::set_SendBufferSize(System.Int32)
-	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
-
-!SSC-FB0EFFF636E7DC19BCF8AEDF249B7DFE
-System.Void System.Net.Sockets.Socket::set_Ttl(System.Int16)
-	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
+!SSC-A469AE7A36476C3AF7A6A79E045ED9FB
+System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
+	20110411	spouliot - check is instance is closed or disposed then call SetSocketOption_internal (icall) then convert its error (if any) into a SocketException
 
 !SSC-2270C5E24E80610537B2327C86A4D0CC
 System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
 	r142142		spouliot - calls Shutdown_internal (icall)
-
-!SSC-CDFE96863441EF4A9B0FF0FF80CBFBD7
-System.Void System.Net.Sockets.SocketAsyncEventArgs::ConnectCallback()
-	20101004	spouliot - 2d0c85f4 / 31485d3e - change how the IPAddress are iterated to check all potential IP we want to connect to
-	20100924	spouliot - no change in 2010, likely a compiler-related change
-	r153971		spouliot - call Dns [SecurityCritical] GetHostAddresses to get a list of address on the DnsEndPoint's Host
 
 !SSC-59455E83C25494CA468EC35CE4EF26C3
 System.Void System.Net.Sockets.SocketException::.ctor()

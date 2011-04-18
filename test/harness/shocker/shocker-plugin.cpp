@@ -51,7 +51,9 @@ PluginObject::GetXY (NPWindow *window, guint32 *x, guint32 *y)
 	Window root = XDefaultRootWindow (display);
 	Window src = (Window) window->window;
 	Window dummy;
-	XTranslateCoordinates (display, src, root, -window->x, -window->y, (int*) x, (int*) y, &dummy);
+	// libshocker has an absolute position of 1000,1000.
+	// the coordinates in window->x/y can't be trusted, firefox 4 on OS 11.4 has strange values there.
+	XTranslateCoordinates (display, src, root, -1000, -1000, (int*) x, (int*) y, &dummy);
 	XCloseDisplay (display);
 
 	LOG_PLUGIN ("[%i shocker] PluginObject::GetXY (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %u, y: %u)\n", getpid (), window->window, window->x, window->y, window->width, window->height, *x, *y);

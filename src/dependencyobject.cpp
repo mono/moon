@@ -990,14 +990,14 @@ EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer clos
 }
 
 bool
-EventObject::HasHandlers (int event_id, int newer_than_generation)
+EventObject::HasHandlers (int event_id, int newer_than_generation, bool ignoreOnEventHandler)
 {
 	// no events, trivially false
 	if (events == NULL)
 		return false;
 
 	// if we have an onevent handler, trivially true
-	if (events->lists [event_id].onevent != NULL)
+	if (!ignoreOnEventHandler && events->lists [event_id].onevent != NULL)
 		return true;
 
 	// if we're not caring about generation, return true if there are any events

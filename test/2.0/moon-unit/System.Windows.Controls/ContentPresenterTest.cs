@@ -36,6 +36,7 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Markup;
+using System.Windows.Data;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -261,6 +262,26 @@ namespace MoonTest.System.Windows.Controls {
 
 				}
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest_DataContextUpdatesAsync ()
+		{
+			var presenter = new ContentPresenter ();
+			presenter.SetBinding (ContentPresenter.DataContextProperty, new Binding ());
+			Assert.IsInstanceOfType<BindingExpression> (presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#1");
+
+			presenter.Content = new object ();
+			Assert.IsInstanceOfType<BindingExpression> (presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#2");
+
+			TestPanel.Children.Add (presenter);
+			Assert.IsInstanceOfType<BindingExpression> (presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#3");
+
+			Enqueue (() => {
+				Assert.AreSame (presenter.Content, presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#4");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

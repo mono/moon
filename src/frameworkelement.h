@@ -137,7 +137,7 @@ public:
 
 	/* @GeneratePInvoke */
 	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
-				       GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb,
+				       GetDefaultTemplateCallback get_default_template_cb,
 				       StyleResourceChangedCallback style_resource_changed_cb);
 
 	// These two methods call into managed land using the
@@ -222,7 +222,6 @@ protected:
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
-	LoadedCallback loaded_cb;
 	StyleResourceChangedCallback style_resource_changed_cb;
 
 	WeakRef<DependencyObject> logical_parent;

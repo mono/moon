@@ -9,9 +9,14 @@
 +SC-M: System.Boolean System.Windows.Browser.ScriptObject::InvokeFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
 +SC-M: System.Boolean System.Windows.Browser.ScriptObject::SetPropertyFromUnmanaged(System.String,System.IntPtr[],System.Int32,Mono.Value&)
 
-# play it safe with our unsafe methods
+# play it safe with our unsafe methods: not-unsafe, visible, properties will be [SecuritySafeCritical]
 +SC-M: System.Windows.Browser.BrowserInformation System.Windows.Browser.HtmlPage::get_UnsafeBrowserInformation()
 +SC-M: System.Windows.Browser.HtmlWindow System.Windows.Browser.HtmlPage::get_UnsafeWindow()
 
-# calls Activator.CreateInstance to create System.Windows.Browser.ManagedObject+ListOps`1
-+SC-M: System.Void System.Windows.Browser.ManagedObject::.ctor(System.Object)
+# calls Activator.CreateInstance to create a type-specified generic instance of System.Windows.Browser.ManagedObject+ListOps`1
++SC-M: System.Object System.Windows.Browser.ManagedObject::CreateListOpsInstance(System.Type)
+
+# only called by [SecuritySafeCritical] code and validations are easier on callers
++SC-M: System.Object Mono.ScriptObjectHelper::FromValue(Mono.Value)
++SC-M: System.Void Mono.ScriptObjectHelper::ToValue(Mono.Value&,System.Object)
+

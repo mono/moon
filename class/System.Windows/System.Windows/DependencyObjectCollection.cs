@@ -45,6 +45,10 @@ namespace System.Windows {
 			get { return Items.Count; }
 		}
 
+		bool InHandler {
+			get; set;
+		}
+
 		public bool IsReadOnly {
 			get { return false; }
 		}
@@ -109,8 +113,15 @@ namespace System.Windows {
 
 		public void Clear ()
 		{
-			Mono.NativeMethods.collection_clear (native);
-			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
+			ThrowIfInHandler ();
+			try {
+				InHandler = true;
+
+				Mono.NativeMethods.collection_clear (native);
+				CollectionChanged.Raise (this, NotifyCollectionChangedAction.Reset);
+			} finally {
+				InHandler = false;
+			}
 		}
 
 
@@ -121,48 +132,83 @@ namespace System.Windows {
 
 		public void RemoveAt (int index)
 		{
-			var oldItem = this [index];
-			Mono.NativeMethods.collection_remove_at (native, index);
-			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, oldItem, index);
+			ThrowIfInHandler ();
+			try {
+				InHandler = true;
+
+				var oldItem = this [index];
+				Mono.NativeMethods.collection_remove_at (native, index);
+				CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, oldItem, index);
+			} finally {
+				InHandler = false;
+			}
 		}
 
 		public void Add (T item)
 		{
-			Value v;
-			using ((v = Value.FromObject (item)))
-				Mono.NativeMethods.collection_add (native, ref v);
-			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, Count - 1);
+			ThrowIfInHandler ();
+			try {
+				InHandler = true;
+
+				Value v;
+				using ((v = Value.FromObject (item)))
+					Mono.NativeMethods.collection_add (native, ref v);
+				CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, Count - 1);
+			} finally {
+				InHandler = false;
+			}
 		}
 
 		public void Insert (int index, T item)
 		{
-			Value v;
-			using ((v = Value.FromObject (item)))
-				Mono.NativeMethods.collection_insert (native, index, ref v);
-			CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, index);
+			ThrowIfInHandler ();
+			try {
+				InHandler = true;
+
+				Value v;
+				using ((v = Value.FromObject (item)))
+					Mono.NativeMethods.collection_insert (native, index, ref v);
+				CollectionChanged.Raise (this, NotifyCollectionChangedAction.Add, item, index);
+			} finally {
+				InHandler = false;
+			}
 		}
 
 		public bool Remove (T item)
 		{
-			Value v;
-			var oldIndex = IndexOf (item);
-			using ((v = Value.FromObject (item))) {
-				if (Mono.NativeMethods.collection_remove (native, ref v)) {
-					CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, item, oldIndex);
-					return true;
+			ThrowIfInHandler ();
+			try {
+				InHandler = true;
+
+				Value v;
+				var oldIndex = IndexOf (item);
+				using ((v = Value.FromObject (item))) {
+					if (Mono.NativeMethods.collection_remove (native, ref v)) {
+						CollectionChanged.Raise (this, NotifyCollectionChangedAction.Remove, item, oldIndex);
+						return true;
+					}
 				}
+				return false;
+			} finally {
+				InHandler = false;
 			}
-			return false;
 		}
 
 		public T this [int index] {
 			get { return Items[index]; }
 			set {
-				Value v;
-				using ((v = Value.FromObject (value))) {
-					var oldItem = this [index];
-					Mono.NativeMethods.collection_set_value_at (native, index, ref v);
-					CollectionChanged.Raise (this, NotifyCollectionChangedAction.Replace, value, oldItem, index);
+				ThrowIfInHandler ();
+				try {
+					InHandler = true;
+
+					Value v;
+					using ((v = Value.FromObject (value))) {
+						var oldItem = this [index];
+						Mono.NativeMethods.collection_set_value_at (native, index, ref v);
+						CollectionChanged.Raise (this, NotifyCollectionChangedAction.Replace, value, oldItem, index);
+					}
+				} finally {
+					InHandler = false;
 				}
 			}
 		}
@@ -185,6 +231,12 @@ namespace System.Windows {
 		public IEnumerator<T> GetEnumerator ()
 		{
 			return Items.GetEnumerator ();
+		}
+
+		void ThrowIfInHandler ()
+		{
+			if (InHandler)
+				throw new InvalidOperationException ("Cannot modify the collection from a CollectionChanged handler");
 		}
 	}
 }

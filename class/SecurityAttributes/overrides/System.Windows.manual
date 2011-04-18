@@ -20,7 +20,7 @@
 +SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::OnAsyncDataAvailable(System.IntPtr,System.IntPtr,System.IntPtr)
 +SC-M: System.Void System.Net.Browser.BrowserHttpWebRequestInternal::OnAsyncResponseStarted(System.IntPtr,System.IntPtr,System.IntPtr)
 
-# make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
+# make all (including the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
 
 # make most of Mono.* (or internal) types [SecurityCritical]
@@ -59,12 +59,7 @@
 +SC-M: System.Object Mono.MoonlightTypeConverter::ConvertObject(System.Reflection.PropertyInfo,System.Object,System.Type)
 +SC-M: System.Object Mono.MoonlightTypeConverter::ConvertObject(System.Windows.DependencyProperty,System.Object,System.Type,System.Boolean)
 
-+SC-M: System.Windows.RoutedEvent Mono.Xaml.XamlTypeConverter::ConvertRoutedEventArgs(Mono.Xaml.XamlTypeConverter,System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
-+SC-M: System.Type Mono.Xaml.XamlTypeConverter::ConvertType(Mono.Xaml.XamlTypeConverter,System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
-+SC-M: System.Windows.DependencyProperty Mono.Xaml.XamlTypeConverter::ConvertDependencyProperty(Mono.Xaml.XamlTypeConverter,System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
-+SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertPropertyPath(Mono.Xaml.XamlTypeConverter,System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 +SC-M: System.Type Mono.Xaml.XamlTypeConverter::GetTargetType(Mono.Xaml.XamlTypeConverter)
-+SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertPropertyPath(Mono.Xaml.XamlTypeConverter,System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 +SC-M: System.Object Mono.Xaml.XamlTypeConverter::ConvertObject(Mono.Xaml.XamlParser,Mono.Xaml.XamlObjectElement,System.Type,System.ComponentModel.TypeConverter,System.String,System.Object)
 
 +SC-M: System.Void Mono.WeakPropertyChangedListener::.ctor(System.Windows.DependencyObject,System.Windows.DependencyProperty,Mono.IListenPropertyChanged)
@@ -80,7 +75,6 @@
 +SC-M: System.Void Mono.Events::RemoveHandler(Mono.INativeEventObjectWrapper,System.Int32,System.Int32)
 +SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler,System.Boolean)
-+SC-M: System.Void Mono.Events::RemoveOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
 
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(Mono.INativeEventObjectWrapper)
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(System.IntPtr)
@@ -91,13 +85,6 @@
 +SC-M: System.Void Mono.Types::AddBuiltinType(System.Type,Mono.ManagedType)
 +SC-M: System.Void Mono.Types::CreateNativeTypes()
 +SC-M: System.Void Mono.Types::.ctor(System.IntPtr)
-
-+SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.Application::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-
-+SC-M: System.Void Mono.Surface::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
 +SC-M: Mono.TimeManager Mono.Surface::get_TimeManager()
 +SC-M: System.Void Mono.TimeManager::.ctor(System.IntPtr,System.Boolean)
@@ -111,6 +98,8 @@
 +SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb_safe(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.Uri,System.Uri)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Application::get_implicit_styles_cb(System.Windows.FrameworkElement,Mono.ImplicitStyleMask,System.IntPtr&)
++SC-M: System.Void System.Windows.Application::get_implicit_styles_cb_safe(System.IntPtr,Mono.ImplicitStyleMask,System.IntPtr&)
 +SC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetXapResource(System.String)
 +SC-M: System.Boolean System.Windows.Application::Install(System.Boolean)
 
@@ -137,7 +126,6 @@
 +SC-M: System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
 +SC-M: System.Void System.Windows.DependencyObject::set_native(System.IntPtr)
-+SC-M: System.Void System.Windows.DependencyObject::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.DependencyObject::AddPropertyChangedHandler(System.Windows.DependencyProperty,Mono.UnmanagedPropertyChangeHandler)
 +SC-M: System.Void System.Windows.DependencyObject::RemovePropertyChangedHandler(System.Windows.DependencyProperty,Mono.UnmanagedPropertyChangeHandler)
 
@@ -163,6 +151,8 @@
 +SC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUri(System.Int32,System.Int32,System.Int32,System.IntPtr&)
 
 +SC-M: System.Object System.Windows.Data.BindingExpressionBase::ConvertToType(System.Windows.DependencyProperty,System.Object)
++SC-M: System.Object System.Windows.Data.BindingExpressionBase::ConvertFromSourceToTarget(System.Object)
++SC-M: System.Object System.Windows.Data.BindingExpressionBase::ConvertFromTargetToSource(System.Object)
 
 +SC-M: System.Void System.Windows.Style::ConvertSetterValue(System.Windows.Setter)
 +SC-M: System.Void System.Windows.Style::ConvertSetterValues()
@@ -170,30 +160,11 @@
 +SC-M: System.Void System.Windows.FrameworkTemplate::SetXamlBuffer(Mono.Xaml.ParseTemplateFunc,Mono.Xaml.XamlContext)
 
 +SC-M: System.Void Mono.IListenPropertyChanged::OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
-+SC-M: System.Void System.Windows.TemplateBindingExpression::Mono.IListenPropertyChanged.OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
-+SC-M: System.Void System.Windows.Data.StandardPropertyPathNode::Mono.IListenPropertyChanged.OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
 # Can create a delegate on private/internal method" 
 +SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()
 
-+SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.Media.CaptureImageCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-
-+SC-M: System.Void Mono.TimeManager::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void Mono.TimeManager::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-
-# LocalMessaging methods
-+SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-
-+SC-M: System.Void System.Windows.Messaging.LocalMessageSender::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.Messaging.LocalMessageSender::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-
-+SC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
-
-+SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
-+SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
++SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
 # clipboard
 +SC-M: System.IntPtr System.Windows.Clipboard::GetClipboard()
@@ -215,5 +186,5 @@
 +SC-M: System.Windows.Rect System.Windows.Rect::FromString(System.String)
 
 # analytics
-+SSC-M: System.Void System.Windows.Analytics::Sample()
-+SC-M: System.Void System.Windows.Analytics::HandleTimerTick(System.Object,System.EventArgs)
++SC-M: System.Void Mono.AnalyticsLinux::SampleProcess()
++SC-M: System.Void Mono.AnalyticsLinux::SampleCpu()

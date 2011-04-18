@@ -76,8 +76,8 @@ class MultiScaleImage : public MediaBase {
 	void ConnectSourceEvents (MultiScaleTileSource *source);
 	
 	void ProcessTile (BitmapImageContext *ctx);
-	void RenderSingle (cairo_t *cr, Region *region);
-	void RenderCollection (cairo_t *cr, Region *region);
+	void RenderSingle (Context *ctx, Region *region);
+	void RenderCollection (Context *ctx, Region *region);
 	void UpdateIdleStatus ();
 	
 	void SetIsDownloading (bool value);

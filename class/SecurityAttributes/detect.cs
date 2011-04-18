@@ -35,11 +35,13 @@ public class AssemblyData {
 
 	HashSet<string> critical;
 	HashSet<string> safe_critical;
+	HashSet<string> remove_critical;
 
 	public AssemblyData ()
 	{
 		critical = new HashSet<string> ();
 		safe_critical = new HashSet<string> ();
+		remove_critical = new HashSet<string> ();
 	}
 
 	public AssemblyDefinition Assembly { get; set; }
@@ -75,8 +77,6 @@ public class AssemblyData {
 		case "System.IDisposable.Dispose":
 		case "Dispose":
 			return method.HasParameters;
-		case ".cctor":
-			return false;
 		default:
 			return true;
 		}
@@ -93,6 +93,9 @@ public class AssemblyData {
 	public void MarkAsCritical (MemberReference member)
 	{
 		string entry = member.GetFullName ();
+		if (remove_critical.Contains (entry))
+			return;
+
 		if (!critical.Contains (entry))
 			critical.Add (entry);
 
@@ -105,6 +108,12 @@ public class AssemblyData {
 		string entry = member.GetFullName ();
 		if (!safe_critical.Contains (entry))
 			safe_critical.Add (entry);
+	}
+
+	public void RemoveCritical (MemberReference member)
+	{
+		string entry = member.GetFullName ();
+		remove_critical.Add (entry);
 	}
 }
 
@@ -178,6 +187,11 @@ class Program {
 	static void MarkAsSafeCritical (MemberReference member)
 	{
 		GetData (member.Module.Assembly).MarkAsSafeCritical (member);
+	}
+
+	static void RemoveCritical (MemberReference member)
+	{
+		GetData (member.Module.Assembly).RemoveCritical (member);
 	}
 
 	#region Stage Helpers
@@ -370,7 +384,11 @@ class Program {
 				if (m == null) {
 					errors.Add (String.Format ("WARNING: could not find member in '{0}'", entry));
 				} else {
-//					removed.Add (m.GetFullName ()); // FIXME
+					if (entry.StartsWith ("-SC", StringComparison.Ordinal))
+						RemoveCritical (m);
+					else
+						errors.Add (String.Format ("WARNING: removal of '{0}' not implemented", entry));
+
 					if (comments) {
 						Annotate (m, notes.ToString ());
 						Annotate (m, "removed by manual entry");

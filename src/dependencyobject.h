@@ -180,7 +180,7 @@ public:
 	void ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure);
 	void ClearForeachGeneration (int event_id);
 	void ForHandler (int event_id, int token, HandlerMethod m, gpointer closure);
-	bool HasHandlers (int event_id, int newer_than_generation = -1);
+	bool HasHandlers (int event_id, int newer_than_generation = -1, bool ignoreOnEventHandler = false);
 
 	// AddTickCall*: 
 	//  Queues a delegate which will be called on the main thread.

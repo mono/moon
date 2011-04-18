@@ -705,6 +705,16 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void BindtoItemsControlItemsProperty ()
+		{
+			// The 'Items' collection is created by touching the CLR wrapper property
+			var source = new ItemsControl ();
+			var target = new TextBlock ();
+			target.SetBinding (TextBlock.TextProperty, new Binding ("Items.Count") { Source = source });
+			Assert.AreEqual ("0", target.Text);
+		}
+
+		[TestMethod]
 		public void DPWithDefaultValueFE_Broken_DoNotUseFallback ()
 		{
 			var o = new DPWithDefaultValueFrameworkElement { };

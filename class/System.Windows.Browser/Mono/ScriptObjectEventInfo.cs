@@ -37,8 +37,6 @@ namespace Mono
 {
 	sealed class ScriptObjectEventInfo
 	{
-		public ScriptObject Callback;
-		public string Name;
 		System.Delegate _delegate;
 		Type type;
 		EventInfo _event;
@@ -51,19 +49,26 @@ namespace Mono
 		}
 
 		public ScriptObjectEventInfo (string name, ScriptObject callback, EventInfo ei)
+			: this (callback)
 		{
 			Name = name;
-			Callback = callback;
 			EventInfo = ei;
-			NativeMethods.html_object_retain (PluginHost.Handle, Callback.Handle);
 		}
 
 		// for js event handlers
 		public ScriptObjectEventInfo (ScriptObject callback, Type type)
+			: this (callback)
 		{
-			Callback = callback;
 			this.type = type;
+		}
 
+		// extract common [SecurityCritical] parts of the public .ctors
+		private ScriptObjectEventInfo (ScriptObject callback)
+		{
+			if (callback == null)
+				throw new ArgumentNullException ("callback");
+
+			Callback = callback;
 			NativeMethods.html_object_retain (PluginHost.Handle, Callback.Handle);
 		}
 
@@ -71,6 +76,14 @@ namespace Mono
 		{
 			if (Callback.Handle != IntPtr.Zero)
 				NativeMethods.html_object_release (PluginHost.Handle, Callback.Handle);
+		}
+
+		public ScriptObject Callback {
+			get; private set;
+		}
+
+		public string Name {
+			get; private set;
 		}
 
 		public Delegate GetDelegate ()

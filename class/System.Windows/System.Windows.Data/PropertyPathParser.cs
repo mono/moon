@@ -69,6 +69,8 @@ namespace System.Windows
 				propertyName = Path.Substring (prop_open, prop_close - prop_open);
 
 				index = null;
+				if (Path.Length > (end + 1) && Path [end + 1] == '.')
+					end ++;
 				Path = Path.Substring (end + 1);
 			} else if (Path.StartsWith ("[")) {
 				type = PropertyNodeType.Indexed;

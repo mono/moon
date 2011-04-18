@@ -51,15 +51,15 @@ a11y_stat_init (const char *platform_dir)
 const static char* platform_code_assemblies [] = {
 	"mscorlib.dll",
 	"System.dll",
-	"System.Core.dll",
 	"System.Net.dll",
-	"System.Runtime.Serialization.dll",
-	"System.ServiceModel.dll",
-	"System.ServiceModel.Web.dll",
 	"System.Windows.dll",
 	"System.Windows.Browser.dll",
-//	right now there are no [SecurityCritical] nor [SecuritySafeCritical] code inside the next two assemblies
+//	right now there are no [SecurityCritical] nor [SecuritySafeCritical] code inside the next assemblies
 //	so we'll treat them (at runtime) just like "application code" to reduce our attack surface
+//	"System.Core.dll",
+//	"System.Runtime.Serialization.dll",
+//	"System.ServiceModel.dll",
+//	"System.ServiceModel.Web.dll",
 //	"System.Xml.dll",
 //	"Microsoft.VisualBasic.dll",
 #if DEBUG

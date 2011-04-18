@@ -287,18 +287,14 @@ GLContext::Blit (unsigned char *data,
 	Rect            r = target->GetData (&ms);
 	GLSurface       *dst = (GLSurface *) ms;
 	GLuint          texture = dst->Texture ();
-	Rect            clip;
-
-	Top ()->GetClip (&clip);
 
 	// no support for clipping
-	g_assert (r == clip);
+	g_assert (GetClip () == r);
 
 	// row length must be the same as width
 	g_assert (PixelRowLength (stride, dst->Width (), 4) == dst->Width ());
 
 	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride));
-	glError ();
 	glBindTexture (GL_TEXTURE_2D, texture);
 	glError ();
 	glTexSubImage2D (GL_TEXTURE_2D,
@@ -312,9 +308,7 @@ GLContext::Blit (unsigned char *data,
 			 data);
 	glError ();
 	glBindTexture (GL_TEXTURE_2D, 0);
-	glError ();
 	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
-	glError ();
 
 	ms->unref ();
 }
@@ -330,27 +324,17 @@ GLContext::BlitYV12 (unsigned char *data[],
 	int             size[] = { dst->Width (), dst->Height () };
 	int             width[] = { size[0], size[0] / 2, size[0] / 2 };
 	int             height[] = { size[1], size[1] / 2, size[1] / 2 };
-	GLuint          texture[3];
-	Rect            clip;
 	int             i;
 
-	Top ()->GetClip (&clip);
-
 	// no support for clipping
-	g_assert (r == clip);
-
-	dst->AllocYUV ();
-
-	texture[0] = dst->TextureY ();
-	texture[1] = dst->TextureU ();
-	texture[2] = dst->TextureV ();
+	g_assert (GetClip () == r);
 
 	for (i = 0; i < 3; i++) {
 		// row length must be the same as width
 		g_assert (PixelRowLength (stride[i], width[i], 1) == width[i]);
 
 		glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
-		glBindTexture (GL_TEXTURE_2D, texture[i]);
+		glBindTexture (GL_TEXTURE_2D, dst->TextureYUV (i));
 		glTexSubImage2D (GL_TEXTURE_2D,
 				 0,
 				 0,
@@ -500,19 +484,6 @@ GLContext::Paint (Color *color)
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-void
-GLContext::Paint (MoonSurface *src,
-		  double      alpha,
-		  double      x,
-		  double      y)
-{
-	double m[16];
-
-	Matrix3D::Identity (m);
-
-	Project (src, m, alpha, x, y);
-}
-
 GLuint
 GLContext::GetProjectProgram (double opacity, unsigned yuv)
 {
@@ -582,11 +553,9 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 }
 
 void
-GLContext::Project (MoonSurface  *src,
-		    const double *matrix,
-		    double       alpha,
-		    double       x,
-		    double       y)
+GLContext::Paint (MoonSurface  *src,
+		  const double *matrix,
+		  double       alpha)
 {
 	GLSurface *surface = (GLSurface *) src;
 	GLsizei   width0 = surface->Width ();
@@ -595,16 +564,13 @@ GLContext::Project (MoonSurface  *src,
 	int       n_sampler, i;
 	GLuint    program;
 	GLint     alpha_location;
-	double    m[16];
-	double    sm[16];
 
-	if (surface->TextureY () &&
-	    surface->TextureU () &&
-	    surface->TextureV ()) {
+	if (surface->IsPlanar ()) {
 		program = GetProjectProgram (alpha, 1);
-		texture[0] = surface->TextureY ();
-		texture[1] = surface->TextureU ();
-		texture[2] = surface->TextureV ();
+
+		for (i = 0; i < 3; i++)
+			texture[i] = surface->TextureYUV (i);
+
 		n_sampler = 3;
 	}
 	else {
@@ -613,17 +579,12 @@ GLContext::Project (MoonSurface  *src,
 		n_sampler = 1;
 	}
 
-	GetDeviceMatrix (m);
-	Matrix3D::Multiply (m, matrix, m);
-	if (!GetSourceMatrix (sm, m, x, y))
-		return;
-
 	SetFramebuffer ();
 	SetViewport ();
 	SetScissor ();
 
-	SetupVertexData (m, x, y, width0, height0);
-	SetupTexCoordData (sm, 1.0 / width0, 1.0 / height0);
+	SetupVertexData ();
+	SetupTexCoordData (matrix, 1.0 / width0, 1.0 / height0);
 
 	glUseProgram (program);
 
@@ -679,7 +640,39 @@ GLContext::Project (MoonSurface  *src,
 
 	glUseProgram (0);
 
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
+	glBindFramebuffer (GL_FRAMEBUFFER, 0);	
+}
+
+void
+GLContext::Paint (MoonSurface *src,
+		  double      alpha,
+		  double      x,
+		  double      y)
+{
+	double m[16];
+
+	GetDeviceMatrix (m);
+	if (!GetSourceMatrix (m, m, x, y))
+		return;
+
+	GLContext::Paint (src, m, alpha);
+}
+
+void
+GLContext::Project (MoonSurface  *src,
+		    const double *matrix,
+		    double       alpha,
+		    double       x,
+		    double       y)
+{
+	double m[16];
+
+	GetDeviceMatrix (m);
+	Matrix3D::Multiply (m, matrix, m);
+	if (!GetSourceMatrix (m, m, x, y))
+		return;
+
+	GLContext::Paint (src, m, alpha);
 }
 
 GLuint
@@ -767,6 +760,9 @@ GLContext::Blur (MoonSurface *src,
 		Project (src, m, 1.0, x, y);
 		return;
 	}
+
+	// convolve program doesn't support planar surfaces
+	g_assert (!surface->IsPlanar ());
 
 	program = GetConvolveProgram (size);
 
@@ -970,6 +966,9 @@ GLContext::DropShadow (MoonSurface *src,
 	double       sm[16];
 
 	size = ComputeGaussianSamples (radius, precision, values);
+
+	// convolve program doesn't support planar surfaces
+	g_assert (!surface->IsPlanar ());
 
 	program = GetConvolveProgram (size);
 
@@ -1698,6 +1697,9 @@ GLContext::ShaderEffect (MoonSurface *src,
 
 	g_assert (n_constant <= MAX_CONSTANTS);
 	g_assert (!ddxUvDdyUvPtr || *ddxUvDdyUvPtr < MAX_CONSTANTS);
+
+	// effect programs don't support planar surfaces
+	g_assert (!surface->IsPlanar ());
 
 	GetDeviceMatrix (m);
 	if (!GetSourceMatrix (sm, m, x, y))

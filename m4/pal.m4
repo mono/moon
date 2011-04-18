@@ -62,6 +62,7 @@ elif test "x$with_pal" = "xcocoa"; then
 	pal_capture="none"
 	pal_video_capture="none"
 	pal_audio_capture="none"
+	pal_font_service="none"
 
 	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src'
 	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 

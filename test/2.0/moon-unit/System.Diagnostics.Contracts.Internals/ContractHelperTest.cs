@@ -1,10 +1,10 @@
 //
-// Unit tests for LineBreak
+// Unit tests for System.Diagnostics.Contracts.Internals.ContractHelper
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,36 +27,24 @@
 //
 
 using System;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Media;
+using System.Diagnostics.Contracts;
+using System.Diagnostics.Contracts.Internal;
 
-using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MoonTest.System.Windows.Documents {
+namespace MoonTest.System.Diagnostics.Contracts.Internal {
 
 	[TestClass]
-	public partial class LineBreakTest {
+	public class ContractHelperTest {
 
+		// disabled since it block the UI
+#if false
 		[TestMethod]
-		[MoonlightBug]
-		public void NullifyFontFamily ()
+		public void TriggerFailure ()
 		{
-			LineBreak lb = new LineBreak ();
-			lb.FontFamily = null;
-			// note: Trying to readback FontFamily, after setting it to null, will crash the plugin
-			// see Run.NullifyFontFamily for a more dramatic effect ;-)
+			ContractHelper.TriggerFailure (ContractFailureKind.Assert, "displayMessage", "userMessage", "conditionText", new Exception ());
 		}
-
-		[TestMethod]
-		public void FindName ()
-		{
-			LineBreak lb = new LineBreak ();
-			Assert.Throws<ArgumentNullException> (delegate {
-				lb.FindName (null);
-			}, "null");
-			Assert.IsNull (lb.FindName (String.Empty), "Empty");
-		}
+#endif
 	}
 }
+

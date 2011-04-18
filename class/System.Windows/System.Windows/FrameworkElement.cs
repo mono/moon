@@ -40,10 +40,21 @@ using System.Windows.Controls.Primitives;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
-				static UnmanagedEventHandlerInvoker template_applied = (_sender, _event_id, _token, _calldata, _closure) =>
+
+		static UnmanagedEventHandlerInvoker template_applied = (_sender, _event_id, _token, _calldata, _closure) =>
 			Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
 			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ()) (_sender, _calldata, _closure);
+
+		static UnmanagedEventHandler invoke_loaded_cb = (IntPtr sender, IntPtr eventargs, IntPtr calldata) => {
+			try {
+				((FrameworkElement) NativeDependencyObjectHelper.Lookup (sender)).InvokeLoaded ();
+			} catch {
+
+			} finally {
+				Mono.NativeMethods.event_object_do_emit_current_context (sender, EventIds.UIElement_LoadedEvent, IntPtr.Zero);
+			}
+		};
 
 		public event EventHandler LayoutUpdated {
 			add {
@@ -71,7 +82,6 @@ namespace System.Windows {
 		static MeasureOverrideCallback measure_cb = InvokeMeasureOverride;
 		static ArrangeOverrideCallback arrange_cb = InvokeArrangeOverride;
 		static GetDefaultTemplateCallback get_default_template_cb = InvokeGetDefaultTemplate;
-		static LoadedCallback loaded_hook_cb = InvokeLoadedHook;
 		static StyleResourceChangedCallback style_resource_changed_cb = InvokeStyleResourceChanged;
 		List<KeyValuePair <EventHandler, WeakLayoutUpdatedListener>> layoutUpdatedListeners;
 
@@ -121,11 +131,11 @@ namespace System.Windows {
 			// can notify controls when their template has
 			// been instantiated as a visual tree.
 			Events.AddHandler (this, EventIds.FrameworkElement_TemplateAppliedEvent, template_applied);
+			Events.AddOnEventHandler (this, EventIds.UIElement_LoadedEvent, invoke_loaded_cb);
 
 			MeasureOverrideCallback measure = null;
 			ArrangeOverrideCallback arrange = null;
 			GetDefaultTemplateCallback getTemplate = null;
-			LoadedCallback loaded = null;
 			StyleResourceChangedCallback styleResourceChanged = null;
 
 			if (OverridesLayoutMethod ("MeasureOverride"))
@@ -134,10 +144,9 @@ namespace System.Windows {
 				arrange = FrameworkElement.arrange_cb;
 			if (OverridesGetDefaultTemplate ())
 				getTemplate = FrameworkElement.get_default_template_cb;
-			loaded = FrameworkElement.loaded_hook_cb;
 			styleResourceChanged = FrameworkElement.style_resource_changed_cb;
 
-			NativeMethods.framework_element_register_managed_overrides (native, measure, arrange, getTemplate, loaded, styleResourceChanged);
+			NativeMethods.framework_element_register_managed_overrides (native, measure, arrange, getTemplate, styleResourceChanged);
 		}
 
 		internal void SetImplicitStyles ()
@@ -409,20 +418,6 @@ namespace System.Windows {
 			return result;
 		}
 
-		static void InvokeLoadedHook (IntPtr fwe_ptr)
-		{
-			try {
-				FrameworkElement element = (FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (fwe_ptr);
-				element.InvokeLoaded ();
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeLoaded: {0}", ex);
-				} catch {
-					// Ignore
-				}
-			}
-		}
-		
 		internal virtual UIElement GetDefaultTemplate ()
 		{
 			return null;

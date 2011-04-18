@@ -110,13 +110,25 @@ GLXSurface::Cairo ()
 {
 	g_assert (window == 0);
 
+	if (!data && texture) {
+		data = (unsigned char *) g_malloc (size[0] * size[1] * 4);
+
+		glBindTexture (GL_TEXTURE_2D, texture);
+		glGetTexImage (GL_TEXTURE_2D,
+			       0,
+			       GL_BGRA,
+			       GL_UNSIGNED_BYTE,
+			       data);
+		glBindTexture (GL_TEXTURE_2D, 0);
+	}
+
 	return GLSurface::Cairo ();
 }
 
 bool
 GLXSurface::HasTexture ()
 {
-	return texture != 0;
+	return texture != 0 || IsPlanar ();
 }
 
 };

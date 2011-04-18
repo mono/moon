@@ -264,51 +264,46 @@ namespace Mono.Xaml {
 
 		private static object ConvertPropertyPath (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
+			string typename;
+			string propertyname;
+			string index;
+			PropertyNodeType node;
 			string str = (string) value;
-			StringBuilder expanded = new StringBuilder (str);
-			bool has_expanded = false;
 
-			for (int i = 0; i < expanded.Length; i++) {
-				if (expanded [i] == ':') {
-					int e = i;
-					int s = i - 1;
-					int te = i + 1;
-					for ( ; s > 0; s--) {
-						if (!Char.IsLetterOrDigit (expanded [s]))
-							break;
+			// Fastpath - if there are no prefixed types then we have nothing to expand
+			if (!str.Contains (":"))
+				return new PropertyPath (str);
+
+			var parser = new PropertyPathParser (str);
+			var expanded = new StringBuilder ();
+			while ((node = parser.Step (out typename, out propertyname, out index)) != PropertyNodeType.None) {
+				switch (node) {
+				case PropertyNodeType.AttachedProperty:
+					if (expanded.Length > 0)
+						expanded.Append ('.');
+
+					if (typename.Contains (":")) {
+						typename = converter.parser.ResolveType (typename).ToString ();
+						expanded.AppendFormat ("('{0}'.{1})", typename, propertyname);
+					} else {
+						expanded.AppendFormat ("({0}.{1})", typename, propertyname);
 					}
+					break;
+				case PropertyNodeType.Indexed:
+					expanded.AppendFormat ("[{0}]", index);
+					break;
+				case PropertyNodeType.Property:
+					if (expanded.Length > 0)
+						expanded.Append ('.');
 
-					for ( ; te < str.Length; te++) {
-						if (!Char.IsLetterOrDigit (expanded [te]) || expanded [te] == '_')
-							break;
-					}
-
-					string prefix = expanded.ToString (s + 1, e - s - 1);
-					string type = expanded.ToString (e + 1, te - e - 1);
-
-					expanded.Remove (s + 1, te - s - 1);
-
-					string ns = converter.parser.Current.ResolvePrefix (prefix);
-
-					if (ns == null) {
-						Console.WriteLine ("could not find xmlns value:  {0}", prefix);
-						return null;
-					}
-
-					Type t = converter.parser.ResolveType (prefix + ":" + type);
-					string uri = String.Format ("'{0}'", t);
-							
-					expanded.Insert (s + 1, uri);
-
-					i = s + 1 + uri.Length;
-					has_expanded = true;
+					expanded.Append (propertyname);
+					break;
+				default:
+					throw new Exception (string.Format ("Could not handle PropertyNodeType.{0}", node));
 				}
 			}
 
-			if (has_expanded)
-				return new PropertyPath (str, expanded.ToString ());
-
-			return new PropertyPath (str);
+			return new PropertyPath (str, expanded.ToString ());
 		}
 
 		private static object ConvertDouble (XamlTypeConverter converter, ITypeDescriptorContext context, CultureInfo culture, object value)

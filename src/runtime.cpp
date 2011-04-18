@@ -2917,7 +2917,7 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 #else
 	g_warning ("This pal doesn't have a font service, you will crash, burn and die a fiery death.");
 #endif
-	
+
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
 	xaml_init ();

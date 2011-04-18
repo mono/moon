@@ -384,6 +384,9 @@ namespace Mono.Xaml {
 			case "Source":
 				// if the expression was: Source="{StaticResource xxx}" then 'value' will be populated
 				// If the expression was  Source="5" then 'str_value' will be populated.
+				if (value is Binding)
+					throw new Exception ("Cannot set Binding.Source using another binding");
+
 				b.Source = value ?? str_value;
 				break;
 			case "BindsDirectlyToSource":

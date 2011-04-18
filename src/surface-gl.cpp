@@ -54,22 +54,10 @@ GLSurface::Cairo ()
 	int stride = size[0] * 4;
 
 	if (!data) {
-		if (texture) {
-#if !USE_EGL
-			data = (unsigned char *) g_malloc (stride * size[1]);
+		data = (unsigned char *) g_malloc0 (stride * size[1]);
 
-			glBindTexture (GL_TEXTURE_2D, texture);
-			glGetTexImage (GL_TEXTURE_2D,
-				       0,
-				       GL_BGRA,
-				       GL_UNSIGNED_BYTE,
-				       data);
-			glBindTexture (GL_TEXTURE_2D, 0);
-#endif
-		}
-		else {
-			data = (unsigned char *) g_malloc0 (stride * size[1]);
-		}
+		// derived class should implement read back of texture image
+		g_assert (texture == 0 && !IsPlanar ());
 	}
 
 	return cairo_image_surface_create_for_data (data,
@@ -110,38 +98,35 @@ GLSurface::Texture ()
 	return texture;
 }
 
-void
-GLSurface::AllocYUV ()
+bool
+GLSurface::IsPlanar ()
 {
-	if (!textureYUV[0]) {
-		GLfloat borderY[] = { 0.0625f, 0.0625f, 0.0625f, 0.0625f };
-		GLfloat borderUV[] = { 0.5f , 0.5f, 0.5f, 0.5f };
-		int     i;
+	return (textureYUV[0] && textureYUV[1] && textureYUV[2]);
+}
+
+GLint
+GLSurface::TextureYUV (int i)
+{
+	if (!textureYUV[i]) {
+		int width[] = { size[0], size[0] / 2, size[0] / 2 };
+		int height[] = { size[1], size[1] / 2, size[1] / 2 };
+		int i;
 
 		glGenTextures (3, textureYUV);
 
-		glBindTexture (GL_TEXTURE_2D, textureYUV[0]);
-		glTexImage2D (GL_TEXTURE_2D,
-			      0,
-			      GL_LUMINANCE,
-			      size[0],
-			      size[1],
-			      0,
-			      GL_LUMINANCE,
-			      GL_UNSIGNED_BYTE,
-			      NULL);
-#if PLUMB_ME // kangaroo
-		glTexParameterfv (GL_TEXTURE_2D,
-				  GL_TEXTURE_BORDER_COLOR,
-				  borderY);
-#endif
-		for (i = 1; i < 3; i++) {
+		for (i = 0; i < 3; i++) {
+			GLfloat border[][4] = {
+				{ 0.0625f, 0.0625f, 0.0625f, 0.0625f },
+				{   0.5f ,    0.5f,    0.5f,    0.5f },
+				{   0.5f ,    0.5f,    0.5f,    0.5f }
+			};
+
 			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
 			glTexImage2D (GL_TEXTURE_2D,
 				      0,
 				      GL_LUMINANCE,
-				      size[0] / 2,
-				      size[1] / 2,
+				      width[i],
+				      height[i],
 				      0,
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
@@ -149,29 +134,13 @@ GLSurface::AllocYUV ()
 #if PLUMB_ME // kangaroo
 			glTexParameterfv (GL_TEXTURE_2D,
 					  GL_TEXTURE_BORDER_COLOR,
-					  borderUV);
+					  border[i]);
 #endif
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
-}
 
-GLuint
-GLSurface::TextureY ()
-{
-	return textureYUV[0];
-}
-
-GLuint
-GLSurface::TextureU ()
-{
-	return textureYUV[1];
-}
-
-GLuint
-GLSurface::TextureV ()
-{
-	return textureYUV[2];
+	return textureYUV[i];
 }
 
 GLsizei

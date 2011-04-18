@@ -1,5 +1,0 @@
-!SSC-8A204C7115A2477D6ABC4311B98613A6
-System.Void System.ServiceModel.ClientBase`1::RunCompletedCallback(System.Threading.SendOrPostCallback,System.ServiceModel.ClientBase`1/InvokeAsyncCompletedEventArgs<TChannel>)
-	20110125	spouliot - no source change, likely result of compiler changes
-	r142142		spouliot - use System.Windows.Threading.Dispatcher.Main.BeginInvoke (transparent) thru reflection
-

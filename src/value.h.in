@@ -171,6 +171,7 @@ public:
 	const Uri*	AsUri () const	            { checked_get_exact (Type::URI, NULL, u.uri); }
 	Rect*		AsRect () const	            { checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize () const	            { checked_get_exact (Type::SIZE, NULL, u.size); }
+	FontFamily*	AsFontFamily ()	const       { checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
 	FontWeight*	AsFontWeight ()	const       { checked_get_exact (Type::FONTWEIGHT, NULL, u.fontweight); }
 	FontStyle*	AsFontStyle () const	    { checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
 	FontStretch*	AsFontStretch() const       { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }

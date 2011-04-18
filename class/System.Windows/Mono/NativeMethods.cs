@@ -87,7 +87,6 @@ namespace Mono {
 	internal delegate void ManagedRefCallback (IntPtr referer, IntPtr referent, IntPtr id);
 	internal delegate Size MeasureOverrideCallback (IntPtr fwe_ptr, Size availableSize, ref MoonError error);
 	internal delegate Size ArrangeOverrideCallback (IntPtr fwe_ptr, Size finalSize, ref MoonError error);
-	internal delegate void LoadedCallback (IntPtr fwe_ptr);
 	internal delegate void StyleResourceChangedCallback (IntPtr fwe_ptr, string resourceKey, IntPtr style_ptr);
 
 	internal delegate void FlattenTimelinesCallback (IntPtr timeline, IntPtr dep_ob, IntPtr dp);

@@ -126,6 +126,11 @@ protected:
 				   int width,
 				   int size);
 
+	static int PixelAlignment (int stride);
+	static int PixelRowLength (int stride,
+				   int width,
+				   int size);
+
 	GLuint CreateShader (GLenum       shaderType,
 			     GLsizei      count,
 			     const GLchar **str);
@@ -137,6 +142,10 @@ protected:
 	GLuint GetDropShadowProgram (unsigned size);
 	GLuint GetEffectProgram (PixelShader *ps);
 	static const char *WritemaskToType (const char *writemask);
+
+	void Paint (MoonSurface  *src,
+		    const double *matrix,
+		    double       alpha);
 
 	float vertices[4][4];
 	float texcoords[4][4];
