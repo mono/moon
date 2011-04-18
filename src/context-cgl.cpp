@@ -476,8 +476,10 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
 	CGLSurface  *dst = (CGLSurface *) ms;
-	GLuint      texture = dst->Texture ();
 	int         size[] = { dst->Width (), dst->Height () };
+	int         width[] = { size[0], size[0] / 2, size[0] / 2 };
+	int         height[] = { size[1], size[1] / 2, size[1] / 2 };
+	int         i;
 
 	ForceCurrent ();
 
@@ -490,9 +492,33 @@ CGLContext::BlitYV12 (unsigned char *data[],
 	// mark target as initialized
 	target->SetInit (ms);
 
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size [0], size [1], 0, GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_APPLE, data [0]);
-	glBindTexture (GL_TEXTURE_2D, 0);
+	// Check if we have real planar data, or GL_YCBCR_422_APPLE from VDA
+	if (data [0] != NULL && data [1] != NULL && data [2] != NULL) {
+		for (i = 0; i < 3; i++) {
+			glPixelStorei (GL_UNPACK_ROW_LENGTH,
+			PixelRowLength (stride[i], width[i], 1));
+			glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride[i]));
+			glBindTexture (GL_TEXTURE_2D, dst->TextureYUV (i));
+			glTexSubImage2D (GL_TEXTURE_2D,
+						0,  
+						0,  
+						0,  
+						width[i],
+						height[i],
+						GL_LUMINANCE,
+						GL_UNSIGNED_BYTE,
+						data[i]);
+		}   
+		glBindTexture (GL_TEXTURE_2D, 0); 
+		glPixelStorei (GL_UNPACK_ALIGNMENT, 4); 
+		glPixelStorei (GL_UNPACK_ROW_LENGTH, 0); 
+	} else {
+		GLuint texture = dst->Texture ();
+
+		glBindTexture (GL_TEXTURE_2D, texture);
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size [0], size [1], 0, GL_YCBCR_422_APPLE, GL_UNSIGNED_SHORT_8_8_APPLE, data [0]);
+		glBindTexture (GL_TEXTURE_2D, 0);
+	}
 
 	ms->unref ();
 }
