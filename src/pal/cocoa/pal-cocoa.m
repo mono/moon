@@ -459,7 +459,6 @@ MoonWindowingSystemCocoa::RemoveTimeout (guint timeoutId)
 
 	[[timer userInfo] autorelease];
 	[timer invalidate];
-	[timer autorelease];
 }
 
 guint
