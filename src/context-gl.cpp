@@ -216,6 +216,16 @@ GLContext::SetupTexCoordData (const double *matrix,
 }
 
 void
+GLContext::SetupTexUnit (GLenum target, GLint texture)
+{
+	glBindTexture (target, texture);
+	glTexParameteri (target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri (target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri (target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+}
+
+void
 GLContext::Push (Group extents)
 {
 	g_warning ("GLContext::Push has been called. The derived class should have overridden it.");
@@ -580,16 +590,7 @@ GLContext::Paint (MoonSurface  *src,
 			continue;
 
 		glActiveTexture (GL_TEXTURE0 + i);
-		glBindTexture (GL_TEXTURE_2D, texture[i]);
-
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				 GL_LINEAR);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				 GL_LINEAR);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				 GL_CLAMP_TO_BORDER);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				 GL_CLAMP_TO_BORDER);
+		SetupTexUnit (GL_TEXTURE_2D, texture[i]);
 
 		glUniform1i (sampler_location, i);
 	}

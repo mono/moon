@@ -116,6 +116,7 @@ protected:
 	virtual void SetupTexCoordData (const double *matrix,
 					double       du,
 					double       dv);
+	virtual void SetupTexUnit (GLenum target, GLint texture);
 
 	static int PixelAlignment (int stride);
 	static int PixelRowLength (int stride,
