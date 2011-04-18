@@ -116,13 +116,6 @@ UIElement::OnIsLoadedChanged (bool loaded)
 	if (!loaded) {
 		ClearForeachGeneration (UIElement::LoadedEvent);
 		Emit (UIElement::UnloadedEvent);
-
-		ResourceDictionaryIterator iter (this->GetResources ());
-		while (iter.Next (NULL)) {
-			Value *v = iter.GetCurrent(NULL);
-			if (v && v->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
-				v->AsFrameworkElement ()->SetIsLoaded (loaded);
-		}
 	}
 
 	// Then propagate the state change to the children
@@ -132,12 +125,6 @@ UIElement::OnIsLoadedChanged (bool loaded)
 
 	// Finally if we're loading, emit the Loaded event after the children
 	if (loaded) {
-		ResourceDictionaryIterator iter (this->GetResources ());
-		while (iter.Next (NULL)) {
-			Value *v = iter.GetCurrent(NULL);
-			if (v && v->Is (GetDeployment (),Type::FRAMEWORKELEMENT))
-				v->AsFrameworkElement ()->SetIsLoaded (loaded);
-		}
 		if (HasHandlers (UIElement::LoadedEvent, -1, true)) {
 			GetDeployment ()->AddAllLoadedHandlers (this, true);
 			GetDeployment ()->EmitLoadedAsync ();
@@ -366,45 +353,8 @@ UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 			// nothing needed here.
 			break;
 		}
-	} else if (PropertyHasValueNoAutoCreate (UIElement::ResourcesProperty, col)) {
-		FrameworkElement *old_val = NULL;
-		FrameworkElement *new_val = NULL;
-
-		if (args->GetOldItem () && args->GetOldItem ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
-			old_val = args->GetOldItem ()->AsFrameworkElement ();
-
-		if (args->GetNewItem () && args->GetNewItem ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
-			new_val = args->GetNewItem ()->AsFrameworkElement ();
-
-		switch (args->GetChangedAction()) {
-		case CollectionChangedActionReplace:
-			if (old_val)
-				old_val->SetIsLoaded (false);
-			if (new_val)
-				new_val->SetIsLoaded (true);
-			break;
-		case CollectionChangedActionAdd:
-			if (new_val)
-				new_val->SetIsLoaded (true);
-			break;
-		case CollectionChangedActionRemove:
-			if (old_val)
-				old_val->SetIsLoaded (false);
-			break;
-		case CollectionChangedActionClearing: {
-			ResourceDictionaryIterator iter (this->GetResources ());
-			while (iter.Next (NULL)) {
-				Value *v = iter.GetCurrent(NULL);
-				if (v && v->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
-					v->AsFrameworkElement ()->SetIsLoaded (false);
-			}
-			break;
-		}
-		case CollectionChangedActionCleared:
-			// nothing needed here.
-			break;
-		}
-	} else {
+	}
+	else {
 		DependencyObject::OnCollectionChanged (col, args);
 	}
 }
