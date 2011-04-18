@@ -124,3 +124,5 @@ install-test-plugin:
 	$(MAKE) -C plugin $@
 	$(MAKE) -C test/harness/shocker $@
 
+try:
+	tools/try-commit.sh --websiteurl=http://moon.sublimeintervention.com/ --lane=try-trunk --action=None
