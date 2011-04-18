@@ -742,6 +742,142 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
+		public void ResourceDictionary_AddSubtreeWithElementInRD ()
+		{
+			// If i add element A to the ResourceDictionary on B and then
+			// put B in the ResourceDictionary of C, Loaded handlers on A
+			// are queued for emission.
+			var loaded1 = false;
+			var loaded2 = false;
+
+			var subtree = new Canvas();
+			var rect1 = new Rectangle();
+			var rect2 = new Rectangle();
+
+			rect1.Loaded += (o, e) => loaded1 = true;
+			rect2.Loaded += (o, e) => loaded2 = true;
+
+			subtree.Resources.Add("foo2", rect1);
+			TestPanel.Resources.Add("foo", subtree);
+			TestPanel.Children.Add(rect2);
+
+			Enqueue(() => TestPanel.UpdateLayout());
+			Enqueue(() =>
+			{
+				Assert.IsTrue(loaded1, "#1");
+				Assert.IsTrue(loaded2, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ResourceDictionary_AddToRDFirst()
+		{
+			var loaded1 = false;
+			var loaded2 = false;
+
+			var rect1 = new Rectangle();
+			var rect2 = new Rectangle();
+
+			rect1.Loaded += (o, e) => loaded1 = true;
+			rect2.Loaded += (o, e) => loaded2 = true;
+
+			Console.WriteLine ("Starting");
+			Console.ReadLine ();
+			TestPanel.Resources.Add("foo", rect1);
+			TestPanel.Children.Add(rect2);
+
+			Enqueue(() => TestPanel.UpdateLayout());
+			Enqueue(() => {
+				Assert.IsTrue(loaded1, "#1");
+				Assert.IsTrue(loaded2, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ResourceDictionary_AddToRDFirst_WithSubtree()
+		{
+			var loaded1 = false;
+			var loaded2 = false;
+
+			var subtree = new Canvas ();
+			var rect1 = new Rectangle();
+			var rect2 = new Rectangle();
+
+			rect1.Loaded += (o, e) => loaded1 = true;
+			rect2.Loaded += (o, e) => loaded2 = true;
+
+			subtree.Children.Add(rect1);
+			TestPanel.Resources.Add("foo", subtree);
+			TestPanel.Children.Add(rect2);
+
+			Enqueue(() => TestPanel.UpdateLayout());
+			Enqueue(() => {
+				Assert.IsTrue(loaded1, "#1");
+				Assert.IsTrue(loaded2, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Adding an element to an RD should just queue up the Loaded handlers, not emit them")]
+		public void ResourceDictionary_AddToRDSecond()
+		{
+			var loaded1 = false;
+			var loaded2 = false;
+
+			var rect1 = new Rectangle();
+			var rect2 = new Rectangle();
+
+			rect1.Loaded += (o, e) => loaded1 = true;
+			rect2.Loaded += (o, e) => loaded2 = true;
+
+			TestPanel.Children.Add(rect2);
+			TestPanel.Resources.Add("foo", rect1);
+
+			Enqueue(() => TestPanel.UpdateLayout());
+			Enqueue(() =>
+			{
+				Assert.IsFalse(loaded1, "#1");
+				Assert.IsTrue(loaded2, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Adding an element to an RD should just queue up the Loaded handlers, not emit them")]
+		public void ResourceDictionary_AddToRDSecond_WithSubtree()
+		{
+			var loaded1 = false;
+			var loaded2 = false;
+
+			var subtree = new Canvas();
+			var rect1 = new Rectangle();
+			var rect2 = new Rectangle();
+
+			rect1.Loaded += (o, e) => loaded1 = true;
+			rect2.Loaded += (o, e) => loaded2 = true;
+
+			subtree.Children.Add(rect1);
+			TestPanel.Children.Add(rect2);
+			TestPanel.Resources.Add("foo", subtree);
+
+			Enqueue(() => TestPanel.UpdateLayout());
+			Enqueue(() =>
+			{
+				Assert.IsFalse(loaded1, "#1");
+				Assert.IsTrue(loaded2, "#2");
+			});
+			EnqueueTestComplete();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void RemoveAfterAdded ()
 		{
 			// See what happens if we add/remove the same element
