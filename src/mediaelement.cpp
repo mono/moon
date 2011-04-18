@@ -1881,6 +1881,46 @@ MediaElement::EnableAntiAlias (void)
 }
 
 void
+MediaElement::ReportGetSampleProgress (double bufferingProgress)
+{
+	LOG_MEDIAELEMENT ("MediaElement::ReportGetSampleProgress (%f) InMainThread: %i\n", bufferingProgress, Surface::InMainThread ());
+
+	if (!Surface::InMainThread ()) {
+		mutex.Lock ();
+		progress_reported_queue.Append (new List::GenericNode<double> (bufferingProgress));
+		mutex.Unlock ();
+		AddTickCall (ReportGetSampleProgressCallback);
+		return;
+	}
+
+	if (state == MediaElementStatePlaying) {
+		flags |= PlayRequested;
+		SetState (MediaElementStateBuffering);
+	} else if (state != MediaElementStateBuffering) {
+		return;
+	}
+	SetBufferingProgress (bufferingProgress);
+}
+
+void
+MediaElement::ReportGetSampleProgressCallback (EventObject *obj)
+{
+	double bufferingProgress = 0;
+	List::GenericNode<double> *node;
+	MediaElement *me = (MediaElement *) obj;
+
+	me->mutex.Lock ();
+	node = (List::GenericNode<double> *) me->progress_reported_queue.Last ();
+	if (node != NULL) {
+		bufferingProgress = node->GetElement ();
+		me->progress_reported_queue.Remove (node);
+	}
+	me->mutex.Unlock ();
+
+	me->ReportGetSampleProgress (bufferingProgress);
+}
+
+void
 MediaElement::ReportErrorOccurredCallback (EventObject *obj)
 {
 	MediaElement *me = (MediaElement *) obj;

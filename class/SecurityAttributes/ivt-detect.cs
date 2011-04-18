@@ -1,4 +1,4 @@
-// Copyright (C) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2010-2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,41 @@ using Moonlight.SecurityModel;
 
 class Program {
 
+	const string FriendAccessAllowedAttribute = "System.Runtime.CompilerServices.FriendAccessAllowedAttribute";
+
 	static List<string> internals = new List<string> ();
+	static List<string> friends = new List<string> ();
+
+	static bool HasFriendAccessAllowedAttribute (MemberReference member, bool declaringType)
+	{
+		if (member == null)
+			return false;
+
+		ICustomAttributeProvider cap = (member as ICustomAttributeProvider);
+		if (cap.HasCustomAttributes) {
+			if (cap.HasAttribute (FriendAccessAllowedAttribute))
+				return true;
+		}
+		return declaringType ? HasFriendAccessAllowedAttribute (member.DeclaringType, declaringType) : false;
+	}
+
+	static void CheckMember (string assemblyName, char memberType, MemberReference member)
+	{
+		if (Array.IndexOf (PlatformCode.Assemblies, assemblyName) == -1)
+			return;
+
+		bool friend = HasFriendAccessAllowedAttribute (member, true);
+		string s = String.Format ("[{0}] {2}{3}: {1}", assemblyName, member, memberType,
+			friend ? "f" : String.Empty);
+
+		if (friend) {
+			if (!friends.Contains (s)) {
+				friends.Add (s);
+			}
+		} else if (!internals.Contains (s)) {
+			internals.Add (s);
+		}
+	}
 
 	static void Check (AssemblyDefinition assembly, MethodDefinition method)
 	{
@@ -44,9 +78,8 @@ class Program {
 					continue;
 				AssemblyDefinition ad = md.DeclaringType.Resolve ().Module.Assembly;
 				if ((ad != assembly) && !md.IsVisible ()) {
-					string s = String.Format ("[{0}] M: {1}", ad.Name.Name, md);
-					if (!internals.Contains (s))
-						internals.Add (s);
+					string aname = ad.Name.Name;
+					CheckMember (aname, 'M', md);
 				}
 				continue;
 			}
@@ -58,9 +91,8 @@ class Program {
 					continue;
 				AssemblyDefinition ad = fd.DeclaringType.Resolve ().Module.Assembly;
 				if ((ad != assembly) && !fd.IsVisible ()) {
-					string s = String.Format ("[{0}] F: {1}", ad.Name.Name, fd);
-					if (!internals.Contains (s))
-						internals.Add (s);
+					string aname = ad.Name.Name;
+					CheckMember (aname, 'F', fd);
 				}
 				continue;
 			}
@@ -72,9 +104,8 @@ class Program {
 					continue;
 				AssemblyDefinition ad = td.Module.Assembly;
 				if ((ad != assembly) && !td.IsVisible ()) {
-					string s = String.Format ("[{0}] T: {1}", ad.Name.Name, td);
-					if (!internals.Contains (s))
-						internals.Add (s);
+					string aname = ad.Name.Name;
+					CheckMember (aname, 'T', td);
 				}
 				continue;
 			}
@@ -83,10 +114,6 @@ class Program {
 
 	static void Check (string filename)
 	{
-		var resolver = new DefaultAssemblyResolver ();
-		resolver.AddSearchDirectory (RuntimePath);
-		resolver.AddSearchDirectory (SdkClientPath);
-
 		AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly (filename, new ReaderParameters { AssemblyResolver = resolver });
 
 		foreach (ModuleDefinition module in assembly.Modules) {
@@ -97,17 +124,28 @@ class Program {
 			}
 		}
 
-		Console.WriteLine ("# Assembly: {0} [{1} items]", assembly, internals.Count);
-		internals.Sort ();
-		foreach (string s in internals)
-			Console.WriteLine (s);
+		Console.WriteLine ("# Assembly: {0} [{1} items]", assembly, internals.Count + friends.Count);
+		if (friends.Count > 0) {
+			Console.WriteLine ("# decorated with [{0}]", FriendAccessAllowedAttribute);
+			friends.Sort ();
+			foreach (string s in friends)
+				Console.WriteLine (s);
+			friends.Clear ();
+		}
+		if (internals.Count > 0) {
+			Console.WriteLine ("# non-decorated");
+			internals.Sort ();
+			foreach (string s in internals)
+				Console.WriteLine (s);
+			internals.Clear ();
+		}
 		Console.WriteLine ();
-
-		internals.Clear ();
 	}
 
-	static string SdkClientPath = @"C:\Program Files\Microsoft SDKs\Silverlight\v3.0\Libraries\Client";
-	static string RuntimePath = @"C:\Program Files\Microsoft Silverlight\3.0.40818.0";
+	static string SdkClientPath = @"C:\Program Files\Microsoft SDKs\Silverlight\v4.0\Libraries\Client";
+	static string RuntimePath = @"C:\Program Files\Microsoft Silverlight\4.0.60129.0";
+
+	static DefaultAssemblyResolver resolver = new DefaultAssemblyResolver ();
 
 	static int Main (string [] args)
 	{
@@ -117,6 +155,9 @@ class Program {
 			SdkClientPath = args [0];
 		if (args.Length > 1)
 			RuntimePath = args [1];
+
+		resolver.AddSearchDirectory (RuntimePath);
+		resolver.AddSearchDirectory (SdkClientPath);
 
 		string [] files = Directory.GetFiles (SdkClientPath, "*.dll");
 		Array.Sort<string> (files);

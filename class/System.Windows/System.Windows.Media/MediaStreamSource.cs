@@ -335,8 +335,8 @@ namespace System.Windows.Media
 		{
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
-			
-			// TODO (in mediaelement.h): NativeMethods.imedia_demuxer_report_get_sample_progress (media_element.native, bufferingProgress);
+
+			NativeMethods.media_element_report_get_sample_progress (media_element.native, bufferingProgress);
 		}
 		
 		protected void ReportOpenMediaCompleted (IDictionary<MediaSourceAttributesKeys, string> mediaStreamAttributes, IEnumerable<MediaStreamDescription> availableMediaStreams)

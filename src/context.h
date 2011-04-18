@@ -195,7 +195,7 @@ public:
 
 protected:
 	void GetDeviceMatrix (double *out);
-	bool GetSourceMatrix (double *out, double *in, double x, double y);
+	bool GetSourceMatrix (double *out, const double *in, double x, double y);
 
 	int ComputeGaussianSamples (double radius,
 				    double precision,

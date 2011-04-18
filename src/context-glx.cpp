@@ -164,12 +164,41 @@ GLXContext::SetupVertexData (double x,
 			     double width,
 			     double height)
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
+	Context::Target *target = Top ()->GetTarget ();
+	MoonSurface     *ms;
+	Rect            r = target->GetData (&ms);
+	GLXSurface      *dst = (GLXSurface *) ms;
+	double          dx = 2.0 / dst->Width ();
+	double          dy = 2.0 / dst->Height ();
+	double          p[4][4];
+	int             i;
 
-	GLContext::SetupVertexData (x, y, width, height);
+	p[0][0] = x;
+	p[0][1] = y;
+	p[0][2] = 0.0;
+	p[0][3] = 1.0;
+
+	p[1][0] = x + width;
+	p[1][1] = y;
+	p[1][2] = 0.0;
+	p[1][3] = 1.0;
+
+	p[2][0] = x + width;
+	p[2][1] = y + height;
+	p[2][2] = 0.0;
+	p[2][3] = 1.0;
+
+	p[3][0] = x;
+	p[3][1] = y + height;
+	p[3][2] = 0.0;
+	p[3][3] = 1.0;
+
+	for (i = 0; i < 4; i++) {
+		vertices[i][0] = p[i][0] * dx - p[i][3];
+		vertices[i][1] = p[i][1] * dy - p[i][3];
+		vertices[i][2] = -p[i][2];
+		vertices[i][3] = p[i][3];
+	}
 
 	if (dst->GetGLXDrawable ()) {
 		int i;
@@ -182,6 +211,112 @@ GLXContext::SetupVertexData (double x,
 	}
 
 	ms->unref ();
+}
+
+void
+GLXContext::SetupVertexData (const double *matrix,
+			     double       x,
+			     double       y,
+			     double       width,
+			     double       height)
+{
+	Target      *target = Top ()->GetTarget ();
+	MoonSurface *ms;
+	Rect        r = target->GetData (&ms);
+	GLXSurface  *dst = (GLXSurface *) ms;
+	double      dx = 2.0 / dst->Width ();
+	double      dy = 2.0 / dst->Height ();
+	double      p[4][4];
+	int         i;
+
+	p[0][0] = 0.0;
+	p[0][1] = 0.0;
+	p[0][2] = 0.0;
+	p[0][3] = 1.0;
+
+	p[1][0] = r.width;
+	p[1][1] = 0.0;
+	p[1][2] = 0.0;
+	p[1][3] = 1.0;
+
+	p[2][0] = r.width;
+	p[2][1] = r.height;
+	p[2][2] = 0.0;
+	p[2][3] = 1.0;
+
+	p[3][0] = 0.0;
+	p[3][1] = r.height;
+	p[3][2] = 0.0;
+	p[3][3] = 1.0;
+
+	for (i = 0; i < 4; i++) {
+		vertices[i][0] = p[i][0] * dx - p[i][3];
+		vertices[i][1] = p[i][1] * dy - p[i][3];
+		vertices[i][2] = -p[i][2];
+		vertices[i][3] = p[i][3];
+	}
+
+	if (dst->GetGLXDrawable ()) {
+		int i;
+
+		for (i = 0; i < 4; i++) {
+			GLfloat v = vertices[i][1] + vertices[i][3];
+
+			vertices[i][1] = vertices[i][3] - v;
+		}
+	}
+
+	ms->unref ();
+}
+
+void
+GLXContext::SetupTexCoordData (const double *matrix,
+			       double       du,
+			       double       dv)
+{
+	Context::Target *target = Top ()->GetTarget ();
+	Rect            r = target->GetData (NULL);
+	double          p[4][4];
+	int             i;
+
+	p[0][0] = 0.0;
+	p[0][1] = 0.0;
+	p[0][2] = 0.0;
+	p[0][3] = 1.0;
+
+	p[1][0] = r.width;
+	p[1][1] = 0.0;
+	p[1][2] = 0.0;
+	p[1][3] = 1.0;
+
+	p[2][0] = r.width;
+	p[2][1] = r.height;
+	p[2][2] = 0.0;
+	p[2][3] = 1.0;
+
+	p[3][0] = 0.0;
+	p[3][1] = r.height;
+	p[3][2] = 0.0;
+	p[3][3] = 1.0;
+
+	for (i = 0; i < 4; i++) {
+		Matrix3D::TransformPoint (p[i], matrix, p[i]);
+
+		texcoords[i][0] = p[i][0] * du;
+		texcoords[i][1] = p[i][1] * dv;
+		texcoords[i][2] = p[i][2];
+		texcoords[i][3] = p[i][3];
+	}
+}
+
+void
+GLXContext::SetupTexUnit (GLenum target, GLint texture)
+{
+	glBindTexture (target, texture);
+	glTexParameteri (target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri (target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri (target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 }
 
 gboolean
@@ -294,7 +429,7 @@ GLXContext::SyncDrawable ()
 		glUseProgram (program);
 
 		SetupVertexData (rSrc.x - r.x, rSrc.y - r.y, width0, height0);
-		SetupTexCoordData ();
+		GLContext::SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
 				       GL_FLOAT, GL_FALSE, 0,
@@ -700,12 +835,9 @@ GLXContext::Project (MoonSurface  *src,
 	if (matrix)
 		Matrix3D::Multiply (m, matrix, m);
 
-	if (!GetSourceMatrix (m, m, x, y))
-		return;
-
 	ForceCurrent ();
 
-	GLContext::Paint (src, m, alpha);
+	GLContext::Paint (src, m, alpha, x, y);
 }
 
 void

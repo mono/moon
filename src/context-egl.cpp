@@ -99,17 +99,24 @@ MoonEGLContext::ProgramPrecisionString ()
 }
 
 void
-MoonEGLContext::SetupVertexData (double x,
-				 double y,
-				 double width,
-				 double height)
+MoonEGLContext::SetupVertexData (const double *matrix,
+				 double       x,
+				 double       y,
+				 double       width,
+				 double       height)
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	MoonEGLSurface  *dst = (MoonEGLSurface *) ms;
+	Target         *target = Top ()->GetTarget ();
+	MoonSurface    *ms;
+	Rect           r = target->GetData (&ms);
+	MoonEGLSurface *dst = (MoonEGLSurface *) ms;
+	double         m[16];
 
-	GLContext::SetupVertexData (x, y, width, height);
+	if (matrix)
+		Matrix3D::Init (m, matrix);
+	else
+		Matrix3D::Identity (m);
+
+	GLContext::SetupVertexData (m, x, y, width, height);
 
 	if (dst->GetEGLDisplay ()) {
 		int i;
@@ -178,7 +185,7 @@ MoonEGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (0, 0, width0, height0);
+		SetupVertexData (NULL, 0, 0, width0, height0);
 		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
@@ -234,7 +241,7 @@ MoonEGLContext::SyncDrawable ()
 
 		glUseProgram (program);
 
-		SetupVertexData (rSrc.x - r.x, rSrc.y - r.y, width0, height0);
+		SetupVertexData (NULL, rSrc.x - r.x, rSrc.y - r.y, width0, height0);
 		SetupTexCoordData ();
 
 		glVertexAttribPointer (0, 4,
@@ -638,12 +645,9 @@ MoonEGLContext::Project (MoonSurface  *src,
 	if (matrix)
 		Matrix3D::Multiply (m, matrix, m);
 
-	if (!GetSourceMatrix (m, m, x, y))
-		return;
-
 	ForceCurrent ();
 
-	GLContext::Paint (src, m, alpha);
+	GLContext::Paint (src, m, alpha, x, y);
 }
 
 void
