@@ -12,7 +12,7 @@
 #define __MOON_COLOR_H__
 
 #include <glib.h>
-#include <math.h>
+#include "pal.h"
 
 namespace Moonlight {
 

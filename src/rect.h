@@ -13,7 +13,6 @@
 
 #include <glib.h>
 #include <cairo.h>
-#include <math.h>
 
 #include "pal.h"
 #include "point.h"

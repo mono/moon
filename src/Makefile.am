@@ -240,9 +240,9 @@ dist_libmoon_la_SOURCES = 		\
 	medialog.cpp		\
 	mediaplayer.cpp		\
 	messaging.cpp		\
-	moon-curves.c		\
+	moon-curves.cpp		\
 	moonlightconfiguration.cpp	\
-	moon-path.c		\
+	moon-path.cpp		\
 	mp3.cpp			\
 	multiscaleimage.cpp	\
 	multiscalesubimage.cpp	\

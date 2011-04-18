@@ -99,6 +99,8 @@ elif test "x$with_pal" = "xandroid"; then
 		AC_DEFINE([HAVE_FREETYPE2], [1], 
 			[Include support for freetype2 in the font manager])
         ])
+
+	AC_CHECK_FUNCS(posix_memalign)
 else
 	AC_MSG_ERROR([unknown PAL specified])
 

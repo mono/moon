@@ -14,9 +14,9 @@
 #define __MOON_PATH_H__
 
 #include <string.h>
-#include <math.h>
 #include <glib.h>
 #include <cairo.h>
+#include "pal.h"
 
 G_BEGIN_DECLS
 

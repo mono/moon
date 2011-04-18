@@ -11,7 +11,7 @@
 #ifndef __MOON_CORNERRADIUS_H__
 #define __MOON_CORNERRADIUS_H__
 
-#include <math.h>
+#include "pal.h"
 
 namespace Moonlight {
 
