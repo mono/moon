@@ -874,7 +874,7 @@ Context::GetDeviceMatrix (double *out)
 }
 
 bool
-Context::GetSourceMatrix (double *out, double *in, double x, double y)
+Context::GetSourceMatrix (double *out, const double *in, double x, double y)
 {
 	double offset[16];
 	double m[16];
