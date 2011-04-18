@@ -13,6 +13,7 @@
 
 #include "moon-path.h"
 
+namespace Moonlight {
 
 /**
  * moon_path_new:
@@ -986,3 +987,5 @@ cairo_path_is_rectangle (const cairo_path_t *path,
 
 	return FALSE;
 }
+
+};

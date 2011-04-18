@@ -14,6 +14,8 @@
 
 #include "moon-curves.h"
 
+namespace Moonlight {
+
 static void 
 point_half_lerp (moon_point *dest, moon_point a, moon_point b)
 {
@@ -114,3 +116,5 @@ moon_subdivide_cubic_at_level (moon_cubic *b, int lvl, moon_cubic *src)
 	int pos = 0;
 	recursive_subdivide_func (b, lvl, 1, &pos, src);
 }
+
+};
