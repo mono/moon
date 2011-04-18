@@ -131,11 +131,9 @@ GLSurface::TextureYUV (int i)
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
-#if PLUMB_ME // kangaroo
 			glTexParameterfv (GL_TEXTURE_2D,
 					  GL_TEXTURE_BORDER_COLOR,
 					  border[i]);
-#endif
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
