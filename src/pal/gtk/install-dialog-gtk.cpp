@@ -44,18 +44,15 @@ typedef struct {
 struct _InstallDialogPrivate {
 	Application *application;
 	Deployment *deployment;
-	HttpRequest *request;
 	GPtrArray *loaders;
 	GList *icon_list;
 	
 	char *install_dir;
 	bool installed;
-	bool unattended;
 	
 	GtkToggleButton *start_menu;
 	GtkToggleButton *desktop;
 	GtkLabel *primary_text;
-	GtkProgressBar *progress;
 	GtkWidget *ok_button;
 	GtkImage *icon;
 };
@@ -141,10 +138,6 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_toggle_button_set_active (priv->desktop, false);
 	gtk_widget_show ((GtkWidget *) priv->desktop);
 	
-	priv->progress = (GtkProgressBar *) gtk_progress_bar_new ();
-	gtk_progress_bar_set_fraction (priv->progress, 0.0);
-	gtk_widget_show ((GtkWidget *) priv->progress);
-	
 	vbox = gtk_vbox_new (false, 2);
 	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->start_menu, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->desktop, false, false, 0);
@@ -158,7 +151,6 @@ install_dialog_init (InstallDialog *dialog)
 	vbox = gtk_vbox_new (false, 6);
 	gtk_box_pack_start ((GtkBox *) vbox, label, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, checkboxes, false, false, 0);
-	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->progress, false, false, 0);
 	gtk_widget_show (vbox);
 	
 	primary = gtk_alignment_new (0.0, 0.0, 0.0, 0.0);
@@ -199,12 +191,6 @@ install_dialog_finalize (GObject *obj)
 	IconLoader *loader;
 	guint i;
 	
-	if (priv->request) {
-		if (!priv->request->IsCompleted ())
-			priv->request->Abort ();
-		priv->request->unref ();
-	}
-
 	if (!priv->installed) {
 		// FIXME: use the InstallerService to uninstall so we don't
 		// leave dummy records in the database...
@@ -292,18 +278,6 @@ icon_loader_write_cb (EventObject *sender, EventArgs *calldata, gpointer user_da
 	}
 }
 
-static void
-error_dialog_response (GtkDialog *dialog, int response_id, gpointer user_data)
-{
-	GtkDialog *installer = (GtkDialog *) user_data;
-	
-	// cancel the install dialog
-	gtk_dialog_response (installer, GTK_RESPONSE_CANCEL);
-	
-	// destroy the error dialog
-	gtk_widget_destroy ((GtkWidget *) dialog);
-}
-
 static gboolean
 click_ok_button (gpointer user_data)
 {
@@ -313,59 +287,6 @@ click_ok_button (gpointer user_data)
 	 * can't install unattended */
 	gtk_dialog_response ((GtkDialog *) user_data, GTK_RESPONSE_OK);
 	return false;
-}
-
-static void
-downloader_stopped (EventObject *sender, EventArgs *args, gpointer user_data)
-{
-	InstallDialog *installer = (InstallDialog *) user_data;
-	InstallDialogPrivate *priv = installer->priv;
-	GtkWidget *dialog;
-	HttpRequestStoppedEventArgs *ea = (HttpRequestStoppedEventArgs *) args;
-
-	LOG_OOB ("OOB install: downloader_stopped (IsSuccess: %i)\n", ea->IsSuccess ());
-
-	if (ea->IsSuccess ()) {
-		gtk_widget_set_sensitive (priv->ok_button, true);
-		gtk_widget_hide ((GtkWidget *) priv->progress);
-		if (priv->unattended) {
-			LOG_OOB ("OOB install: downloader_stopped (): async clicking ok button since we're doing an unattended install\n");
-			/* We can't click directly, for some reason the click is lost when running from file:// urls
-			 * (maybe it's all happening too fast? it happens with #422). */
-			g_timeout_add (1000, click_ok_button, installer);
-		}
-	} else {
-		dialog = gtk_message_dialog_new ((GtkWindow *) installer,
-						 (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
-						 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s",
-						 ea->GetErrorMessage ());
-
-		gtk_window_set_title ((GtkWindow *) dialog, "Install Error");
-		
-		gtk_message_dialog_format_secondary_text ((GtkMessageDialog *) dialog,
-							  "Failed to download application from %s",
-							  priv->deployment->GetXapLocation ()->GetOriginalString ());
-		
-		g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response), installer);
-
-		gtk_widget_show (dialog);
-	}
-}
-
-static void
-downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer user_data)
-{
-	HttpRequestProgressChangedEventArgs *args = (HttpRequestProgressChangedEventArgs *) calldata;
-	InstallDialog *installer = (InstallDialog *) user_data;
-	InstallDialogPrivate *priv = installer->priv;
-	double fraction;
-	char *label;
-	
-	fraction = args->GetProgress ();
-	label = g_strdup_printf ("Downloading... %d%%", (int) (fraction * 100));
-	gtk_progress_bar_set_fraction (priv->progress, fraction);
-	gtk_progress_bar_set_text (priv->progress, label);
-	g_free (label);
 }
 
 GtkDialog *
@@ -404,18 +325,16 @@ install_dialog_new (GtkWindow *parent, Deployment *deployment, const char *insta
 	g_free (markup);
 	
 	priv->install_dir = g_strdup (install_dir);
-	priv->unattended = unattended;
-	
-	/* desensitize the OK button until the httprequest is complete */
-	gtk_widget_set_sensitive (priv->ok_button, false);
-	
-	/* spin up a httprequest for the xap */
-	priv->request = deployment->CreateHttpRequest (HttpRequest::DisableAsyncSend /* FIXME: why can't it be async? */);
-	priv->request->AddHandler (HttpRequest::StoppedEvent, downloader_stopped, dialog);
-	priv->request->AddHandler (HttpRequest::ProgressChangedEvent, downloader_progress_changed, dialog);
-	priv->request->Open ("GET", deployment->GetXapLocation (), NULL, XamlPolicy);
-	priv->request->Send ();
-	
+
+	gtk_widget_set_sensitive (priv->ok_button, true);
+
+	if (unattended) {
+		LOG_OOB ("OOB install: downloader_stopped (): async clicking ok button since we're doing an unattended install\n");
+		/* We can't click directly, for some reason the click is lost when running from file:// urls
+		 * (maybe it's all happening too fast? it happens with #422). */
+		g_timeout_add (1000, click_ok_button, dialog);
+	}
+
 	/* load the icons */
 	if (icons && (count = icons->GetCount ()) > 0) {
 		priv->loaders = g_ptr_array_sized_new (count);
@@ -726,7 +645,7 @@ install_dialog_install (InstallDialog *dialog)
 		return false;
 	
 	/* install the XAP */
-	if (!install_xap (priv->request->GetFilename (), priv->install_dir)) {
+	if (!install_xap (priv->deployment->GetXapFilename (), priv->install_dir)) {
 		LOG_OOB ("OOB install: install_dialog_install: could not install xap\n");
 		RemoveDir (priv->install_dir);
 		return false;
