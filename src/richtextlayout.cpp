@@ -490,9 +490,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	bool new_glyph;
 	gunichar c;
 	
-#if PLUMB_ME
 	g_array_set_size (word->break_ops, 0);
-#endif
 	word->type = WORD_TYPE_UNKNOWN;
 	word->advance = 0.0;
 	word->count = 0;
