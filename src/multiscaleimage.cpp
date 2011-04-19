@@ -90,11 +90,7 @@ struct QTree {
 static QTree *
 qtree_new (void)
 {
-#if PLUMB_ME
-	return g_slice_new0 (QTree);
-#else
-	return NULL;
-#endif
+	return g_new0 (QTree, 1);
 }
 
 static QTree *
@@ -156,13 +152,11 @@ qtree_set_tile (QTree *node, BitmapImage *image, double opacity)
 	if (image)
 		image->ref ();
 
-#if PLUMB_ME
 	if (node->tile) {
 		if (node->tile->image)
 			node->tile->image->unref ();
 	} else
-		node->tile = g_slice_new (QTreeTile);
-#endif
+		node->tile = g_new (QTreeTile, 1);
 	
 	node->tile->opacity = opacity;
 	node->tile->image = image;
@@ -216,14 +210,12 @@ qtree_remove (QTree *node, int depth)
 	if (!node)
 		return;
 	
-#if PLUMB_ME
 	if (node->tile) {
 		if (node->tile->image)
 			node->tile->image->unref ();
-		g_slice_free (QTreeTile, node->tile);
+		g_free (node->tile);
 		node->tile = NULL;
 	}
-#endif
 	
 	if (depth <= 0)
 		return;
@@ -254,21 +246,17 @@ qtree_destroy (QTree *root)
 	if (!root)
 		return;
 	
-#if PLUMB_ME
 	if (root->tile) {
 		if (root->tile->image)
 			root->tile->image->unref ();
-		g_slice_free (QTreeTile, root->tile);
+		g_free (root->tile);
 	}
-#endif
 	
 	qtree_destroy (root->l0);
 	qtree_destroy (root->l1);
 	qtree_destroy (root->l2);
 	qtree_destroy (root->l3);
-#if PLUMB_ME
-	g_slice_free (QTree, root);
-#endif
+	g_free (root);
 }
 
 /*
