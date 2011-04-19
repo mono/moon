@@ -1114,10 +1114,10 @@ TextStream::Eof ()
 ssize_t
 TextStream::Read (char *buf, size_t n)
 {
-	size_t inleft = buflen;
+	gsize inleft = buflen;
 	char *inbuf = bufptr;
 	char *outbuf = buf;
-	size_t outleft = n;
+	gsize outleft = n;
 	ssize_t nread;
 	size_t r;
 	
