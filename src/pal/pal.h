@@ -51,10 +51,6 @@
 #undef FocusOut
 #endif
 
-#if defined(PLATFORM_ANDROID)
-#define GLchar char
-#endif
-
 #if !HAVE_POSIX_MEMALIGN
 extern "C" {
 	int posix_memalign (void **ptr, size_t alignment, size_t size);

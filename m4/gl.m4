@@ -11,6 +11,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GL],
 			AC_DEFINE(USE_GLX, 1, [Include glx support])
 			PKG_CHECK_MODULES(GLX, gl x11)
 			with_gl=yes
+			MOONLIGHT_CHECK_GLCHAR([GL/gl.h])
 		else
 			with_glx=no
 		fi
@@ -24,6 +25,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GL],
 	if test x$with_cgl = xyes; then
 		AC_DEFINE(USE_CGL, 1, [Include cgl support])
 		with_gl=yes
+		MOONLIGHT_CHECK_GLCHAR([OpenGL/OpenGL.h])
 	fi
 	AM_CONDITIONAL(HAVE_CGL, [test x$with_cgl != xno])
 
@@ -34,8 +36,29 @@ AC_DEFUN([MOONLIGHT_CHECK_GL],
 	if test x$with_egl = xyes; then
 		AC_DEFINE(USE_EGL, 1, [Include egl support])
 		with_gl=yes
+		MOONLIGHT_CHECK_GLCHAR([GLES/gl.h])
 	fi
 	AM_CONDITIONAL(HAVE_EGL, [test x$with_egl != xno])
 
 	AM_CONDITIONAL(HAVE_GL, [test x$with_gl != xno])
+
+
 ])
+
+AC_DEFUN([MOONLIGHT_CHECK_GLCHAR],
+  [AC_CACHE_CHECK([for GLchar], ac_cv_type_GLchar,
+    [AC_COMPILE_IFELSE(
+      [AC_LANG_PROGRAM(
+         [AC_INCLUDES_DEFAULT
+#           include <$1>],
+         [GLchar x; return sizeof x;])],
+
+      [ac_cv_type_glchar=yes],
+      [ac_cv_type_glchar=no])])
+ if test x$type_glchar = xyes; then
+   AC_DEFINE([HAVE_GLCHAR], 1,
+             [Define to 1 if GL header declares GLchar.])
+ else
+   AC_DEFINE([GLchar], char,
+             [Define to a type if GL header does not define.])
+ fi])
