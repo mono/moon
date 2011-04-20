@@ -249,7 +249,7 @@ encode_utf32le (gunichar c, char **outbytes, size_t *outbytesleft)
 static int
 encode_utf32 (gunichar c, char **outbytes, size_t *outbytesleft)
 {
-#if G_BYTE_ORDER = G_LITTLE_ENDIAN
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
 	return encode_utf32_be_or_le (LittleEndian, c, outbytes, outbytesleft);
 #else
 	return encode_utf32_be_or_le (BigEndian, c, outbytes, outbytesleft);
@@ -395,7 +395,7 @@ encode_utf16le (gunichar c, char **outbytes, size_t *outbytesleft)
 static int
 encode_utf16 (gunichar c, char **outbytes, size_t *outbytesleft)
 {
-#if G_BYTE_ORDER = G_LITTLE_ENDIAN
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
 	return encode_utf16_be_or_le (LittleEndian, c, outbytes, outbytesleft);
 #else
 	return encode_utf16_be_or_le (BigEndian, c, outbytes, outbytesleft);
