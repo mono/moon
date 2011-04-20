@@ -131,11 +131,6 @@ static MoonlightRuntimeOption options [] = {
 	{ RUNTIME_INIT_KEEP_MEDIA,            "keepmedia",         "yes",        "no",     true,            "Don't remove media files from /tmp after download" },
 	{ RUNTIME_INIT_ALL_IMAGE_FORMATS,     "allimages",         "yes",        "no" },
 	{ RUNTIME_INIT_EMULATE_KEYCODES,      "emulatekeycodes",   "yes",        "no",     true,            "Emulate Windows PlatformKeyCodes" },
-
-#ifdef USE_GALLIUM
-	{ RUNTIME_INIT_INTERMEDIATE_SURFACES, "intermediates",     "yes",        "no",     false,           "Allow rendering to intermediate surfaces" },
-#endif
-
 	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",        "yes",        "no",     true,            "Prefer Curl bridge" },
 	{ RUNTIME_INIT_ENABLE_TOGGLEREFS,     "togglerefs",        "yes",        "no" },
 	{ RUNTIME_INIT_OOB_LAUNCHER_FIREFOX,  "ooblauncher",       "firefox",    "default" , true,          "Use firefox to execute out-of-browser applications" },
@@ -185,20 +180,14 @@ moonlight_get_runtime_option (RuntimeInitFlag flag)
 	return moonlight_flags & flag;
 }
 
-#ifdef USE_GALLIUM
-#define GALLIUM_RUNTIME_INIT RUNTIME_INIT_INTERMEDIATE_SURFACES
-#else
-#define GALLIUM_RUNTIME_INIT 0
-#endif
-
 #ifdef USE_GLX
 #define GLX_RUNTIME_INIT RUNTIME_INIT_HW_ACCELERATION
 #else
 #define GLX_RUNTIME_INIT 0
 #endif
 
-#define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS | GALLIUM_RUNTIME_INIT | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE )
-#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | GALLIUM_RUNTIME_INIT | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE )
+#define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE )
+#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE )
 
 #if DEBUG || LOGGING
 static struct MoonlightDebugOption debugs[] = {
@@ -552,7 +541,6 @@ Surface::SetRuntimeOption (RuntimeInitFlag flag, bool value)
 
 	// FIXME: these flags just modify the global settings, but
 	// many shouldn't
-	case RUNTIME_INIT_INTERMEDIATE_SURFACES:
 	case RUNTIME_INIT_SHOW_CACHE_SIZE:
 	case RUNTIME_INIT_SHOW_CLIPPING:
 	case RUNTIME_INIT_SHOW_BOUNDING_BOXES:

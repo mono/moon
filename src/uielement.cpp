@@ -2020,28 +2020,22 @@ UIElement::TransformPoint (double *x, double *y)
 	}
 }
 
-#define EFFECT_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
-
 Effect *
 UIElement::GetRenderEffect ()
 {
-	return (moonlight_flags & EFFECT_FLAGS) == (EFFECT_FLAGS) ? GetEffect () : NULL;
+	return GetEffect ();
 }
-
-#define PROJECTION_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
 
 Projection *
 UIElement::GetRenderProjection ()
 {
-	return (moonlight_flags & PROJECTION_FLAGS) == (PROJECTION_FLAGS) ? GetProjection () : NULL;
+	return GetProjection ();
 }
-
-#define CACHE_MODE_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
 
 CacheMode *
 UIElement::GetRenderCacheMode ()
 {
-	return (moonlight_flags & CACHE_MODE_FLAGS) == (CACHE_MODE_FLAGS) ? GetCacheMode () : NULL;
+	return GetCacheMode ();
 }
 
 };
