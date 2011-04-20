@@ -128,17 +128,17 @@ namespace System.Windows.Data
 		{
 			if (DependencyProperty != null) {
 				ValueType = DependencyProperty.PropertyType;
-				Value = ((DependencyObject) Source).GetValue (DependencyProperty);
+				UpdateValueAndIsBroken (((DependencyObject) Source).GetValue (DependencyProperty), CheckIsBroken ());
 			} else if (PropertyInfo != null) {
 				ValueType = PropertyInfo.PropertyType;
 				try {
-					Value = PropertyInfo.GetValue (Source, null);
+					UpdateValueAndIsBroken (PropertyInfo.GetValue (Source, null), CheckIsBroken ());
 				} catch {
-					Value = null;
+					UpdateValueAndIsBroken (null, CheckIsBroken ());
 				}
 			} else {
 				ValueType = null;
-				Value = null;
+				UpdateValueAndIsBroken (null, CheckIsBroken ());
 			}
 		}
 	}

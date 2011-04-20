@@ -35,10 +35,6 @@ namespace System.Windows.Data {
 
 	class CollectionViewNode : PropertyPathNode, IListenEventRaised {
 
-		public override bool IsBroken {
-			get { return Source == null; }
-		}
-
 		bool BindsDirectlyToSource {
 			get; set;
 		}
@@ -119,13 +115,18 @@ namespace System.Windows.Data {
 		{
 			throw new System.NotImplementedException ();
 		}
+		
+		protected override bool CheckIsBroken ()
+		{
+			return Source == null;
+		}
 
 		public override void UpdateValue ()
 		{
 			// The simple case - we use the source object directly, whatever it is.
 			if (BindsDirectlyToSource) {
 				ValueType = Source == null ? null : Source.GetType ();
-				Value = Source;
+				UpdateValueAndIsBroken (Source, CheckIsBroken ());
 			} else {
 				var usableSource = Source;
 				ICollectionView view = null;
@@ -139,16 +140,16 @@ namespace System.Windows.Data {
 				// If we have no ICollectionView, then use the Source directly.
 				if (view == null) {
 					ValueType = usableSource == null ? null : usableSource.GetType ();
-					Value = usableSource;
+					UpdateValueAndIsBroken (usableSource, CheckIsBroken ());
 				} else {
 					// If we have an ICollectionView and the property we're binding to exists
 					// on ICollectionView, we bind to the view. Otherwise we bind to its CurrentItem.
 					if (BindToView) {
 						ValueType = view.GetType ();
-						Value = view;
+						UpdateValueAndIsBroken (view, CheckIsBroken ());
 					} else {
 						ValueType = view.CurrentItem == null ? null : view.CurrentItem.GetType ();
-						Value = view.CurrentItem;
+						UpdateValueAndIsBroken (view.CurrentItem, CheckIsBroken ());
 					}
 				}
 			}

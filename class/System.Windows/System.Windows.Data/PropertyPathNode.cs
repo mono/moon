@@ -37,20 +37,15 @@ namespace System.Windows.Data
 {
 	abstract class PropertyPathNode : IPropertyPathNode, IListenINPC {
 
+		public event EventHandler IsBrokenChanged;
 		public event EventHandler ValueChanged;
-
-		object value;
 
 		public DependencyProperty DependencyProperty {
 			get; protected set;
 		}
 
-		public virtual bool IsBroken {
-			get {
-				// If any node in the middle of the chain has a null source,
-				// then the final value cannot be retrieved so the chain is broken
-				return Source == null || (PropertyInfo == null && DependencyProperty == null);
-			}
+		public bool IsBroken {
+			get; private set;
 		}
 
 		public IWeakListener Listener {
@@ -70,15 +65,7 @@ namespace System.Windows.Data
 		}
 
 		public object Value {
-			get { return value; }
-			protected set {
-				if (!Helper.AreEqual (value, this.value)) {
-					this.value = value;
-					var h = ValueChanged;
-					if (h != null && this.Next == null)
-						h (this, EventArgs.Empty);
-				}
-			}
+			get; private set;
 		}
 
 		public Type ValueType {
@@ -87,7 +74,7 @@ namespace System.Windows.Data
 
 		protected PropertyPathNode ()
 		{
-			
+			IsBroken = true;
 		}
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)
@@ -123,6 +110,28 @@ namespace System.Windows.Data
 		}
 
 		public abstract void UpdateValue ();
+
+		protected virtual bool CheckIsBroken ()
+		{
+			return Source == null || (PropertyInfo == null && DependencyProperty == null);
+		}
+
+		protected void UpdateValueAndIsBroken (object newValue, bool isBroken)
+		{
+			bool emitBrokenChanged = IsBroken != isBroken;
+			bool emitValueChanged = !Helper.AreEqual (Value, newValue);
+
+			IsBroken = isBroken;
+			Value = newValue;
+
+			// If Value changes it implicitly covers the case where
+			// IsBroken changed too, so don't emit both events.
+			if (emitValueChanged && ValueChanged != null) {
+				ValueChanged (this, EventArgs.Empty);
+			} else if (emitBrokenChanged && IsBrokenChanged != null) {
+				IsBrokenChanged (this, EventArgs.Empty);
+			}
+		}
 
 		void IListenINPC.OnPropertyChanged (object o, PropertyChangedEventArgs e)
 		{

@@ -40,11 +40,6 @@ namespace System.Windows.Data
 		static readonly PropertyInfo IListIndexer = GetIndexer (true, typeof (IList));
 
 		bool isBroken;
-		public override bool IsBroken {
-			get {
-				return isBroken || base.IsBroken;
-			}
-		}
 
 		public object Index {
 			get; private set;
@@ -127,25 +122,28 @@ namespace System.Windows.Data
 				PropertyInfo.SetValue (Source, value, new object[] { Index });
 		}
 
+		protected override bool CheckIsBroken ()
+		{
+			return isBroken || base.CheckIsBroken ();
+		}
 		public override void UpdateValue ()
 		{
-			isBroken = true;
 			if (PropertyInfo == null) {
+				isBroken = true;
 				ValueType = null;
-				Value = null;
+				UpdateValueAndIsBroken (null, isBroken);
 				return;
 			}
 
 			try {
 				object newVal = PropertyInfo.GetValue (Source, new object [] { Index });
 				isBroken = false;
-				if (Value != newVal) {
-					ValueType = PropertyInfo.PropertyType;
-					Value = newVal;
-				}
+				ValueType = PropertyInfo.PropertyType;
+				UpdateValueAndIsBroken (newVal, isBroken);
 			} catch {
+				isBroken = true;
 				ValueType = null;
-				Value = null;
+				UpdateValueAndIsBroken (null, isBroken);
 			}
 		}
 	}

@@ -238,8 +238,10 @@ namespace System.Windows.Data {
 
 			bool bindsToView = property == FrameworkElement.DataContextProperty || property.PropertyType == typeof (IEnumerable) || property.PropertyType == typeof (ICollectionView);
 			PropertyPathWalker = new PropertyPathWalker (Binding.Path.ParsePath, binding.BindsDirectlyToSource, bindsToView, IsBoundToAnyDataContext);
-			if (Binding.Mode != BindingMode.OneTime)
+			if (Binding.Mode != BindingMode.OneTime) {
+				PropertyPathWalker.IsBrokenChanged += PropertyPathValueChanged;
 				PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
+			}
 		}
 
 		internal override void OnAttached (DependencyObject element)
@@ -351,6 +353,7 @@ namespace System.Windows.Data {
 			string property = "";
 			if (PropertyPathWalker.FinalNode.PropertyInfo != null)
 				property = PropertyPathWalker.FinalNode.PropertyInfo.Name;
+			Console.WriteLine ("Errors changed on: {0} / {1}", property, e.PropertyName);
 			if (e.PropertyName == property) {
 				var errors = CurrentNotifyError.GetErrors (property);
 				if (errors != null) {
