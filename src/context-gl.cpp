@@ -757,7 +757,7 @@ GLContext::Blur (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-		      GL_BGRA,
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -964,7 +964,7 @@ GLContext::DropShadow (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-		      GL_BGRA,
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
