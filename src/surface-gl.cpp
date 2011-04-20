@@ -109,30 +109,30 @@ GLSurface::TextureYUV (int i)
 	if (!textureYUV[i]) {
 		int width[] = { size[0], size[0] / 2, size[0] / 2 };
 		int height[] = { size[1], size[1] / 2, size[1] / 2 };
-		int i;
+		int j;
 
 		glGenTextures (3, textureYUV);
 
-		for (i = 0; i < 3; i++) {
+		for (j = 0; j < 3; j++) {
 			GLfloat border[][4] = {
 				{ 0.0625f, 0.0625f, 0.0625f, 0.0625f },
 				{   0.5f ,    0.5f,    0.5f,    0.5f },
 				{   0.5f ,    0.5f,    0.5f,    0.5f }
 			};
 
-			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
+			glBindTexture (GL_TEXTURE_2D, textureYUV[j]);
 			glTexImage2D (GL_TEXTURE_2D,
 				      0,
 				      GL_LUMINANCE,
-				      width[i],
-				      height[i],
+				      width[j],
+				      height[j],
 				      0,
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
 			glTexParameterfv (GL_TEXTURE_2D,
 					  GL_TEXTURE_BORDER_COLOR,
-					  border[i]);
+					  border[j]);
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
