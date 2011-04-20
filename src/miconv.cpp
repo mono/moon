@@ -25,35 +25,41 @@ enum Endian {
 	BigEndian
 };
 
-typedef int (* Decoder) (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar);
+typedef int (* Decoder) (char **inbytes, size_t *inbytesleft, gunichar *outchar);
 typedef int (* Encoder) (gunichar c, char **outbytes, size_t *outbytesleft);
 
-static int decode_utf32 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar);
-//static int encode_utf32 (gunichar c, char **outbytes, size_t *outbytesleft);
+static int decode_utf32be (char **inbytes, size_t *inbytesleft, gunichar *outchar);
+static int decode_utf32le (char **inbytes, size_t *inbytesleft, gunichar *outchar);
 
-static int decode_utf16 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar);
-//static int encode_utf16 (gunichar c, char **outbytes, size_t *outbytesleft);
+static int decode_utf16be (char **inbytes, size_t *inbytesleft, gunichar *outchar);
+static int decode_utf16le (char **inbytes, size_t *inbytesleft, gunichar *outchar);
 
-static int decode_utf8 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar);
+static int decode_utf32 (char **inbytes, size_t *inbytesleft, gunichar *outchar);
+static int encode_utf32 (gunichar c, char **outbytes, size_t *outbytesleft);
+
+static int decode_utf16 (char **inbytes, size_t *inbytesleft, gunichar *outchar);
+static int encode_utf16 (gunichar c, char **outbytes, size_t *outbytesleft);
+
+static int decode_utf8 (char **inbytes, size_t *inbytesleft, gunichar *outchar);
 static int encode_utf8 (gunichar c, char **outbytes, size_t *outbytesleft);
 
 static struct {
 	const char *name;
 	Decoder decoder;
 	Encoder encoder;
-	Endian endian;
 } charsets[] = {
-	{ "UTF-32BE", decode_utf32, NULL,         BigEndian    },
-	{ "UTF-32LE", decode_utf32, NULL,         LittleEndian },
-	{ "UTF-16BE", decode_utf16, NULL,         BigEndian    },
-	{ "UTF-16LE", decode_utf16, NULL,         LittleEndian },
-	{ "UTF-8",    decode_utf8,  encode_utf8,  LittleEndian },
+	{ "UTF-32BE", decode_utf32be, NULL         },
+	{ "UTF-32LE", decode_utf32le, NULL         },
+	{ "UTF-16BE", decode_utf16be, NULL         },
+	{ "UTF-16LE", decode_utf16le, NULL         },
+	{ "UTF-32",   decode_utf32,   encode_utf32 },
+	{ "UTF-16",   decode_utf16,   encode_utf16 },
+	{ "UTF-8",    decode_utf8,    encode_utf8  },
 };
 
 struct _miconv_t {
 	Decoder decode;
 	Encoder encode;
-	Endian endian;
 	gunichar c;
 };
 
@@ -63,7 +69,6 @@ miconv_open (const char *to, const char *from)
 {
 	Decoder decoder = NULL;
 	Encoder encoder = NULL;
-	Endian endian;
 	miconv_t cd;
 	guint i;
 	
@@ -71,10 +76,8 @@ miconv_open (const char *to, const char *from)
 		return (miconv_t) -1;
 	
 	for (i = 0; i < G_N_ELEMENTS (charsets); i++) {
-		if (!strcmp (charsets[i].name, from)) {
+		if (!strcmp (charsets[i].name, from))
 			decoder = charsets[i].decoder;
-			endian = charsets[i].endian;
-		}
 		
 		if (!strcmp (charsets[i].name, to))
 			encoder = charsets[i].encoder;
@@ -86,7 +89,6 @@ miconv_open (const char *to, const char *from)
 	cd = (miconv_t) g_malloc (sizeof (*cd));
 	cd->decode = decoder;
 	cd->encode = encoder;
-	cd->endian = endian;
 	cd->c = -1;
 	
 	return cd;
@@ -121,7 +123,7 @@ miconv (miconv_t cd, char **inbytes, size_t *inbytesleft,
 	c = cd->c;
 	
 	do {
-		if (c == (gunichar) -1 && cd->decode (cd->endian, &inptr, &inleft, &c) == -1) {
+		if (c == (gunichar) -1 && cd->decode (&inptr, &inleft, &c) == -1) {
 			rc = -1;
 			break;
 		}
@@ -149,7 +151,7 @@ miconv (miconv_t cd, char **inbytes, size_t *inbytesleft,
 
 
 static int
-decode_utf32 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar)
+decode_utf32_be_or_le (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar)
 {
 	gunichar *inptr = (gunichar *) *inbytes;
 	size_t inleft = *inbytesleft;
@@ -180,10 +182,50 @@ decode_utf32 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outc
 	return 0;
 }
 
-//static int encode_utf32 (gunichar c, char **outbytes, size_t *outbytesleft);
+static int
+decode_utf32be (char **inbytes, size_t *inbytesleft, gunichar *outchar)
+{
+	return decode_utf32_be_or_le (BigEndian, inbytes, inbytesleft, outchar);
+}
 
 static int
-decode_utf16 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar)
+decode_utf32le (char **inbytes, size_t *inbytesleft, gunichar *outchar)
+{
+	return decode_utf32_be_or_le (LittleEndian, inbytes, inbytesleft, outchar);
+}
+
+static int
+decode_utf32 (char **inbytes, size_t *inbytesleft, gunichar *outchar)
+{
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+	return decode_utf32_be_or_le (LittleEndian, inbytes, inbytesleft, outchar);
+#else
+	return decode_utf32_be_or_le (BigEndian, inbytes, inbytesleft, outchar);
+#endif
+}
+
+static int
+encode_utf32 (gunichar c, char **outbytes, size_t *outbytesleft)
+{
+	gunichar *outptr = (gunichar *) *outbytes;
+	size_t outleft = *outbytesleft;
+	
+	if (outleft < 4) {
+		errno = E2BIG;
+		return -1;
+	}
+	
+	*outptr++ = c;
+	outleft -= 4;
+	
+	*outbytes = (char *) outptr;
+	*outbytesleft = outleft;
+	
+	return 0;
+}
+
+static int
+decode_utf16_be_or_le (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar)
 {
 	gunichar2 *inptr = (gunichar2 *) *inbytes;
 	size_t inleft = *inbytesleft;
@@ -235,10 +277,60 @@ decode_utf16 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outc
 	return 0;
 }
 
-//static int encode_utf16 (gunichar c, char **outbytes, size_t *outbytesleft);
+static int
+decode_utf16be (char **inbytes, size_t *inbytesleft, gunichar *outchar)
+{
+	return decode_utf16_be_or_le (BigEndian, inbytes, inbytesleft, outchar);
+}
 
 static int
-decode_utf8 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outchar)
+decode_utf16le (char **inbytes, size_t *inbytesleft, gunichar *outchar)
+{
+	return decode_utf16_be_or_le (LittleEndian, inbytes, inbytesleft, outchar);
+}
+
+static int
+decode_utf16 (char **inbytes, size_t *inbytesleft, gunichar *outchar)
+{
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+	return decode_utf16_be_or_le (LittleEndian, inbytes, inbytesleft, outchar);
+#else
+	return decode_utf16_be_or_le (BigEndian, inbytes, inbytesleft, outchar);
+#endif
+}
+
+static int
+encode_utf16 (gunichar c, char **outbytes, size_t *outbytesleft)
+{
+	gunichar2 *outptr = (gunichar2 *) *outbytes;
+	size_t outleft = *outbytesleft;
+	
+	if (outleft < 2) {
+		errno = E2BIG;
+		return -1;
+	}
+	
+	if (c <= 0xffff && (c < 0xd800 || c > 0xdfff)) {
+		*outptr++ = (gunichar2) c;
+		outleft -= 2;
+	} else if (outleft < 4) {
+		errno = E2BIG;
+		return -1;
+	} else {
+		c -= 0x10000;
+		*outptr++ = (gunichar2) ((c >> 10) + 0xd800);
+		*outptr++ = (gunichar2) ((c & 0x3ff) + 0xdc00);
+		outleft -= 4;
+	}
+	
+	*outbytes = (char *) outptr;
+	*outbytesleft = outleft;
+	
+	return 0;
+}
+
+static int
+decode_utf8 (char **inbytes, size_t *inbytesleft, gunichar *outchar)
 {
 	size_t inleft = *inbytesleft;
 	char *inptr = *inbytes;
