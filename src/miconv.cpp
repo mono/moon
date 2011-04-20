@@ -295,7 +295,7 @@ encode_utf8 (gunichar c, char **outbytes, size_t *outbytesleft)
 	size_t outleft = *outbytesleft;
 	char *outptr = *outbytes;
 	size_t len, i;
-	char base;
+	int base;
 	
 	if (c < 128UL) {
 		base = 0;
@@ -332,7 +332,7 @@ encode_utf8 (gunichar c, char **outbytes, size_t *outbytesleft)
 	}
 	
 	/* first character has a different base */
-	outptr[0] = base + (c & 0x3f);
+	outptr[0] = base + c;
 	
 	*outbytesleft = outleft - len;
 	*outbytes = outptr + len;
