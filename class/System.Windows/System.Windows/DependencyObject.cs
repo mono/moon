@@ -335,6 +335,11 @@ namespace System.Windows {
 
 		internal void SetValueImpl (DependencyProperty dp, object value)
 		{
+			if (value == DependencyProperty.UnsetValue) {
+				ClearValue (dp);
+				return;
+			}
+
 			bool updateTwoWay = false;
 			bool addingExpression = false;
 			Expression existing = null;
