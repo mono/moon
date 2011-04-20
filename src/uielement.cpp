@@ -538,7 +538,7 @@ UIElement::UpdateProjection ()
 void
 UIElement::ComputeLocalProjection ()
 {
-	Projection *projection = GetRenderProjection ();
+	Projection *projection = GetProjection ();
 	double width, height;
 
 	if (projection == NULL) {
@@ -584,8 +584,8 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 void
 UIElement::ComputeTransform ()
 {
-	Projection *projection = GetRenderProjection ();
-	CacheMode *cacheMode = GetRenderCacheMode ();
+	Projection *projection = GetProjection ();
+	CacheMode *cacheMode = GetCacheMode ();
 	cairo_matrix_t old = absolute_xform;
 	cairo_matrix_t old_cache = cache_xform;
 	double m[16], old_projection[16];
@@ -692,7 +692,7 @@ UIElement::ComputeTransform ()
 		cairo_matrix_t inverse;
 
 		// ignore bitmap cache scale when effect property is set
-		if (!GetRenderEffect ())
+		if (!GetEffect ())
 			cacheMode->GetTransform (&cache_xform);
 			
 		if (memcmp (&old_cache, &cache_xform, sizeof (cairo_matrix_t)))
@@ -752,7 +752,7 @@ UIElement::ComputeComposite ()
 {
 	flags &= ~COMPOSITE_MASK;
 
-	if (GetRenderCacheMode ())
+	if (GetCacheMode ())
 		flags |= (COMPOSITE_CACHE | COMPOSITE_TRANSFORM);
 
 	if (opacityMask)
@@ -761,7 +761,7 @@ UIElement::ComputeComposite ()
 	if (IS_TRANSLUCENT (GetOpacity ()))
 		flags |= COMPOSITE_OPACITY;
 
-	if (GetRenderEffect ())
+	if (GetEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
 	if (GetClip ())
@@ -1174,7 +1174,7 @@ UIElement::InvalidateVisibility ()
 void
 UIElement::InvalidateEffect ()
 {
-	Effect    *effect = GetRenderEffect ();
+	Effect    *effect = GetEffect ();
 	Thickness old_effect_padding = effect_padding;
 
 	if (effect)
@@ -1394,9 +1394,9 @@ UIElement::UseOcclusionCulling ()
 {
 	// for now the only things that drop us out of the occlusion
 	// culling pass for a subtree are projections and effects.
-	if (GetRenderEffect ()) return FALSE;
-	if (GetRenderProjection ()) return FALSE;
-	if (GetRenderCacheMode ()) return FALSE;
+	if (GetEffect ()) return FALSE;
+	if (GetProjection ()) return FALSE;
+	if (GetCacheMode ()) return FALSE;
 	if (flags & UIElement::RENDER_PROJECTION) return FALSE;
 
 	return TRUE;
@@ -1405,9 +1405,9 @@ UIElement::UseOcclusionCulling ()
 bool
 UIElement::RenderToIntermediate ()
 {
-	if (GetRenderEffect ()) return TRUE;
-	if (GetRenderProjection ()) return TRUE;
-	if (GetRenderCacheMode ()) return TRUE;
+	if (GetEffect ()) return TRUE;
+	if (GetProjection ()) return TRUE;
+	if (GetCacheMode ()) return TRUE;
 	if (flags & UIElement::RENDER_PROJECTION) return TRUE;
 
 	return FALSE;
@@ -1739,7 +1739,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		MoonSurface *src;
 		Rect        r = ctx->Pop (&src);
 
-		if (!r.IsEmpty () && (effect = GetRenderEffect ())) {
+		if (!r.IsEmpty () && (effect = GetEffect ())) {
 			ctx->Push (Context::Clip (r));
 			effect->Render (ctx, src, r.x, r.y);
 			ctx->Pop ();
@@ -2018,24 +2018,6 @@ UIElement::TransformPoint (double *x, double *y)
 		*x = p[0] / p[3];
 		*y = p[1] / p[3];
 	}
-}
-
-Effect *
-UIElement::GetRenderEffect ()
-{
-	return GetEffect ();
-}
-
-Projection *
-UIElement::GetRenderProjection ()
-{
-	return GetProjection ();
-}
-
-CacheMode *
-UIElement::GetRenderCacheMode ()
-{
-	return GetCacheMode ();
 }
 
 };

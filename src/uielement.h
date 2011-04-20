@@ -660,12 +660,6 @@ public:
 
 	static bool CoerceCursor (DependencyObject *obj, DependencyProperty *p, const Value *value, Value **coerced, MoonError *error);
 
-	// Helper methods for properties that should be ignored when runtime
-	// flags are not present
-	Effect *GetRenderEffect ();
-	Projection *GetRenderProjection ();
-	CacheMode *GetRenderCacheMode ();
-
 	const static void *SubtreeObjectWeakRef;
 	const static void *VisualParentWeakRef;
 
