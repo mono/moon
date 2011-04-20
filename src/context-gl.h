@@ -28,9 +28,6 @@ public:
 
 	void Clear (Color *color);
 
-	void Blit (unsigned char *data,
-		   int           stride);
-
 	void BlitYV12 (unsigned char *data[],
 		       int           stride[]);
 
