@@ -417,7 +417,8 @@ namespace System.Windows.Data {
 				PropertyPathWalker.Update (fe.DataContext);
 				// OneTime bindings refresh when the datacontext changes. As these bindings do not listen
 				// for the ValueChanged notifications from the PropertyPathWalker we need to force a refresh
-				Refresh ();
+				if (Binding.Mode == BindingMode.OneTime)
+					Refresh ();
 			} catch (Exception ex) {
 				try {
 					error = new MoonError (ex);
