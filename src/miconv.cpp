@@ -120,7 +120,7 @@ miconv (miconv_t cd, char **inbytes, size_t *inbytesleft,
 	outptr = *outbytes;
 	c = cd->c;
 	
-	while (inleft >= 0 && outleft > 0) {
+	do {
 		if (c == (gunichar) -1 && cd->decode (cd->endian, &inptr, &inleft, &c) == -1) {
 			rc = -1;
 			break;
@@ -132,7 +132,7 @@ miconv (miconv_t cd, char **inbytes, size_t *inbytesleft,
 		}
 		
 		c = -1;
-	}
+	} while (inleft > 0 && outleft > 0);
 	
 	if (inbytesleft)
 		*inbytesleft = inleft;
