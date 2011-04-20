@@ -125,6 +125,32 @@ GLXSurface::Cairo ()
 	return GLSurface::Cairo ();
 }
 
+GLint
+GLXSurface::TextureYUV (int i)
+{
+	if (!textureYUV[i]) {
+		int j;
+
+		GLSurface::TextureYUV (i);
+
+		for (j = 0; j < 3; j++) {
+			GLfloat border[][4] = {
+				{ 0.0625f, 0.0625f, 0.0625f, 0.0625f },
+				{   0.5f ,    0.5f,    0.5f,    0.5f },
+				{   0.5f ,    0.5f,    0.5f,    0.5f }
+			};
+
+			glBindTexture (GL_TEXTURE_2D, textureYUV[j]);
+			glTexParameterfv (GL_TEXTURE_2D,
+					  GL_TEXTURE_BORDER_COLOR,
+					  border[j]);
+		}
+		glBindTexture (GL_TEXTURE_2D, 0);
+	}
+
+	return textureYUV[i];
+}
+
 bool
 GLXSurface::HasTexture ()
 {
