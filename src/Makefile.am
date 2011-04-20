@@ -78,6 +78,7 @@ libmoon_include_headers = 	\
 	medialog.h		\
 	mediaplayer.h		\
 	messaging.h		\
+	miconv.h		\
 	moon-curves.h		\
 	moonlightconfiguration.h\
 	moon-path.h		\
@@ -234,6 +235,7 @@ dist_libmoon_la_SOURCES = 		\
 	medialog.cpp		\
 	mediaplayer.cpp		\
 	messaging.cpp		\
+	miconv.cpp		\
 	moon-curves.c		\
 	moonlightconfiguration.cpp	\
 	moon-path.c		\
