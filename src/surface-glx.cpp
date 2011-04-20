@@ -156,7 +156,7 @@ GLXSurface::Texture ()
 }
 
 
-GLint
+GLuint
 GLXSurface::TextureYUV (int i)
 {
 	if (!textureYUV[i]) {

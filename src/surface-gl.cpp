@@ -85,7 +85,7 @@ GLSurface::IsPlanar ()
 	return (textureYUV[0] && textureYUV[1] && textureYUV[2]);
 }
 
-GLint
+GLuint
 GLSurface::TextureYUV (int i)
 {
 	if (!textureYUV[i]) {

@@ -36,7 +36,7 @@ public:
 	void Reshape (int width, int height);
 	cairo_surface_t *Cairo ();
 	GLuint Texture ();
-	GLint TextureYUV (int i);
+	GLuint TextureYUV (int i);
 	bool HasTexture ();
 
 	static void X11ErrorTrapPush (Display *dpy);
