@@ -166,7 +166,7 @@ namespace Mono {
 						if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker")) {
 							Value val;
 							NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "_internal_moonlight_marker", out val);
-							reference = ScriptObject.LookupScriptObject (new IntPtr (val.u.i32));
+							reference = ScriptObject.LookupScriptObject (new IntPtr ((int)val.u.d));
 							if (reference != null) {
 								Mono.Value [] vargs = new Mono.Value [2];
 								vargs[0] = v;
@@ -184,7 +184,7 @@ namespace Mono {
 						double r = (double)ScriptObjectHelper.FromValue (val);
 						val.Dispose ();
 						if (isChrome)
-							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (int)v.u.p);
+							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (double)v.u.p);
 
 						if (r == (double)HtmlElement.NodeType.Document)
 							return new HtmlDocument (v.u.p);
@@ -196,7 +196,7 @@ namespace Mono {
 					}
 					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location")) {
 						if (isChrome)
-							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (int)v.u.p);
+							ScriptObject.SetPropertyInternal (v.u.p, "_internal_moonlight_marker", (double)v.u.p);
 						return new HtmlWindow (v.u.p);
 					} else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "length") &&
 							 NativeMethods.html_object_has_method (PluginHost.Handle, v.u.p, "item"))

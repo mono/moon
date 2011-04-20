@@ -473,6 +473,9 @@ MoonEGLContext::Blit (unsigned char *data,
 
 	ForceCurrent ();
 
+	// no support for clipping
+	g_assert (GetClip () == r);
+
 	// no support for blit to drawable at the moment
 	g_assert (!dst->GetEGLDisplay ());
 
@@ -490,7 +493,19 @@ MoonEGLContext::Blit (unsigned char *data,
 				buffer_stride);
 	}
 
-	GLContext::Blit (buffer, buffer_stride);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (buffer_stride));
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTexSubImage2D (GL_TEXTURE_2D,
+			 0,
+			 0,
+			 0,
+			 dst->Width (),
+			 dst->Height (),
+			 GL_RGBA,
+			 GL_UNSIGNED_BYTE,
+			 buffer);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
 
 	if (buffer != data)
 		g_free (buffer);

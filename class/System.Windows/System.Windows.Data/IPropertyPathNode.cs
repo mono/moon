@@ -5,6 +5,7 @@ namespace System.Windows.Data
 {
 	interface IPropertyPathNode {
 
+		event EventHandler IsBrokenChanged;
 		event EventHandler ValueChanged;
 
 		bool IsBroken { get; }

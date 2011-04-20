@@ -295,17 +295,17 @@ bool
 ResourceDictionary::Clear ()
 {
 	EmitChanged (CollectionChangedActionClearing, NULL, NULL, NULL);
-	
+
+	from_resource_dictionary_api = true;
+	bool rv = Collection::Clear ();
+	from_resource_dictionary_api = false;
+
 #if GLIB_CHECK_VERSION(2,12,0)
 	if (glib_check_version (2,12,0))
 		g_hash_table_remove_all (hash);
 	else
 #endif
 	g_hash_table_foreach_remove (hash, (GHRFunc) _true, NULL);
-
-	from_resource_dictionary_api = true;
-	bool rv = Collection::Clear ();
-	from_resource_dictionary_api = false;
 
 	EmitChanged (CollectionChangedActionCleared, NULL, NULL, NULL);
 

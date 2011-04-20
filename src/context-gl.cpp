@@ -272,43 +272,6 @@ GLContext::PixelRowLength (int stride,
 }
 
 void
-GLContext::Blit (unsigned char *data,
-		 int           stride)
-{
-	Context::Target *target = Top ()->GetTarget ();
-	MoonSurface     *ms;
-	Rect            r = target->GetData (&ms);
-	GLSurface       *dst = (GLSurface *) ms;
-	GLuint          texture = dst->Texture ();
-
-	// no support for clipping
-	g_assert (GetClip () == r);
-
-	// row length must be the same as width
-	g_assert (PixelRowLength (stride, dst->Width (), 4) == dst->Width ());
-
-	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (stride));
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexSubImage2D (GL_TEXTURE_2D,
-			 0,
-			 0,
-			 0,
-			 dst->Width (),
-			 dst->Height (),
-#if USE_EGL
-			 GL_RGBA,
-#else
-			 GL_BGRA,
-#endif
-			 GL_UNSIGNED_BYTE,
-			 data);
-	glBindTexture (GL_TEXTURE_2D, 0);
-	glPixelStorei (GL_UNPACK_ALIGNMENT, 4);
-
-	ms->unref ();
-}
-
-void
 GLContext::BlitYV12 (unsigned char *data[],
 		     int           stride[])
 {
@@ -771,11 +734,7 @@ GLContext::Blur (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-#if USE_EGL
-			  GL_RGBA,
-#else
-		      GL_BGRA,
-#endif
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 
@@ -982,11 +941,7 @@ GLContext::DropShadow (MoonSurface *src,
 		      width0,
 		      height0,
 		      0,
-#if USE_EGL
-			  GL_RGBA,
-#else
-		      GL_BGRA,
-#endif
+		      GL_RGBA,
 		      GL_UNSIGNED_BYTE,
 		      NULL);
 

@@ -126,7 +126,6 @@ namespace System.Windows.Data {
 					break;
 
 				case NotifyCollectionChangedAction.Replace:
-					actualOldIndex = IndexOf (e.OldItems [0]);
 					foreach (object o in e.OldItems)
 						RemoveFromFilteredAndGroup (o);
 					foreach (object o in e.NewItems)
@@ -179,7 +178,7 @@ namespace System.Windows.Data {
 				break;
 
 			case NotifyCollectionChangedAction.Replace:
-				MoveCurrentTo (CurrentPosition);
+				MoveCurrentTo (IndexOf (CurrentItem));
 				break;
 
 			case NotifyCollectionChangedAction.Reset:

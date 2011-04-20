@@ -116,6 +116,13 @@ UIElement::OnIsLoadedChanged (bool loaded)
 	if (!loaded) {
 		ClearForeachGeneration (UIElement::LoadedEvent);
 		Emit (UIElement::UnloadedEvent);
+
+		ResourceDictionaryIterator iter (this->GetResources ());
+		while (iter.Next (NULL)) {
+			Value *v = iter.GetCurrent(NULL);
+			if (v && v->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
+				v->AsFrameworkElement ()->SetIsLoaded (loaded);
+		}
 	}
 
 	// Then propagate the state change to the children
@@ -125,6 +132,12 @@ UIElement::OnIsLoadedChanged (bool loaded)
 
 	// Finally if we're loading, emit the Loaded event after the children
 	if (loaded) {
+		ResourceDictionaryIterator iter (this->GetResources ());
+		while (iter.Next (NULL)) {
+			Value *v = iter.GetCurrent(NULL);
+			if (v && v->Is (GetDeployment (),Type::FRAMEWORKELEMENT))
+				v->AsFrameworkElement ()->SetIsLoaded (loaded);
+		}
 		if (HasHandlers (UIElement::LoadedEvent, -1, true)) {
 			GetDeployment ()->AddAllLoadedHandlers (this, true);
 			GetDeployment ()->EmitLoadedAsync ();
@@ -353,8 +366,45 @@ UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 			// nothing needed here.
 			break;
 		}
-	}
-	else {
+	} else if (PropertyHasValueNoAutoCreate (UIElement::ResourcesProperty, col)) {
+		FrameworkElement *old_val = NULL;
+		FrameworkElement *new_val = NULL;
+
+		if (args->GetOldItem () && args->GetOldItem ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
+			old_val = args->GetOldItem ()->AsFrameworkElement ();
+
+		if (args->GetNewItem () && args->GetNewItem ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
+			new_val = args->GetNewItem ()->AsFrameworkElement ();
+
+		switch (args->GetChangedAction()) {
+		case CollectionChangedActionReplace:
+			if (old_val)
+				old_val->SetIsLoaded (false);
+			if (new_val)
+				new_val->SetIsLoaded (true);
+			break;
+		case CollectionChangedActionAdd:
+			if (new_val)
+				new_val->SetIsLoaded (true);
+			break;
+		case CollectionChangedActionRemove:
+			if (old_val)
+				old_val->SetIsLoaded (false);
+			break;
+		case CollectionChangedActionClearing: {
+			ResourceDictionaryIterator iter (this->GetResources ());
+			while (iter.Next (NULL)) {
+				Value *v = iter.GetCurrent(NULL);
+				if (v && v->Is (GetDeployment (), Type::FRAMEWORKELEMENT))
+					v->AsFrameworkElement ()->SetIsLoaded (false);
+			}
+			break;
+		}
+		case CollectionChangedActionCleared:
+			// nothing needed here.
+			break;
+		}
+	} else {
 		DependencyObject::OnCollectionChanged (col, args);
 	}
 }
@@ -488,7 +538,7 @@ UIElement::UpdateProjection ()
 void
 UIElement::ComputeLocalProjection ()
 {
-	Projection *projection = GetRenderProjection ();
+	Projection *projection = GetProjection ();
 	double width, height;
 
 	if (projection == NULL) {
@@ -534,8 +584,8 @@ UIElement::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 void
 UIElement::ComputeTransform ()
 {
-	Projection *projection = GetRenderProjection ();
-	CacheMode *cacheMode = GetRenderCacheMode ();
+	Projection *projection = GetProjection ();
+	CacheMode *cacheMode = GetCacheMode ();
 	cairo_matrix_t old = absolute_xform;
 	cairo_matrix_t old_cache = cache_xform;
 	double m[16], old_projection[16];
@@ -642,7 +692,7 @@ UIElement::ComputeTransform ()
 		cairo_matrix_t inverse;
 
 		// ignore bitmap cache scale when effect property is set
-		if (!GetRenderEffect ())
+		if (!GetEffect ())
 			cacheMode->GetTransform (&cache_xform);
 			
 		if (memcmp (&old_cache, &cache_xform, sizeof (cairo_matrix_t)))
@@ -702,7 +752,7 @@ UIElement::ComputeComposite ()
 {
 	flags &= ~COMPOSITE_MASK;
 
-	if (GetRenderCacheMode ())
+	if (GetCacheMode ())
 		flags |= (COMPOSITE_CACHE | COMPOSITE_TRANSFORM);
 
 	if (opacityMask)
@@ -711,7 +761,7 @@ UIElement::ComputeComposite ()
 	if (IS_TRANSLUCENT (GetOpacity ()))
 		flags |= COMPOSITE_OPACITY;
 
-	if (GetRenderEffect ())
+	if (GetEffect ())
 		flags |= (COMPOSITE_EFFECT | COMPOSITE_TRANSFORM);
 
 	if (GetClip ())
@@ -1124,7 +1174,7 @@ UIElement::InvalidateVisibility ()
 void
 UIElement::InvalidateEffect ()
 {
-	Effect    *effect = GetRenderEffect ();
+	Effect    *effect = GetEffect ();
 	Thickness old_effect_padding = effect_padding;
 
 	if (effect)
@@ -1344,9 +1394,9 @@ UIElement::UseOcclusionCulling ()
 {
 	// for now the only things that drop us out of the occlusion
 	// culling pass for a subtree are projections and effects.
-	if (GetRenderEffect ()) return FALSE;
-	if (GetRenderProjection ()) return FALSE;
-	if (GetRenderCacheMode ()) return FALSE;
+	if (GetEffect ()) return FALSE;
+	if (GetProjection ()) return FALSE;
+	if (GetCacheMode ()) return FALSE;
 	if (flags & UIElement::RENDER_PROJECTION) return FALSE;
 
 	return TRUE;
@@ -1355,9 +1405,9 @@ UIElement::UseOcclusionCulling ()
 bool
 UIElement::RenderToIntermediate ()
 {
-	if (GetRenderEffect ()) return TRUE;
-	if (GetRenderProjection ()) return TRUE;
-	if (GetRenderCacheMode ()) return TRUE;
+	if (GetEffect ()) return TRUE;
+	if (GetProjection ()) return TRUE;
+	if (GetCacheMode ()) return TRUE;
 	if (flags & UIElement::RENDER_PROJECTION) return TRUE;
 
 	return FALSE;
@@ -1689,7 +1739,7 @@ UIElement::PostRender (Context *ctx, Region *region, bool skip_children)
 		MoonSurface *src;
 		Rect        r = ctx->Pop (&src);
 
-		if (!r.IsEmpty () && (effect = GetRenderEffect ())) {
+		if (!r.IsEmpty () && (effect = GetEffect ())) {
 			ctx->Push (Context::Clip (r));
 			effect->Render (ctx, src, r.x, r.y);
 			ctx->Pop ();
@@ -1968,30 +2018,6 @@ UIElement::TransformPoint (double *x, double *y)
 		*x = p[0] / p[3];
 		*y = p[1] / p[3];
 	}
-}
-
-#define EFFECT_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
-
-Effect *
-UIElement::GetRenderEffect ()
-{
-	return (moonlight_flags & EFFECT_FLAGS) == (EFFECT_FLAGS) ? GetEffect () : NULL;
-}
-
-#define PROJECTION_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
-
-Projection *
-UIElement::GetRenderProjection ()
-{
-	return (moonlight_flags & PROJECTION_FLAGS) == (PROJECTION_FLAGS) ? GetProjection () : NULL;
-}
-
-#define CACHE_MODE_FLAGS RUNTIME_INIT_INTERMEDIATE_SURFACES
-
-CacheMode *
-UIElement::GetRenderCacheMode ()
-{
-	return (moonlight_flags & CACHE_MODE_FLAGS) == (CACHE_MODE_FLAGS) ? GetCacheMode () : NULL;
 }
 
 };

@@ -67,7 +67,7 @@ namespace Mono.Moonlight.UnitTesting
 
         [TestMethod]
         [Asynchronous]
-		[MinRuntimeVersion (4)]
+        [MinRuntimeVersion (4)]
         public void SelectionForeground()
         {
             var box = new PasswordBox();
@@ -76,6 +76,7 @@ namespace Mono.Moonlight.UnitTesting
             Assert.IsNull(box.SelectionForeground, "#2");
             box.UpdateLayout();
             Assert.IsNull(box.SelectionForeground, "#3");
+            Enqueue (() => { });
             Enqueue(() => {
                 Assert.IsNotNull(box.SelectionForeground, "#4");
                 Assert.IsUnset(box, PasswordBox.SelectionForegroundProperty, "#5");

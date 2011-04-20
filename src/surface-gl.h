@@ -33,11 +33,11 @@ public:
 
 	cairo_surface_t *Cairo ();
 
-	GLuint Texture ();
+	virtual GLuint Texture ();
 
 	// Planar YUV
 	bool IsPlanar ();
-	GLint TextureYUV (int i);
+	virtual GLuint TextureYUV (int i);
 
 	GLsizei Width ();
 	GLsizei Height ();

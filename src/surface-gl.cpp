@@ -70,33 +70,11 @@ GLSurface::Cairo ()
 GLuint
 GLSurface::Texture ()
 {
-	GLuint name = texture;
-
 	if (!texture)
 		glGenTextures (1, &texture);
 
-	if (name != texture || data) {
-		glBindTexture (GL_TEXTURE_2D, texture);
-		glTexImage2D (GL_TEXTURE_2D,
-			      0,
-			      GL_RGBA,
-			      size[0],
-			      size[1],
-			      0,
-#if USE_EGL
-			      GL_RGBA,
-#else
-			      GL_BGRA,
-#endif
-			      GL_UNSIGNED_BYTE,
-			      data);
-		glBindTexture (GL_TEXTURE_2D, 0);
-	}
-
-	if (data) {
-		g_free (data);
-		data = NULL;
-	}
+	// derived class should implement texture image allocation
+	g_assert (data == NULL);
 
 	return texture;
 }
@@ -107,38 +85,27 @@ GLSurface::IsPlanar ()
 	return (textureYUV[0] && textureYUV[1] && textureYUV[2]);
 }
 
-GLint
+GLuint
 GLSurface::TextureYUV (int i)
 {
 	if (!textureYUV[i]) {
 		int width[] = { size[0], size[0] / 2, size[0] / 2 };
 		int height[] = { size[1], size[1] / 2, size[1] / 2 };
-		int i;
+		int j;
 
 		glGenTextures (3, textureYUV);
 
-		for (i = 0; i < 3; i++) {
-			GLfloat border[][4] = {
-				{ 0.0625f, 0.0625f, 0.0625f, 0.0625f },
-				{   0.5f ,    0.5f,    0.5f,    0.5f },
-				{   0.5f ,    0.5f,    0.5f,    0.5f }
-			};
-
-			glBindTexture (GL_TEXTURE_2D, textureYUV[i]);
+		for (j = 0; j < 3; j++) {
+			glBindTexture (GL_TEXTURE_2D, textureYUV[j]);
 			glTexImage2D (GL_TEXTURE_2D,
 				      0,
 				      GL_LUMINANCE,
-				      width[i],
-				      height[i],
+				      width[j],
+				      height[j],
 				      0,
 				      GL_LUMINANCE,
 				      GL_UNSIGNED_BYTE,
 				      NULL);
-#if !USE_EGL
-			glTexParameterfv (GL_TEXTURE_2D,
-					  GL_TEXTURE_BORDER_COLOR,
-					  border[i]);
-#endif
 		}
 		glBindTexture (GL_TEXTURE_2D, 0);
 	}
