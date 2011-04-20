@@ -251,19 +251,19 @@ decode_utf8 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outch
 	if (c < 0x80) {
 		/* simple ascii case */
 		len = 1;
-	} else if ((c & 0xe0) == 0xc0) {
+	} else if (c < 0xe0) {
 		c &= 0x1f;
 		len = 2;
-	} else if ((c & 0xf0) == 0xe0) {
+	} else if (c < 0xf0) {
 		c &= 0x0f;
 		len = 3;
-	} else if ((c & 0xf8) == 0xf0) {
+	} else if (c < 0xf8) {
 		c &= 0x07;
 		len = 4;
-	} else if ((c & 0xfc) == 0xf8) {
+	} else if (c < 0xfc) {
 		c &= 0x03;
 		len = 5;
-	} else if ((c & 0xfe) == 0xfc) {
+	} else if (c < 0xfe) {
 		c &= 0x01;
 		len = 6;
 	} else {
@@ -278,7 +278,7 @@ decode_utf8 (Endian endian, char **inbytes, size_t *inbytesleft, gunichar *outch
 	
 	u = c;
 	for (i = 1; i < len; i++) {
-		u <<= 6 | ((*inptr) & 0x3f);
+		u = (u << 6) | ((*inptr) & 0x3f);
 		inptr++;
 	}
 	
