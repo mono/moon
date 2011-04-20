@@ -494,7 +494,7 @@ MoonEGLContext::Blit (unsigned char *data,
 	}
 
 	glPixelStorei (GL_UNPACK_ALIGNMENT, PixelAlignment (buffer_stride));
-	glBindTexture (GL_TEXTURE_2D, texture);
+	glBindTexture (GL_TEXTURE_2D, dst->Texture ());
 	glTexSubImage2D (GL_TEXTURE_2D,
 			 0,
 			 0,
