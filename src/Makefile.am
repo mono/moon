@@ -364,13 +364,17 @@ libmoon_la_SOURCES_GALLIUM =	\
 	context-gallium.h
 
 libmoon_la_SOURCES_GLX = 	\
-	surface-gl.cpp	\
-	surface-gl.h	\
-	context-gl.cpp	\
-	context-gl.h    \
-	surface-glx.cpp	\
-	surface-glx.h	\
-	context-glx.cpp	\
+	surface-gl.cpp		\
+	surface-gl.h		\
+	context-gl.cpp		\
+	context-gl.h		\
+	surface-opengl.cpp	\
+	surface-opengl.h	\
+	context-opengl.cpp	\
+	context-opengl.h	\
+	surface-glx.cpp		\
+	surface-glx.h		\
+	context-glx.cpp		\
 	context-glx.h
 
 

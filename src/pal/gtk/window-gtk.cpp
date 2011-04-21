@@ -587,7 +587,7 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		Region *region = new Region (r);
 		int    y = height - (event->area.y + event->area.height);
 
-		glxtarget->Reshape (width, height);
+		static_cast<OpenGLSurface *> (glxtarget)->Reshape (width, height);
 
 		static_cast<Context *> (glxctx)->Push (Context::Clip (r));
 		surface->Paint (glxctx, region, GetTransparent (), true);

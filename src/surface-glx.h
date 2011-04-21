@@ -11,7 +11,7 @@
 #ifndef __MOON_SURFACE_GLX_H__
 #define __MOON_SURFACE_GLX_H__
 
-#include "surface-gl.h"
+#include "surface-opengl.h"
 
 #ifdef __MOON_GLX__
 
@@ -23,21 +23,15 @@ typedef int (*PFNX11ERRORHANDLERPROC) (Display *, XErrorEvent *);
 
 namespace Moonlight {
 
-class MOON_API GLXSurface : public GLSurface {
+class MOON_API GLXSurface : public OpenGLSurface {
 public:
 	GLXSurface (Display *dpy, XID win);
-	GLXSurface (GLsizei w, GLsizei h);
 
 	Display     *GetDisplay () { return display; }
 	GLXDrawable GetGLXDrawable () { return window; }
 	VisualID    GetVisualID ();
 
 	void SwapBuffers ();
-	void Reshape (int width, int height);
-	cairo_surface_t *Cairo ();
-	GLuint Texture ();
-	GLuint TextureYUV (int i);
-	bool HasTexture ();
 
 	static void X11ErrorTrapPush (Display *dpy);
 	static int X11ErrorTrapPop (Display *dpy);
