@@ -11,7 +11,7 @@ make-sdk-directories:
 	@mkdir -p $(SDK4_DIR)
 	@mkdir -p $(SDK4_REDIST_DIR)
 
-install-data-local: make-sdk-directories install-buildversion install-sdk-assemblies install-sdk-tools install-redist-assemblies install-compiler
+install-data-local: make-sdk-directories install-buildversion install-sdk-assemblies install-redist-assemblies install-compiler
 
 install-buildversion:
 	@echo $(SILVERLIGHT_4_0_TARGETRUNTIME) > buildversion
@@ -43,10 +43,6 @@ install-sdk-assemblies:
 #	ideally we'd install the mdb file as well, but class/tuning/Makefile.am  r132251 claims that
 #	the .mdb file crashes the linker.  let's just install the dll for now.
 #	$(INSTALL) $(CLASS_DIR)/Microsoft.VisualBasic.dll.mdb $(SDK4_DIR)/Microsoft.VisualBasic.dll.mdb
-
-install-sdk-tools:
-	$(INSTALL) $(TOOLS_DIR)/respack/respack.exe $(SDK4_DIR)/respack.exe
-	-$(INSTALL) $(TOOLS_DIR)/respack/respack.exe.mdb $(SDK4_DIR)/respack.exe.mdb
 
 install-redist-assemblies:
 	$(INSTALL) $(CLASS_DIR)/System.Windows.Controls.dll $(SDK4_REDIST_DIR)/System.Windows.Controls.dll
