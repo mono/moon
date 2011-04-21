@@ -161,9 +161,6 @@
 
 +SC-M: System.Void Mono.IListenPropertyChanged::OnPropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
-# Can create a delegate on private/internal method" 
-+SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()
-
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
 # clipboard

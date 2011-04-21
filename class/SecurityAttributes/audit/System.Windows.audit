@@ -1450,11 +1450,6 @@ System.String System.Windows.Documents.TextSelection::get_Xaml()
 System.String System.Windows.InternalResourceDictionaryChangedEventArgs::get_Key()
 	20100924	spouliot - 85d10b7d - pinvoke into resource_dictionary_changed_event_args_get_key using 'NativeHandle' property
 
-!SSC-7A6E214F4F9158F4EA909C6C90D5946F
-System.String System.Windows.Interop.SilverlightHost::get_NavigationState()
-	20110125	spouliot - no source change / likely compiler related
-	r160018		spouliot - reflect into System.Windows.Browser.dll to call (internal) HtmlPage.NavigationState property
-
 !SSC-EE83E9E80699B4352D24FB6DA0BE90C0
 System.String System.Windows.Media.GlyphTypeface::get_FontFileName()
 	r159791		spouliot - pinvoke into glyph_typeface_get_font_uri using 'native' field
@@ -1932,8 +1927,9 @@ System.Void System.Windows.Controls.TextBox::SelectAll()
 System.Void System.Windows.Controls.ToolTip::set_TooltipParent(System.Windows.FrameworkElement)
 	20110321	spouliot - if 'tooltipParent' (field) is non-null then call RemovePropertyChangedHandler (with 'DataContextProperty' and 'propagateDataContext' as argument) before setting 'tooltipParent' to its new value and calling AddPropertyChangedHandler (same arguments)
 
-!SSC-24684F0EFAFA459C05BD70CEB8F36625
+!SSC-2BCF79C749AC1D222B4CD4CA363B7D4A
 System.Void System.Windows.Data.BindingExpressionBase::DataContextChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
+	20110420	spouliot - d48fee5 - Refresh is now called only if Binding.Mode == BindingMode.OneTime
 	20110321	spouliot - ff99b06 - renamed from OnNativeMentorDataContextChangedSafe, Lookup 'fe' from 'dependency_object' argument, then PropertyPathWalker.Update (fe.DataContext) before the call to Reset (also renamed)
 	20101210	spouliot - e43ca60 - merged with OnNativeMentorDataContextChanged (and remove a layer of try/catch)
 	20100831	spouliot - 25f4e0b5 - add a second try catch around the creation of the MoonError instance 'error' so exceptions cannot be leaked to native code
@@ -1948,8 +1944,9 @@ System.Void System.Windows.Data.BindingExpressionBase::OnAttached(System.Windows
 	r151736		spouliot - split from internal .ctor and now calls base OnAttached method (with parameter)
 	r151115		spouliot - call DependencyObject.AddPropertyChangedHandler [SecurityCritical] for BindingMode is TwoWay and Property is CustomDependencyProperty
 
-!SSC-30CED7DB9B665673A6710FBEC9D9BCC2
+!SSC-333035570006DDB4F6FCF3AA3E3CDA78
 System.Void System.Windows.Data.BindingExpressionBase::OnDetached(System.Windows.DependencyObject)
+	20110420	spouliot - bd8afd9 - clear the validation error if the binding is removed
 	20110321	spouliot - e8f85de - the pinvoke was replace by a call to Target.RemovePropertyChangedHandler using 'Property' (property) and 'updateDataSourceCallback'
 	r157017		spouliot - parameter changed from FrameworkElement to DependencyObject
 	r151736		spouliot - renamed from Dispose() and now calls base OnDetached method (with parameter)
@@ -1990,11 +1987,6 @@ System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System
 	r151115		spouliot - call base and remove CWL (not a critical change)
 	r150884		spouliot - pinvoke into dependency_object_remove_property_change_handler (if dpChanged is non-null) and dependency_object_add_property_change_handler (if Source and dp are not null)
 	r115028		spouliot - pinvoke removed. call Deployment.Current.Types [SecurityCritical] to get the kind
-
-!SSC-D5C261301BB21C423823A4207DAA3A7D
-System.Void System.Windows.Data.StandardPropertyPathNode::UpdateValue()
-	20101013	spouliot - 736c577 - add a try/catch around the call to PropertyInfo.GetValue, setting Value to null on any exception
-	r154963		spouliot - new override, code moved from OnSourceChanged. Manual SSC since it can, indirectly, create a delegate on private/internal methods
 
 !SSC-37A5823AD8BC39405AA3652933FF099C
 System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
@@ -2155,16 +2147,6 @@ System.Void System.Windows.Interop.Settings::set_EnableRedrawRegions(System.Bool
 System.Void System.Windows.Interop.Settings::set_MaxFrameRate(System.Int32)
 	r142142		spouliot - pinvoke into time_manager_set_maximum_refresh_rate
 
-!SSC-D0CEB052F17322F5182F50D728700588
-System.Void System.Windows.Interop.SilverlightHost::EnsureHistoryIframePresence()
-	20110125	spouliot - no source change / likely compiler related
-	r159963		spouliot - reflect into System.Windows.Browser.dll to call (internal) HtmlPage.EnsureHistoryIframePresence method
-
-!SSC-120DB9749EA9662776FBE2161EB95C64
-System.Void System.Windows.Interop.SilverlightHost::set_NavigationState(System.String)
-	20110125	spouliot - no source change / likely compiler related
-	r160018		spouliot - reflect into System.Windows.Browser.dll to call (internal) HtmlPage.NavigationState property
-
 !SSC-A6B2AC81F5C7D35805C9E886015DB029
 System.Void System.Windows.Media.Animation.EasingFunctionBase::Initialize()
 	20110104	spouliot - 854b133 - pinvoke to static (instead of a instance local) EaseCallback
@@ -2308,6 +2290,10 @@ System.Void System.Windows.Media.MediaStreamSource::Finalize()
 System.Void System.Windows.Media.MediaStreamSource::ReportGetSampleCompleted(System.Windows.Media.MediaStreamSample)
 	20110104	spouliot - bd24ede - pinvoke into media_frame_allocate_buffer and media_frame_allocate_buffer to allocate aligned memory
 	r142142		spouliot - wrong/overzealous validations. pinvoke into imedia_demuxer_report_get_frame_completed using (non-null) 'demuxer' field. Call Marshal [SecurityCritical] Copy. Pinvoke into media_frame_new and event_object_unref using local, validated, variables
+
+!SSC-E973DE2AFA505A333864E55E8E4F1284
+System.Void System.Windows.Media.MediaStreamSource::ReportGetSampleProgress(System.Double)
+	20110420	spouliot - 99f01e0 - pinvoke into media_element_report_get_sample_progress using (non-null) media_element native (field) and bufferingProgress (argument)
 
 !SSC-B8D62A7FB5336A35DAC8670162671B29
 System.Void System.Windows.Media.MediaStreamSource::ReportOpenMediaCompleted(System.Collections.Generic.IDictionary`2<System.Windows.Media.MediaSourceAttributesKeys,System.String>,System.Collections.Generic.IEnumerable`1<System.Windows.Media.MediaStreamDescription>)
