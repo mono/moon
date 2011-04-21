@@ -100,6 +100,13 @@ dnl
 dnl Export Variables
 dnl
 
+GMCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -sdk:2 -lib:\$(abs_top_builddir)/class/lib/moonlight,\$(abs_top_builddir)/class/lib/moonlight-bootstrap,\$(abs_top_builddir)/class/lib/2.1_raw -d:NET_3_0"
+SMCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -nostdlib -lib:\$(abs_top_builddir)/class/lib/2.1 -r:mscorlib.dll -r:System.Net"
+MCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -lib:\$(abs_top_builddir)/class/lib/moonlight,\$(abs_top_builddir)/class/lib/moonlight-bootstrap"
+AC_SUBST(GMCS)
+AC_SUBST(SMCS)
+AC_SUBST(MCS)
+
 AC_PATH_PROG(GACUTIL, gacutil)
 AC_SUBST([MOONLIGHT_MONO], [$MONO_PATH/mono/mini/mono])
 AC_SUBST([SYSTEM_MONO], mono)
@@ -113,7 +120,7 @@ PERF_TOOL_LIBS="$MONO_LIBS $GTK_LIBS $XULRUNNER_LIBS"
 AC_SUBST(PERF_TOOL_CFLAGS)
 AC_SUBST(PERF_TOOL_LIBS)
 
-MONO_LIBS="-lmono-2.0 -L$MONO_PATH/mono/mini -L$MONO_PATH/mono/mini/.libs"
+MONO_LIBS="-lmono-moon -L$MONO_PATH/mono/mini -L$MONO_PATH/mono/mini/.libs"
 MONO_STATIC_LIBS="$MONO_PATH/mono/mini/libmono-moon.la"
 MOON_CFLAGS="$GLIB_CFLAGS $CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS $DBUS_CFLAGS $CURL_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build

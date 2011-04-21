@@ -17,7 +17,6 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
-GMCS = MONO_PATH="../lib/moonlight:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight -d:NET_3_0
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 system_windows_sources =							\

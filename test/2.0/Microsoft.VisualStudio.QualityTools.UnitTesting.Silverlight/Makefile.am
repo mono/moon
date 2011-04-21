@@ -1,5 +1,3 @@
-SMCS = mcs -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
-
 noinst_DATA= Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
 CLEANFILES=Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \

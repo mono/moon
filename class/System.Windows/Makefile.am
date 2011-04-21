@@ -1,7 +1,7 @@
 assembly = System.Windows
 
 NET_2_1_ASSEMBLY_DEPS=-r:System.Runtime.Serialization.dll
-NET_3_0_ASSEMBLY_DEPS=
+NET_3_0_ASSEMBLY_DEPS=-r:System.Net.dll
 
 sl_secattr = ../SecurityAttributes/$(assembly).secattr
 
@@ -12,7 +12,7 @@ assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
 bootstrap_assemblysl = ../lib/2.1-bootstrap/$(assembly).dll
 bootstrap_assemblysl_raw = ../lib/2.1_raw-bootstrap/$(assembly).dll
 
-NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll
+NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll -r:System.Net.dll
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
@@ -20,7 +20,7 @@ assemblydesktop = ../lib/moonlight/$(assembly).dll
 
 bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
 
-NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
+NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll -r:System.Net.dll
 
 config = $(assemblydesktop).config
 endif
@@ -40,8 +40,6 @@ if HEAPVIZ
 CSCFLAGS += -d:HEAPVIZ
 endif
 
-GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
-SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
@@ -913,12 +911,12 @@ uninstall-local:
 check-code: check-static check-dynamic
 
 check-static:
-	gmcs $(srcdir)/scripts/checks.cs -r:../lib/moonlight/System.Windows.dll -out:check-static.exe
+	$(GMCS) $(srcdir)/scripts/checks.cs -r:../lib/moonlight/System.Windows.dll -out:check-static.exe
 	MONO_PATH=../lib/moonlight:$$MONO_PATH mono --debug check-static.exe
 	> check-static
 
 check-dynamic:
-	gmcs $(srcdir)/scripts/checks.cs -r:../lib/moonlight/System.Windows.dll -out:check-static.exe
+	$(GMCS) $(srcdir)/scripts/checks.cs -r:../lib/moonlight/System.Windows.dll -out:check-static.exe
 	mono --debug check-static.exe generate-test-code > tester.cs
-	gmcs tester.cs -r:../lib/moonlight/System.Windows.dll -debug:full -nowarn:219
+	$(GMCS) tester.cs -r:../lib/moonlight/System.Windows.dll -debug:full -nowarn:219
 	MONO_PATH=../lib/moonlight:$$MONO_PATH mono --debug tester.exe

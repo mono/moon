@@ -14,8 +14,6 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe -r:System.Core.dll
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
-SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 

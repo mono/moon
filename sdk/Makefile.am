@@ -11,7 +11,7 @@ make-sdk-directories:
 	@mkdir -p $(SDK4_DIR)
 	@mkdir -p $(SDK4_REDIST_DIR)
 
-install-data-local: make-sdk-directories install-buildversion install-sdk-assemblies install-sdk-tools install-redist-assemblies
+install-data-local: make-sdk-directories install-buildversion install-sdk-assemblies install-sdk-tools install-redist-assemblies install-compiler
 
 install-buildversion:
 	@echo $(SILVERLIGHT_4_0_TARGETRUNTIME) > buildversion
@@ -57,7 +57,9 @@ install-redist-assemblies:
 	-$(INSTALL) $(CLASS_DIR)/System.Xml.Linq.dll.mdb $(SDK4_REDIST_DIR)/System.Xml.Linq.dll.mdb
 	$(INSTALL) $(CLASS_DIR)/System.Xml.Serialization.dll $(SDK4_REDIST_DIR)/System.Xml.Serialization.dll
 	-$(INSTALL) $(CLASS_DIR)/System.Xml.Serialization.dll.mdb $(SDK4_REDIST_DIR)/System.Xml.Serialization.dll.mdb
-	
+
+install-compiler:
+	$(INSTALL) $(CLASS_DIR)/../mcs.exe $(SDK_ROOT)/mcs.exe
 
 clean-local:
 	-rm -rf buildversion

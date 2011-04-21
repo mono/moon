@@ -11,7 +11,6 @@ perf_tool_SOURCES =					\
 
 perf_tool_LDADD = $(PERF_TOOL_LIBS) $(MOON_PROG_LIBS)
 
-MCS = dmcs
 RUNTIME = mono
 
 MCS_LIB_FLAGS = -r:Mono.Data.Sqlite -r:System.Data
