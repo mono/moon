@@ -72,4 +72,10 @@ GLXSurface::GetVisualID ()
 	return vid;
 }
 
+__GLFuncPtr
+GLXSurface::GetProcAddress (const char *procname)
+{
+	return glXGetProcAddressARB ((const GLubyte *) procname);
+}
+
 };

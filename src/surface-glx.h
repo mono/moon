@@ -30,8 +30,7 @@ public:
 	Display     *GetDisplay () { return display; }
 	GLXDrawable GetGLXDrawable () { return window; }
 	VisualID    GetVisualID ();
-
-	void SwapBuffers ();
+	__GLFuncPtr GetProcAddress (const char *procname);
 
 	static void X11ErrorTrapPush (Display *dpy);
 	static int X11ErrorTrapPop (Display *dpy);

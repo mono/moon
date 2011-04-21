@@ -21,7 +21,7 @@ namespace Moonlight {
 
 class MOON_API GLContext : public Context {
 public:
-	GLContext (MoonSurface *surface);
+	GLContext (GLSurface *surface);
 	virtual ~GLContext ();
 
 	void Push (Group extents);
