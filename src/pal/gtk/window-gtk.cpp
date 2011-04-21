@@ -39,17 +39,14 @@
 #include <gdk/gdkx.h>
 #include <cairo-xlib.h>
 #ifdef USE_GLX
-#define GLXContext _XxGLXContext
 #include <GL/glx.h>
-#undef GLXContext
 #endif
 #undef Visual
 #undef Region
 #undef Window
 
 #ifdef USE_GLX
-#define __MOON_GLX__
-#include "context-glx.h"
+#include "context-opengl.h"
 typedef void (* PFNGLXCOPYSUBBUFFERPROC) (Display *dpy, GLXDrawable drawable, int x, int y, int width, int height);
 #endif
 
@@ -66,6 +63,23 @@ using namespace Moonlight;
 
 #ifdef USE_GALLIUM
 int MoonWindowGtk::gctxn = 0;
+#endif
+
+#ifdef USE_GLX
+class MoonGLXSurface : public OpenGLSurface {
+public:
+	MoonGLXSurface () : OpenGLSurface () {};
+	__GLFuncPtr GetProcAddress (const char *procname) { return glXGetProcAddressARB ((const GLubyte *) procname); }
+};
+class MoonGLXContext : public OpenGLContext {
+public:
+	MoonGLXContext (OpenGLSurface *surface, Display *dpy, GLXContext ctx) : OpenGLContext (surface) { this->ctx = ctx; this->dpy = dpy; };
+	GLXContext GetGLXContext () { return ctx; }
+	Display *GetGLXDisplay () { return dpy; }
+private:
+	Display *dpy;
+	GLXContext ctx;
+};
 #endif
 
 MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
@@ -132,8 +146,11 @@ MoonWindowGtk::~MoonWindowGtk ()
 #endif
 
 #ifdef USE_GLX
-	if (glxctx)
+	if (glxctx) {
+		glXDestroyContext (static_cast<MoonGLXContext *> (glxctx)->GetGLXDisplay (),
+				   static_cast<MoonGLXContext *> (glxctx)->GetGLXContext ());
 		delete glxctx;
+	}
 	if (glxtarget)
 		glxtarget->unref ();
 #endif
@@ -550,31 +567,58 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		return true;
 
 #ifdef USE_GLX
-	Display *dpy = gdk_x11_drawable_get_xdisplay (w->window);
-	XID     win = gdk_x11_drawable_get_xid (w->window);
-	int     width, height;
+	Display   *dpy = gdk_x11_drawable_get_xdisplay (w->window);
+	XID       win = gdk_x11_drawable_get_xid (w->window);
+	_XxVisual *visual = GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (w->window));
+	int       width, height;
 
 	gdk_drawable_get_size (w->window, &width, &height);
 
 	if (!glxtarget && (moonlight_flags & RUNTIME_INIT_HW_ACCELERATION)) {
-		GLXContext *context;
+		GLXContext  ctx = (GLXContext) 0;
+		XVisualInfo templ, *visinfo;
+		int         n;
 
-		glxtarget = new GLXSurface (dpy, win);
-		context = new GLXContext (glxtarget);
+		templ.visualid = XVisualIDFromVisual (visual);
+		visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
+		g_assert (visinfo);
 
-		if (context->Initialize ()) {
-			const char *extensions = (const char *)
-				glXGetClientString (dpy, GLX_EXTENSIONS);
-
-			if (strstr (extensions, "GLX_MESA_copy_sub_buffer"))
-				glxcopysubbuffer = glXGetProcAddressARB
-					((const GLubyte*)
-					 "glXCopySubBufferMESA");
-
-			glxctx = context;
+		ctx = glXCreateContext (dpy, visinfo, 0, True);
+		if (ctx) {
+			gdk_error_trap_push ();
+			glXMakeCurrent (dpy, win, ctx);
+			gdk_flush ();
+			if (gdk_error_trap_pop ()) {
+				g_warning ("Failed to make GLX context current for window: "
+					   "0x%x", (int) win);
+				glXDestroyContext (dpy, ctx);
+				ctx = (GLXContext) 0;
+			}
 		}
 		else {
-			delete context;
+			g_warning ("Failed to create GLX context for VisualID: 0x%x",
+				   (int) XVisualIDFromVisual (visual));
+		}
+
+		glxtarget = new MoonGLXSurface ();
+
+		if (ctx) {
+			OpenGLContext *context = new MoonGLXContext (glxtarget, dpy, ctx);
+
+			if (context->Initialize ()) {
+				const char *extensions = (const char *)
+					glXGetClientString (dpy, GLX_EXTENSIONS);
+
+				if (strstr (extensions, "GLX_MESA_copy_sub_buffer"))
+					glxcopysubbuffer = glxtarget->GetProcAddress
+						("glXCopySubBufferMESA");
+
+				glxctx = context;
+			}
+			else {
+				glXDestroyContext (dpy, ctx);
+				delete context;
+			}
 		}
 	}
 
@@ -587,11 +631,15 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 		Region *region = new Region (r);
 		int    y = height - (event->area.y + event->area.height);
 
-		static_cast<OpenGLSurface *> (glxtarget)->Reshape (width, height);
+		glXMakeCurrent (dpy,
+				win,
+				static_cast<MoonGLXContext *> (glxctx)->GetGLXContext ());
 
-		static_cast<Context *> (glxctx)->Push (Context::Clip (r));
+		glxtarget->Reshape (width, height);
+
+		glxctx->Push (Context::Clip (r));
 		surface->Paint (glxctx, region, GetTransparent (), true);
-		static_cast<Context *> (glxctx)->Pop ();
+		glxctx->Pop ();
 
 		glxctx->Flush ();
 
@@ -610,8 +658,6 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 					      event->area.height);
 		}
 		else {
-			glxctx->MakeCurrent ();
-
 			glDrawBuffer (GL_FRONT);
 			glViewport (-1, -1, 2, 2);
 			glRasterPos2f (0, 0);
@@ -883,6 +929,7 @@ MoonWindowGtk::widget_destroyed (GtkWidget *widget, gpointer user_data)
 	window->widget = NULL;
 	if (window->surface)
 		window->surface->HandleUIWindowDestroyed (window);
+
 }
 
 gboolean

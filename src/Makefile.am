@@ -371,11 +371,7 @@ libmoon_la_SOURCES_GLX = 	\
 	surface-opengl.cpp	\
 	surface-opengl.h	\
 	context-opengl.cpp	\
-	context-opengl.h	\
-	surface-glx.cpp		\
-	surface-glx.h		\
-	context-glx.cpp		\
-	context-glx.h
+	context-opengl.h
 
 
 # Conditionally built items are added to the nodist target as they

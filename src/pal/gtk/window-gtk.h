@@ -35,8 +35,8 @@ typedef void (* PFNGLXPROC) ();
 
 namespace Moonlight {
 
-class GLXSurface;
-class GLXContext;
+class OpenGLSurface;
+class Context;
 
 /* @Namespace=System.Windows */
 class MoonWindowGtk : public MoonWindow {
@@ -118,9 +118,9 @@ private:
 #endif
 
 #ifdef USE_GLX
-	GLXSurface *glxtarget;
-	GLXContext *glxctx;
-	PFNGLXPROC glxcopysubbuffer;
+	OpenGLSurface *glxtarget;
+	Context       *glxctx;
+	PFNGLXPROC    glxcopysubbuffer;
 #endif
 
 	int left;
