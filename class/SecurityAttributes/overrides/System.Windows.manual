@@ -173,11 +173,6 @@
 # Elevated Trust related overrides
 +SSC-M: System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
 
-# use reflection to call into System.Windows.Browser.dll to get DOM access
-+SSC-M: System.String System.Windows.Interop.SilverlightHost::get_NavigationState()
-+SSC-M: System.Void System.Windows.Interop.SilverlightHost::set_NavigationState(System.String)
-+SSC-M: System.Void System.Windows.Interop.SilverlightHost::EnsureHistoryIframePresence()
-
 # need this for heap visualization in moon-unit (when enabled)
 +SC-T: Mono.HeapUtil
 

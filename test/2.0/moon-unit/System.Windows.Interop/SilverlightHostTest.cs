@@ -106,6 +106,15 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (n, Application.Current.Host.InitParams.Count, "Count-2");
 		}
 
+		[TestMethod]
+		public void NavigationState ()
+		{
+			SilverlightHost host = Application.Current.Host;
+			Assert.Throws<ArgumentNullException> (delegate {
+				host.NavigationState = null;
+			}, "null");
+		}
+
 		// Fragment is Empty by default but is easy to change to a single '#' on Silverlight - not that it should change things...
 		static bool IsFragmentEmptyOrSharp (string s)
 		{
