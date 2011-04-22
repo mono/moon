@@ -19,19 +19,9 @@
 
 namespace Moonlight {
 
-class MOON_API CGLSurface : public GLSurface {
+class MOON_API CGLSurface : public OpenGLSurface {
 public:
 	CGLSurface (CGLContextObj context, GLsizei w, GLsizei h);
-	CGLSurface (GLsizei w, GLsizei h);
-
-	CGLContextObj GetContext () { return context; }
-
-	void SwapBuffers ();
-	void Reshape (int width, int height);
-	cairo_surface_t *Cairo ();
-	GLuint Texture ();
-	GLuint TextureYUV (int i);
-	bool HasTexture ();
 
 private:
 	CGLContextObj context;

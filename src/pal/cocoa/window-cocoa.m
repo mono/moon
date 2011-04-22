@@ -438,19 +438,19 @@ MoonWindowCocoa::ExposeEvent (Rect r)
 		Region *region = new Region (r); 
 		int y = height - (r.y + r.height);
 
-		cgltarget->Reshape (width, height);
+		CGLSetCurrentContext ((CGLContextObj) [glcontext CGLContextObj]);
+
+		static_cast<OpenGLSurface *> (cgltarget)->Reshape (width, height);
 
 		static_cast<Context *> (cglctx)->Push (Context::Clip (r0));
 		surface->Paint (cglctx, region, GetTransparent (), true);
 		static_cast<Context *> (cglctx)->Pop ();
 
-		cglctx->Flush ();
+		static_cast<OpenGLContext *> (cglctx)->Flush ();
 
 		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
 			[glcontext flushBuffer];
 		} else {
-			cglctx->MakeCurrent ();
-
 			glDrawBuffer (GL_FRONT);
 			glViewport (-1, -1, 2, 2);
 			glRasterPos2f (0, 0);

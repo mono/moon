@@ -11,100 +11,24 @@
 #ifndef __MOON_CONTEXT_CGL_H__
 #define __MOON_CONTEXT_CGL_H__
 
-#include "context-gl.h"
+#include "context-opengl.h"
 #include "surface-cgl.h"
 
 #ifdef __MOON_CGL__
 
 namespace Moonlight {
 
-class MOON_API CGLContext : public GLContext {
+class MOON_API CGLContext : public OpenGLContext {
 public:
 	CGLContext (CGLSurface *surface);
 	virtual ~CGLContext ();
 
 	bool Initialize ();
 
-	void MakeCurrent ();
-
-	void Push (Group extents);
-	cairo_t *Push (Cairo extents);
-	Rect Pop (MoonSurface **ref);
-
-	void Clear (Color *color);
-
-	void Blit (unsigned char *data,
-		   int           stride);
-
 	void BlitVUY2 (unsigned char *data);
-
-	void BlitYV12 (unsigned char *data[],
-		       int           stride[]);
-
-	void Paint (Color *color);
-
-	void Paint (MoonSurface *src,
-		    double      alpha,
-		    double      x,
-		    double      y);
-
-	void Project (MoonSurface  *src,
-		      const double *matrix,
-		      double       alpha,
-		      double       x,
-		      double       y);
-
-	void Blur (MoonSurface *src,
-		   double      radius,
-		   double      x,
-		   double      y);
-
-	void DropShadow (MoonSurface *src,
-			 double      dx,
-			 double      dy,
-			 double      radius,
-			 Color       *color,
-			 double      x,
-			 double      y);
-
-	void ShaderEffect (MoonSurface *src,
-			   PixelShader *shader,
-			   Brush       **sampler,
-			   int         *sampler_mode,
-			   int         n_sampler,
-			   Color       *constant,
-			   int         n_constant,
-			   int         *ddxUvDdyUvPtr,
-			   double      x,
-			   double      y);
-
-	void Flush ();
-
-protected:
-	void SetupVertexData (double x,
-			      double y,
-			      double width,
-			      double height);
-	void SetupVertexData (const double *matrix,
-			      double       x,
-			      double       y,
-			      double       width,
-			      double       height);
-	void SetupTexCoordData (const double *matrix,
-				double       du,
-				double       dv);
-	void SetupTexUnit (GLenum target, GLint texture);
-	const char *ProgramPrecisionString ();
-	void SetFramebuffer ();
-	void SetScissor ();
-	void ForceCurrent ();
-	gboolean HasDrawable ();
-	void SyncDrawable ();
-	Rect GroupBounds (Group extents);
 
 private:
 	CGLContextObj context;
-	GLint maxTextureSize;
 };
 
 };
