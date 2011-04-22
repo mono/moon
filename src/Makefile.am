@@ -393,7 +393,7 @@ libmoon_la_SOURCES_GL = 	\
 	context-gl.cpp	\
 	context-gl.h    
 
-libmoon_la_SOURCES_GLX = 	\
+libmoon_la_SOURCES_OPENGL = 	\
 	surface-opengl.cpp	\
 	surface-opengl.h	\
 	context-opengl.cpp	\
@@ -464,8 +464,8 @@ if HAVE_GL
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GL)
 endif
 
-if HAVE_GLX
-nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GLX)
+if HAVE_OPENGL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_OPENGL)
 endif
 
 if HAVE_CGL

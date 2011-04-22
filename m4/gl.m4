@@ -1,6 +1,7 @@
 AC_DEFUN([MOONLIGHT_CHECK_GL],
 [
 	with_gl=no
+	with_opengl=no
 
 	dnl GLX
 	AC_ARG_WITH(glx, AC_HELP_STRING([--with-glx=yes|no],
@@ -11,6 +12,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GL],
 			AC_DEFINE(USE_GLX, 1, [Include glx support])
 			PKG_CHECK_MODULES(GLX, gl x11)
 			with_gl=yes
+			with_opengl=yes
 			MOONLIGHT_CHECK_GLCHAR([GL/gl.h])
 		else
 			with_glx=no
@@ -25,6 +27,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GL],
 	if test x$with_cgl = xyes; then
 		AC_DEFINE(USE_CGL, 1, [Include cgl support])
 		with_gl=yes
+		with_opengl=yes
 		MOONLIGHT_CHECK_GLCHAR([OpenGL/OpenGL.h])
 	fi
 	AM_CONDITIONAL(HAVE_CGL, [test x$with_cgl != xno])
@@ -41,8 +44,7 @@ AC_DEFUN([MOONLIGHT_CHECK_GL],
 	AM_CONDITIONAL(HAVE_EGL, [test x$with_egl != xno])
 
 	AM_CONDITIONAL(HAVE_GL, [test x$with_gl != xno])
-
-
+	AM_CONDITIONAL(HAVE_OPENGL, [test x$with_opengl != xno])
 ])
 
 AC_DEFUN([MOONLIGHT_CHECK_GLCHAR],
