@@ -1,8 +1,8 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * context-glx.cpp
+ * context-opengl.cpp
  *
- * Copyright 2010 Novell, Inc. (http://www.novell.com)
+ * Copyright 2011 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -13,84 +13,45 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define __MOON_GLX__
+#define __MOON_OPENGL__
 
-#include "context-glx.h"
+#include "context-opengl.h"
 #include "projection.h"
 #include "effect.h"
 #include "region.h"
 
 #define IS_TRANSLUCENT(x) (x * 255 < 254.5)
 
-#define GETPROCADDR(type, name)						\
-	(name) = (type) glXGetProcAddressARB ((const GLubyte*) # name)
-
 namespace Moonlight {
 
-GLXContext::GLXContext (GLXSurface *surface) : GLContext (surface)
+OpenGLContext::OpenGLContext (OpenGLSurface *surface) : GLContext (surface)
 {
-	dpy = surface->GetDisplay ();
-	drawable = surface->GetGLXDrawable ();
-	vid = surface->GetVisualID ();
-	ctx = (_XxGLXContext) 0;
 }
 
-GLXContext::~GLXContext ()
+OpenGLContext::~OpenGLContext ()
 {
-	if (ctx)
-		glXDestroyContext (dpy, ctx);
 }
 
 bool
-GLXContext::Initialize ()
+OpenGLContext::Initialize ()
 {
-	XVisualInfo templ, *visinfo;
-	int         n;
-	const char  *requiredExtension[] = {
+	const char *requiredExtension[] = {
 		"GL_EXT_framebuffer_object",
 		"GL_ARB_texture_non_power_of_two",
 		"GL_ARB_shading_language_100"
 	};
-
-	templ.visualid = vid;
-	visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
-	if (visinfo == NULL) {
-		g_warning ("Found no visuals matching VisualID 0x%x, "
-			   "disabling GLX", (int) vid);
-		return false;
-	}
-
-	GLXSurface::X11ErrorTrapPush (dpy);
-	ctx = glXCreateContext (dpy, visinfo, 0, True);
-	XFree (visinfo);
-
-	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
-		g_warning ("Failed to create GLX context for VisualID: 0x%x",
-			   (int) vid);
-		return false;
-	}
-
-	GLXSurface::X11ErrorTrapPush (dpy);
-	glXMakeCurrent (dpy, drawable, ctx);
-	if (GLXSurface::X11ErrorTrapPop (dpy) != Success) {
-		g_warning ("Failed to make GLX context current for drawable: "
-			   "0x%x", (int) drawable);
-		return false;
-	}
-
 	const char *version = (const char *) glGetString (GL_VERSION);
+        const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
-	if (!version) {
+	if (!version || !extensions) {
 		g_warning ("glGetString returned NULL");
 		return false;
 	}
-	
+
 	if (atof (version) < MIN_GL_VERSION) {
 		g_warning ("Insufficient OpenGL version: %s", version);
 		return false;
 	}
-
-	const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
 	for (guint i = 0; i < G_N_ELEMENTS (requiredExtension); i++) {
 		if (!strstr (extensions, requiredExtension[i])) {
@@ -104,36 +65,6 @@ GLXContext::Initialize ()
 	if (maxTextureSize < 2048)
 		g_warning ("OpenGL max texture size: %d", maxTextureSize);
 
-	GETPROCADDR (PFNGLCREATESHADERPROC, glCreateShader);
-	GETPROCADDR (PFNGLSHADERSOURCEPROC, glShaderSource);
-	GETPROCADDR (PFNGLCOMPILESHADERPROC, glCompileShader);
-	GETPROCADDR (PFNGLGETSHADERIVPROC, glGetShaderiv);
-	GETPROCADDR (PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog);
-	GETPROCADDR (PFNGLDELETESHADERPROC, glDeleteShader);
-	GETPROCADDR (PFNGLCREATEPROGRAMPROC, glCreateProgram);
-	GETPROCADDR (PFNGLATTACHSHADERPROC, glAttachShader);
-	GETPROCADDR (PFNGLBINDATTRIBLOCATIONPROC, glBindAttribLocation);
-	GETPROCADDR (PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation);
-	GETPROCADDR (PFNGLUNIFORM4FPROC, glUniform4f);
-	GETPROCADDR (PFNGLUNIFORM4FVPROC, glUniform4fv);
-	GETPROCADDR (PFNGLUNIFORM1IPROC, glUniform1i);
-	GETPROCADDR (PFNGLLINKPROGRAMPROC, glLinkProgram);
-	GETPROCADDR (PFNGLUSEPROGRAMPROC, glUseProgram);
-	GETPROCADDR (PFNGLDELETEPROGRAMPROC, glDeleteProgram);
-	GETPROCADDR (PFNGLVERTEXATTRIBPOINTERPROC, glVertexAttribPointer);
-	GETPROCADDR (PFNGLENABLEVERTEXATTRIBARRAYARBPROC,
-		     glEnableVertexAttribArray);
-	GETPROCADDR (PFNGLDISABLEVERTEXATTRIBARRAYARBPROC,
-		     glDisableVertexAttribArray);
-	GETPROCADDR (PFNGLGENRENDERBUFFERSPROC, glGenRenderbuffers);
-	GETPROCADDR (PFNGLDELETERENDERBUFFERSPROC, glDeleteRenderbuffers);
-	GETPROCADDR (PFNGLGENFRAMEBUFFERSPROC, glGenFramebuffers);
-	GETPROCADDR (PFNGLBINDFRAMEBUFFERPROC, glBindFramebuffer);
-	GETPROCADDR (PFNGLDELETEFRAMEBUFFERSPROC, glDeleteFramebuffers);
-	GETPROCADDR (PFNGLFRAMEBUFFERTEXTURE2DPROC, glFramebufferTexture2D);
-	GETPROCADDR (PFNGLCHECKFRAMEBUFFERSTATUSPROC,
-		     glCheckFramebufferStatus);
-
 	printf ("Moonlight: OpenGL vendor string: %s\n",
 		glGetString (GL_VENDOR));
 	printf ("Moonlight: OpenGL renderer string: %s\n",
@@ -145,29 +76,15 @@ GLXContext::Initialize ()
 }
 
 void
-GLXContext::MakeCurrent ()
-{
-	g_assert (ctx);
-	glXMakeCurrent (dpy, drawable, ctx);
-}
-
-void
-GLXContext::ForceCurrent ()
-{
-	if (glXGetCurrentContext () != ctx)
-		MakeCurrent ();
-}
-
-void
-GLXContext::SetupVertexData (double x,
-			     double y,
-			     double width,
-			     double height)
+OpenGLContext::SetupVertexData (double x,
+                                double y,
+                                double width,
+                                double height)
 {
 	Context::Target *target = Top ()->GetTarget ();
 	MoonSurface     *ms;
 	Rect            r = target->GetData (&ms);
-	GLXSurface      *dst = (GLXSurface *) ms;
+	OpenGLSurface   *dst = (OpenGLSurface *) ms;
 	double          dx = 2.0 / dst->Width ();
 	double          dy = 2.0 / dst->Height ();
 	double          p[4][4];
@@ -200,7 +117,7 @@ GLXContext::SetupVertexData (double x,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (dst->GetGLXDrawable ()) {
+	if (dst->HasDrawable ()) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -214,16 +131,16 @@ GLXContext::SetupVertexData (double x,
 }
 
 void
-GLXContext::SetupVertexData (const double *matrix,
-			     double       x,
-			     double       y,
-			     double       width,
-			     double       height)
+OpenGLContext::SetupVertexData (const double *matrix,
+                                double       x,
+                                double       y,
+                                double       width,
+                                double       height)
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
+	OpenGLSurface  *dst = (OpenGLSurface *) ms;
 	double      dx = 2.0 / dst->Width ();
 	double      dy = 2.0 / dst->Height ();
 	double      p[4][4];
@@ -256,7 +173,7 @@ GLXContext::SetupVertexData (const double *matrix,
 		vertices[i][3] = p[i][3];
 	}
 
-	if (dst->GetGLXDrawable ()) {
+	if (dst->HasDrawable ()) {
 		int i;
 
 		for (i = 0; i < 4; i++) {
@@ -270,9 +187,9 @@ GLXContext::SetupVertexData (const double *matrix,
 }
 
 void
-GLXContext::SetupTexCoordData (const double *matrix,
-			       double       du,
-			       double       dv)
+OpenGLContext::SetupTexCoordData (const double *matrix,
+                                  double       du,
+                                  double       dv)
 {
 	Context::Target *target = Top ()->GetTarget ();
 	Rect            r = target->GetData (NULL);
@@ -310,7 +227,7 @@ GLXContext::SetupTexCoordData (const double *matrix,
 }
 
 void
-GLXContext::SetupTexUnit (GLenum target, GLint texture)
+OpenGLContext::SetupTexUnit (GLenum target, GLint texture)
 {
 	glBindTexture (target, texture);
 	glTexParameteri (target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -320,15 +237,15 @@ GLXContext::SetupTexUnit (GLenum target, GLint texture)
 }
 
 gboolean
-GLXContext::HasDrawable ()
+OpenGLContext::HasDrawable ()
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
-	gboolean    status = FALSE;
+	Target        *target = Top ()->GetTarget ();
+	MoonSurface   *ms;
+	Rect          r = target->GetData (&ms);
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
+	gboolean      status = FALSE;
 
-	if (dst->GetGLXDrawable () || dst->HasTexture ())
+	if (dst->HasDrawable () || dst->HasTexture ())
 		status = TRUE;
 
 	ms->unref ();
@@ -337,17 +254,17 @@ GLXContext::HasDrawable ()
 }
 
 void
-GLXContext::SyncDrawable ()
+OpenGLContext::SyncDrawable ()
 {
-	Target      *target = Top ()->GetTarget ();
-	Target      *cairo = target->GetCairoTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface  *) ms;
+	Target        *target = Top ()->GetTarget ();
+	Target        *cairo = target->GetCairoTarget ();
+	MoonSurface   *ms;
+	Rect          r = target->GetData (&ms);
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
 
 	// clear target contents
 	if (!target->GetInit ()) {
-		if (!dst->GetGLXDrawable ())
+		if (!dst->HasDrawable ())
 			GLContext::SetFramebuffer ();
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -359,13 +276,13 @@ GLXContext::SyncDrawable ()
 
 	// initialize target contents with surface
 	if (target->GetInit () != ms) {
-		GLXSurface *src = (GLXSurface  *) target->GetInit ();
+		OpenGLSurface *src = (OpenGLSurface  *) target->GetInit ();
 		GLuint     texture0 = src->Texture ();
 		GLuint     program = GetProjectProgram (1.0, 0);
 		GLsizei    width0 = src->Width ();
 		GLsizei    height0 = src->Height ();
 
-		if (!dst->GetGLXDrawable ())
+		if (!dst->HasDrawable ())
 			GLContext::SetFramebuffer ();
 
 		SetViewport ();
@@ -413,15 +330,15 @@ GLXContext::SyncDrawable ()
 
 	// render any cairo contents onto target
 	if (cairo) {
-		MoonSurface *mSrc;
-		Rect        rSrc = cairo->GetData (&mSrc);
-		GLXSurface  *src = (GLXSurface  *) mSrc;
-		GLuint      texture0 = src->Texture ();
-		GLuint      program = GetProjectProgram (1.0, 0);
-		GLsizei     width0 = src->Width ();
-		GLsizei     height0 = src->Height ();
+		MoonSurface   *mSrc;
+		Rect          rSrc = cairo->GetData (&mSrc);
+		OpenGLSurface *src = (OpenGLSurface  *) mSrc;
+		GLuint        texture0 = src->Texture ();
+		GLuint        program = GetProjectProgram (1.0, 0);
+		GLsizei       width0 = src->Width ();
+		GLsizei       height0 = src->Height ();
 
-		if (!dst->GetGLXDrawable ())
+		if (!dst->HasDrawable ())
 			GLContext::SetFramebuffer ();
 
 		SetViewport ();
@@ -477,7 +394,7 @@ GLXContext::SyncDrawable ()
 }
 
 Rect
-GLXContext::GroupBounds (Group extents)
+OpenGLContext::GroupBounds (Group extents)
 {
 	if (extents.r.width  > maxTextureSize ||
 	    extents.r.height > maxTextureSize)
@@ -487,13 +404,13 @@ GLXContext::GroupBounds (Group extents)
 }
 
 void
-GLXContext::Push (Group extents)
+OpenGLContext::Push (Group extents)
 {
 	Rect r = GroupBounds (extents);
 
 	if (!r.IsEmpty ()) {
 		cairo_matrix_t matrix;
-		GLXSurface     *surface = new GLXSurface (r.width, r.height);
+		OpenGLSurface  *surface = new OpenGLSurface (r.width, r.height);
 		Target         *target = new Target (surface, extents.r);
 
 		Top ()->GetMatrix (&matrix);
@@ -512,28 +429,26 @@ GLXContext::Push (Group extents)
 }
 
 cairo_t *
-GLXContext::Push (Cairo extents)
+OpenGLContext::Push (Cairo extents)
 {
 	Target *target = Top ()->GetTarget ();
 	Target *cairo = target->GetCairoTarget ();
 	Rect   box;
 
 	Top ()->GetClip (&box);
- 
+
 	box = box.Intersection (extents.r);
 
 	if (box.IsEmpty ())
 		return Context::Push (extents);
- 
+
 	if (cairo) {
 		Rect   r = cairo->GetData (NULL);
 		Region *region = new Region (r);
- 
-		if (region->RectIn (box) != CAIRO_REGION_OVERLAP_IN) {
-			ForceCurrent ();
+
+		if (region->RectIn (box) != CAIRO_REGION_OVERLAP_IN)
 			SyncDrawable ();
-		}
- 
+
 		delete region;
 	}
 
@@ -542,9 +457,9 @@ GLXContext::Push (Cairo extents)
 		Rect        r = target->GetData (&ms);
 
 		if (HasDrawable ()) {
-			GLXSurface *surface = new GLXSurface (box.width,
-							      box.height);
-			Target     *cairo = new Target (surface, box);
+			OpenGLSurface *surface = new OpenGLSurface (box.width,
+                                                                    box.height);
+			Target        *cairo = new Target (surface, box);
 
 			target->SetCairoTarget (cairo);
 
@@ -563,7 +478,7 @@ GLXContext::Push (Cairo extents)
 }
 
 Rect
-GLXContext::Pop (MoonSurface **ref)
+OpenGLContext::Pop (MoonSurface **ref)
 {
 	Context::Node *prev = (Context::Node *) Top ()->prev;
 
@@ -577,7 +492,6 @@ GLXContext::Pop (MoonSurface **ref)
 		MoonSurface *data = init != ms ? init : NULL;
 
 		ms->unref ();
-		ForceCurrent ();
 
 		// return reference to initial state surface instead
 		// of the target surface itself
@@ -592,41 +506,41 @@ GLXContext::Pop (MoonSurface **ref)
 			SyncDrawable ();
 		}
 	}
- 
+
 	return GLContext::Pop (ref);
 }
 
 void
-GLXContext::SetFramebuffer ()
+OpenGLContext::SetFramebuffer ()
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
+	Target        *target = Top ()->GetTarget ();
+	MoonSurface   *ms;
+	Rect          r = target->GetData (&ms);
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
 
 	SyncDrawable ();
 
-	if (!dst->GetGLXDrawable ())
+	if (!dst->HasDrawable ())
 		GLContext::SetFramebuffer ();
 
 	ms->unref ();
 }
 
 void
-GLXContext::SetScissor ()
+OpenGLContext::SetScissor ()
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
-	Rect        clip;
+	Target        *target = Top ()->GetTarget ();
+	MoonSurface   *ms;
+	Rect          r = target->GetData (&ms);
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
+	Rect          clip;
 
 	Top ()->GetClip (&clip);
 
 	clip.x -= r.x;
 	clip.y -= r.y;
 
-	if (dst->GetGLXDrawable ()) {
+	if (dst->HasDrawable ()) {
 		glScissor (clip.x,
 			   dst->Height () - (clip.y + clip.height),
 			   clip.width,
@@ -640,30 +554,20 @@ GLXContext::SetScissor ()
 }
 
 void
-GLXContext::Clear (Color *color)
+OpenGLContext::Blit (unsigned char *data,
+                     int           stride)
 {
-	ForceCurrent ();
-
-	GLContext::Clear (color);
-}
-
-void
-GLXContext::Blit (unsigned char *data,
-		  int           stride)
-{
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
-	Rect        clip;
-
-	ForceCurrent ();
+	Target        *target = Top ()->GetTarget ();
+	MoonSurface   *ms;
+	Rect          r = target->GetData (&ms);
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
+	Rect          clip;
 
 	// no support for clipping
 	g_assert (GetClip () == r);
 
 	// no support for blit to drawable at the moment
-	g_assert (!dst->GetGLXDrawable ());
+	g_assert (!dst->HasDrawable ());
 
 	// mark target as initialized
 	target->SetInit (ms);
@@ -689,25 +593,23 @@ GLXContext::Blit (unsigned char *data,
 }
 
 void
-GLXContext::BlitYV12 (unsigned char *data[],
-		     int           stride[])
+OpenGLContext::BlitYV12 (unsigned char *data[],
+                         int           stride[])
 {
-	Target      *target = Top ()->GetTarget ();
-	MoonSurface *ms;
-	Rect        r = target->GetData (&ms);
-	GLXSurface  *dst = (GLXSurface *) ms;
-	int         size[] = { dst->Width (), dst->Height () };
-	int         width[] = { size[0], size[0] / 2, size[0] / 2 };
-	int         height[] = { size[1], size[1] / 2, size[1] / 2 };
-	int         i;
-
-	ForceCurrent ();
+	Target        *target = Top ()->GetTarget ();
+	MoonSurface   *ms;
+	Rect          r = target->GetData (&ms);
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
+	int           size[] = { dst->Width (), dst->Height () };
+	int           width[] = { size[0], size[0] / 2, size[0] / 2 };
+	int           height[] = { size[1], size[1] / 2, size[1] / 2 };
+	int           i;
 
 	// no support for clipping
 	g_assert (GetClip () == r);
 
 	// no support for blit to drawable at the moment
-	g_assert (!dst->GetGLXDrawable ());
+	g_assert (!dst->HasDrawable ());
 
 	// mark target as initialized
 	target->SetInit (ms);
@@ -735,7 +637,7 @@ GLXContext::BlitYV12 (unsigned char *data[],
 }
 
 void
-GLXContext::Paint (Color *color)
+OpenGLContext::Paint (Color *color)
 {
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
@@ -743,7 +645,7 @@ GLXContext::Paint (Color *color)
 	Rect        clip;
 
 	// avoid GL rendering to target without previously
-	// allocated hardware drawable	
+	// allocated hardware drawable
 	if (!HasDrawable ()) {
 		Context::Paint (color);
 		ms->unref ();
@@ -757,34 +659,32 @@ GLXContext::Paint (Color *color)
 		target->SetInit (ms);
 	}
 
-	ForceCurrent ();
-
 	GLContext::Paint (color);
 
 	ms->unref ();
 }
 
 void
-GLXContext::Paint (MoonSurface *src,
-		   double      alpha,
-		   double      x,
-		   double      y)
+OpenGLContext::Paint (MoonSurface *src,
+                      double      alpha,
+                      double      x,
+                      double      y)
 {
-	GLXContext::Project (src, NULL, alpha, x, y);
+	OpenGLContext::Project (src, NULL, alpha, x, y);
 }
 
 void
-GLXContext::Project (MoonSurface  *src,
-		     const double *matrix,
-		     double       alpha,
-		     double       x,
-		     double       y)
+OpenGLContext::Project (MoonSurface  *src,
+                        const double *matrix,
+                        double       alpha,
+                        double       x,
+                        double       y)
 {
-	GLXSurface *surface = (GLXSurface *) src;
-	Target     *target = Top ()->GetTarget ();
-	Rect       r = target->GetData (NULL);
-	Rect       clip = GetClip ();
-	double     m[16];
+	OpenGLSurface *surface = (OpenGLSurface *) src;
+	Target        *target = Top ()->GetTarget ();
+	Rect          r = target->GetData (NULL);
+	Rect          clip = GetClip ();
+	double        m[16];
 
 	if (!target->GetInit () && !IS_TRANSLUCENT (alpha) && r == clip) {
 		int x0, y0;
@@ -794,11 +694,11 @@ GLXContext::Project (MoonSurface  *src,
 			Matrix3D::Multiply (m, matrix, m);
 
 		if (Matrix3D::IsIntegerTranslation (m, &x0, &y0)) {
-			GLXSurface *surface = (GLXSurface *) src;
-			Rect       r = Rect (x + x0,
-					     y + y0,
-					     surface->Width (),
-					     surface->Height ());
+			OpenGLSurface *surface = (OpenGLSurface *) src;
+			Rect          r = Rect (x + x0,
+                                                y + y0,
+                                                surface->Width (),
+                                                surface->Height ());
 
 			// matching dimensions and no transformation allow us
 			// to set source as initial state of target surface when
@@ -835,64 +735,13 @@ GLXContext::Project (MoonSurface  *src,
 	if (matrix)
 		Matrix3D::Multiply (m, matrix, m);
 
-	ForceCurrent ();
-
 	GLContext::Paint (src, m, alpha, x, y);
 }
 
 void
-GLXContext::Blur (MoonSurface *src,
-		  double      radius,
-		  double      x,
-		  double      y)
+OpenGLContext::Flush ()
 {
-	ForceCurrent ();
-
-	GLContext::Blur (src, radius, x, y);
-}
-
-void
-GLXContext::DropShadow (MoonSurface *src,
-			double      dx,
-			double      dy,
-			double      radius,
-			Color       *color,
-			double      x,
-			double      y)
-{
-	ForceCurrent ();
-
-	GLContext::DropShadow (src, dx, dy, radius, color, x, y);
-}
-
-void
-GLXContext::ShaderEffect (MoonSurface *src,
-			  PixelShader *shader,
-			  Brush       **sampler,
-			  int         *sampler_mode,
-			  int         n_sampler,
-			  Color       *constant,
-			  int         n_constant,
-			  int         *ddxUvDdyUvPtr,
-			  double      x,
-			  double      y)
-{
-	ForceCurrent ();
-
-	GLContext::ShaderEffect (src,
-				 shader,
-				 sampler, sampler_mode, n_sampler,
-				 constant, n_constant,
-				 ddxUvDdyUvPtr,
-				 x, y);
-}
-
-void
-GLXContext::Flush ()
-{
-	ForceCurrent ();
 	SyncDrawable ();
-
 	GLContext::Flush ();
 }
 

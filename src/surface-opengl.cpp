@@ -1,8 +1,8 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * surface-glx.cpp
+ * surface-opengl.cpp
  *
- * Copyright 2010 Novell, Inc. (http://www.novell.com)
+ * Copyright 2011 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -12,84 +12,22 @@
 
 #include <string.h>
 
-#define __MOON_GLX__
-
-#include "surface-glx.h"
+#include "surface-opengl.h"
 
 namespace Moonlight {
 
-int GLXSurface::X11Error;
-int (*GLXSurface::SavedX11ErrorHandler) (Display *, XErrorEvent *);
-
-GLXSurface::GLXSurface (Display *dpy, XID win) : GLSurface ()
+OpenGLSurface::OpenGLSurface () : GLSurface ()
 {
-	XWindowAttributes attr;
-	Status            status;
-
-	display = dpy;
-	window  = 0;
-	size[0] = 0;
-	size[1] = 0;
-	vid     = 0;
-
-	X11ErrorTrapPush (dpy);
-	status = XGetWindowAttributes (dpy, win, &attr);
-	if (X11ErrorTrapPop (dpy) == Success)
-		window = win;
-
-	if (status) {
-		size[0] = attr.width;
-		size[1] = attr.height;
-		vid     = XVisualIDFromVisual (attr.visual);
-	}
+	drawable = true;
 }
 
-GLXSurface::GLXSurface (GLsizei w, GLsizei h) : GLSurface (w, h)
+OpenGLSurface::OpenGLSurface (GLsizei w, GLsizei h) : GLSurface (w, h)
 {
-	display = NULL;
-	window  = 0;
-	vid     = 0;
-}
-
-int
-GLXSurface::X11ErrorHandler (Display     *display,
-			     XErrorEvent *event)
-{
-	X11Error = event->type;
-	return False;
+	drawable = false;
 }
 
 void
-GLXSurface::X11ErrorTrapPush (Display *dpy)
-{
-	XSync (dpy, False);
-	X11Error = Success;
-	SavedX11ErrorHandler = XSetErrorHandler (X11ErrorHandler);
-}
-
-int
-GLXSurface::X11ErrorTrapPop (Display *dpy)
-{
-	XSync (dpy, False);
-	XSetErrorHandler (SavedX11ErrorHandler);
-	return X11Error;
-}
-
-VisualID
-GLXSurface::GetVisualID ()
-{
-	return vid;
-}
-
-void
-GLXSurface::SwapBuffers ()
-{
-	g_assert (window);
-	glXSwapBuffers (display, window);
-}
-
-void
-GLXSurface::Reshape (int width, int height)
+OpenGLSurface::Reshape (int width, int height)
 {
 	size[0] = width;
 	size[1] = height;
@@ -106,9 +44,9 @@ GLXSurface::Reshape (int width, int height)
 }
 
 cairo_surface_t *
-GLXSurface::Cairo ()
+OpenGLSurface::Cairo ()
 {
-	g_assert (window == 0);
+	g_assert (!drawable);
 
 	if (!data && texture) {
 		data = (unsigned char *) g_malloc (size[0] * size[1] * 4);
@@ -126,7 +64,7 @@ GLXSurface::Cairo ()
 }
 
 GLuint
-GLXSurface::Texture ()
+OpenGLSurface::Texture ()
 {
 	GLuint name = texture;
 
@@ -157,7 +95,7 @@ GLXSurface::Texture ()
 
 
 GLuint
-GLXSurface::TextureYUV (int i)
+OpenGLSurface::TextureYUV (int i)
 {
 	if (!textureYUV[i]) {
 		int j;
@@ -183,7 +121,7 @@ GLXSurface::TextureYUV (int i)
 }
 
 bool
-GLXSurface::HasTexture ()
+OpenGLSurface::HasTexture ()
 {
 	return texture != 0 || IsPlanar ();
 }

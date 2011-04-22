@@ -125,4 +125,11 @@ GLSurface::Height ()
 	return size[1];
 }
 
+__GLFuncPtr
+GLSurface::GetProcAddress (const char *procname)
+{
+	g_warning ("GLSurface::GetProcAddress has been called. The derived class should have overridden it.");
+	return NULL;
+}
+
 };

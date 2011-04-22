@@ -669,8 +669,9 @@ System.Int32 System.Globalization.CompareInfo::IndexOf(System.String,System.Stri
 System.Int32 System.Globalization.CompareInfo::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
 	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'false'
 
-!SSC-D489D311CDCA41F7C2DBD9B28B854560
+!SSC-B4B1E88E9CE71A34CDAD270917BEB8EE
 System.Int32 System.Globalization.CompareInfo::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	20110420	spouliot - 8277f4a5 - bug fix - return 'startIndex' (argument) instead of 0 if 'value'.Length is 0
 	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'false'
 
 !SSC-D176BE20E0203F6764DF6894A5E1576D

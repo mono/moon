@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008-2010 Novell, Inc.
+// Copyright 2008-2011 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,12 +27,13 @@
 //
 
 using System;
-using System.Reflection;
 using System.Windows.Media;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.IO;
 using Mono;
+#if !BOOTSTRAP
+using System.Windows.Browser;
+#endif
 
 namespace System.Windows.Interop {
 	public class SilverlightHost {
@@ -149,53 +150,43 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		const string HtmlPage =
-#if NET_2_1
-			"System.Windows.Browser.HtmlPage, System.Windows.Browser, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
-#else
-			"System.Windows.Browser.HtmlPage, System.Windows.Browser, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"
-#endif
-				;
-		const BindingFlags StaticNonPublic = BindingFlags.Static | BindingFlags.NonPublic;
-		private static Type htmlpage = Type.GetType (HtmlPage);
-		private static MethodInfo get_navigation_state;
-		private static MethodInfo set_navigation_state;
-		private static MethodInfo ensure_history_iframe_presence;
+		private string oob_state = String.Empty;
 		private event EventHandler<NavigationStateChangedEventArgs> navigation_state_changed;
 		private object locker = new object ();
 
 		public string NavigationState {
 			get {
-				CheckNavigation ();
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ();
 
-				if (get_navigation_state == null)
-					get_navigation_state = htmlpage.GetMethod ("get_NavigationState", StaticNonPublic);
-
-				// the default value for 'NavigationState' comes from the HTML page hosting the plugin
-				try {
-					return (string) get_navigation_state.Invoke (null, null);
-				}
-				catch (TargetInvocationException tie) {
-					throw tie.InnerException;
+				if (Application.Current.IsRunningOutOfBrowser) {
+					return oob_state;
+#if !BOOTSTRAP
+				} else if (Settings.EnableNavigation) {
+					// the default value for 'NavigationState' comes from the HTML page hosting the plugin
+					return HtmlPage.NavigationState;
+#endif
+				} else {
+					throw new InvalidOperationException ("enabledNavigation is set to false");
 				}
 			}
 			set {
-				CheckNavigation ();
+				if (value == null)
+					throw new ArgumentNullException ();
 
-				if (set_navigation_state == null)
-					set_navigation_state = htmlpage.GetMethod ("set_NavigationState", StaticNonPublic);
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ();
 
 				// note: there's no event for re-assigning the same state
 				string current = NavigationState;
 				if (current == value)
 					return;
 
-				try {
-					set_navigation_state.Invoke (null, new object[1] { value });
-				}
-				catch (TargetInvocationException tie) {
-					throw tie.InnerException;
-				}
+				if (Application.Current.IsRunningOutOfBrowser)
+					oob_state = value;
+#if !BOOTSTRAP
+				else
+					HtmlPage.NavigationState = value;
 
 				// note: there's no event if HtmlPage.Window.CurrentBookmark is used to change NavigationState
 				var changed = navigation_state_changed;
@@ -204,31 +195,13 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		static void CheckNavigation ()
-		{
-			if (!Helper.CheckAccess ())
-				throw new UnauthorizedAccessException ();
-			if (!Settings.EnableNavigation)
-				throw new InvalidOperationException ("enabledNavigation is set to false");
-		}
-
-		static void EnsureHistoryIframePresence ()
-		{
-			if (ensure_history_iframe_presence == null)
-				ensure_history_iframe_presence = htmlpage.GetMethod ("EnsureHistoryIframePresence", StaticNonPublic);
-
-			try {
-				ensure_history_iframe_presence.Invoke (null, null);
-			}
-			catch (TargetInvocationException tie) {
-				throw tie.InnerException;
-			}
-		}
-
 		public event EventHandler<NavigationStateChangedEventArgs> NavigationStateChanged {
 			add {
-				CheckNavigation ();
-				EnsureHistoryIframePresence ();
+				if (!Helper.CheckAccess ())
+					throw new UnauthorizedAccessException ();
+				if (!Application.Current.IsRunningOutOfBrowser)
+					HtmlPage.EnsureHistoryIframePresence ();
+
 				lock (locker) {
 					navigation_state_changed += value;
 				}
@@ -237,6 +210,7 @@ namespace System.Windows.Interop {
 				lock (locker) {
 					navigation_state_changed -= value;
 				}
+#endif
 			}
 		}
 	}

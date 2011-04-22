@@ -394,10 +394,10 @@ libmoon_la_SOURCES_GL = 	\
 	context-gl.h    
 
 libmoon_la_SOURCES_GLX = 	\
-	surface-glx.cpp	\
-	surface-glx.h	\
-	context-glx.cpp	\
-	context-glx.h
+	surface-opengl.cpp	\
+	surface-opengl.h	\
+	context-opengl.cpp	\
+	context-opengl.h
 
 libmoon_la_SOURCES_CGL = 	\
 	surface-cgl.cpp	\

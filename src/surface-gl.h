@@ -25,6 +25,8 @@
 
 namespace Moonlight {
 
+typedef void (*__GLFuncPtr) ();
+
 class MOON_API GLSurface : public MoonSurface {
 public:
 	GLSurface ();
@@ -41,6 +43,8 @@ public:
 
 	GLsizei Width ();
 	GLsizei Height ();
+
+	virtual __GLFuncPtr GetProcAddress (const char *procname);
 
 protected:
 	GLsizei size[2];

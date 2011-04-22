@@ -7,12 +7,18 @@
 #include <unistd.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#define __MOON_GLX__
-#include "context-glx.h"
+#include <GL/glx.h>
+#include "context-opengl.h"
 #include "runtime.h"
 #include "projection.h"
 
 using namespace Moonlight;
+
+class GLXSurface : public OpenGLSurface {
+public:
+	GLXSurface () : OpenGLSurface () {};
+	__GLFuncPtr GetProcAddress (const char *procname) { return glXGetProcAddressARB ((const GLubyte *) procname); }
+};
 
 struct projection {
 	Context     *ctx;
@@ -44,7 +50,7 @@ on_expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 	GdkDrawable       *drawable = GDK_DRAWABLE (widget->window);
 	struct projection *p = (struct projection *) data;
 	GLXSurface        *window = (GLXSurface *) p->target;
-	GLXContext        *ctx = (GLXContext *) p->ctx;
+	OpenGLContext     *ctx = (OpenGLContext *) p->ctx;
 	static double     max = p->count;
 	int               width;
 	int               height;
@@ -84,6 +90,7 @@ main (int argc, char **argv)
 	DoubleCollection *values;
 	Rect bounds = Rect (0, 0, width, height);
 	Color color = Color (0.0, 0.0, 1.0, 1.0);
+	GLXContext glxctx;
 
 	if (argc < 2) {
 		printf ("usage: %s MATRIX [COUNT]\n", argv[0]);
@@ -114,13 +121,28 @@ main (int argc, char **argv)
 	p.ctx = NULL;
 
 	if (!p.ctx) {
-		GLXContext  *ctx;
-		GLXSurface  *target;
-		GdkDrawable *drawable = GDK_DRAWABLE (window->window);
-		XID         win = gdk_x11_drawable_get_xid (drawable);
+		OpenGLContext *ctx;
+		OpenGLSurface *target;
+		GdkDrawable   *drawable = GDK_DRAWABLE (window->window);
+		Display       *dpy = gdk_x11_drawable_get_xdisplay (window->window);
+		XID           win = gdk_x11_drawable_get_xid (window->window);
+		Visual        *visual = GDK_VISUAL_XVISUAL (gdk_drawable_get_visual (window->window));
+		XVisualInfo   templ, *visinfo;
+		int           n;
 
-		target = new GLXSurface (GDK_DISPLAY (), win);
-		ctx = new GLXContext (target);
+		templ.visualid = XVisualIDFromVisual (visual);
+		visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
+		if (!visinfo)
+			return 1;
+
+		glxctx = glXCreateContext (dpy, visinfo, 0, True);
+		if (!glxctx)
+			return 1;
+
+		glXMakeCurrent (dpy, win, glxctx);
+
+		target = new GLXSurface ();
+		ctx = new OpenGLContext (target);
 		p.target = target;
 		p.ctx = ctx;
 
