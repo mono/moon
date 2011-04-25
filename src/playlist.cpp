@@ -22,6 +22,7 @@
 #include "media.h"
 #include "mediaplayer.h"
 #include "factory.h"
+#include "gkeyfile.h"
 
 namespace Moonlight {
 

@@ -11,7 +11,6 @@
 #include "config.h"
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +22,7 @@
 #include "network.h"
 #include "runtime.h"
 #include "uri.h"
+#include "timesource.h" // for get_now
 #include "pal.h"
 #include "debug.h"
 
@@ -39,6 +39,15 @@ posix_memalign (void **ptr, size_t alignment, size_t size) throw ()
 #endif /* ! HAVE_POSIX_MEMALIGN */
 
 namespace Moonlight {
+
+extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
+{
+	*ptr = (void *) malloc (size);
+	if (!*ptr)
+		return errno;
+
+	return 0;
+}
 
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
@@ -421,8 +430,18 @@ MoonAppDatabase::CreateAppRecord (const Uri *origin)
 	if (origin == NULL || !(domain = origin->GetHost ()))
 		domain = "localhost";
 	
+	int seed = (int)(get_now () >> 32);
+#if !HAVE_RAND_R
+	srand (seed);
+#endif
 	do {
-		uid = g_strdup_printf ("%u.%s", g_random_int (), domain);
+#if HAVE_RAND_R
+		int r = rand_r (&seed);
+#else
+		int r = rand ();
+#endif
+
+		uid = g_strdup_printf ("%u.%s", r, domain);
 		install_dir = g_build_filename (base_dir, uid, NULL);
 		if (g_mkdir_with_parents (install_dir, 0777) == 0)
 			break;

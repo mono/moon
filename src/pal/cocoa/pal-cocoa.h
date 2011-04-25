@@ -55,6 +55,9 @@ public:
 	virtual bool ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height);
 
 	virtual gchar *GetTemporaryFolder ();
+
+	virtual gchar *GetUserConfigFolder ();
+
 private:
 	void *pool;
 	int stride;

@@ -62,6 +62,7 @@ libmoon_include_headers = 	\
 	gchandle.h		\
 	geometry.h		\
 	glyphs.h		\
+	gkeyfile.h		\
 	grid.h			\
 	http-streaming.h	\
 	icon128.h		\
@@ -227,6 +228,7 @@ dist_libmoon_la_SOURCES = 		\
 	frameworkelement.cpp	\
 	gchandle.cpp		\
 	geometry.cpp		\
+	gkeyfile.c		\
 	glyphs.cpp		\
 	grid.cpp		\
 	http-streaming.cpp	\

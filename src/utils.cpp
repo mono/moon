@@ -13,7 +13,9 @@
 #include <config.h>
 
 #include <glib.h>
+#if !GLIB_IS_EGLIB
 #include <glib/gstdio.h>
+#endif
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>

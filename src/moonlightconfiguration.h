@@ -14,6 +14,7 @@
 #define __MOON_MOONLIGHT_CONFIGURATION_H__
 
 #include <glib.h>
+#include "gkeyfile.h"
 
 namespace Moonlight {
 

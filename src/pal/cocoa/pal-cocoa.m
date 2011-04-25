@@ -555,6 +555,29 @@ MoonWindowingSystemCocoa::GetTemporaryFolder ()
 	return (gchar *) g_get_tmp_dir ();
 }
 
+gchar *
+MoonWindowingSystemCocoa::GetUserConfigFolder ()
+{
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSString *folder = @"~/Library/Application Support/Moonlight/";
+
+	folder = [folder stringByExpandingTildeInPath];
+
+	if ([fileManager fileExistsAtPath: folder] == NO) {
+		[fileManager createDirectoryAtPath: folder attributes: nil];
+	}
+
+	return [folder UTF8String];
+
+	// todo: make sure we have a NSAutoreleasePool on the thread we're calling this from too, otherwise wrap this in:
+
+	// NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
+	// ...
+
+	// [pool drain];
+}
+
 guint32
 MoonWindowingSystemCocoa::GetScreenHeight (MoonWindow *moon_window)
 {

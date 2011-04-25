@@ -14,12 +14,15 @@
 #include <config.h>
 
 #include <glib.h>
+#if !GLIB_IS_EGLIB
 #include <glib/gstdio.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "application.h"
 #include "runtime.h"

@@ -1268,6 +1268,19 @@ MoonWindowingSystemAndroid::GetScreenWidth (MoonWindow *moon_window)
 gchar *
 MoonWindowingSystemAndroid::GetTemporaryFolder ()
 {
+	// FIXME we need JNI instead of this hardcoded path
+	android_app *app = (android_app *) system_data;
+
+	const gchar* path = app->activity->internalDataPath;
+	if (!path) // 2.3 has a bug, la de da
+		path = "/sdcard";
+	return (gchar*)path;
+}
+
+gchar *
+MoonWindowingSystemAndroid::GetUserConfigFolder ()
+{
+	// FIXME we need JNI instead of this hardcoded path
 	android_app *app = (android_app *) system_data;
 
 	const gchar* path = app->activity->internalDataPath;

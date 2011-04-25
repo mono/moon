@@ -1408,6 +1408,12 @@ MoonWindowingSystemGtk::GetTemporaryFolder ()
 	return (gchar *) g_get_tmp_dir ();
 }
 
+gchar *
+MoonWindowingSystemGtk::GetUserConfigFolder ()
+{
+	return (gchar *) g_get_user_config_dir ();
+}
+
 MoonInstallerServiceGtk::MoonInstallerServiceGtk ()
 {
 	base_install_dir = g_build_filename (g_get_home_dir (), ".local", "share", "moonlight", "applications", NULL);

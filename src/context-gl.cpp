@@ -47,6 +47,7 @@ GLContext::GLContext (GLSurface *surface) : Context (surface)
 	effect_program = g_hash_table_new (g_direct_hash,
 					   g_direct_equal);
 
+#if !USE_EGL
 	GETPROCADDR (PFNGLCREATESHADERPROC, glCreateShader);
 	GETPROCADDR (PFNGLSHADERSOURCEPROC, glShaderSource);
 	GETPROCADDR (PFNGLCOMPILESHADERPROC, glCompileShader);
@@ -76,6 +77,7 @@ GLContext::GLContext (GLSurface *surface) : Context (surface)
 	GETPROCADDR (PFNGLFRAMEBUFFERTEXTURE2DPROC, glFramebufferTexture2D);
 	GETPROCADDR (PFNGLCHECKFRAMEBUFFERSTATUSPROC,
 		     glCheckFramebufferStatus);
+#endif
 }
 
 GLContext::~GLContext ()

@@ -352,6 +352,7 @@ public:
 	virtual bool ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height) = 0;
 
 	virtual gchar *GetTemporaryFolder () = 0;
+	virtual gchar *GetUserConfigFolder () = 0;
 
 	void SetPlatformWindowingSystemData (gpointer data) {
 		system_data = data;
