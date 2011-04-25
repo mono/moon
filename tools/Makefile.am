@@ -12,6 +12,6 @@ if HAVE_GTK_SHARP
 SUBDIRS += munxap
 endif
 
-DIST_SUBDIRS = $(SUBDIRS) moonvisi respack  # added as dist_subdir so as not to break make dist
+DIST_SUBDIRS = $(SUBDIRS) moonvisi respack munxap # added as dist_subdir so as not to break make dist
 
 EXTRA_DIST = launcher.in Options.cs README
