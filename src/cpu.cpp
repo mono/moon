@@ -61,7 +61,7 @@ CPU::Fetch ()
 			"movl %%edx, %0;"
 			: "=r" (features)
 			:
-			: "%eax"
+			: "%eax", "%ecx"
 		);
 
 		have_mmx = features & 0x00800000;
