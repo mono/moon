@@ -3779,7 +3779,6 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::CHAR: {
-#if PLUMB_ME
 		gunichar unichar = g_utf8_get_char_validated (str, -1);
 		const char *next;
 		
@@ -3791,7 +3790,6 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		
 		*v = new Value (unichar, Type::CHAR);
 		*v_set = true;
-#endif
 		break;
 	}
 	case Type::STRING: {

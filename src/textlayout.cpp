@@ -1860,11 +1860,9 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 		
 		// extend the selection background by the width of a SPACE if it includes CRLF
 		inend = text + start + length;
-#if PLUMB_ME
 		if ((prev = g_utf8_find_prev_char (text + start, inend)))
 			c = utf8_getc (&prev, inend - prev);
 		else
-#endif
 			c = (gunichar) -1;
 		
 		if (UnicharIsLineBreak (c)) {
@@ -2209,11 +2207,9 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 		inend = text + run->start + run->length;
 		inptr = text + run->start;
 		
-#if PLUMB_ME
 		if ((ch = g_utf8_find_prev_char (inptr, inend)))
 			c = utf8_getc (&ch, inend - ch);
 		else
-#endif
 			c = (gunichar) -1;
 		
 		if (c == '\n') {
@@ -2288,11 +2284,9 @@ TextLayout::GetCursor (const Point &offset, int index)
 				inptr = text + line->start;
 				inend = inptr + line->length;
 				
-#if PLUMB_ME
 				if ((pchar = g_utf8_find_prev_char (text + line->start, inend)))
 					c = utf8_getc (&pchar, inend - pchar);
 				else
-#endif
 					c = (gunichar) -1;
 				
 				if (UnicharIsLineBreak (c)) {

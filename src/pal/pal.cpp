@@ -11,10 +11,12 @@
 #include "config.h"
 
 #include <glib.h>
+#include <glib/gstdio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <errno.h>
 
 #include "deployment.h"
@@ -26,6 +28,7 @@
 
 namespace Moonlight {
 
+#if !HAVE_POSIX_MEMALIGN
 extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
 {
 	*ptr = (void *) malloc (size);
@@ -34,6 +37,7 @@ extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
 
 	return 0;
 }
+#endif /* ! HAVE_POSIX_MEMALIGN */
 
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
@@ -417,12 +421,10 @@ MoonAppDatabase::CreateAppRecord (const Uri *origin)
 		domain = "localhost";
 	
 	do {
-#if PLUMB_ME
 		uid = g_strdup_printf ("%u.%s", g_random_int (), domain);
 		install_dir = g_build_filename (base_dir, uid, NULL);
 		if (g_mkdir_with_parents (install_dir, 0777) == 0)
 			break;
-#endif
 		
 		g_free (install_dir);
 		g_free (uid);
@@ -637,10 +639,8 @@ MoonInstallerService::InitDatabase ()
 	const char *base_dir = GetBaseInstallDir ();
 	
 	if (db == NULL) {
-#if PLUMB_ME
 		if (g_mkdir_with_parents (base_dir, 0777) == -1 && errno != EEXIST)
 			return false;
-#endif
 		
 		db = new MoonAppDatabase (base_dir);
 	}

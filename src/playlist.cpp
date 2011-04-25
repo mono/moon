@@ -428,7 +428,6 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 void
 PlaylistEntry::AddParams (const char *name, const char *value)
 {
-#if PLUMB_ME
 	char *uppername = g_ascii_strup (name, strlen (name));
 	if (!strcmp (uppername, "AUTHOR")) {
 		SetAuthor (value);
@@ -452,7 +451,6 @@ PlaylistEntry::AddParams (const char *name, const char *value)
 		} 
 	}
 	g_free (uppername);
-#endif
 }
 
 Uri *
@@ -1540,7 +1538,6 @@ str_match (const char *candidate, const char *tag)
 void
 PlaylistParser::on_start_element_internal_asxparser (AsxParser *parser, const char *name, GHashTable *atts)
 {
-#if PLUMB_ME
 	PlaylistParser *pp = (PlaylistParser *) parser->GetUserData ();
 
 	/*
@@ -1565,7 +1562,6 @@ PlaylistParser::on_start_element_internal_asxparser (AsxParser *parser, const ch
 
 	g_list_free (keys);
 	g_free (attr_list);
-#endif
 }
 
 void
@@ -2207,7 +2203,6 @@ PlaylistParser::IsASX2 (MemoryBuffer *source)
 bool
 PlaylistParser::ParseASX2 ()
 {
-#if PLUMB_ME
 	int bytes_read;
 	char *buffer;
 	char *ref;
@@ -2258,8 +2253,7 @@ PlaylistParser::ParseASX2 ()
 	parent->AddEntry (entry);
 	current_entry = entry;
 	entry->unref ();
-#endif
-
+	
 	return true;
 }
 
