@@ -56,7 +56,7 @@ private:
 	gint64 current_position; /* the current position. accessed from media and ffmpeg thread, needs locking with wait_mutex */
 	bool last_buffer; /* if current_buffer is the last data in the file. accessed from media and ffmpeg thread, needs locking with wait_mutex */
 	MediaReadClosure *read_closure; /* the pending read closure. accessed from media and ffmpeg thread, needs locking with wait_mutex */
-	ByteIOContext *byte_context; /* ffmpeg thread only */
+	AVIOContext *io_context; /* ffmpeg thread only */
 
 	class FrameNode : public List::Node {
 	public:

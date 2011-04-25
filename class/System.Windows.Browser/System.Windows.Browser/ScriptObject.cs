@@ -76,7 +76,9 @@ namespace System.Windows.Browser {
 		{
 			// we do not want a [SecuritySafeCritical] attribute on the default ctor
 			// since it mess with coreclr inheritance rules
+#if !ANDROID_HACK
 			SetDefaultHandle ();
+#endif
 		}
 
 		internal ScriptObject (IntPtr handle) : this (handle, false)
@@ -146,8 +148,10 @@ namespace System.Windows.Browser {
 
 		public virtual void SetProperty (string name, object value)
 		{
+#if !ANDROID_HACK
 			CheckHandle ();
 			SetPropertyInternal (Handle, name, value);
+#endif
 		}
 
 		internal virtual void SetProperty (string name, object[] args)

@@ -14,7 +14,6 @@
 #define __MOONLIGHT_PROJECTION_H__
 
 #include <glib.h>
-#include <math.h>
 #include "pal.h"
 #include "enums.h"
 #include "dependencyobject.h"

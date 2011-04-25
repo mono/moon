@@ -11,8 +11,8 @@
 #ifndef __MOON_SIZE_H__
 #define __MOON_SIZE_H__
 
-#include <math.h>
 #include <glib.h>
+#include "pal.h"
 #include "thickness.h"
 
 namespace Moonlight {

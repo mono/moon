@@ -29,6 +29,7 @@
 using System;
 using System.Windows.Media;
 using System.Collections.Generic;
+using System.IO;
 using Mono;
 #if !BOOTSTRAP
 using System.Windows.Browser;
@@ -108,10 +109,23 @@ namespace System.Windows.Interop {
 
 				init_params = new Dictionary<string,string> ();
 
+#if !ANDROID_HACK
 				if (PluginHost.Handle != IntPtr.Zero) {
+#endif
 					char [] param_separator = new char [] { ',' };
-					
+
+#if ANDROID_HACK
+					var paramFile = "/data/local/tmp/AdaptiveStreaming.xap/initParams";
+					string param_string = "";
+					if (File.Exists (paramFile)) {
+						StreamReader sr = File.OpenText ("/data/local/tmp/AdaptiveStreaming.xap/initParams");
+//						StreamReader sr = new StreamReader (Application.GetResourceStream(new Uri("initParams")).Stream);
+						param_string = sr.ReadToEnd();
+					}
+					Console.WriteLine ("param_string = {0}", param_string);
+#else
 					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
+#endif
 					// Console.WriteLine ("params = {0}", param_string);
 					if (!String.IsNullOrEmpty (param_string)) {
 						foreach (string val in param_string.Split (param_separator)) {
@@ -128,7 +142,9 @@ namespace System.Windows.Interop {
 							}
 						}
 					}
+#if !ANDROID_HACK
 				}
+#endif
 
 				return init_params;
 			}

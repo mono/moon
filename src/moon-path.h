@@ -14,11 +14,11 @@
 #define __MOON_PATH_H__
 
 #include <string.h>
-#include <math.h>
 #include <glib.h>
 #include <cairo.h>
+#include "pal.h"
 
-G_BEGIN_DECLS
+namespace Moonlight {
 
 // http://graphics.stanford.edu/courses/cs248-98-fall/Final/q1.html
 #define ARC_TO_BEZIER	0.55228475
@@ -69,6 +69,6 @@ gboolean        cairo_path_is_rectangle (const cairo_path_t *path, cairo_rectang
 void		cairo_path_display (cairo_path_t *path);
 void		moon_path_display (moon_path *path);
 
-G_END_DECLS
+};
 
 #endif

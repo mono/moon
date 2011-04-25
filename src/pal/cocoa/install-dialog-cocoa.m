@@ -15,7 +15,6 @@
 #endif
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include <stdio.h>
 #include <string.h>

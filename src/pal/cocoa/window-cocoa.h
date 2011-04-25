@@ -21,6 +21,11 @@
 
 namespace Moonlight {
 
+#if USE_CGL
+class CGLSurface;
+class CGLContext;
+#endif
+
 /* @Namespace=System.Windows */
 class MoonWindowCocoa : public MoonWindow {
 public:
@@ -31,6 +36,8 @@ public:
 	virtual void ConnectToContainerPlatformWindow (gpointer container_window);
 
 	virtual void Resize (int width, int height);
+	void ResizeInternal (int width, int height);
+
 	virtual void SetCursor (CursorType cursor);
 	virtual void SetBackgroundColor (Color *color);
 	virtual void Invalidate (Rect r);
@@ -77,7 +84,13 @@ public:
 	void KeyDownEvent (gpointer evt);
 	void KeyUpEvent (gpointer evt);
 
+	void ClearPlatformContext ();
 private:
+#if USE_CGL
+	CGLSurface *cgltarget;
+	CGLContext *cglctx;
+	void *nsoglcontext;
+#endif
 	unsigned char *backing_image_data;
 	void *window;
 	void *view;

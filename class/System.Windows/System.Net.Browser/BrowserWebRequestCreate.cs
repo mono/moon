@@ -34,7 +34,11 @@ namespace System.Net.Browser {
 
 		public WebRequest Create (Uri uri)
 		{
+#if ANDROID_HACK
+			return new ClientHttpWebRequest (uri);
+#else
 			return new BrowserHttpWebRequest (uri);
+#endif
 		}
 	}
 }

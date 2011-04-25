@@ -156,7 +156,7 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 		break;
 	}
 
-	fprintf (stderr, text);
+	g_warning (text);
 	fprintf(stderr, "\n");
 	fflush (stderr);
 //	dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);

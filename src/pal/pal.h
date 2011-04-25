@@ -27,10 +27,12 @@
 #define MOON_LOCAL
 #endif
 
-
 #include <glib.h>
 #include <time.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <math.h>
+#include <float.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -49,6 +51,22 @@
 #undef FocusOut
 #endif
 
+#if !HAVE_POSIX_MEMALIGN
+extern "C" {
+	int posix_memalign (void **ptr, size_t alignment, size_t size);
+}
+#endif
+
+#if SANITY
+#define glError() { \
+	GLenum err = glGetError(); \
+	if (err != GL_NO_ERROR) { \
+		g_warning ("glError: %i caught at %s:%u\n", err, __FILE__, __LINE__); \
+	} \
+}
+#else
+#define glError()
+#endif
 
 // the default for MoonWindowingSystem::GetCursorBlinkTimeout
 #define CURSOR_BLINK_TIMEOUT_DEFAULT  900
@@ -98,6 +116,12 @@ enum MoonModifier {
 	MoonModifier_Meta     = 1 << 28,
 };
 
+
+#define MOON_PRIORITY_HIGH         -100
+#define MOON_PRIORITY_DEFAULT      0
+#define MOON_PRIORITY_HIGH_IDLE    100
+#define MOON_PRIORITY_DEFAULT_IDLE 200
+
 enum MoonWindowType {
 	MoonWindowType_FullScreen,
 	MoonWindowType_Desktop,
@@ -113,6 +137,12 @@ typedef bool (*MoonCallback) (gpointer sender, gpointer data);
 
 typedef void (*MoonClipboardGetTextCallback) (MoonClipboard *clipboard, const char *text, gpointer data);
 
+enum MoonEventStatus {
+	MoonEventNotSupported = -1,
+	MoonEventNotHandled,
+	MoonEventHandled
+};
+
 class MoonEvent {
 public:
 	virtual ~MoonEvent () {}
@@ -122,6 +152,8 @@ public:
 	// platform interfaces which consume events can get at the actual data.
 	virtual gpointer GetPlatformEvent() = 0;
 	
+	virtual MoonEventStatus DispatchToWindow (MoonWindow *window) = 0;
+
 	virtual bool HasModifiers () { return false; }
 	
 	// FIXME: should this be separate bool getters instead (like IsShiftDown, IsCtrlDown, IsAltDown)?
@@ -318,6 +350,17 @@ public:
 
 	// buffer must have a size of at least buffer_stride * buffer_height
 	virtual bool ConvertJPEGToBGRA (void *jpeg, guint32 jpeg_size, guint8 *buffer, guint32 buffer_stride, guint32 buffer_height) = 0;
+
+	virtual gchar *GetTemporaryFolder () = 0;
+	virtual gchar *GetUserConfigFolder () = 0;
+
+	void SetPlatformWindowingSystemData (gpointer data) {
+		system_data = data;
+	}
+	gpointer GetPlatformWindowingSystemData () { return system_data; }
+
+protected:
+	gpointer system_data;
 
 private:
 	MoonWindowlessCtor windowless_ctor;

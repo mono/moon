@@ -39,22 +39,12 @@ namespace System.Windows
 		{
 		}
 
-#if NET_2_1
-		override
-#else
-		new
-#endif
-		public bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
 			return TypeConverters.CanConvertFrom<Duration>(sourceType);
 		}
 
-#if NET_2_1
-		override
-#else
-		new
-#endif
-		public object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
+		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value is string) {
 				string text = (string) value;

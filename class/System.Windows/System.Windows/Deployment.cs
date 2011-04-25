@@ -60,6 +60,15 @@ namespace System.Windows {
 
 		static bool is_shutting_down;
 
+		static Deployment ()
+		{
+#if ANDROID
+			TextWriter androidWriter = new AndroidLogTextWriter ();
+			Console.SetOut (androidWriter);
+			Console.SetError (androidWriter);
+#endif
+		}
+
 		internal int MajorVersion {
 			get { return int.Parse (RuntimeVersion.Split ('.') [0]); }
 		}
@@ -316,6 +325,7 @@ namespace System.Windows {
 			TerminateAndSetCulture (culture, uiCulture);
 
 			if (plugin == IntPtr.Zero) {
+#if NET_2_1
 				Uri source_uri = UriHelper.FromNativeUri (NativeMethods.surface_get_source_location (Surface.Native));
 
 				if (source_uri != null) {
@@ -325,6 +335,10 @@ namespace System.Windows {
 					// to initialize it's application and site directory storage. WebClient is another user of this
 					AppDomain.CurrentDomain.SetData ("xap_uri", PluginHost.GetApplicationIdentity (source_uri));
 				}
+#else
+				// This is a horrible horrible hack for android to let us hit the isostor for the demo
+				AppDomain.CurrentDomain.SetData ("xap_uri", Environment.GetEnvironmentVariable("XAP_URI"));
+#endif
 			}
 			else {
 				PluginHost.SetPluginHandle (plugin);

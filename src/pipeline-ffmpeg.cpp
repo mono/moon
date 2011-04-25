@@ -29,6 +29,8 @@
 #include "debug.h"
 #include "deployment.h"
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 #define AUDIO_BUFFER_SIZE (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
@@ -306,6 +308,9 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		mf->srcSlideY = 0;
 		mf->srcSlideH = context->height;
 		
+		mf->width = context->width;
+		mf->height = context->height;
+
 		int height = context->height;
 		int plane_bytes [4];
 		
@@ -514,13 +519,13 @@ FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *
 	read_closure = NULL;
 	current_buffer = initial_buffer;
 	current_buffer->ref ();
-	byte_context = NULL;
+	io_context = NULL;
 
 	pthread_mutex_init (&wait_mutex, NULL);
 	pthread_cond_init (&wait_cond, NULL);
 
 	pthread_mutex_lock (&worker_thread_mutex);
-	if (g_atomic_int_exchange_and_add (&demuxers, 1) == 0) {
+	if (InterlockedExchangeAdd (&demuxers, 1) == 0) {
 		pthread_create (&worker_thread, NULL, WorkerLoop, NULL);
 	}
 	pthread_mutex_unlock (&worker_thread_mutex);
@@ -530,7 +535,7 @@ void
 FfmpegDemuxer::Dispose ()
 {
 	pthread_mutex_lock (&worker_thread_mutex);
-	if (g_atomic_int_dec_and_test (&demuxers)) {
+	if (InterlockedDecrement (&demuxers) == 0) {
 		/* No more demuxers, stop the thread */
 		pthread_mutex_lock (&worker_mutex);
 		worker_list.Clear (true);
@@ -580,9 +585,9 @@ FfmpegDemuxer::~FfmpegDemuxer ()
 		av_free (format_context);
 	}
 
-	if (byte_context) {
-		g_free (byte_context->buffer);
-		av_free (byte_context);
+	if (io_context) {
+		g_free (io_context->buffer);
+		av_free (io_context);
 	}
 
 	pthread_mutex_destroy (&wait_mutex);
@@ -846,10 +851,10 @@ FfmpegDemuxer::Open ()
 	current_buffer->SeekSet (0);
 
 	/* Create the byte context */
-	byte_context = av_alloc_put_byte ((unsigned char *) g_malloc (1024), 1024, false, this, ReadCallback, NULL, SeekCallback);
+	io_context = avio_alloc_context ((unsigned char *) g_malloc (1024), 1024, false, this, ReadCallback, NULL, SeekCallback);
 
 	/* Open the stream */
-	if (av_open_input_stream (&format_context, byte_context, "Moonlight stream", input_format, NULL) != 0) {
+	if (av_open_input_stream (&format_context, io_context, "Moonlight stream", input_format, NULL) != 0) {
 		ReportErrorOccurred ("FfmpegDemuxer: Input stream could not be opened");
 		goto cleanup;
 	}

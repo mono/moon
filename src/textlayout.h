@@ -15,8 +15,8 @@
 
 #include <cairo.h>
 #include <glib.h>
-#include <math.h>
 
+#include "pal.h"
 #include "brush.h"
 #include "enums.h"
 #include "fonts.h"

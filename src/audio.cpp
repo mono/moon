@@ -17,6 +17,7 @@
 #include "audio.h"
 #include "audio-alsa.h"
 #include "audio-pulse.h"
+#include "audio-opensles.h"
 #include "pipeline.h"
 #include "runtime.h"
 #include "clock.h"
@@ -24,6 +25,8 @@
 #include "mediaplayer.h"
 #include "deployment.h"
 #include "capture.h"
+
+#include <mono/io-layer/atomic.h>
 
 namespace Moonlight {
 
@@ -1037,13 +1040,13 @@ AudioPlayer::AudioPlayer ()
 void
 AudioPlayer::ref ()
 {
-	g_atomic_int_inc (&refcount);
+	InterlockedIncrement (&refcount);
 }
 
 void
 AudioPlayer::unref ()
 {
-	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	int v = InterlockedExchangeAdd (&refcount, -1) - 1;
 
 	if (v == 0) {
 		Dispose ();
@@ -1071,6 +1074,11 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	
 	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
 	
+	// toshok remove me
+#if defined (PLATFORM_ANDROID) || defined (__APPLE__)
+	return NULL;
+#endif
+
 	if (moonlight_flags & RUNTIME_INIT_DISABLE_AUDIO) {
 		LOG_AUDIO ("AudioPlayer: audio is disabled.\n");
 		return NULL;
@@ -1166,7 +1174,30 @@ AudioPlayer::CreatePlayer ()
 	// If any of the flags are specified, we disable all players
 	// and re-enable according to the flag.
 	
-	overridden  = moonlight_flags & (RUNTIME_INIT_AUDIO_PULSE | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_ALSA_RW);
+	overridden  = moonlight_flags & (RUNTIME_INIT_AUDIO_PULSE | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_OPENSLES | RUNTIME_INIT_AUDIO_ALSA_RW);
+
+#if INCLUDE_OPENSLES
+	if (result != NULL) {
+		LOG_AUDIO ("AudioPlayer: Not checking for OpenSLES support, we already found support for another configuration.\n");
+	} else if (overridden && !(moonlight_flags & RUNTIME_INIT_AUDIO_OPENSLES)) {
+		LOG_AUDIO ("AudioPlayer: OpenSLES disabled with environment variable (MOONLIGHT_OVERRIDES)\n");
+	} else {
+		printf ("AudioPlayer: Using OpenSLES.\n");
+		result = new OpenSLESPlayer ();
+	}	
+
+	if (result != NULL) {
+		if (!result->Initialize ()) {
+			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
+			result->unref ();
+			result = NULL;
+		} else {
+			return result;
+		}
+	}
+#else
+	LOG_AUDIO ("AudioPlayer: Built without support for OpenSLES.\n");
+#endif
 
 #if INCLUDE_PULSEAUDIO
 	if (result != NULL) {

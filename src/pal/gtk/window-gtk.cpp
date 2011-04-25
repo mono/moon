@@ -750,13 +750,13 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 		return false;
 	
 	if (window->surface) {
-		MoonButtonEvent *mevent = (MoonButtonEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		status = window->surface->HandleUIButtonPress (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (window);
 		delete mevent;
 	}
 	if (status == MoonEventNotHandled)
 		container_button_press_callback (widget, event, data);
-	// ignore HandleUIButtonPress's return value, and always
+	// ignore DispatchToWindow's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
 }
@@ -769,11 +769,11 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIButtonRelease (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (window);
 		delete mevent;
 	}
-	// ignore HandleUIButtonRelease's return value, and always
+	// ignore DispatchToWindow's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
 }
@@ -787,8 +787,8 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		status = window->surface->HandleUIScroll (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (window);
 		delete mevent;
 	}
 	// HandleUIScroll's return value is a special case: if it
@@ -804,11 +804,11 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonMotionEvent *mevent = (MoonMotionEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIMotion (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (window);
 		delete mevent;
 	}
-	// ignore HandleUIMotion's return value, and always
+	// ignore DispatchToWindows's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
 }
@@ -821,8 +821,8 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonCrossingEvent *mevent = (MoonCrossingEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUICrossing (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		mevent->DispatchToWindow (window);
 		delete mevent;
 		return true;
 	}
@@ -838,8 +838,8 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonFocusEvent *mevent = (MoonFocusEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIFocusIn (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		mevent->DispatchToWindow (window);
 		delete mevent;
 		return true;
 	}
@@ -855,8 +855,8 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonFocusEvent *mevent = (MoonFocusEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIFocusOut (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		mevent->DispatchToWindow (window);
 		delete mevent;
 		return true;
 	}
@@ -872,8 +872,8 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonKeyEvent *mevent = (MoonKeyEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIKeyPress (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		mevent->DispatchToWindow (window);
 		delete mevent;
 		return true;
 	}
@@ -889,8 +889,8 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		MoonKeyEvent *mevent = (MoonKeyEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		window->surface->HandleUIKeyRelease (mevent);
+		MoonEvent *mevent = Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		mevent->DispatchToWindow (window);
 		delete mevent;
 		return true;
 	}

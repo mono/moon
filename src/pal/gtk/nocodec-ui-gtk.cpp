@@ -58,7 +58,6 @@ GtkNoCodecsUI::ShowUI (bool is_user_initiated)
 
 	GtkNoCodecsUI *cd = new GtkNoCodecsUI (Deployment::GetCurrent ()->GetSurface ());
 	cd->Show ();
-	cd->unref ();
 }
 
 // ----- Event Proxies -----
@@ -214,7 +213,6 @@ GtkNoCodecsUI::Show ()
 
 	gtk_widget_show_all (dialog);
 
-	ref (); // We manage our lifetime ourself
 	running = true;
 }
 
@@ -222,8 +220,8 @@ void
 GtkNoCodecsUI::Close ()
 {
 	gtk_widget_destroy (dialog);
-	unref ();
 	running = false;
+	delete this;
 }
 
 

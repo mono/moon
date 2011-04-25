@@ -198,14 +198,14 @@ NameScope::MergeTemporaryScope (NameScope *temp, MoonError *error)
 static void
 dump_namescope_helper (gpointer key, gpointer value, gpointer user_data)
 {
-	fprintf (stderr, "  %s => %s\n", (char*)key, ((DependencyObject*)value)->GetTypeName());
+	g_warning ("  %s => %s\n", (char*)key, ((DependencyObject*)value)->GetTypeName());
 }
 
 
 void
 NameScope::Dump ()
 {
-	fprintf (stderr, "  ns = %p\n", this);
+	g_warning ("  ns = %p\n", this);
 	g_hash_table_foreach (names, dump_namescope_helper, NULL);
 }
 

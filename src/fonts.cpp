@@ -12,7 +12,6 @@
 
 #include <config.h>
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -131,11 +130,12 @@ strcase_hash (gconstpointer key)
 	return h;
 }
 
+// FIXME: Maybe the MoonFontService should provide this table...?
 static struct {
 	const char *lang;
-	const char *families[6];
+	const char *families[7];
 } default_fonts[] = {
-	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", NULL } },
+	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", "Droid Sans Fallback", NULL } },
 	{ "ja", { "MS Gothic", "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL } },
 	{ "ko", { "Gulim", "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL } },
 	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL, NULL } },
@@ -587,7 +587,7 @@ TextFont::GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index)
 		qsort (glyphs, n_glyphs, sizeof (GlyphInfo), glyphsort);
 		
 		for (i = 0; i < n_glyphs; i++)
-			fprintf (stderr, "glyphs[%d].atime = %" G_GINT64_FORMAT "\n", i, glyphs[i].atime);
+			g_warning ("glyphs[%d].atime = %" G_GINT64_FORMAT "\n", i, glyphs[i].atime);
 		
 		slot = &glyphs[n_glyphs - 1];
 		

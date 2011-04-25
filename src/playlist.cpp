@@ -22,6 +22,7 @@
 #include "media.h"
 #include "mediaplayer.h"
 #include "factory.h"
+#include "gkeyfile.h"
 
 namespace Moonlight {
 
@@ -748,7 +749,7 @@ PlaylistEntry::Open ()
 	if (entries.Length () == 0) {
 		if (!media) {
 			if (GetFullSourceName () == NULL) {
-				fprintf (stderr, "Moonlight: An entry in the playlist didn't specify a url.\n");
+				g_warning ("Moonlight: An entry in the playlist didn't specify a url.\n");
 				return;
 			}
 			InitializeWithUri (GetElement ()->GetResourceBase (), GetFullSourceName ());

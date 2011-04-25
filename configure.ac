@@ -50,23 +50,26 @@ dnl Dependencies
 dnl
 
 PTHREAD_CHECK
+
 MOONLIGHT_CHECK_C_COMPILER
 MOONLIGHT_CHECK_LARGE_FILE
 MOONLIGHT_CHECK_ZLIB
+MOONLIGHT_CHECK_EXECINFO
 MOONLIGHT_CHECK_EXPAT
 
+MOONLIGHT_CHECK_MONO
 MOONLIGHT_CHECK_PAL
 
 MOONLIGHT_CHECK_FFMPEG
+MOONLIGHT_CHECK_VDA
 MOONLIGHT_CHECK_CODECS
 MOONLIGHT_CHECK_SOUND
 
 MOONLIGHT_CHECK_CAIRO
 MOONLIGHT_CHECK_LLVM
 MOONLIGHT_CHECK_GALLIUM
-MOONLIGHT_CHECK_GLX
+MOONLIGHT_CHECK_GL
 
-MOONLIGHT_CHECK_MONO
 MOONLIGHT_CHECK_MOZILLA
 
 MOONLIGHT_CHECK_TESTING
@@ -240,6 +243,9 @@ Moonlight configuration
 	Using cairo: $with_cairo
 	Using LLVM: $enable_llvm
 	Using GLX: $with_glx
+	Using EGL: $with_egl
+	Using CGL: $with_cgl
+	OpenGL Support: $with_gl
 	Test Harness: $with_testing $testing_reason
 	Performance Suite: $with_performance $performance_reason
 	MonoDevelop SDK: $enable_sdk $sdk_reason
@@ -301,8 +307,10 @@ cat <<EOF
 
   Media Support: $media_warning
 	FFmpeg: $with_ffmpeg $ffmpeg_reason
+	VDA: $with_vda
 	ALSA: $with_alsa $alsa_reason
 	PulseAudio: $with_pulseaudio $pulseaudio_reason
+	OpenSLES: $with_opensles $opensles_reason
 EOF
 
 # silverlight version info
@@ -375,7 +383,7 @@ cat <<EOF
         Capture Service: $pal_capture
 	    Video capture backends: $pal_video_capture
 	    Audio capture backends: $pal_audio_capture
-	Font Service: $pal_font_service
+        Font Service: $pal_font_service
 EOF
 
 # blank line

@@ -27,6 +27,8 @@
 #include "deployment.h"
 #include "textbox.h"
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
@@ -213,7 +215,7 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	if (deployment != NULL && this != deployment) {
 		deployment->ref ();
 	}
-	flags = g_atomic_int_exchange_and_add (&current_id, 1);
+	flags = InterlockedExchangeAdd (&current_id, 1);
 	refcount = 1;
 	events = NULL;
 	addManagedRef = NULL;
@@ -426,7 +428,7 @@ EventObject::IsAttached ()
 void
 EventObject::Resurrect ()
 {
-	int v = g_atomic_int_exchange_and_add (&refcount, 1);
+	int v = InterlockedExchangeAdd (&refcount, 1);
 
 #if SANITY
 	g_assert (v >= 0); //  #if SANITY
@@ -438,7 +440,7 @@ EventObject::Resurrect ()
 void
 EventObject::ref ()
 {
-	int v = g_atomic_int_exchange_and_add (&refcount, 1);
+	int v = InterlockedExchangeAdd (&refcount, 1);
 		
 #if DEBUG		
 	if (deployment != Deployment::GetCurrent () && object_type != Type::DEPLOYMENT) {
@@ -517,13 +519,13 @@ EventObject::unref ()
 		return;
 	}
 
-	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	int v = InterlockedExchangeAdd (&refcount, -1) - 1;
 	
 	// from now on we can't access any instance fields if v > 0
 	// since another thread might have unreffed and caused our destruction
 
 	if (v == 0 && events != NULL && events->emitting) {
-		g_atomic_int_exchange_and_add (&refcount, 1);
+		InterlockedExchangeAdd (&refcount, 1);
 		unref_delayed ();
 		return;
 	}
@@ -549,7 +551,7 @@ EventObject::unref ()
 		// TODO: we should disallow resurrection, it's not thread-safe
 		// if we got resurrected and unreffed, we'd be deleted by now
 		// in which case we'll double free here.
-		v = g_atomic_int_get (&refcount);
+		v = InterlockedIncrement (&refcount);
 		if (v == 0)
 			delete this;
 			
@@ -911,7 +913,7 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(int token, 
 {
 	if (events == NULL) {
 #if SANITY
-		fprintf (stderr, "EventObject::RemoveMatchingHandlers (): no handlers have been registered.\n");
+		g_warning ("EventObject::RemoveMatchingHandlers (): no handlers have been registered.\n");
 #endif		
 		return;
 	}

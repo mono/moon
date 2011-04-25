@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 
+#include <mono/io-layer/atomic.h>
+
 namespace Moonlight {
 
 GalliumPipe::GalliumPipe (pipe_context *context)
@@ -38,7 +40,7 @@ GalliumPipe::~GalliumPipe ()
 GalliumPipe *
 GalliumPipe::ref ()
 {
-	g_atomic_int_inc (&refcount);
+	InterlockedIncrement (&refcount);
 
 	return this;
 }
@@ -46,7 +48,7 @@ GalliumPipe::ref ()
 void
 GalliumPipe::unref ()
 {
-	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	int v = InterlockedExchangeAdd (&refcount, -1) - 1;
 
 	if (v == 0)
 		delete this;

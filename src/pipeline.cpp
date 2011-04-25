@@ -14,12 +14,14 @@
 
 #include <config.h>
 
-#include <glib/gstdio.h>
+#include <glib.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "audio.h"
 #include "pipeline.h"
 #include "pipeline-ffmpeg.h"
+#include "pipeline-vda.h"
 #include "mp3.h"
 #include "uri.h"
 #include "media.h"
@@ -361,7 +363,7 @@ Media::Initialize ()
 		if (CPU::HaveSSE2 ()) {
 			RegisterMSCodecs ();
 		} else {
-			fprintf (stderr, "Moonlight: The Media Codec Pack has been disabled since your cpu doesn't support SSE2 instructions.\n");
+			g_warning ("Moonlight: The Media Codec Pack has been disabled since your cpu doesn't support SSE2 instructions.\n");
 		}
 #endif
 	}
@@ -369,6 +371,9 @@ Media::Initialize ()
 	if (!(moonlight_flags & RUNTIME_INIT_DISABLE_FFMPEG_CODECS)) {
 		register_ffmpeg ();
 	}
+#endif
+#ifdef INCLUDE_VDA
+	register_vda ();
 #endif
 	
 	Media::RegisterDecoder (new PassThroughDecoderInfo ());
@@ -515,7 +520,7 @@ Media::SeekAsync (guint64 pts)
 
 	if (demuxer == NULL) {
 #if SANITY
-		printf ("Media::SeekAsync was called, but there is no demuxer to seek on.\n");
+		g_debug ("Media::SeekAsync was called, but there is no demuxer to seek on.\n");
 #endif
 		return;
 	}
@@ -557,9 +562,9 @@ Media::ReportErrorOccurred (ErrorEventArgs *args)
 	LOG_PIPELINE ("Media::ReportErrorOccurred (%p %s)\n", args, args == NULL ? NULL : args->GetErrorMessage());
 	
 	if (args) {
-		fprintf (stderr, "Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->GetErrorType()), args->GetErrorCode(), args->GetErrorMessage(), args->GetExtendedMessage());
+		g_warning ("Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->GetErrorType()), args->GetErrorCode(), args->GetErrorMessage(), args->GetExtendedMessage());
 	} else {
-		fprintf (stderr, "Moonlight: Unspecified media error.\n");
+		g_warning ("Moonlight: Unspecified media error.\n");
 	}
 	
 	if (!error_reported) {
@@ -1108,7 +1113,7 @@ Media::SelectDecodersAsync ()
 		}
 
 		if (current_decoder == NULL) {
-			printf ("Moonlight: Unknown codec: %s\n", codec);
+		        g_debug ("Moonlight: Unknown codec: %s\n", codec);
 			continue;
 		}
 		
@@ -1460,7 +1465,7 @@ ManagedStreamSource::ReadAsyncInternal (MediaReadClosure *closure)
 	Media *media;
 
 	if (closure->GetOffset () >= G_MAXINT32 || closure->GetCount () >= G_MAXINT32) {
-		fprintf (stderr, "Moonlight: stream read overflow, offset: %" G_GUINT64_FORMAT ", count: %" G_GUINT32_FORMAT "\n", closure->GetOffset (), closure->GetCount ());
+		g_warning ("Moonlight: stream read overflow, offset: %" G_GUINT64_FORMAT ", count: %" G_GUINT32_FORMAT "\n", closure->GetOffset (), closure->GetCount ());
 		return;
 	}
 
@@ -1794,7 +1799,7 @@ ProgressiveSource::Dispose ()
 gint64
 ProgressiveSource::GetPositionInternal ()
 {
-	printf ("ProgressiveSource::GetPositionInternal (): this should method should not have been called.\n");
+        g_debug ("ProgressiveSource::GetPositionInternal (): this should method should not have been called.\n");
 	return 0;
 }
 void
@@ -1855,7 +1860,7 @@ ProgressiveSource::Initialize ()
 	g_return_val_if_fail (write_fd == NULL, MEDIA_FAIL);
 	g_return_val_if_fail (read_fd == NULL, MEDIA_FAIL);
 
-	filename = g_build_filename (g_get_tmp_dir (), "MoonlightProgressiveStream.XXXXXX", NULL);
+	filename = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), "MoonlightProgressiveStream.XXXXXX", NULL);
 	
 	if ((tmp_fd = g_mkstemp (filename)) == -1) {
 		ReportErrorOccurred ("Could not create temporary filename for media file.\n");
@@ -1896,7 +1901,7 @@ ProgressiveSource::Initialize ()
 
 	/* Unlink the file right away so that it'll be deleted even if we crash. */
 	if (moonlight_flags & RUNTIME_INIT_KEEP_MEDIA) {
-		printf ("Moonlight: The media file %s will not deleted (uri: %s).\n", filename, uri->ToString ());
+	        g_debug ("Moonlight: The media file %s will not deleted (uri: %s).\n", filename, uri->ToString ());
 	} else {
 		g_unlink (filename);
 	}
@@ -2172,7 +2177,7 @@ ProgressiveSource::CheckReadRequests ()
 			SetRangeRequest (r);
 			r->unref ();
 		} else {
-			fprintf (stderr, "Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
+			g_warning ("Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
 		}
 	}
 }
@@ -2278,7 +2283,7 @@ ProgressiveSource::RangeStoppedHandler (HttpRequest *sender, HttpRequestStoppedE
 					SetRangeRequest (r);
 					r->unref ();
 				} else {
-					fprintf (stderr, "Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
+					g_warning ("Moonlight: Failed to create http request to execute a byte range request for url: %s", uri == NULL ? "?" : uri->ToString ());
 				}
 			} else {
 				LOG_PIPELINE ("HttpRequest::RangeStoppedHandler (%p, %p): entire file downloaded!\n", sender, args);
@@ -2364,7 +2369,7 @@ ProgressiveSource::ReadAsyncInternal (MediaReadClosure *closure)
 {
 	VERIFY_MEDIA_THREAD;
 
-	LOG_PIPELINE ("ProgressiveSource::ReadAsyncInternal (offset: %" G_GINT64_FORMAT " count: %u)\n", closure->GetOffset (), closure->GetCount ());	
+	LOG_PIPELINE ("ProgressiveSource::ReadAsyncInternal (offset: %" G_GINT64_FORMAT " count: %" G_GUINT32_FORMAT ")\n", closure->GetOffset (), closure->GetCount ());	
 		
 	mutex.Lock ();
 	read_closures.Append (new MediaReadClosureNode (closure));
@@ -2401,7 +2406,7 @@ ProgressiveSource::DownloadComplete ()
 	}
 #if SANITY
 	if (write_pos != size && size != -1) { // what happend here?
-		printf ("ProgressiveSource::DownloadComplete (): the downloaded size (%" G_GINT64_FORMAT ") != the reported size (%" G_GINT64_FORMAT	 ")\n", write_pos, size);
+		g_debug ("ProgressiveSource::DownloadComplete (): the downloaded size (%" G_GINT64_FORMAT ") != the reported size (%" G_GINT64_FORMAT	 ")\n", write_pos, size);
 	}
 #endif
 	this->size = MAX (write_pos, this->size);
@@ -2546,7 +2551,7 @@ MediaThreadPool::AddWork (MediaClosure *closure)
 				pthread_attr_destroy (&attribs);
 				
 				if (result != 0) {
-					fprintf (stderr, "Moonlight: could not create media thread: %s (%i)\n", strerror (result), result);
+					g_warning ("Moonlight: could not create media thread: %s (%i)\n", strerror (result), result);
 				} else {
 					valid [i] = true;
 				}
@@ -2744,11 +2749,15 @@ MediaThreadPool::WorkerLoop (void *data)
 	
 	sigset_t signal_set;
 	int err = 0;
+#if !defined(__APPLE__)
 	if ((err = sigemptyset (&signal_set)) != 0) {
-		fprintf (stderr, "Moonlight: Media thread pool was unable to create an empty set of signals: %s (%i).\n", strerror (err), err);
+		g_warning ("Moonlight: Media thread pool was unable to create an empty set of signals: %s (%i).\n", strerror (err), err);
 	} else if ((err = pthread_sigmask (SIG_SETMASK, &signal_set, NULL)) != 0) {
-		fprintf (stderr, "Moonlight: Media thread pool was unable to unblock all signals: %s (%i).\n", strerror (err), err);
+		g_warning ("Moonlight: Media thread pool was unable to unblock all signals: %s (%i).\n", strerror (err), err);
 	}
+	// Android has blocked signals we cannot unblock
+	// FIXME: Determine what they're blocking and why
+#if !defined(PLATFORM_ANDROID)
 	if (err != 0) {
 		/* Something failed. Check if all signals are unblocked, if not, exit
 		 * the thread. Exiting the thread might cause media playback to fail,
@@ -2765,10 +2774,12 @@ MediaThreadPool::WorkerLoop (void *data)
 		}
 
 		if (any_blocked_signals) {
-			fprintf (stderr, "Moonlight: A media thread was started with blocked signals and could not unblock them. The media thread will exit (this may cause media playback to fail).\n");
+			g_warning ("Moonlight: A media thread was started with blocked signals and could not unblock them. The media thread will exit (this may cause media playback to fail).\n");
 			return NULL;
 		}
 	}
+#endif
+#endif
 	
 	pthread_mutex_lock (&mutex);
 	for (int i = 0; i < count; i++) {
@@ -2779,7 +2790,7 @@ MediaThreadPool::WorkerLoop (void *data)
 	}
 	pthread_mutex_unlock (&mutex);
 	
-	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %u: Started thread with index %i.\n", (int) pthread_self (), self_index);
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %" G_GUINT32_FORMAT ": Started thread with index %i.\n", (int) pthread_self (), self_index);
 	
 	g_return_val_if_fail (self_index >= 0, NULL);
 	
@@ -2837,11 +2848,11 @@ MediaThreadPool::WorkerLoop (void *data)
 		
 		media->SetCurrentDeployment (true);
 
-		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %" G_GUINT32_FORMAT ": got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
 		
 		node->closure->Call ();
 		
-		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %u: processed node %p\n", (int) pthread_self (), node);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %" G_GUINT32_FORMAT ": processed node %p\n", (int) pthread_self (), node);
 		
 		delete node;
 
@@ -2858,7 +2869,7 @@ MediaThreadPool::WorkerLoop (void *data)
 
 	Deployment::UnregisterThread ();
 
-	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %u: Exited (index: %i).\n", (int) pthread_self (), self_index);
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %" G_GUINT32_FORMAT ": Exited (index: %i).\n", (int) pthread_self (), self_index);
 	
 	return NULL;
 }
@@ -2995,12 +3006,12 @@ MediaGetFrameClosure::MediaGetFrameClosure (Media *media, MediaCallback *callbac
 	this->stream = stream;
 	// this->stream->ref ();
 	
-	//fprintf (stderr, "MediaGetFrameClosure::MediaGetFrameClosure ()  id: %i\n", GetId ());
+	//g_warning ("MediaGetFrameClosure::MediaGetFrameClosure ()  id: %i\n", GetId ());
 }
 
 MediaGetFrameClosure::~MediaGetFrameClosure ()
 {
-	//fprintf (stderr, "MediaGetFrameClosure::~MediaGetFrameClosure () id: %i\n", GetId ()); 
+	//g_warning ("MediaGetFrameClosure::~MediaGetFrameClosure () id: %i\n", GetId ()); 
 }
 
 void
@@ -3012,7 +3023,7 @@ MediaGetFrameClosure::Dispose ()
 	}
 	
 	MediaClosure::Dispose ();
-	//fprintf (stderr, "MediaGetFrameClosure::Dispose () id: %i\n", GetId ());
+	//g_warning ("MediaGetFrameClosure::Dispose () id: %i\n", GetId ());
 }
 
 /*
@@ -3079,7 +3090,9 @@ IMediaStream::IMediaStream (Type::Kind kind, Media *media) : IMediaObject (kind,
 	
 	extra_data_size = 0;
 	extra_data = NULL;
-	
+	raw_extra_data_size = 0;
+	raw_extra_data = NULL;
+
 	duration = 0;
 	pts_per_frame = 0;
 	
@@ -3111,6 +3124,8 @@ IMediaStream::Dispose ()
 	}
 	g_free (extra_data);
 	extra_data = NULL;
+	g_free (raw_extra_data);
+	raw_extra_data = NULL;
 	g_free (codec);
 	codec = NULL;
 
@@ -3330,15 +3345,15 @@ IMediaStream::PrintBufferInformation ()
 {
 	guint64 buffer_size = GetBufferedSize ();
 	
-	printf (" <%s: ", codec);
+	g_debug (" <%s: ", codec);
 	
 	if (GetSelected ()) {
-		printf ("size: %.4" G_GINT64_FORMAT " first: %.4" G_GINT64_FORMAT " last popped: %.4" G_GINT64_FORMAT " "
-			"last enq demuxed: %.4" G_GINT64_FORMAT " last enq decoded: %.4" G_GINT64_FORMAT " demux frames enq: %i dec frames enq: %i>",
-			TO_MS (buffer_size), TO_MS (first_pts), TO_MS (last_popped_decoded_pts),
-			TO_MS (last_enqueued_demuxed_pts), TO_MS (last_enqueued_decoded_pts), demuxed_queue.Length (), decoded_queue.Length ());
+		g_debug ("size: %.4lli first: %.4lli last popped: %.4lli "
+			 "last enq demuxed: %.4lli last enq decoded: %.4lli demux frames enq: %i dec frames enq: %i>",
+			 TO_MS (buffer_size), TO_MS (first_pts), TO_MS (last_popped_decoded_pts),
+			 TO_MS (last_enqueued_demuxed_pts), TO_MS (last_enqueued_decoded_pts), demuxed_queue.Length (), decoded_queue.Length ());
 	} else {
-		printf ("(not selected) >");
+		g_debug ("(not selected) >");
 	}
 }
 #endif
@@ -3349,7 +3364,7 @@ IMediaStream::EnqueueDemuxedFrame (MediaFrame *frame)
 	IMediaDemuxer *demuxer;
 	StreamNode *node;
 
-	LOG_PIPELINE ("%s::EnqueueDemuxedFrame () generation: %u pts: %" G_GUINT64_FORMAT " ms\n", GetTypeName (), frame->GetGeneration (), MilliSeconds_FromPts (frame->GetPts ()));
+	LOG_PIPELINE ("%s::EnqueueDemuxedFrame () generation: %" G_GUINT32_FORMAT " pts: %" G_GUINT64_FORMAT " ms\n", GetTypeName (), frame->GetGeneration (), MilliSeconds_FromPts (frame->GetPts ()));
 
 	if (frame->GetDuration () == 0)
 		frame->SetDuration (frame->GetStream ()->GetPtsPerFrame ());
@@ -3386,17 +3401,17 @@ IMediaStream::EnqueueDecodedFrame (MediaFrame *frame)
 	
 	g_return_if_fail (Media::InMediaThread ());
 
-	LOG_PIPELINE ("%s::EnqueueDecodedFrame () generation: %u pts: %" G_GUINT64_FORMAT " ms\n", GetTypeName (), frame->GetGeneration (), MilliSeconds_FromPts (frame->GetPts ()));
+	LOG_PIPELINE ("%s::EnqueueDecodedFrame () generation: %" G_GUINT32_FORMAT " pts: %" G_GUINT64_FORMAT " ms\n", GetTypeName (), frame->GetGeneration (), MilliSeconds_FromPts (frame->GetPts ()));
 
 	if (frame->GetGeneration () != GetGeneration ()) {
-		printf ("%s::EnqueueDecodedFrame () generation mismatch, expected %i got %i. Dropping frame.\n", GetTypeName (), GetGeneration (), frame->GetGeneration ());
+		g_debug ("%s::EnqueueDecodedFrame () generation mismatch, expected %i got %i. Dropping frame.\n", GetTypeName (), GetGeneration (), frame->GetGeneration ());
 		return;
 	}
 	
 	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
 	
-	if (frame->GetBuffer () == NULL && !frame->IsPlanar ()) {
+	if (frame->GetBuffer () == NULL && !frame->IsPlanar () && !frame->IsVUY2 ()) {
 		/* for some reason there is no output from the decoder, possibly because it needs more data from the demuxer before outputting anything */
 		LOG_PIPELINE ("IMediaStream::EnqueueDecodedFrame (%p): No data in frame, not storing it.\n", frame);
 		goto cleanup;
@@ -3697,7 +3712,7 @@ IMediaDemuxer::ReportOpenDemuxerCompleted ()
 			} else {
 				ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT")));
 			}
-			fprintf (stderr, "Moonlight: %s: Video stream size (width: %d, height: %d) outside limits (%d, %d)\n",
+			g_warning ("Moonlight: %s: Video stream size (width: %d, height: %d) outside limits (%d, %d)\n",
 				GetTypeName (), vs->GetHeight (), vs->GetWidth (), MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
 			return;
 		}
@@ -3849,7 +3864,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	
 #if SANITY
 	if (pending_stream != NULL)
-		printf ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT "): we can't be waiting for a frame now.\n", pts);
+		g_debug ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT "): we can't be waiting for a frame now.\n", pts);
 #endif
 
 	media = GetMediaReffed ();
@@ -4294,7 +4309,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	
 		decoder = stream->GetDecoder ();
 		if (decoder == NULL) {
-			fprintf (stderr, "IMediaDemuxer::FillBuffersInternal () %s stream has no decoder (id: %i refcount: %i)\n", stream->GetTypeName (), GET_OBJ_ID (stream), stream->GetRefCount ());
+			g_warning ("IMediaDemuxer::FillBuffersInternal () %s stream has no decoder (id: %i refcount: %i)\n", stream->GetTypeName (), GET_OBJ_ID (stream), stream->GetRefCount ());
 			continue; // no decoder??
 		}
 	
@@ -4398,11 +4413,11 @@ IMediaDemuxer::GetBufferedSize ()
 void
 IMediaDemuxer::PrintBufferInformation ()
 {
-	printf ("Buffer: %" G_GINT64_FORMAT "", MilliSeconds_FromPts (GetBufferedSize ()));
+	g_debug ("Buffer: %" G_GINT64_FORMAT "", MilliSeconds_FromPts (GetBufferedSize ()));
 	for (int i = 0; i < GetStreamCount (); i++) {
 		GetStream (i)->PrintBufferInformation ();
 	}
-	printf ("\n");
+	g_debug ("\n");
 }
 #endif
 
@@ -4453,10 +4468,10 @@ MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, gu
 	
 #if 0	
 	if (buflen > 4 && false) {
-		printf ("MediaFrame::MediaFrame () %s buffer: ", stream->GetTypeName ());
+		g_debug ("MediaFrame::MediaFrame () %s buffer: ", stream->GetTypeName ());
 		for (int i = 0; i < 4; i++)
-			printf (" 0x%x", buffer [i]);
-		printf ("\n");
+			g_debug (" 0x%x", buffer [i]);
+		g_debug ("\n");
 	}
 #endif
 
@@ -4584,7 +4599,7 @@ MediaFrame::Dispose ()
 		if (!Media::InMediaThread ()) {
 			// if refcount != 0 we're not being called just before destruction, in which case we should
 			// only be on the media thread.
-			printf ("MediaFrame::Dispose (): this method should only be called from the media thread.\n");
+			g_debug ("MediaFrame::Dispose (): this method should only be called from the media thread.\n");
 		}
 	}
 #endif
@@ -4956,7 +4971,7 @@ IMediaSource::ReadFD (FILE *read_fd, MediaReadClosure *closure)
 	
 	VERIFY_MEDIA_THREAD;
 
-	LOG_PIPELINE ("IMediaSource::ReadFD (%p, %p offset: %" G_GINT64_FORMAT " count: %u)\n", read_fd, closure, closure->GetOffset (), closure->GetCount ());
+	LOG_PIPELINE ("IMediaSource::ReadFD (%p, %p offset: %" G_GINT64_FORMAT " count: %" G_GUINT32_FORMAT ")\n", read_fd, closure, closure->GetOffset (), closure->GetCount ());
 
 	g_return_if_fail (read_fd != NULL);
 
@@ -5859,7 +5874,7 @@ ExternalDemuxer::CloseDemuxerInternal ()
 		close_demuxer_callback (instance);
 	} else {
 #if SANITY
-		printf ("ExternalDemuxer::CloseDemuxerInternal (): no function pointer.\n");
+		g_debug ("ExternalDemuxer::CloseDemuxerInternal (): no function pointer.\n");
 #endif
 	}
 	pthread_rwlock_unlock (&rwlock);
@@ -5873,7 +5888,7 @@ ExternalDemuxer::GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind dia
 		get_diagnostic_async_callback (instance, diagnosticsKind);
 	} else {
 #if SANITY
-		printf ("ExternalDemuxer::GetDiagnosticsAsyncInternal (): no function pointer.\n");
+		g_debug ("ExternalDemuxer::GetDiagnosticsAsyncInternal (): no function pointer.\n");
 #endif
 	}
 	pthread_rwlock_unlock (&rwlock);
@@ -5889,7 +5904,7 @@ ExternalDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		get_sample_async_callback (instance, stream->GetStreamType ());
 	} else {
 #if SANITY
-		printf ("ExternalDemuxer::GetFrameAsyncInternal (): no function pointer.\n");
+		g_debug ("ExternalDemuxer::GetFrameAsyncInternal (): no function pointer.\n");
 #endif
 	}
 	pthread_rwlock_unlock (&rwlock);
@@ -5903,7 +5918,7 @@ ExternalDemuxer::OpenDemuxerAsyncInternal ()
 		open_demuxer_async_callback (instance, this);
 	} else {
 #if SANITY
-		printf ("ExternalDemuxer::OpenDemuxerAsyncInternal (): no function pointer.\n");
+		g_debug ("ExternalDemuxer::OpenDemuxerAsyncInternal (): no function pointer.\n");
 #endif
 	}
 	pthread_rwlock_unlock (&rwlock);
@@ -5917,7 +5932,7 @@ ExternalDemuxer::SeekAsyncInternal (guint64 seekToTime)
 		seek_async_callback (instance, seekToTime);
 	} else {
 #if SANITY
-		printf ("ExternalDemuxer::SeekAsyncInternal (): no function pointer.\n");
+		g_debug ("ExternalDemuxer::SeekAsyncInternal (): no function pointer.\n");
 #endif
 	}
 	pthread_rwlock_unlock (&rwlock);
@@ -5933,7 +5948,7 @@ ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescri
 		switch_media_stream_async_callback (instance, mediaStreamDescription);
 	} else {
 #if SANITY
-		printf ("ExternalDemuxer::SwitchMediaStreamAsyncInternal (): no function pointer.\n");
+		g_debug ("ExternalDemuxer::SwitchMediaStreamAsyncInternal (): no function pointer.\n");
 #endif
 	}
 	pthread_rwlock_unlock (&rwlock);

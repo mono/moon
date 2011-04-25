@@ -12,11 +12,10 @@
 
 #include <config.h>
 
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-
-#include <glib/gstdio.h>
 
 #include "openfile.h"
 #include "runtime.h"
@@ -27,8 +26,9 @@
  * no one comes
  */
 // FIXME: PAL THIS
-#if !defined (__APPLE__)
+#if PAL_GTK_WINDOWING
 #include <gtk/gtk.h>
+#endif
 
 namespace Moonlight {
 
@@ -40,6 +40,7 @@ namespace Moonlight {
 gboolean
 isolated_storage_increase_quota_to (const char *primary_text, const char* secondary_text)
 {
+#if PAL_GTK_WINDOWING
 	// the dialog is displayed only if the action leading to this call was initiated directly from the user
 	if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
 		return false;
@@ -59,7 +60,11 @@ isolated_storage_increase_quota_to (const char *primary_text, const char* second
 	surface->SetCurrentDeployment ();
 	gtk_widget_destroy (widget);
 	return result;
+#else
+	return TRUE;
+#endif
 }
+
 
 // recursively calculate the size of the specified directory
 static long
@@ -111,4 +116,3 @@ isolated_storage_get_current_usage (const char* root)
 }
 
 };
-#endif

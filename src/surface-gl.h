@@ -15,6 +15,10 @@
 
 #if defined(__APPLE__)
 #include <OpenGL/OpenGL.h>
+#elif defined(USE_EGL)
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #else
 #include <GL/gl.h>
 #endif

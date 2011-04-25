@@ -68,10 +68,11 @@ namespace System.Windows.Browser
 		public IDictionary<string,string> QueryString {
 			get {
 				// document.location.search
+				Dictionary<string, string> res = new Dictionary<string, string> ();
+
+#if !ANDROID_HACK
 				ScriptObject loc = (ScriptObject) GetProperty ("location");
 				string search = (string) loc.GetProperty ("search");
-
-				Dictionary<string, string> res = new Dictionary<string, string> ();
 
 				if (search == null)
 					return res;
@@ -97,7 +98,7 @@ namespace System.Windows.Browser
 
 				if (name != null && li < search.Length)
 					res.Add (name, search.Substring (li, search.Length - li));
-
+#endif
 				return res;
 			}
 		}
@@ -113,11 +114,15 @@ namespace System.Windows.Browser
 
 		public Uri DocumentUri {
 			get {
+#if ANDROID_HACK
+				return new Uri ("file:///data/local/tmp");
+#else
 				ScriptObject location = GetProperty ("location") as ScriptObject;
 				if (location == null)
 					return null;
 
 				return new Uri ((string)location.GetProperty ("href"));
+#endif
 			}
 		}
 		
@@ -155,7 +160,13 @@ namespace System.Windows.Browser
 		}
 		
 		public bool IsReady {
-			get { throw new NotImplementedException (); }
+			get {
+#if ANDROID_HACK
+				return true;
+#else
+				throw new NotImplementedException ();
+#endif
+			  }
 		}
 		
 		

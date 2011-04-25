@@ -18,7 +18,7 @@
 #include <math.h>
 #include <glib.h>
 
-G_BEGIN_DECLS
+namespace Moonlight {
 
 typedef struct
 {
@@ -48,7 +48,7 @@ void	moon_convert_cubics_to_quadratics	(moon_quadratic *dest_array, moon_cubic *
 void	moon_subdivide_cubic			(moon_cubic *dest1, moon_cubic *dest2, moon_cubic *src);
 void	moon_subdivide_cubic_at_level		(moon_cubic *b, int lvl, moon_cubic *src);
 
-G_END_DECLS
+};
 
 #endif
 

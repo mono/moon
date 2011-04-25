@@ -299,7 +299,7 @@ Glyphs::Layout ()
 	
 	while (attr) {
 		if (attr->set & Cluster) {
-			LOG_TEXT (stderr, "Can't use clusters past the end of the UnicodeString\n");
+			LOG_TEXT ("Can't use clusters past the end of the UnicodeString\n");
 			moon_path_destroy (path);
 			invalid = true;
 			path = NULL;
@@ -307,7 +307,7 @@ Glyphs::Layout ()
 		}
 		
 		if (!(attr->set & Index)) {
-			LOG_TEXT (stderr, "No index specified for glyph %d\n", n + 1);
+			LOG_TEXT ("No index specified for glyph %d\n", n + 1);
 			moon_path_destroy (path);
 			invalid = true;
 			path = NULL;
@@ -548,11 +548,11 @@ static void
 print_parse_error (const char *in, const char *where, const char *reason)
 {
 	if (debug_flags & RUNTIME_DEBUG_TEXT) {
-		fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
-		fprintf (stderr, "                            ");
+		g_warning ("Glyph Indices parse error: \"%s\": %s\n", in, reason);
+		g_warning ("                            ");
 		for (int i = 0; i < (where - in); i++)
 			fputc (' ', stderr);
-		fprintf (stderr, "^\n");
+		g_warning ("^\n");
 	}
 }
 #endif

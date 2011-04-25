@@ -44,4 +44,20 @@ AC_DEFUN([MOONLIGHT_CHECK_SOUND],
 	fi
 	
 	AM_CONDITIONAL(INCLUDE_PULSEAUDIO, test x$with_pulseaudio = xyes)
+
+	dnl
+	dnl OpenSLES
+	dnl
+
+	AC_ARG_WITH(opensles, AC_HELP_STRING([--with-opensles=yes|no], 
+		[If you want to enable opensles sound support]),
+		[], [with_opensles=no])
+
+	if test x$with_opensles = xyes; then
+		AC_DEFINE([INCLUDE_OPENSLES], [1], [Include opensles sound support])
+	else
+		opensles_reason="(reason: disabled at configure time)"
+	fi
+	
+	AM_CONDITIONAL(INCLUDE_OPENSLES, test x$with_opensles = xyes)
 ])

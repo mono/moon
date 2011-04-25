@@ -13,10 +13,15 @@
 #ifndef PLUGIN_CONFIG
 #define PLUGIN_CONFIG
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
 
+#if PAL_GTK_WINDOWING
 #define MOZ_X11
+#endif
+
 #ifndef XP_UNIX
 #define XP_UNIX
 #endif

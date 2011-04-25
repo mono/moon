@@ -207,7 +207,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	AudioStream *astream = NULL, *astream2 = NULL;
 	
 	if (demuxer == NULL) {
-		fprintf (stderr, "MediaPlayer::Open (): media doesn't have a demuxer.\n");
+		g_warning ("MediaPlayer::Open (): media doesn't have a demuxer.\n");
 		return false;
 	}
 
@@ -509,7 +509,7 @@ MediaPlayer::SetRenderedFrame (MediaFrame *frame)
 	VERIFY_MAIN_THREAD;
 	
 	if (!frame->IsDecoded ()) {
-		fprintf (stderr, "MediaPlayer::SetRendererFrame (): Trying to render a frame which hasn't been decoded yet.\n");
+		g_warning ("MediaPlayer::SetRendererFrame (): Trying to render a frame which hasn't been decoded yet.\n");
 		return frame;
 	}
 	
@@ -933,6 +933,8 @@ MediaPlayer::GetSurface (Context *ctx)
 
 	if (frame->IsPlanar ())
 		ctx->BlitYV12 (frame->data_stride, frame->srcStride);
+	else if (frame->IsVUY2 ())
+		ctx->BlitVUY2 (frame->data_stride [0]);
 	else
 		ctx->Blit (frame->GetBuffer (), width * 4);
 
@@ -1170,7 +1172,7 @@ MediaPlayer::GetBalance ()
 		result = audio->GetBalance ();
 		audio->unref ();
 	} else {
-		fprintf (stderr, "MediaPlayer::GetBalance (): There's no audio source to get the balance from\n");
+		g_warning ("MediaPlayer::GetBalance (): There's no audio source to get the balance from\n");
 		result = 0.0;
 	}
 
@@ -1195,7 +1197,7 @@ MediaPlayer::SetBalance (double balance)
 		audio->SetBalance (balance);
 		audio->unref ();
 	} else {
-		//fprintf (stderr, "MediaPlayer::SetBalance (%f): There's no audio source to set the balance\n", balance);
+		//g_warning ("MediaPlayer::SetBalance (%f): There's no audio source to set the balance\n", balance);
 	}
 }
 
@@ -1212,7 +1214,7 @@ MediaPlayer::GetVolume ()
 		result = audio->GetVolume ();
 		audio->unref ();
 	} else {
-		fprintf (stderr, "MediaPlayer::GetVolume (): There's no audio source to get the volume from\n");
+		g_warning ("MediaPlayer::GetVolume (): There's no audio source to get the volume from\n");
 		result = 0.0;
 	}
 
@@ -1237,7 +1239,7 @@ MediaPlayer::SetVolume (double volume)
 		audio->SetVolume (volume);
 		audio->unref ();
 	} else {
-		//fprintf (stderr, "MediaPlayer::SetVolume (%f): There's no audio source to set the volume\n", volume);
+		//g_warning ("MediaPlayer::SetVolume (%f): There's no audio source to set the volume\n", volume);
 	}		
 }
 	
@@ -1254,7 +1256,7 @@ MediaPlayer::GetMuted ()
 		result = audio->GetMuted ();
 		audio->unref ();
 	} else {
-		fprintf (stderr, "MediaPlayer::GetMuted (): There's no audio.\n");
+		g_warning ("MediaPlayer::GetMuted (): There's no audio.\n");
 		result = false;
 	}
 
@@ -1274,7 +1276,7 @@ MediaPlayer::SetMuted (bool muted)
 		audio->SetMuted (true);
 		audio->unref ();
 	} else {
-		//fprintf (stderr, "MediaPlayer::SetMuted (%i): There's no audio to mute.\n", muted);
+		//g_warning ("MediaPlayer::SetMuted (%i): There's no audio to mute.\n", muted);
 	}
 }
 

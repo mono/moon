@@ -47,6 +47,7 @@ GLContext::GLContext (GLSurface *surface) : Context (surface)
 	effect_program = g_hash_table_new (g_direct_hash,
 					   g_direct_equal);
 
+#if !USE_EGL
 	GETPROCADDR (PFNGLCREATESHADERPROC, glCreateShader);
 	GETPROCADDR (PFNGLSHADERSOURCEPROC, glShaderSource);
 	GETPROCADDR (PFNGLCOMPILESHADERPROC, glCompileShader);
@@ -76,6 +77,7 @@ GLContext::GLContext (GLSurface *surface) : Context (surface)
 	GETPROCADDR (PFNGLFRAMEBUFFERTEXTURE2DPROC, glFramebufferTexture2D);
 	GETPROCADDR (PFNGLCHECKFRAMEBUFFERSTATUSPROC,
 		     glCheckFramebufferStatus);
+#endif
 }
 
 GLContext::~GLContext ()
@@ -498,9 +500,15 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 	g_string_sprintfa (s, "{");
 	if (yuv) {
 		g_string_sprintfa (s, "float r, g, b, y, u, v;");
+#if USE_EGL
+		g_string_sprintfa (s, "y = texture2D(sampler0, v_TexCoord0.xy).r;");
+		g_string_sprintfa (s, "u = texture2D(sampler1, v_TexCoord0.xy).r;");
+		g_string_sprintfa (s, "v = texture2D(sampler2, v_TexCoord0.xy).r;");
+#else
 		g_string_sprintfa (s, "y = texture2DProj(sampler0, v_TexCoord0.xyzw).r;");
 		g_string_sprintfa (s, "u = texture2DProj(sampler1, v_TexCoord0.xyzw).r;");
 		g_string_sprintfa (s, "v = texture2DProj(sampler2, v_TexCoord0.xyzw).r;");
+#endif
 		g_string_sprintfa (s, "y = 1.1643 * (y - 0.0625);");
 		g_string_sprintfa (s, "u = u - 0.5;");
 		g_string_sprintfa (s, "v = v - 0.5;");
@@ -510,7 +518,11 @@ GLContext::GetProjectProgram (double opacity, unsigned yuv)
 		g_string_sprintfa (s, "gl_FragColor = vec4(r, g, b, 1.0)");
 	}
 	else {
+#if USE_EGL
+		g_string_sprintfa (s, "gl_FragColor = texture2D(sampler0, v_TexCoord0.xy).bgra");
+#else
 		g_string_sprintfa (s, "gl_FragColor = texture2DProj(sampler0, v_TexCoord0.xyzw)");
+#endif
 	}
 	if (alpha)
 		g_string_sprintfa (s, " * alpha");
@@ -1374,6 +1386,15 @@ GLContext::GetEffectProgram (PixelShader *ps)
 				 reg.writemask & 0x2 ? "y" : "",
 				 reg.writemask & 0x4 ? "z" : "",
 				 reg.writemask & 0x8 ? "w" : "");
+
+#if USE_EGL
+			if (op.type == D3DSIO_TEX)
+				sprintf (writemask, "%s%s%s%s",
+					reg.writemask & 0x1 ? "z" : "",
+					reg.writemask & 0x2 ? "y" : "",
+					reg.writemask & 0x4 ? "x" : "",
+					reg.writemask & 0x8 ? "w" : "");
+#endif
 
 			ERROR_IF (reg.writemask == 0);
 

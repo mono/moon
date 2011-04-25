@@ -12,12 +12,14 @@
 
 #include <config.h>
 
-#include <glib/gstdio.h>
+#include <glib.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "utils.h"
+#include "runtime.h"
 #include "application.h"
 #include "deployment.h"
 
@@ -850,7 +852,7 @@ CreateTempDir (const char *filename)
 	if (Application::GetCurrent())
 		path = g_build_filename (Application::GetCurrent()->GetResourceRoot(), buf, NULL);
 	else {
-		path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+		path = g_build_filename (Runtime::GetWindowingSystem ()->GetTemporaryFolder (), buf, NULL);
 		Deployment::GetCurrent()->TrackPath (path);
 	}
 	g_free (buf);
@@ -1112,10 +1114,10 @@ TextStream::Eof ()
 ssize_t
 TextStream::Read (char *buf, size_t n)
 {
-	size_t inleft = buflen;
+	gsize inleft = buflen;
 	char *inbuf = bufptr;
 	char *outbuf = buf;
-	size_t outleft = n;
+	gsize outleft = n;
 	ssize_t nread;
 	size_t r;
 	

@@ -72,17 +72,18 @@ enum RuntimeInitFlag {
 	RUNTIME_INIT_AUDIO_ALSA_RW         = 1 << 14,
 	RUNTIME_INIT_AUDIO_ALSA            = 1 << 16,
 	RUNTIME_INIT_AUDIO_PULSE           = 1 << 17,
-	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 18,
-	RUNTIME_INIT_KEEP_MEDIA            = 1 << 19,
-	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 20,
-	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 21,
-	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 22,
-	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 23,
-	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 24,
-	RUNTIME_INIT_CURL_BRIDGE	   = 1 << 25,
-	RUNTIME_INIT_ENABLE_TOGGLEREFS	   = 1 << 26,
-	RUNTIME_INIT_OOB_LAUNCHER_FIREFOX  = 1 << 27,
-	RUNTIME_INIT_HW_ACCELERATION       = 1 << 28,
+	RUNTIME_INIT_AUDIO_OPENSLES        = 1 << 18,
+	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 19,
+	RUNTIME_INIT_KEEP_MEDIA            = 1 << 20,
+	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 21,
+	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 22,
+	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 23,
+	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 24,
+	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 25,
+	RUNTIME_INIT_CURL_BRIDGE	   = 1 << 26,
+	RUNTIME_INIT_ENABLE_TOGGLEREFS	   = 1 << 27,
+	RUNTIME_INIT_OOB_LAUNCHER_FIREFOX  = 1 << 28,
+	RUNTIME_INIT_HW_ACCELERATION       = 1 << 29,
 };
 
 struct MoonlightRuntimeOption {
@@ -172,12 +173,6 @@ class Downloader;
 typedef void (* MoonlightFPSReportFunc) (Surface *surface, int nframes, float nsecs, void *user_data);
 typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *user_data);
 typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, void *user_data);
-
-enum MoonEventStatus {
-	MoonEventNotSupported = -1,
-	MoonEventNotHandled,
-	MoonEventHandled
-};
 
 /* @Namespace=None,ManagedEvents=Manual */
 class MOON_API Surface : public EventObject {

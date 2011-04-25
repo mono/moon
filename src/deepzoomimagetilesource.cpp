@@ -613,6 +613,10 @@ FloatTryParse (const char *str, double *val)
 		return false;
 	}
 	
+	/* Android implements localeconv, but doesn't have the structure, we're presuming
+	 * its always "." there
+	 */
+#if !defined (PLATFORM_ANDROID)
 	if (decimal && (locale = localeconv ()) && strcmp (locale->decimal_point, ".") != 0) {
 		/* locale doesn't use '.' as decimal point so we need to munge
 		 * the string into the locale's formatting */
@@ -629,6 +633,7 @@ FloatTryParse (const char *str, double *val)
 		
 		inptr = buf;
 	}
+#endif
 	
 	errno = 0;
 	f = strtof (inptr, &inend);
@@ -719,7 +724,7 @@ image_start (DZParserInfo *info, const char **attr)
 	}
 	
 	if (failed || (parsed & DZParsedImage) != DZParsedImage) {
-		fprintf (stderr, "DeepZoom Image parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom Image parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
 }
@@ -799,7 +804,7 @@ collection_start (DZParserInfo *info, const char **attr)
 	}
 	
 	if (failed || (parsed & DZParsedCollection) != DZParsedCollection) {
-		fprintf (stderr, "DeepZoom Collection parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom Collection parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 		return;
 	}
@@ -892,7 +897,7 @@ display_rect_start (DZParserInfo *info, const char **attr)
 		failed = true;
 	
 	if (failed || (parsed & DZParsedDisplayRect) != DZParsedDisplayRect) {
-		fprintf (stderr, "DeepZoom DisplayRect parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom DisplayRect parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 		return;
 	}
@@ -954,7 +959,7 @@ viewport_start (DZParserInfo *info, const char **attr)
 	}
 	
 	if (failed || (parsed & DZParsedViewport) != DZParsedViewport) {
-		fprintf (stderr, "DeepZoom Viewport parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom Viewport parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
 }
@@ -1036,7 +1041,7 @@ rect_start (DZParserInfo *info, const char **attr)
 	}
 	
 	if (failed || (parsed & DZParsedRect) != DZParsedRect) {
-		fprintf (stderr, "DeepZoom Rect parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom Rect parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
 }
@@ -1106,7 +1111,7 @@ size_start (DZParserInfo *info, const char **attr)
 	}
 	
 	if (failed || (parsed & DZParsedSize) != DZParsedSize) {
-		fprintf (stderr, "DeepZoom Size parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom Size parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
 }
@@ -1174,7 +1179,7 @@ item_start (DZParserInfo *info, const char **attr)
 	}
 	
 	if (failed || (parsed & DZParsedI) != DZParsedI) {
-		fprintf (stderr, "DeepZoom I parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
+		g_warning ("DeepZoom I parse error: failed=%s; parsed=%x\n", failed ? "true" : "false", parsed);
 		info->error = true;
 	}
 }
@@ -1268,7 +1273,7 @@ start_element (void *data, const char *el, const char **attr)
 		}
 	}
 	
-	fprintf (stderr, "Deep Zoom parse error: unknown element <%s>\n", el);
+	g_warning ("Deep Zoom parse error: unknown element <%s>\n", el);
 	info->error = true;
 }
 
@@ -1296,7 +1301,7 @@ end_element (void *data, const char *el)
 		}
 	}
 	
-	fprintf (stderr, "Deep Zoom parse error: unknown element </%s>\n", el);
+	g_warning ("Deep Zoom parse error: unknown element </%s>\n", el);
 	info->error = true;
 }
 

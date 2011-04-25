@@ -1399,6 +1399,7 @@ class Generator {
 		string paldir = Path.Combine (srcdir, "pal");
 		string palgtkdir = Path.Combine (paldir, "gtk");
 		string palcocoadir = Path.Combine (paldir, "cocoa");
+		string palandroiddir = Path.Combine (paldir, "android");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
@@ -1406,6 +1407,7 @@ class Generator {
 		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (palgtkdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (palcocoadir, "*.h"));
+		all_files.AddRange (Directory.GetFiles (palandroiddir, "*.h"));
 
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
@@ -2278,6 +2280,9 @@ class Generator {
 		} else if (header.Contains ("pal/cocoa/")) {
 			endif = "#endif\n";
 			file.AppendLine ("#if PAL_COCOA_WINDOWING");
+		} else if (header.Contains ("pal/android/")) {
+			endif = "#endif\n";
+			file.AppendLine ("#if PAL_ANDROID_WINDOWING");
 		}
 	}
 
@@ -2306,9 +2311,11 @@ class Generator {
 		header.AppendLine ();
 		header.AppendLine ("#include \"pal.h\"");
 		header.AppendLine ("#if PAL_COCOA_WINDOWING");
-		header.AppendLine ("#  include \"pal/coca/window-cocoa.h\"");
+		header.AppendLine ("#  include \"pal/cocoa/window-cocoa.h\"");
 		header.AppendLine ("#elif PAL_GTK_WINDOWING");
 		header.AppendLine ("#  include \"pal/gtk/window-gtk.h\"");
+		header.AppendLine ("#elif PAL_ANDROID_WINDOWING");
+		header.AppendLine ("#  include \"pal/android/window-android.h\"");
 		header.AppendLine ("#endif");
 		header.AppendLine ("#include \"enums.h\"");
 		header.AppendLine ("#include \"type.h\"");

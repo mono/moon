@@ -62,6 +62,7 @@ libmoon_include_headers = 	\
 	gchandle.h		\
 	geometry.h		\
 	glyphs.h		\
+	gkeyfile.h		\
 	grid.h			\
 	http-streaming.h	\
 	icon128.h		\
@@ -108,6 +109,7 @@ libmoon_include_headers = 	\
 	pal/cocoa/MLEvent.h	\
 	pal/cocoa/MLTimer.h	\
 	pal/cocoa/MLView.h		\
+	pal/cocoa/MLWindow.h		\
 	pal/cocoa/clipboard-cocoa.h	\
 	pal/cocoa/config-dialog-cocoa.h\
 	pal/cocoa/im-cocoa.h	\
@@ -116,6 +118,11 @@ libmoon_include_headers = 	\
 	pal/cocoa/pixbuf-cocoa.h	\
 	pal/cocoa/window-cocoa.h	\
 	pal/cocoa/debug-ui-cocoa.h	\
+	pal/android/clipboard-android.h	\
+	pal/android/im-android.h	\
+	pal/android/pal-android.h	\
+	pal/android/pixbuf-android.h	\
+	pal/android/window-android.h	\
 	pal/messaging/glib/pal-glib-msg.h	\
 	pal/network/dbus/pal-dbus-network.h	\
 	pal/network/pal-linux-network.h	\
@@ -221,6 +228,7 @@ dist_libmoon_la_SOURCES = 		\
 	frameworkelement.cpp	\
 	gchandle.cpp		\
 	geometry.cpp		\
+	gkeyfile.c		\
 	glyphs.cpp		\
 	grid.cpp		\
 	http-streaming.cpp	\
@@ -234,9 +242,9 @@ dist_libmoon_la_SOURCES = 		\
 	medialog.cpp		\
 	mediaplayer.cpp		\
 	messaging.cpp		\
-	moon-curves.c		\
+	moon-curves.cpp		\
 	moonlightconfiguration.cpp	\
-	moon-path.c		\
+	moon-path.cpp		\
 	mp3.cpp			\
 	multiscaleimage.cpp	\
 	multiscalesubimage.cpp	\
@@ -328,6 +336,7 @@ libmoon_la_SOURCES_PAL_GTK = \
 
 libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/MLView.m		\
+	pal/cocoa/MLWindow.m		\
 	pal/cocoa/MLEvent.m	\
 	pal/cocoa/MLTimer.m	\
 	pal/cocoa/clipboard-cocoa.m	\
@@ -337,11 +346,24 @@ libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/pal-cocoa.m	\
 	pal/cocoa/pixbuf-cocoa.m	\
 	pal/cocoa/window-cocoa.m	\
+	pal/cocoa/fonts-cocoa.cpp	\
 	pal/cocoa/debug-ui-cocoa.m
+
+libmoon_la_SOURCES_PAL_ANDROID = \
+	pal/android/clipboard-android.cpp	\
+	pal/android/fonts-android.cpp	\
+	pal/android/im-android.cpp	\
+	pal/android/pal-android.cpp	\
+	pal/android/pixbuf-android.cpp	\
+	pal/android/window-android.cpp
 
 libmoon_la_SOURCES_FFMPEG = 	\
 	pipeline-ffmpeg.cpp	\
 	pipeline-ffmpeg.h
+
+libmoon_la_SOURCES_VDA = 	\
+	pipeline-vda.cpp	\
+	pipeline-vda.h
 
 libmoon_la_SOURCES_ALSA =	\
 	audio-alsa.cpp		\
@@ -350,6 +372,10 @@ libmoon_la_SOURCES_ALSA =	\
 libmoon_la_SOURCES_PULSEAUDIO =	\
 	audio-pulse.cpp		\
 	audio-pulse.h
+
+libmoon_la_SOURCES_OPENSLES =   \
+	audio-opensles.cpp	\
+	audio-opensles.h
 
 libmoon_la_SOURCES_CURL =	\
 	network-curl.cpp	\
@@ -363,16 +389,29 @@ libmoon_la_SOURCES_GALLIUM =	\
 	context-gallium.cpp	\
 	context-gallium.h
 
-libmoon_la_SOURCES_GLX = 	\
-	surface-gl.cpp		\
-	surface-gl.h		\
-	context-gl.cpp		\
-	context-gl.h		\
+libmoon_la_SOURCES_GL = 	\
+	surface-gl.cpp	\
+	surface-gl.h	\
+	context-gl.cpp	\
+	context-gl.h    
+
+libmoon_la_SOURCES_OPENGL = 	\
 	surface-opengl.cpp	\
 	surface-opengl.h	\
 	context-opengl.cpp	\
 	context-opengl.h
 
+libmoon_la_SOURCES_CGL = 	\
+	surface-cgl.cpp	\
+	surface-cgl.h	\
+	context-cgl.cpp	\
+	context-cgl.h
+
+libmoon_la_SOURCES_EGL = 	\
+	surface-egl.cpp	\
+	surface-egl.h	\
+	context-egl.cpp	\
+	context-egl.h
 
 # Conditionally built items are added to the nodist target as they
 # are already in EXTRA_DIST.
@@ -387,12 +426,20 @@ libmoon_la_OBJCXXFLAGS = $(AM_OBJCXXFLAGS)
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PAL_COCOA)
 endif
 
+if ANDROID_PAL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PAL_ANDROID)
+endif
+
 if CODECS_SUPPORTED
 INCLUDES += -I$(CODECS_PATH)/libmoon
 endif
 
 if INCLUDE_FFMPEG
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_FFMPEG)
+endif
+
+if INCLUDE_VDA
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_VDA)
 endif
 
 if INCLUDE_ALSA
@@ -403,6 +450,10 @@ if INCLUDE_PULSEAUDIO
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_PULSEAUDIO)
 endif
 
+if INCLUDE_OPENSLES
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_OPENSLES)
+endif
+
 if HAVE_CURL
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_CURL)
 endif
@@ -411,8 +462,20 @@ if HAVE_GALLIUM
 nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GALLIUM)
 endif
 
-if HAVE_GLX
-nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GLX)
+if HAVE_GL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_GL)
+endif
+
+if HAVE_OPENGL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_OPENGL)
+endif
+
+if HAVE_CGL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_CGL)
+endif
+
+if HAVE_EGL
+nodist_libmoon_la_SOURCES += $(libmoon_la_SOURCES_EGL)
 endif
 
 EXTRA_DIST = \
@@ -434,16 +497,21 @@ EXTRA_DIST = \
 	$(libmoon_la_SOURCES_PAL_GTK) \
 	$(libmoon_la_SOURCES_PAL_COCOA) \
 	$(libmoon_la_SOURCES_FFMPEG) \
+	$(libmoon_la_SOURCES_VDA) \
 	$(libmoon_la_SOURCES_ALSA) \
 	$(libmoon_la_SOURCES_PULSEAUDIO) \
+	$(libmoon_la_SOURCES_OPENSLES) \
 	$(libmoon_la_SOURCES_CURL) \
 	$(libmoon_la_SOURCES_GALLIUM) \
-	$(libmoon_la_SOURCES_GLX)
+	$(libmoon_la_SOURCES_GL) \
+	$(libmoon_la_SOURCES_GLX) \
+	$(libmoon_la_SOURCES_CGL)
+	$(libmoon_la_SOURCES_EGL)
 
-libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(CGL_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
-libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(CGL_LIBS) $(EGL_LIBS) $(GLX_LIBS) $(GALLIUM_LIBS) $(LLVM_LIBS)
 dist_libmoonxpi_la_SOURCES = $(dist_libmoon_la_SOURCES)
 nodist_libmoonxpi_la_SOURCES = $(nodist_libmoon_la_SOURCES)
 

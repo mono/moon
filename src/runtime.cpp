@@ -56,6 +56,8 @@
 #include "gtk/gtk.h"
 #elif PAL_COCOA_WINDOWING
 #include "pal-cocoa.h"
+#elif PAL_ANDROID_WINDOWING
+#include "pal-android.h"
 #endif
 #if PAL_GLIB_MESSAGING
 #include "pal/messaging/glib/pal-glib-msg.h"
@@ -126,6 +128,7 @@ static MoonlightRuntimeOption options [] = {
 	{ RUNTIME_INIT_ALLOW_WINDOWLESS,      "windowless",        "yes",        "no" },
 	{ RUNTIME_INIT_AUDIO_PULSE,           "pulse",             "yes",        "no" },
 	{ RUNTIME_INIT_AUDIO_ALSA,            "alsa",              "yes",        "no" },
+	{ RUNTIME_INIT_AUDIO_OPENSLES,        "opensles",          "yes",        "no" },
 	{ RUNTIME_INIT_AUDIO_ALSA_RW,         "alsa-rw",           "yes",        "no" },
 	{ RUNTIME_INIT_USE_IDLE_HINT,         "idlehint",          "yes",        "no" },
 	{ RUNTIME_INIT_KEEP_MEDIA,            "keepmedia",         "yes",        "no",     true,            "Don't remove media files from /tmp after download" },
@@ -186,8 +189,8 @@ moonlight_get_runtime_option (RuntimeInitFlag flag)
 #define GLX_RUNTIME_INIT 0
 #endif
 
-#define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE )
-#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE )
+#define RUNTIME_INIT_DESKTOP (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE | RUNTIME_INIT_AUDIO_OPENSLES )
+#define RUNTIME_INIT_BROWSER (RuntimeInitFlag)(RUNTIME_INIT_OCCLUSION_CULLING | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN | GLX_RUNTIME_INIT | RUNTIME_INIT_ENABLE_TOGGLEREFS | RUNTIME_INIT_AUDIO_ALSA | RUNTIME_INIT_AUDIO_PULSE | RUNTIME_INIT_AUDIO_OPENSLES )
 
 #if DEBUG || LOGGING
 static struct MoonlightDebugOption debugs[] = {
@@ -912,6 +915,10 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 
 	// mono_gc_disable ();
 	// GetDeployment()->DisableToggleRefs ();
+
+	if (getenv ("MOONLIGHT_DISABLE_FRAME_RATE_COUNTER") == NULL)
+		if (!GetEnableFrameRateCounter ())
+			SetEnableFrameRateCounter (true);
 
 	List *render_list = new List ();
 
@@ -2863,6 +2870,8 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 #elif PAL_COCOA_WINDOWING
 	windowing_system = new MoonWindowingSystemCocoa (out_of_browser);
 	installer_service = new MoonInstallerServiceCocoa ();
+#elif PAL_ANDROID_WINDOWING
+	windowing_system = new MoonWindowingSystemAndroid (out_of_browser);
 #else
 #error "no PAL windowing system defined"
 #endif
@@ -2889,6 +2898,10 @@ Runtime::Init (const char *platform_dir, RuntimeInitFlag flags, bool out_of_brow
 	
 #if PAL_FONTCONFIG_FONTSERVICE
 	font_service = new MoonFontServiceFontconfig ();
+#elif PAL_ANDROID_FONTSERVICE
+	font_service = new MoonFontServiceAndroid ();
+#elif PAL_COCOA_FONTSERVICE
+	font_service = new MoonFontServiceCocoa ();
 #else
 	g_warning ("This pal doesn't have a font service, you will crash, burn and die a fiery death.");
 #endif

@@ -20,7 +20,6 @@
 #include "window-cocoa.h"
 #include "openfile.h"
 #include "pipeline.h"
-#include "pipeline-ui.h"
 #include "timemanager.h"
 #include "debug-ui-cocoa.h"
 #include "consent.h"

@@ -14,7 +14,6 @@
 #include "config.h"
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 #include "window-cocoa.h"
 #include "clipboard-cocoa.h"
@@ -27,39 +26,58 @@
 
 #include "MLEvent.h"
 #include "MLView.h"
+#include "MLWindow.h"
 #include <AppKit/AppKit.h>
 
 #include <cairo.h>
 #include "cairo-quartz.h"
 
-#define PLUGIN_OURNAME      "Novell Moonlight"
-
-// FIXME: We have a lot of horrible hacks here since we dont subclass NSWindow yet and proxy its events
+#ifdef USE_CGL
+#define __MOON_CGL__
+#include "context-cgl.h"
+#endif
 
 using namespace Moonlight;
 
 MoonWindowCocoa::MoonWindowCocoa (MoonWindowType windowType, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (windowType, w, h, parent, surface)
 {
+	MLWindow *window;
+	MLView *view;
+
 	native = NULL;
 	ctx = NULL;
-	NSWindow *window = [[NSWindow alloc] initWithContentRect: NSMakeRect (0, 0, w, h) styleMask: NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask backing: NSBackingStoreBuffered defer: YES];
-	MLView *view = [[[MLView alloc] initWithFrame: NSMakeRect (0, 0, w, h)] autorelease];
+
+	window = [[MLWindow alloc] initWithContentRect: NSMakeRect (0, 0, w, h) styleMask: NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask backing: NSBackingStoreBuffered defer: YES];
+	view = [[[MLView alloc] initWithFrame: NSMakeRect (0, 0, w, h)] autorelease];
+
+	window.moonwindow = this;
+	view.moonwindow = this;
 
 	window.acceptsMouseMovedEvents = YES;
 	window.contentView = view;
-	view.moonwindow = this;
 
-	[view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+	[(MLView *)view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 
 	this->width = w;
 	this->height = h;
 	this->window = window;
 	this->view = view;
+
+#ifdef USE_CGL
+	cgltarget = NULL;
+	cglctx = NULL;
+#endif
 }
 
 MoonWindowCocoa::~MoonWindowCocoa ()
 {
+#ifdef USE_CGL
+	if (cglctx)
+		delete cglctx;
+	if (cgltarget)
+		cgltarget->unref ();
+#endif
 }
 
 void
@@ -82,13 +100,17 @@ MoonWindowCocoa::GetPlatformWindow ()
 void
 MoonWindowCocoa::Resize (int width, int height)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.size.width = width;
 	frame.size.height = height;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
+}
 
+void
+MoonWindowCocoa::ResizeInternal (int width, int height)
+{
 	this->width = width;
 	this->height = height;
 }
@@ -109,7 +131,7 @@ MoonWindowCocoa::Invalidate (Rect r)
 //	NSRect frame = [view frame];
 
 //	[view setNeedsDisplayInRect: NSMakeRect (r.x, frame.size.height - r.y - r.height, r.width, r.height)];
-	[view setNeedsDisplayInRect: [view frame]];
+	[(MLView *)view setNeedsDisplayInRect: [(MLView *)view frame]];
 }
 
 void
@@ -128,10 +150,8 @@ MoonWindowCocoa::HandleEvent (gpointer platformEvent)
 void
 MoonWindowCocoa::Show ()
 {
-	[window makeKeyAndOrderFront:nil];
-	// FIXME: We need to subclass NSWindow as well to do this properly.
-	this->surface->HandleUIWindowAvailable ();
-	this->surface->HandleUIWindowAllocation (true);
+	[(MLWindow *)window makeKeyAndOrderFront:nil];
+
 }
 
 void
@@ -142,41 +162,42 @@ MoonWindowCocoa::Hide ()
 void
 MoonWindowCocoa::EnableEvents (bool first)
 {
-	g_warning ("implement me");
+	g_warning ("implement me: EnableEvents");
 }
 
 void
 MoonWindowCocoa::DisableEvents ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: DisableEvents");
 }
 
 void
 MoonWindowCocoa::GrabFocus ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: GrabFocus");
 }
 
 bool
 MoonWindowCocoa::HasFocus ()
 {
-	g_warning ("implement me");
+	g_warning ("implement me: HasFocus");
+	return YES;
 }
 
 void
 MoonWindowCocoa::SetLeft (double left)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.origin.x = left;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 }
 
 double
 MoonWindowCocoa::GetLeft ()
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	return frame.origin.x;
 }
@@ -184,17 +205,17 @@ MoonWindowCocoa::GetLeft ()
 void
 MoonWindowCocoa::SetTop (double top)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.origin.y = top;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 }
 
 double
 MoonWindowCocoa::GetTop ()
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	return frame.origin.y;
 }
@@ -202,11 +223,11 @@ MoonWindowCocoa::GetTop ()
 void
 MoonWindowCocoa::SetWidth (double width)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.size.width = width;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 
 	this->width = width;
 }
@@ -214,11 +235,11 @@ MoonWindowCocoa::SetWidth (double width)
 void
 MoonWindowCocoa::SetHeight (double height)
 {
-	NSRect frame = [window frame];
+	NSRect frame = [(MLWindow *)window frame];
 
 	frame.size.height = height;
 
-	[window setFrame: frame display: YES];
+	[(MLWindow *)window setFrame: frame display: YES];
 
 	this->height = height;
 }
@@ -240,6 +261,21 @@ MoonWindowCocoa::SetStyle (WindowStyle style)
 	g_assert_not_reached ();
 }
 
+void
+MoonWindowCocoa::ClearPlatformContext ()
+{
+#ifdef USE_CGL
+	if (cglctx)
+		delete cglctx;
+	if (cgltarget)
+		cgltarget->unref ();
+
+	cglctx = NULL;
+	cgltarget = NULL;
+#endif
+}
+
+
 cairo_surface_t *
 MoonWindowCocoa::CreateCairoSurface ()
 {
@@ -257,110 +293,191 @@ void
 MoonWindowCocoa::ButtonPressEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIButtonPress (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::KeyDownEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIKeyPress (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::KeyUpEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIKeyRelease (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::ButtonReleaseEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonButtonEvent *mevent = (MoonButtonEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIButtonRelease (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::MotionEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
-		MoonMotionEvent *mevent = (MoonMotionEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUIMotion (mevent);
+		MoonMotionEvent *mevent = (MoonMotionEvent*) Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::MouseEnteredEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUICrossing (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::MouseExitedEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
 	SetCurrentDeployment ();
 
 	if (surface) {
 		MoonCrossingEvent *mevent = (MoonCrossingEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
-		surface->HandleUICrossing (mevent);
+		status = mevent->DispatchToWindow (this);
 		delete mevent;
 	}
-//	[event release];
 }
 
 void
 MoonWindowCocoa::ExposeEvent (Rect r)
 {
 	SetCurrentDeployment ();
+
 	Region *region = new Region (r);
+
+#if USE_CGL
+	if (!cgltarget) {
+		const NSOpenGLPixelFormatAttribute attr[] = {
+			NSOpenGLPFAWindow,
+			NSOpenGLPFADoubleBuffer,
+			NSOpenGLPFAColorSize, 24,
+			NSOpenGLPFAAlphaSize, 8,
+			0
+		};
+
+		NSOpenGLContext *glcontext;
+		NSOpenGLPixelFormat *format;
+		CGLContext *context;
+		MLView *mlview = (MLView *) view;
+
+		format = [[[NSOpenGLPixelFormat alloc] initWithAttributes: attr] autorelease];
+		glcontext = [[NSOpenGLContext alloc] initWithFormat: format shareContext: nil];
+
+		[mlview setOpenGLContext: glcontext];
+
+		cgltarget = new CGLSurface ((CGLContextObj) [glcontext CGLContextObj], width, height);
+		context = new CGLContext (cgltarget);
+
+		if (context->Initialize ()) {
+			this->cglctx = context;
+			this->nsoglcontext = glcontext;
+		} else {
+			delete context;
+		}  
+	}
+
+	if (cgltarget && cglctx) {
+		NSOpenGLContext *glcontext = (NSOpenGLContext *) nsoglcontext;
+		Rect r0 = Rect (0, 0, width, height);
+		Region *region = new Region (r); 
+		int y = height - (r.y + r.height);
+
+		CGLSetCurrentContext ((CGLContextObj) [glcontext CGLContextObj]);
+
+		static_cast<OpenGLSurface *> (cgltarget)->Reshape (width, height);
+
+		static_cast<Context *> (cglctx)->Push (Context::Clip (r0));
+		surface->Paint (cglctx, region, GetTransparent (), true);
+		static_cast<Context *> (cglctx)->Pop ();
+
+		static_cast<OpenGLContext *> (cglctx)->Flush ();
+
+		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
+			[glcontext flushBuffer];
+		} else {
+			glDrawBuffer (GL_FRONT);
+			glViewport (-1, -1, 2, 2);
+			glRasterPos2f (0, 0);
+			glViewport (0, 0, width, height);
+
+			glBitmap (0, 0, 0, 0, r.x, y, NULL);
+
+			glCopyPixels (r.x, y, r.width, r.height, GL_COLOR);
+
+			glDrawBuffer (GL_BACK);
+			glFlush ();
+		}
+
+		return;
+	}
+#endif
+				
 	cairo_surface_t *native = CreateCairoSurface ();
-	CairoSurface *target = new CairoSurface (native);
-	CairoContext *ctx = new CairoContext (target);
+	CairoSurface *target = new CairoSurface (width, height);
+	Context *ctx = new CairoContext (target);
 
 	surface->Paint (ctx, region, GetTransparent (), NO);
+
+	cairo_t *cr = cairo_create (native);
+	cairo_set_source_surface (cr, target->Cairo (), 0, 0);
+	cairo_paint (cr);
+	cairo_destroy (cr);
 
 	cairo_surface_destroy (native);
 

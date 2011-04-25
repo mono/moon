@@ -315,6 +315,7 @@ private:
 	MemoryBuffer *buffer;
 	IMediaStream *get_frame_stream;
 	guint64 buffer_position;
+	bool needs_raw_frames;
 	bool last_buffer;
 	bool ftyp_validated;
 	int8_t nal_size_length; // the length of the size field before each nal unit (in bytes)
@@ -391,6 +392,10 @@ public:
 	Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer);
 	virtual void Dispose ();
 	virtual void UpdateSelected (IMediaStream *stream);
+
+	void SetNeedsRawFrames (bool needs_raw_frames) {
+		this->needs_raw_frames = needs_raw_frames;
+	}
 
 	static bool IsCompatibleType (guint32 type);
 	static char *TypeToString (guint32 type);

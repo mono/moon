@@ -16,12 +16,13 @@
 #include <string.h>
 
 #include "moonlightconfiguration.h"
+#include "runtime.h"
 
 namespace Moonlight {
 
 MoonlightConfiguration::MoonlightConfiguration ()
 {
-	filename = g_build_filename (g_get_user_config_dir (), "moonlight", "configuration", NULL);;
+	filename = g_build_filename (Runtime::GetWindowingSystem()->GetUserConfigFolder(), "moonlight", "configuration", NULL);;
 	data = g_key_file_new ();
 	// We don't care about errors.
 	g_key_file_load_from_file (data, filename, (GKeyFileFlags) (G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS), NULL);
@@ -43,11 +44,11 @@ MoonlightConfiguration::Save ()
 
 	// Make sure the directory exists
 	if (g_mkdir_with_parents (dir, 0700) == -1)
-		fprintf (stderr, "Moonlight: Could not create configuration directory '%s': %s.\n", dir, strerror (errno));
+		g_warning ("Moonlight: Could not create configuration directory '%s': %s.\n", dir, strerror (errno));
 
 
 	if (!g_file_set_contents (filename, contents, length, &error)) {
-		fprintf (stderr, "Moonlight: Could not store configuration in '%s': %s.\n", filename, error->message);
+		g_warning ("Moonlight: Could not store configuration in '%s': %s.\n", filename, error->message);
 		g_error_free (error);
 	}
 

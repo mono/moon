@@ -607,6 +607,7 @@ Mp4Demuxer::Mp4Demuxer (Media *media, IMediaSource *source, MemoryBuffer *initia
 	get_frame_stream = NULL;
 	last_buffer = false;
 	ftyp_validated = false;
+	needs_raw_frames = false;
 	moov = NULL;
 	buffer_position = 0;
 	nal_size_length = 0;
@@ -1036,6 +1037,17 @@ Mp4Demuxer::ParseAVCFrame (MediaFrame *frame, MemoryBuffer *memory_buffer, guint
 		return true;
 	}
 
+	if (needs_raw_frames) {
+		if (!frame->AllocateBuffer (sample_size)) {
+			ReportErrorOccurred ("Mp4Demuxer: could not allocate frame buffer");
+			return false;
+		}
+		if (!memory_buffer->Read (frame->GetBuffer (), sample_size)) {
+			ReportErrorOccurred ("Mp4Demuxer: could not read from memory buffer");
+			return false;
+		}
+		return true;
+	}
 
 	guint8 *out;
 	guint8 *in = buffer;
@@ -1350,6 +1362,8 @@ Mp4Demuxer::OpenMoov ()
 		entry = stsd->entries [0];
 
 		switch (hdlr->handler_type) {
+			/* This is a hack to disable aac audio so we can test vda decoder until we have a audio pipeline */
+#if !defined (__APPLE__)
 		case SOUN_4CC:
 			audio = new AudioStream (media);
 			stream = audio;
@@ -1364,6 +1378,7 @@ Mp4Demuxer::OpenMoov ()
 			audio->SetBlockAlign (0);
 			LOG_MP4 ("Mp4Demuxer::OpenMoov (): added audio track with channels: %i sample rate: %ihz bits per sample: %i\n", audio->GetChannels (), audio->GetSampleRate (), audio->GetBitsPerSample ());
 			break;
+#endif
 		case VIDE_4CC:
 			video = new VideoStream (media);
 			stream = video;
@@ -1425,6 +1440,7 @@ Mp4Demuxer::ParseAVCExtraData (IMediaStream *stream, SampleEntry *entry)
 		return;
 	}
 
+
 	if (stream->IsAudio ()) {
 		stream->SetExtraDataSize (extradata_size);
 		stream->SetExtraData (g_memdup (extradata, extradata_size));
@@ -1437,6 +1453,9 @@ Mp4Demuxer::ParseAVCExtraData (IMediaStream *stream, SampleEntry *entry)
 		g_free (msg);
 		return;
 	}
+
+	stream->SetRawExtraDataSize (extradata_size);
+	stream->SetRawExtraData (g_memdup (extradata, extradata_size));
 
 	guint8 *cur_ptr = extradata;
 
@@ -2637,10 +2656,13 @@ Mp4Demuxer::ReadStsd (guint32 type, guint64 start, guint64 size, StblBox *stbl)
 
 	for (guint32 i = 0; i < stsd->entry_count; i++) {
 		switch (current_handler_type) {
+			/* This is a hack to disable aac audio so we can test vda decoder until we have a audio pipeline */
+#if !defined (__APPLE__)
 		case SOUN_4CC:
 			if (!ReadAudioSampleEntry ((AudioSampleEntry **) &stsd->entries [i]))
 				return false;
 			break;
+#endif
 		case VIDE_4CC:
 			if (!ReadVisualSampleEntry ((VisualSampleEntry **) &stsd->entries [i]))
 				return false;

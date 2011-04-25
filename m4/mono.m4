@@ -15,25 +15,23 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		[with_mono_path=$srcdir/../mono]
 	)
 
+	if test ! -d "$with_mcs_path"; then
+		AC_ERROR($with_mcs_path doesn't exist)
+	fi
+
+	if test ! -d $with_mono_path; then
+		with_mono_path=$with_mcs_path/..
+	fi
+
+	MCS_PATH=$(cd "$with_mcs_path" && pwd)
+	AC_SUBST(MCS_PATH)
+
+	MONO_PATH=$(cd "$with_mono_path" && pwd)
+	AC_SUBST(MONO_PATH)
+
 	MOON_ARG_ENABLED_BY_DEFAULT([browser-support], [Disable the browser plugin])
 	browser_support=$enableval
 	if test "x$browser_support" = xyes; then
-		MONO_REQUIRED_VERSION=$MONO_REQUIRED_BROWSER_VERSION
-
-		if test ! -d "$with_mcs_path"; then
-			AC_ERROR($with_mcs_path doesn't exist)
-		fi
-
-		if test ! -d $with_mono_path; then
-			with_mono_path=$with_mcs_path/..
-		fi
-
-		MCS_PATH=$(cd "$with_mcs_path" && pwd)
-		AC_SUBST(MCS_PATH)
-	
-		MONO_PATH=$(cd "$with_mono_path" && pwd)
-		AC_SUBST(MONO_PATH)
-
 		dnl
 		dnl path to mono-basic checkout
 		dnl
@@ -43,13 +41,12 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			[with_mono_basic_path=$srcdir/../mono-basic]
 		)
 		if test ! -d "$with_mono_basic_path"; then
-			AC_ERROR($with_mono_basic_path doesn't exist)
+			AM_CONDITIONAL([HAVE_MONO_BASIC], false)
+		else
+			MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
+			AC_SUBST(MONO_BASIC_PATH)
+			AM_CONDITIONAL([HAVE_MONO_BASIC], true)
 		fi
-
-		MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
-		AC_SUBST(MONO_BASIC_PATH)
-		AM_CONDITIONAL([HAVE_MONO_BASIC], true)
-
 		AC_DEFINE([PLUGIN_SL_2_0], [1], [Enable Silverlight 2.0 support for the plugin])
 	else
 		AM_CONDITIONAL([HAVE_MONO_BASIC], false)
@@ -59,7 +56,11 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	desktop_support=$enableval
 	if test "x$desktop_support" = xyes; then
 		if test "x$with_pal" = "xgtk"; then
-			PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0)
+			PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0, [
+				AM_CONDITIONAL(HAVE_GTK_SHARP, true)
+			], [
+				AM_CONDITIONAL(HAVE_GTK_SHARP, false)
+			])
 
 			PKG_CHECK_MODULES(WNCKSHARP, wnck-sharp-1.0)
 
@@ -75,12 +76,13 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			], [
 				AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
 			])
-		elif test "x$with_pal" = "xcocoa"; then
-			dnl FIXME
+		else
 			AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
+			AM_CONDITIONAL(HAVE_GTK_SHARP, false)
 		fi
 	else
 		AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
+		AM_CONDITIONAL(HAVE_GTK_SHARP, false)
 	fi
 
 	if test "x$desktop_support" = xno -a "x$browser_support" = xno; then
@@ -108,11 +110,11 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	MOON_ARG_ENABLED_BY_DEFAULT([sdk], [Disable installation of the monodevelop sdk])
 	enable_sdk=$enableval
 	if test "x$enable_sdk" = xyes -a "x$browser_support" = xno; then
-	   enabled_sdk=no
+	   enable_sdk=no
 	   sdk_reason="(SDK requires browser support)"
 	fi
 	if test "x$enable_sdk" = xyes -a "x$with_mono_basic_path" = "xno"; then
-	   enabled_sdk=no
+	   enable_sdk=no
 	   sdk_reason="(SDK requires mono-basic support)"
 	fi
 

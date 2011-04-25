@@ -27,6 +27,7 @@ G_END_DECLS
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/appdomain.h>
+#include <mono/utils/mono-membar.h>
 
 #include "factory.h"
 #include "downloader.h"
@@ -41,6 +42,8 @@ G_END_DECLS
 #include "network-curl.h"
 #endif
 #include "uri.h"
+
+#include <mono/io-layer/atomic.h>
 
 namespace Moonlight {
 
@@ -214,7 +217,6 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		Deployment::desktop_deployment = new Deployment ();
 		Deployment::desktop_deployment->InitializeDesktop (root_domain);
 		Deployment::SetCurrent (Deployment::desktop_deployment);
-		Deployment::desktop_deployment->EnsureManagedPeer ();
 
 		// we need to call this here so that the application's
 		// and surface's managed peer actually gets created.
@@ -467,6 +469,7 @@ Deployment::Deployment()
 	moon_exception = NULL;
 	moon_exception_message = NULL;
 	moon_exception_error_code = NULL;
+	moon_ensure_managed_peer = NULL;
 
 #if DEBUG
 	moon_sources = NULL;
@@ -577,6 +580,11 @@ Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 		errorCode = *(int*) mono_object_unbox (ret);
 	}
 	
+	// This is here to help debugging while get things fleshed out, remove it soon
+#if PLATFORM_ANDROID
+	mono_print_unhandled_exception (exc);
+#endif
+
 	// FIXME: we need to figure out what type of exception it is
 	// and map it to the right MoonError::ExceptionType enum
 	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
@@ -605,6 +613,11 @@ Deployment::ManagedExceptionToMoonError (MonoObject *exc, MoonError::ExceptionTy
 
 		errorCode = *(int*) mono_object_unbox (ret);
 	}
+
+	// This is here to help debugging while get things fleshed out, remove it soon
+#if PLATFORM_ANDROID
+	mono_print_unhandled_exception (exc);
+#endif
 
 	MoonError::FillIn (error, type, errorCode, message);
 }
@@ -799,13 +812,13 @@ Deployment::InitializeAppDomain (const char *system_windows_fullname)
 		
 		app_launcher = mono_class_from_name (system_windows_image, "Mono", "ApplicationLauncher");
 		if (!app_launcher) {
-			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find ApplicationLauncher type.\n");
+			g_warning ("Moonlight: Plugin AppDomain Creation Failure: could not find ApplicationLauncher type.\n");
 			goto completed;
 		}
 
 		moon_exception = mono_class_from_name (system_windows_image, "Mono", "MoonException");
 		if (!moon_exception) {
-			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find MoonException type.\n");
+			g_warning ("Moonlight: Plugin AppDomain Creation Failure: could not find MoonException type.\n");
 			goto completed;
 		}
 		
@@ -816,7 +829,7 @@ Deployment::InitializeAppDomain (const char *system_windows_fullname)
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
 		if (moon_load_xaml == NULL || moon_ensure_managed_peer == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
-			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: lookup of ApplicationLauncher methods failed.\n");
+			g_warning ("Moonlight: Plugin AppDomain Creation Failure: lookup of ApplicationLauncher methods failed.\n");
 			goto completed;
 		}
 
@@ -824,18 +837,18 @@ Deployment::InitializeAppDomain (const char *system_windows_fullname)
 		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
 
 		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
-			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: lookup of MoonException properties failed.\n");
+			g_warning ("Moonlight: Plugin AppDomain Creation Failure: lookup of MoonException properties failed.\n");
 			goto completed;
 		}
 
 		if (!InitializeManagedXamlParser (system_windows_image)) {
-			fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: unable to initialize the managed xaml parser.\n");
+			g_warning ("Moonlight: Plugin AppDomain Creation Failure: unable to initialize the managed xaml parser.\n");
 			goto completed;
 		}
 
 		result = true;
 	} else {
-		fprintf (stderr, "Moonlight: Plugin AppDomain Creation Failure: could not find assembly '%s'.\n", system_windows_fullname);
+		g_warning ("Moonlight: Plugin AppDomain Creation Failure: could not find assembly '%s'.\n", system_windows_fullname);
 	}
 
 #if DEBUG
@@ -1447,7 +1460,7 @@ bool
 Deployment::ShutdownManaged ()
 {
 	if (domain == root_domain) {
-		fprintf (stderr, "Moonlight: Can't unload the root domain!\n");
+		g_warning ("Moonlight: Can't unload the root domain!\n");
 		this->unref (); /* the ref taken in Shutdown */
 		return false;
 	}
@@ -1503,7 +1516,7 @@ Deployment::ShutdownManaged ()
 		/* this shouldn't happen */
 	case ShutdownFailed: /* -1 */ {
 		/* There has been an error during shutdown and we can't continue shutting down */
-		fprintf (stderr, "Moonlight: Shutdown aborted due to unexpected error(s)\n");
+		g_warning ("Moonlight: Shutdown aborted due to unexpected error(s)\n");
 		this->unref (); /* the ref taken in Shutdown */
 		return false;
 	}
@@ -1515,13 +1528,13 @@ Deployment::ShutdownManaged ()
 
 		if (system_windows_image == NULL) {
 			shutdown_state = ShutdownFailed;
-			fprintf (stderr, "Moonlight: Can't find the System.Windows.dll image.\n");
+			g_warning ("Moonlight: Can't find the System.Windows.dll image.\n");
 			break;
 		}
 		
 		if (system_windows_assembly == NULL) {
 			shutdown_state = ShutdownFailed;
-			fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment's assembly.\n");
+			g_warning ("Moonlight: Can't find the System.Windows.Deployment's assembly.\n");
 			break;
 		}
 		
@@ -1529,7 +1542,7 @@ Deployment::ShutdownManaged ()
 			system_windows_deployment = mono_class_from_name (system_windows_image, "System.Windows", "Deployment");
 			if (system_windows_deployment == NULL) {
 				shutdown_state = ShutdownFailed;
-				fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment class.\n");
+				g_warning ("Moonlight: Can't find the System.Windows.Deployment class.\n");
 				break;
 			}
 		}
@@ -1538,7 +1551,7 @@ Deployment::ShutdownManaged ()
 			deployment_shutdown = mono_class_get_method_from_name (system_windows_deployment, "Shutdown", 0);
 			if (deployment_shutdown == NULL) {
 				shutdown_state = ShutdownFailed;
-				fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment:Shutdown method.\n");
+				g_warning ("Moonlight: Can't find the System.Windows.Deployment:Shutdown method.\n");
 				break;
 			}
 		}
@@ -1547,7 +1560,7 @@ Deployment::ShutdownManaged ()
 	
 		if (exc) {
 			shutdown_state = ShutdownFailed;
-			fprintf (stderr, "Moonlight: Exception while cleaning up managed code.\n");  // TODO: print exception message/details
+			g_warning ("Moonlight: Exception while cleaning up managed code.\n");  // TODO: print exception message/details
 			break;
 		}
 	
@@ -1582,7 +1595,7 @@ Deployment::ShutdownManaged ()
 			shutdown_state = ShutdownFailed;
 			MonoObject *msg = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
 			char *message = mono_string_to_utf8 ((MonoString *) msg);
-			fprintf (stderr, "Moonlight: Exception while unloading appdomain: %s\n", message);
+			g_warning ("Moonlight: Exception while unloading appdomain: %s\n", message);
 			g_free (message);
 			break;
 		}
@@ -1894,13 +1907,7 @@ Deployment::DrainUnrefs ()
 	
 loop:
 	// Get the list of objects to unref.
-	do {
-		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
-		
-		if (list == NULL)
-			break;
-		
-	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, NULL));
+	list = (UnrefData *) InterlockedExchangePointer (&pending_unrefs, NULL);
 	
 	// Loop over all the objects in the list and unref them.
 	while (list != NULL) {
@@ -1913,7 +1920,9 @@ loop:
 		list = next;
 	}
 
-	list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+	mono_memory_barrier ();
+	list = (UnrefData *) pending_unrefs;
+
 	if (list != NULL)
 		goto loop;
 	
@@ -1962,9 +1971,10 @@ Deployment::UnrefDelayed (EventObject *obj)
 	
 	// Prepend the list item into the list
 	do {
-		list = (UnrefData *) g_atomic_pointer_get (&pending_unrefs);
+		mono_memory_barrier ();
+		list = (UnrefData *) pending_unrefs;
 		item->next = list;
-	} while (!g_atomic_pointer_compare_and_exchange (&pending_unrefs, list, item));
+	} while (InterlockedExchangePointer (&pending_unrefs, item) != list);
 	
 	// If we created a new list instead of prepending to an existing one, add a idle tick call.
 	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
@@ -1976,7 +1986,7 @@ Deployment::UnrefDelayed (EventObject *obj)
 void
 Deployment::TrackObjectCreated (EventObject *obj)
 {
-	g_atomic_int_inc (&objects_created);
+	InterlockedIncrement (&objects_created);
 
 #if OBJECT_TRACKING
 	pthread_mutex_lock (&objects_alive_mutex);
@@ -1990,7 +2000,7 @@ Deployment::TrackObjectCreated (EventObject *obj)
 void
 Deployment::TrackObjectDestroyed (EventObject *obj)
 {
-	g_atomic_int_inc (&objects_destroyed);
+	InterlockedIncrement (&objects_destroyed);
 	
 #if OBJECT_TRACKING
 	pthread_mutex_lock (&objects_alive_mutex);

@@ -12,7 +12,7 @@
 #define __MOON_FRAMEWORKELEMENT_H__
 
 #include <glib.h>
-#include <math.h>
+#include "pal.h"
 
 #include "uielement.h"
 #include "enums.h"

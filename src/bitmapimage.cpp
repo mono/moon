@@ -13,7 +13,7 @@
 
 #include <config.h>
 
-#include <glib/gstdio.h>
+#include <glib.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -25,7 +25,7 @@
 #include "debug.h"
 #include "factory.h"
 
-#if linux
+#if PAL_GTK_WINDOWING
 #include <gdk-pixbuf/gdk-pixbuf-io.h>
 #endif
 
@@ -496,7 +496,7 @@ BitmapImage::CleanupLoader ()
 	}
 }
 
-#if linux
+#if PAL_GTK_WINDOWING
 // linux is such a special beast, matched only in its
 // unique-snowflakeness by google-chrome
 //
@@ -602,7 +602,7 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 			loader = Runtime::GetWindowingSystem ()->CreatePixbufLoader ("png");
 		// ff d8 ff e0 == jfif magic
 		else if (buffer[0] == 0xff
-#if linux
+#if PAL_GTK_WINDOWING
 			 && !jpeg_loader_is_disabled (GetDeployment()->GetSurface())
 #endif
 			 ) {
