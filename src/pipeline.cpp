@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sys/stat.h>
 
 #include "audio.h"
 #include "pipeline.h"
