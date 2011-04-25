@@ -45,6 +45,7 @@ changequote([,])dnl
 
 AC_CHECK_FUNCS([sigisemptyset])
 AC_CHECK_FUNCS([posix_memalign])
+AC_CHECK_FUNCS([pthread_rwlock_rdlock])
 
 dnl
 dnl Dependencies
