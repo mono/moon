@@ -11,6 +11,9 @@
 #include "config.h"
 
 #include <glib.h>
+#if !GLIB_IS_EGLIB
+#include <glib/gstdio.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
