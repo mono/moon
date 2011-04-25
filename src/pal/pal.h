@@ -51,10 +51,8 @@
 #undef FocusOut
 #endif
 
-#if !HAVE_POSIX_MEMALIGN
-extern "C" {
-	int posix_memalign (void **ptr, size_t alignment, size_t size);
-}
+#ifndef HAVE_POSIX_MEMALIGN
+extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size);
 #endif
 
 #if SANITY

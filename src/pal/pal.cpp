@@ -26,10 +26,9 @@
 #include "pal.h"
 #include "debug.h"
 
-namespace Moonlight {
-
-#if !HAVE_POSIX_MEMALIGN
-extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
+#ifndef HAVE_POSIX_MEMALIGN
+int
+posix_memalign (void **ptr, size_t alignment, size_t size) throw ()
 {
 	*ptr = (void *) malloc (size);
 	if (!*ptr)
@@ -38,6 +37,8 @@ extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
 	return 0;
 }
 #endif /* ! HAVE_POSIX_MEMALIGN */
+
+namespace Moonlight {
 
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
