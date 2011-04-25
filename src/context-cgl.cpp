@@ -44,7 +44,7 @@ CGLContext::BlitVUY2 (unsigned char *data)
 	Target      *target = Top ()->GetTarget ();
 	MoonSurface *ms;
 	Rect        r = target->GetData (&ms);
-	OpengGLSurface *dst = (OpenGLSurface *) ms;
+	OpenGLSurface *dst = (OpenGLSurface *) ms;
 	int         size[] = { dst->Width (), dst->Height () };
 	GLuint texture = dst->Texture ();
 

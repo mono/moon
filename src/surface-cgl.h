@@ -11,7 +11,7 @@
 #ifndef __MOON_SURFACE_CGL_H__
 #define __MOON_SURFACE_CGL_H__
 
-#include "surface-gl.h"
+#include "surface-opengl.h"
 
 #include <OpenGL/OpenGL.h>
 
@@ -22,6 +22,8 @@ namespace Moonlight {
 class MOON_API CGLSurface : public OpenGLSurface {
 public:
 	CGLSurface (CGLContextObj context, GLsizei w, GLsizei h);
+
+	CGLContextObj GetContext () { return context; }
 
 private:
 	CGLContextObj context;
