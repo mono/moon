@@ -44,6 +44,7 @@ dnl LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"
 changequote([,])dnl
 
 AC_CHECK_FUNC([sigisemptyset])
+AC_CHECK_FUNC([posix_memalign])
 
 dnl
 dnl Dependencies

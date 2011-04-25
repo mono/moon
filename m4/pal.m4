@@ -64,7 +64,7 @@ elif test "x$with_pal" = "xcocoa"; then
 	pal_audio_capture="none"
 	pal_font_service="none"
 
-	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src'
+	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src -DGLIB_IS_EGLIB=1'
 	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 
 
 	PAL=cocoa
@@ -90,7 +90,7 @@ elif test "x$with_pal" = "xandroid"; then
 	pal_video_capture="none"
 	pal_audio_capture="none"
 
-	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src'
+	GLIB_CFLAGS='-I$(MONO_PATH)/eglib/src -DGLIB_IS_EGLIB=1'
 	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 
 
 	PAL=android
@@ -99,8 +99,6 @@ elif test "x$with_pal" = "xandroid"; then
 		AC_DEFINE([HAVE_FREETYPE2], [1], 
 			[Include support for freetype2 in the font manager])
         ])
-
-	AC_CHECK_FUNCS(posix_memalign)
 else
 	AC_MSG_ERROR([unknown PAL specified])
 
