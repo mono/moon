@@ -14,6 +14,8 @@
 #include <config.h>
 
 #include <glib.h>
+#include <glib/gstdio.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 
