@@ -567,7 +567,7 @@ MoonWindowingSystemCocoa::GetUserConfigFolder ()
 		[fileManager createDirectoryAtPath: folder attributes: nil];
 	}
 
-	return (gchar *) [folder UTF8String];
+	return [folder UTF8String];
 
 	// todo: make sure we have a NSAutoreleasePool on the thread we're calling this from too, otherwise wrap this in:
 
