@@ -43,8 +43,8 @@ changequote(,)dnl
 dnl LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
 changequote([,])dnl
 
-AC_CHECK_FUNC([sigisemptyset])
-AC_CHECK_FUNC([posix_memalign])
+AC_CHECK_FUNCS([sigisemptyset])
+AC_CHECK_FUNCS([posix_memalign])
 
 dnl
 dnl Dependencies
