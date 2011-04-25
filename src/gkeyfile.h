@@ -31,6 +31,8 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 typedef struct _GKeyFile GKeyFile;
 
 typedef enum {
@@ -62,5 +64,7 @@ void      g_key_file_set_string (GKeyFile *key_file, const gchar *group_name, co
 gboolean  g_key_file_get_boolean (GKeyFile *key_file, const gchar *group_name, const gchar *key, GError **error);
 gchar    *g_key_file_get_string (GKeyFile *key_file, const gchar *group_name, const gchar *key, GError **error);
 gchar    *g_key_file_get_value (GKeyFile *key_file, const gchar *group_name, const gchar *key, GError **error);
+
+G_END_DECLS
 
 #endif /* __G_KEY_FILE_H__ */
