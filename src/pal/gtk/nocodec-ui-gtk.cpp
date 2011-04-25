@@ -22,8 +22,6 @@
 #include "debug.h"
 #include "deployment.h"
 
-//FIXME: PAL THIS
-#if !defined(__APPLE__)
 namespace Moonlight {
 
 bool GtkNoCodecsUI::running = false;
@@ -226,4 +224,3 @@ GtkNoCodecsUI::Close ()
 
 
 };
-#endif

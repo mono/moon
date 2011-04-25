@@ -254,7 +254,7 @@ shutdown_moonlight (gpointer data)
 	/* check if all deployments and all plugins have been freed. */
 	if (Deployment::GetDeploymentCount () != 0 || PluginInstance::GetPluginCount () != 0) {
 		// printf ("shutdown_moonlight (): there are %i deployments and %i plugins left, postponing shutdown a bit.\n", Deployment::GetDeploymentCount (), PluginInstance::GetPluginCount ());
-		Runtime::GetWindowingSystem ()->AddTimeout (MOON_PRIORITY_IDLE,
+		Runtime::GetWindowingSystem ()->AddTimeout (MOON_PRIORITY_DEFAULT,
 							     100,
 							     shutdown_moonlight,
 							     NULL);
