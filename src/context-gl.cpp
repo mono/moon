@@ -47,7 +47,7 @@ GLContext::GLContext (GLSurface *surface) : Context (surface)
 	effect_program = g_hash_table_new (g_direct_hash,
 					   g_direct_equal);
 
-#if !USE_EGL
+#if !USE_EGL && !USE_CGL
 	GETPROCADDR (PFNGLCREATESHADERPROC, glCreateShader);
 	GETPROCADDR (PFNGLSHADERSOURCEPROC, glShaderSource);
 	GETPROCADDR (PFNGLCOMPILESHADERPROC, glCompileShader);
