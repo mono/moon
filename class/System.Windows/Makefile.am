@@ -852,15 +852,6 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	$(AM_V_GEN)resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-LINKER = monolinker
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
-
 $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
 		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
@@ -869,6 +860,7 @@ $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.res
 
 $(assemblysl): $(assemblysl_raw)
 	cp $(assemblysl_raw) $(assemblysl)
+	cp $(assemblysl_raw).mdb $(assemblysl).mdb
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \

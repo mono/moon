@@ -81,20 +81,9 @@ $(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/cl
 		-resource:$(assembly).g.resources
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
-LINKER = monolinker
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-o ../lib/2.1/	\
-	-d ../lib/2.1/ -d ../lib/2.1-bootstrap \
-	-a $(assemblysl_raw)	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
-
 $(assemblysl): $(assemblysl_raw) 
 	cp $(assemblysl_raw) $(assemblysl)
+	cp $(assemblysl_raw).mdb $(assemblysl).mdb
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll $(assembly).g.resources
 	$(AM_V_GEN)$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:DESKTOP -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -r:System.ServiceModel.Web \
