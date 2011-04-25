@@ -41,12 +41,13 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			[with_mono_basic_path=$srcdir/../mono-basic]
 		)
 		if test ! -d "$with_mono_basic_path"; then
-			AM_CONDITIONAL([HAVE_MONO_BASIC], false)
-		else
-			MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
-			AC_SUBST(MONO_BASIC_PATH)
-			AM_CONDITIONAL([HAVE_MONO_BASIC], true)
+			AC_ERROR($with_mono_basic_path doesn't exist)
 		fi
+
+		MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
+		AC_SUBST(MONO_BASIC_PATH)
+		AM_CONDITIONAL([HAVE_MONO_BASIC], true)
+
 		AC_DEFINE([PLUGIN_SL_2_0], [1], [Enable Silverlight 2.0 support for the plugin])
 	else
 		AM_CONDITIONAL([HAVE_MONO_BASIC], false)
