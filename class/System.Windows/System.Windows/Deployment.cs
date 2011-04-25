@@ -62,7 +62,7 @@ namespace System.Windows {
 
 		static Deployment ()
 		{
-#if ANDROID
+#if ANDROID_HACK
 			TextWriter androidWriter = new AndroidLogTextWriter ();
 			Console.SetOut (androidWriter);
 			Console.SetError (androidWriter);

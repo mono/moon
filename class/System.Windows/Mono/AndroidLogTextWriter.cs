@@ -1,3 +1,5 @@
+#if ANDROID_HACK
+
 using System;
 using System.IO;
 using System.Text;
@@ -204,3 +206,4 @@ namespace Mono {
 
     }
 }
+#endif
