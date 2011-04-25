@@ -73,7 +73,7 @@ GtkNoCodecsUI::ResponseEventHandler (GtkDialog *dialog, gint response, gpointer 
 void
 GtkNoCodecsUI::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 {
-	SetCurrentDeployment ();
+	surface->SetCurrentDeployment ();
 
 	switch (response) {
 	case GTK_RESPONSE_DELETE_EVENT:
