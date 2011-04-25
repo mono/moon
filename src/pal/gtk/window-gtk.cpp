@@ -764,8 +764,9 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 gboolean
 MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
-	MoonWindowGtk *window = (MoonWindowGtk*)data;
-
+	MoonWindowGtk *window = (MoonWindowGtk *) data;
+	MoonEventStatus status = MoonEventNotHandled;
+	
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
@@ -799,8 +800,9 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 gboolean
 MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data)
 {
-	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
-
+	MoonWindowGtk *window = (MoonWindowGtk *) user_data;
+	MoonEventStatus status = MoonEventNotHandled;
+	
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
