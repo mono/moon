@@ -743,7 +743,7 @@ void
 Value::FreeValueInternal ()
 {
 	if (boxed_valuetype.IsAllocated())
-		Deployment::GetCurrent ()->FreeGCHandle (boxed_valuetype.ToIntPtr());
+		Deployment::GetCurrent ()->FreeGCHandle (boxed_valuetype);
 
 	if ((kind & GCHandleMask) == GCHandleMask) {
 		Deployment::GetCurrent ()->FreeGCHandle ((GCHandle) u.managed_object);
