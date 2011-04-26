@@ -916,7 +916,7 @@ Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_trans
 	// mono_gc_disable ();
 	// GetDeployment()->DisableToggleRefs ();
 
-	if (getenv ("MOONLIGHT_DISABLE_FRAME_RATE_COUNTER") == NULL)
+	if (getenv ("MOONLIGHT_ENABLE_FRAME_RATE_COUNTER") != NULL)
 		if (!GetEnableFrameRateCounter ())
 			SetEnableFrameRateCounter (true);
 
