@@ -267,7 +267,9 @@ public:
 		void *npobj;
 	} u;
 	void *boxed_valuetype;
-	
+
+	guint32 more_padding;
+
 	// You don't want to be using this ctor.  it's here to help
 	// c++ recognize bad unspecified pointer args to Value ctors
 	// (it normally converts them to bool, which we handle, so you

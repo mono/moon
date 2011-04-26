@@ -139,14 +139,19 @@ namespace Mono {
 		[FieldOffset(0)] public IntPtr p;
 	}
 
+	[StructLayout(LayoutKind.Explicit)]
 	internal struct Value : IDisposable {
 		// Note: Keep these flags in sync with the native version
 		const int NullFlag = 1;
 		const int GCHandleFlag = 1 << 1;
 		
+		[FieldOffset(0)]
 		public Kind k;
+		[FieldOffset(4)]
 		public int bitfield;
+		[FieldOffset(8)]
 		public ValUnion u;
+		[FieldOffset(16)]
 		public IntPtr boxed_valuetype;
 
 		public bool IsGCHandle {
