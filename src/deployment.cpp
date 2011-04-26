@@ -1974,7 +1974,7 @@ Deployment::UnrefDelayed (EventObject *obj)
 		mono_memory_barrier ();
 		list = (UnrefData *) pending_unrefs;
 		item->next = list;
-	} while (InterlockedExchangePointer (&pending_unrefs, item) != list);
+	} while (InterlockedCompareExchangePointer (&pending_unrefs, item, list) != list);
 	
 	// If we created a new list instead of prepending to an existing one, add a idle tick call.
 	if (list == NULL) { // don't look at item->next, item might have gotten freed already.
