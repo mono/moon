@@ -58,14 +58,14 @@ class PlaylistEntry;
 /*DO_FWD_DECLS*/
 
 #if SANITY || DEBUG
-#define checked_get_enum() g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, Type::ENUM), -1); return u.i64;
-#define checked_get_datetime() g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, Type::DATETIME), -1); return u.i64;
-#define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind) && !GetIsManaged (), errval); return mem;
+#define checked_get_enum() g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, GetKind(), Type::ENUM), -1); return u.i64;
+#define checked_get_datetime() g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, GetKind(), Type::DATETIME), -1); return u.i64;
+#define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (GetKind() == (kind) && !GetIsManaged (), errval); return mem;
 #define checked_get_subclass(kind, castas) \
-	if (u.dependency_object == NULL || k == (kind)) \
+	if (u.dependency_object == NULL || GetKind() == (kind))	\
 		return (castas*)u.dependency_object;	\
 	g_return_val_if_fail (!GetIsManaged (), NULL); \
-	g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, kind), NULL); \
+	g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, GetKind(), kind), NULL); \
 	return (castas*)u.dependency_object;
 #else
 #define checked_get_enum() return u.i64;
@@ -73,6 +73,14 @@ class PlaylistEntry;
 #define checked_get_exact(kind, errval, mem) return mem;
 #define checked_get_subclass(kind, castas) return (castas*)u.dependency_object;
 #endif
+
+#define NullMask      ((guint32)1 << 31)
+#define GCHandleMask  ((guint32)1 << 30)
+#define NeedUnrefMask ((guint32)1 << 29)
+
+#define FlagMask (NullMask | GCHandleMask | NeedUnrefMask)
+#define KindMask ~FlagMask
+
 
 struct MOON_API Value {
 public:
@@ -136,13 +144,13 @@ public:
 	// does a deep copy of DependencyObjects.
 	static Value* Clone (Value *v, Types *types = NULL);
 
-	bool GetIsManaged () const;
+	bool GetIsManaged () const { return (kind & GCHandleMask) == GCHandleMask; }
 
 	static bool IsNull (const Value *value) { return value == NULL ? true : value->GetIsNull (); }
-	bool GetIsNull () const;
+	bool GetIsNull () const { return (kind & NullMask) == NullMask; }
 	void SetIsNull (bool isNull);
 
-	bool GetNeedUnref () const;
+	bool GetNeedUnref () const { return (kind & NeedUnrefMask) == NeedUnrefMask; }
 	void SetNeedUnref (bool needUnref);
 
 	static bool AreEqual (const Value *v1, const Value *v2);
@@ -152,7 +160,7 @@ public:
 
 	Value& operator= (const Value& other);
 	
-	bool		Is (Deployment *deployment, Type::Kind type) const { return Type::IsAssignableFrom (deployment, type, k); }
+	bool		Is (Deployment *deployment, Type::Kind type) const { return Type::IsAssignableFrom (deployment, type, GetKind()); }
 	bool		IsEventObject (Deployment *deployment) const;
 	bool		IsDependencyObject (Deployment *deployment) const;
 
@@ -202,7 +210,7 @@ public:
 	
 	char *ToString () const;
 	
-  	Type::Kind GetKind () const;
+  	Type::Kind GetKind () const { return (Type::Kind)(kind & KindMask); }
 	
 	/* @GeneratePInvoke */
 	static void FreeValue (Value *value);
@@ -226,10 +234,10 @@ public:
 	static bool FromStr (Type::Kind type, const char *prop_name, const char *str, /* @MarshalAs=IntPtr,IsOut */ Value **v);
 
   private:
-	Type::Kind k;
-	
-	gint32 padding;
-	
+	gint32 kind;
+
+	GCHandle boxed_valuetype;
+
 	union {
 		double d;
 		float f;
@@ -266,9 +274,8 @@ public:
 		void *managed_object; // This should be a GCHandle, but g++ says that types with ctors/copy assignment operators can't be used in unions
 		void *npobj;
 	} u;
-	void *boxed_valuetype;
 
-	guint32 more_padding;
+  	void SetKind (Type::Kind kind) { this->kind = (this->kind & FlagMask) | (kind & KindMask); }
 
 	// You don't want to be using this ctor.  it's here to help
 	// c++ recognize bad unspecified pointer args to Value ctors

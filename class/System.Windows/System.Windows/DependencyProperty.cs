@@ -160,7 +160,7 @@ namespace System.Windows {
 
 			Value v;
 			if (default_value == DependencyProperty.UnsetValue) {
-				v = new Value { k = types.TypeToKind (propertyType), IsNull = true };
+				v = new Value { Kind = types.TypeToKind (propertyType), IsNull = true };
 				default_value = null;
 			} else {
 				v = Value.FromObject (default_value, true);

@@ -334,7 +334,7 @@ namespace Mono.Xaml
 				value = Value.FromObject (res, false);
 			} else {
 				value = Value.Empty;
-				value.k = Deployment.Current.Types.Find (type).native_handle;
+				value.Kind = Deployment.Current.Types.Find (type).native_handle;
 			}
 
 			return true;
@@ -384,7 +384,7 @@ namespace Mono.Xaml
 				ManagedType mt = Deployment.Current.Types.Find (attach_type);
 				value = Value.Empty;
 				value.IsNull = true;
-				value.k = mt.native_handle;
+				value.Kind = mt.native_handle;
 				return true;
 			} else {
 				pi = parent.GetType ().GetProperty (name.Substring (dot + 1), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
@@ -396,7 +396,7 @@ namespace Mono.Xaml
 
 				ManagedType mt = Deployment.Current.Types.Find (pi.PropertyType);
 				value = Value.Empty;
-				value.k = mt.native_handle;
+				value.Kind = mt.native_handle;
 				value.IsNull = true;
 
 				return true;
@@ -412,7 +412,7 @@ namespace Mono.Xaml
 					return false;
 				}
 				value = Value.Empty;
-				value.k = Deployment.Current.Types.Find (type).native_handle;
+				value.Kind = Deployment.Current.Types.Find (type).native_handle;
 				return true;
 			}
 
@@ -802,7 +802,7 @@ namespace Mono.Xaml
 
 				GCHandle handle = GCHandle.Alloc (e);
 				val->IsGCHandle = true;
-				val->k = Deployment.Current.Types.TypeToKind (e.GetType ());
+				val->Kind = Deployment.Current.Types.TypeToKind (e.GetType ());
 				val->u.p = GCHandle.ToIntPtr (handle);
 			}
 
@@ -850,7 +850,7 @@ namespace Mono.Xaml
 
 				GCHandle handle = GCHandle.Alloc (e);
 				val->IsGCHandle = true;
-				val->k = Deployment.Current.Types.TypeToKind (e.GetType ());
+				val->Kind = Deployment.Current.Types.TypeToKind (e.GetType ());
 				val->u.p = GCHandle.ToIntPtr (handle);
 			}
 

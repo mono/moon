@@ -293,7 +293,7 @@ namespace Mono.Xaml
 		{
 			Value v = XamlParser.CreateFromFile (path, createNamescope, false);
 
-			kind = v.k;
+			kind = v.Kind;
 			return ValueToIntPtr (v);
 		}
 
@@ -327,7 +327,7 @@ namespace Mono.Xaml
 		{
 			Value v = XamlParser.CreateFromFile (xaml, createNamescope, false);
 
-			kind = v.k;
+			kind = v.Kind;
 			return ValueToIntPtr (v);
 		}
 

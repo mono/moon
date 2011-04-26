@@ -142,40 +142,45 @@ namespace Mono {
 	[StructLayout(LayoutKind.Explicit)]
 	internal struct Value : IDisposable {
 		// Note: Keep these flags in sync with the native version
-		const int NullFlag = 1;
-		const int GCHandleFlag = 1 << 1;
-		
+		const uint NullMask      = (uint)1 << 31;
+		const uint GCHandleMask  = (uint)1 << 30;
+		const uint NeedUnrefMask = (uint)1 << 29;
+		const uint KindMask      = (uint)0x1fffffff;
+
 		[FieldOffset(0)]
-		public Kind k;
+		public uint k;
 		[FieldOffset(4)]
-		public int bitfield;
+		public uint boxed_valuetype;
 		[FieldOffset(8)]
 		public ValUnion u;
-		[FieldOffset(16)]
-		public IntPtr boxed_valuetype;
+
+		public Kind Kind {
+			get { return (Kind)(k & KindMask); }
+			set { k = (k & ~KindMask) | ((uint)value & KindMask); }
+		}
 
 		public bool IsGCHandle {
-			get { return (bitfield & GCHandleFlag) == GCHandleFlag; }
+			get { return (k & GCHandleMask) == GCHandleMask; }
 			set {
 				if (value)
-					bitfield |= GCHandleFlag;
+					k |= GCHandleMask;
 				else
-					bitfield &= ~GCHandleFlag;
+					k &= ~GCHandleMask;
 			}
 		}
 
 		public bool IsNull {
-			get { return (bitfield & NullFlag) == NullFlag; }
+			get { return (k & NullMask) == NullMask; }
 			set {
 				if (value)
-					bitfield |= NullFlag;
+					k |= NullMask;
 				else
-					bitfield &= ~NullFlag;
+					k &= ~NullMask;
 			}
 		}
 
 		public static Value Empty {
-			get { return new Value { k = Kind.INVALID, IsNull = true }; }
+			get { return new Value { Kind = Kind.INVALID, IsNull = true }; }
 		}
 
 		public static unsafe object ToObject (Type type, Value* value)
@@ -184,8 +189,8 @@ namespace Mono {
 				return null;
 			}
 
-			if (value->boxed_valuetype != IntPtr.Zero) {
-				return GCHandle.FromIntPtr (value->boxed_valuetype).Target;
+			if (value->boxed_valuetype != 0) {
+				return GCHandle.FromIntPtr ((IntPtr)value->boxed_valuetype).Target;
 			}
 
 			if (value->IsGCHandle) {
@@ -194,7 +199,7 @@ namespace Mono {
 				return handle.Target;
 			}
 
-			switch (value->k) {
+			switch (value->Kind) {
 			case Kind.INVALID:
 				return null;
 					
@@ -358,7 +363,7 @@ namespace Mono {
 
 			case Kind.STYLUSPOINT:
 			case Kind.UNMANAGEDSTYLUSPOINT: {
-				var kind = value->k;
+				var kind = value->Kind;
 				var ptr = value->u.p;
 				var x = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, UnmanagedStylusPoint.XProperty.Native));
 				var y = (double) Value.ToObject (typeof (double), NativeMethods.dependency_object_get_value (ptr, UnmanagedStylusPoint.YProperty.Native));
@@ -398,7 +403,7 @@ namespace Mono {
 					if (map == IntPtr.Zero)
 						continue;
 					Value *attribute = (Value *) map;
-					if (attribute->k != Kind.MEDIAATTRIBUTE || attribute->u.p == IntPtr.Zero)
+					if (attribute->Kind != Kind.MEDIAATTRIBUTE || attribute->u.p == IntPtr.Zero)
 						continue;
 					string name = NativeMethods.media_attribute_get_name (attribute->u.p);
 					string val = NativeMethods.media_attribute_get_value (attribute->u.p);
@@ -415,13 +420,13 @@ namespace Mono {
 				return Deployment.Current.Types.KindToType (type_info->Kind);
 			}
 			default:
-				Type tt = Deployment.Current.Types.KindToType (value->k);
+				Type tt = Deployment.Current.Types.KindToType (value->Kind);
 				if (tt != null && tt.IsEnum)
 					return Enum.ToObject (tt, value->u.i32);
 				break;
 			}
 
-			if (NativeMethods.type_is_event_object (value->k)){
+			if (NativeMethods.type_is_event_object (value->Kind)){
 				if (value->u.p == IntPtr.Zero)
 					return null;
 					
@@ -429,7 +434,7 @@ namespace Mono {
 			}
 
 			throw new Exception (String.Format ("Do not know how to convert {0}  {1}. Managed type: {2}",
-			                                    value->k, (int) value->k, Deployment.Current.Types.KindToType (value->k)));
+			                                    value->Kind, (int) value->Kind, Deployment.Current.Types.KindToType (value->Kind)));
 		}
 		
 		public static unsafe object ToObject (IntPtr value)
@@ -458,7 +463,7 @@ namespace Mono {
 			
 			unsafe {
 				if (box_value_types && (v is ValueType || v is string)) {
-					value.boxed_valuetype = GCHandle.ToIntPtr (GCHandle.Alloc (v));
+					value.boxed_valuetype = (uint)GCHandle.ToIntPtr (GCHandle.Alloc (v));
 				}
 
 				if (v is IEasingFunction && !(v is EasingFunctionBase))
@@ -473,80 +478,80 @@ namespace Mono {
 
 					NativeMethods.event_object_ref (dov.NativeHandle);
 
-					value.k = dov.GetKind ();
+					value.Kind = dov.GetKind ();
 					value.u.p = dov.NativeHandle;
 
 				} else if (v is DependencyProperty) {
-					value.k = Kind.DEPENDENCYPROPERTY;
+					value.Kind = Kind.DEPENDENCYPROPERTY;
 					value.u.p = ((DependencyProperty)v).Native;
 				}
 				else if (v is int || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(int))) {
-					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
+					value.Kind = Deployment.Current.Types.TypeToKind (v.GetType ());
 					value.u.i32 = (int) v;
 				}
 				else if (v is byte || (v.GetType ().IsEnum && Enum.GetUnderlyingType (v.GetType()) == typeof(byte))) {
-					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
+					value.Kind = Deployment.Current.Types.TypeToKind (v.GetType ());
 					value.u.i32 = (byte) v;
 				}
 				else if (v is bool) {
-					value.k = Kind.BOOL;
+					value.Kind = Kind.BOOL;
 					value.u.i32 = ((bool) v) ? 1 : 0;
 				}
 				else if (v is double) {
-					value.k = Kind.DOUBLE;
+					value.Kind = Kind.DOUBLE;
 					value.u.d = (double) v;
 				}
 				else if (v is float) {
-					value.k = Kind.FLOAT;
+					value.Kind = Kind.FLOAT;
 					value.u.f = (float) v;
 				}
 				else if (v is long) {
-					value.k = Kind.INT64;
+					value.Kind = Kind.INT64;
 					value.u.i64 = (long) v;
 				}
 				else if (v is TimeSpan) {
 					TimeSpan ts = (TimeSpan) v;
-					value.k = Kind.TIMESPAN;
+					value.Kind = Kind.TIMESPAN;
 					value.u.i64 = ts.Ticks;
 				}
 				else if (v is ulong) {
-					value.k = Kind.UINT64;
+					value.Kind = Kind.UINT64;
 					value.u.ui64 = (ulong) v;
 				}
 				else if (v is uint) {
-					value.k = Kind.UINT32;
+					value.Kind = Kind.UINT32;
 					value.u.ui32 = (uint) v;
 				}
 				else if (v is char) {
-					value.k = Kind.CHAR;
+					value.Kind = Kind.CHAR;
 					value.u.ui32 = (uint) (char) v;
 				}
 				else if (v is string) {
-					value.k = Kind.STRING;
+					value.Kind = Kind.STRING;
 
 					value.u.p = StringToIntPtr ((string) v);
 				}
 				else if (v is Rect) {
 					Rect rect = (Rect) v;
-					value.k = Kind.RECT;
+					value.Kind = Kind.RECT;
 					value.u.p = Marshal.AllocHGlobal (sizeof (Rect));
 					Marshal.StructureToPtr (rect, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Size) {
 					Size size = (Size) v;
-					value.k = Kind.SIZE;
+					value.Kind = Kind.SIZE;
 					value.u.p = Marshal.AllocHGlobal (sizeof (Size));
 					Marshal.StructureToPtr (size, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is CornerRadius) {
 					CornerRadius corner = (CornerRadius) v;
-					value.k = Kind.CORNERRADIUS;
+					value.Kind = Kind.CORNERRADIUS;
 					value.u.p = Marshal.AllocHGlobal (sizeof (CornerRadius));
 					Marshal.StructureToPtr (corner, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is AudioFormat) {
 					AudioFormat f = (AudioFormat) v;
-					value.k = Kind.AUDIOFORMAT;
+					value.Kind = Kind.AUDIOFORMAT;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedAudioFormat));
 					UnmanagedAudioFormat *format = (UnmanagedAudioFormat*) value.u.p;
 					format->bitsPerSample = f.BitsPerSample;
@@ -556,7 +561,7 @@ namespace Mono {
 				}
 				else if (v is VideoFormat) {
 					VideoFormat f = (VideoFormat) v;
-					value.k = Kind.VIDEOFORMAT;
+					value.Kind = Kind.VIDEOFORMAT;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedVideoFormat));
 					UnmanagedVideoFormat *format = (UnmanagedVideoFormat*) value.u.p;
 					format->framesPerSecond = f.FramesPerSecond;
@@ -567,19 +572,19 @@ namespace Mono {
 				}
 				else if (v is Point) {
 					Point pnt = (Point) v;
-					value.k = Kind.POINT;
+					value.Kind = Kind.POINT;
 					value.u.p = Marshal.AllocHGlobal (sizeof (Point));
 					Marshal.StructureToPtr (pnt, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Thickness) {
 					Thickness thickness = (Thickness)v;
-					value.k = Kind.THICKNESS;
+					value.Kind = Kind.THICKNESS;
 					value.u.p = Marshal.AllocHGlobal (sizeof (Thickness));
 					Marshal.StructureToPtr (thickness, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Color) {
 					Color c = (Color) v;
-					value.k = Kind.COLOR;
+					value.Kind = Kind.COLOR;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedColor));
 					UnmanagedColor* color = (UnmanagedColor*) value.u.p;
 					color->r = c.R / 255.0f;
@@ -602,25 +607,25 @@ namespace Mono {
 				}
 				else if (v is Duration) {
 					Duration d = (Duration) v;
-					value.k = Kind.DURATION;
+					value.Kind = Kind.DURATION;
 					value.u.p = Marshal.AllocHGlobal (sizeof (Duration));
 					Marshal.StructureToPtr (d, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is KeyTime) {
 					KeyTime k = (KeyTime) v;
-					value.k = Kind.KEYTIME;
+					value.Kind = Kind.KEYTIME;
 					value.u.p = Marshal.AllocHGlobal (sizeof (KeyTime));
 					Marshal.StructureToPtr (k, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is RepeatBehavior) {
 					RepeatBehavior d = (RepeatBehavior) v;
-					value.k = Kind.REPEATBEHAVIOR;
+					value.Kind = Kind.REPEATBEHAVIOR;
 					value.u.p = Marshal.AllocHGlobal (sizeof (RepeatBehavior));
 					Marshal.StructureToPtr (d, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontFamily) {
 					FontFamily family = (FontFamily) v;
-					value.k = Kind.FONTFAMILY;
+					value.Kind = Kind.FONTFAMILY;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontFamily));
 					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
@@ -628,7 +633,7 @@ namespace Mono {
 				else if (v is FontSource) {
 					FontSource source = (FontSource) v;
 					
-					value.k = Kind.FONTSOURCE;
+					value.Kind = Kind.FONTSOURCE;
 					
 					if (source.wrapper != null || source.typeface != null) {
 						value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontSource));
@@ -652,7 +657,7 @@ namespace Mono {
 
 				else if (v is PropertyPath) {
 					PropertyPath propertypath = (PropertyPath) v;
-					value.k = Kind.PROPERTYPATH;
+					value.Kind = Kind.PROPERTYPATH;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedPropertyPath));
 
 					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
@@ -668,52 +673,52 @@ namespace Mono {
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
 
-					value.k = Kind.URI;
+					value.Kind = Kind.URI;
 					value.u.p = UriHelper.ToNativeUri (uri);
 				}
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
 					
-					value.k = Kind.XMLLANGUAGE;
+					value.Kind = Kind.XMLLANGUAGE;
 					value.u.p = StringToIntPtr (lang.IetfLanguageTag);
 				}
 				else if (v is Cursor) {
 					Cursor c = (Cursor) v;
 
-					value.k = Kind.CURSORTYPE;
+					value.Kind = Kind.CURSORTYPE;
 					value.u.i32 = (int)c.cursor;
 				}
 				else if (v is GridLength) {
 					GridLength gl = (GridLength) v;
-					value.k = Kind.GRIDLENGTH;
+					value.Kind = Kind.GRIDLENGTH;
 					value.u.p = Marshal.AllocHGlobal (sizeof (GridLength));
 					Marshal.StructureToPtr (gl, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontStretch) {
 					FontStretch stretch = (FontStretch) v;
-					value.k = Kind.FONTSTRETCH;
+					value.Kind = Kind.FONTSTRETCH;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontStretch));
 					Marshal.StructureToPtr (stretch, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontStyle) {
 					FontStyle style = (FontStyle) v;
-					value.k = Kind.FONTSTYLE;
+					value.Kind = Kind.FONTSTYLE;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontStyle));
 					Marshal.StructureToPtr (style, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontWeight) {
 					FontWeight weight = (FontWeight) v;
-					value.k = Kind.FONTWEIGHT;
+					value.Kind = Kind.FONTWEIGHT;
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontWeight));
 					Marshal.StructureToPtr (weight, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is TextDecorationCollection) {
-					value.k = Kind.TEXTDECORATIONS;
+					value.Kind = Kind.TEXTDECORATIONS;
 					value.u.i32 = (int) (v as TextDecorationCollection).Kind;
 				}
 				else if (v is Type) {
 					Type t = v as Type;
-					value.k = Kind.MANAGEDTYPEINFO;
+					value.Kind = Kind.MANAGEDTYPEINFO;
 					value.u.p = NativeMethods.managed_type_info_new (Deployment.Current.Types.TypeToKind (t));
 				} else if (v is Value) {
 					throw new InvalidOperationException ("You can not create a Mono.Value from a Mono.Value.");
@@ -727,7 +732,7 @@ namespace Mono {
 					// or register a callback on the surface for the unmanaged code to call.
 					GCHandle handle = GCHandle.Alloc (v);
 					value.IsGCHandle = true;
-					value.k = Deployment.Current.Types.TypeToKind (v.GetType ());
+					value.Kind = Deployment.Current.Types.TypeToKind (v.GetType ());
 					value.u.p = GCHandle.ToIntPtr (handle);
 				}
 			}

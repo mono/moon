@@ -17,21 +17,21 @@ namespace Moonlight {
 
 struct GCHandle {
 private:
-	void *ptr;
+	guint32 handle;
 
 public:
-	GCHandle () { ptr = NULL; }
-	GCHandle (int handle) { ptr = GINT_TO_POINTER (handle); }
-	GCHandle (void *handle) { ptr = handle; }
-	//GCHandle (const GCHandle &e) { ptr = e.ptr; }
-	//GCHandle& operator= (const GCHandle& e) { ptr = e.ptr; return *this; }
+	GCHandle () { handle = 0; }
+	GCHandle (guint32 handle) { this->handle = handle; }
+	GCHandle (void *handle) { this->handle = GPOINTER_TO_UINT (handle); }
+	//GCHandle (const GCHandle &e) { handle = e handle; }
+	//GCHandle& operator= (const GCHandle& e) { handle = e.handle; return *this; }
 
-	void *ToIntPtr () const { return ptr; }
-	int ToInt () const { return GPOINTER_TO_INT (ptr); }
-	bool IsAllocated () const { return ptr != NULL; }
-	bool IsWeak () const { return (ToInt () & 7) - 1 == 0; }
-	bool IsNormal () const { return (ToInt () & 7) - 1 == 2; }
-	void Clear () { ptr = NULL; }
+	void *ToIntPtr () const { return GUINT_TO_POINTER (handle); }
+	guint32 ToInt () const { return handle; }
+	bool IsAllocated () const { return handle != 0; }
+	bool IsWeak () const { return (handle & 7) - 1 == 0; }
+	bool IsNormal () const { return (handle & 7) - 1 == 2; }
+	void Clear () { handle = 0; }
 
 	static GCHandle Zero;
 };

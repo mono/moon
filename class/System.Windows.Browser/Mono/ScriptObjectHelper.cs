@@ -145,7 +145,7 @@ namespace Mono {
 			// ints and doubles, depending on the value).
 			// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
 
-			switch (v.k) {
+			switch (v.Kind) {
 				case Kind.BOOL:
 					return v.u.i32 != 0;
 				case Kind.INT32:
@@ -203,7 +203,7 @@ namespace Mono {
 						return new ScriptObjectCollection (v.u.p);
 					return new ScriptObject (v.u.p);
 			default:
-				Console.WriteLine ("unsupported Kind.{0}", v.k);
+				Console.WriteLine ("unsupported Kind.{0}", v.Kind);
 				throw new NotSupportedException ();
 			}
 		}
@@ -211,7 +211,7 @@ namespace Mono {
 		public static void ToValue (ref Value v, object o)
 		{
 			if (o == null) {
-				v.k = Kind.NPOBJ;
+				v.Kind = Kind.NPOBJ;
 				v.u.p = IntPtr.Zero;
 				return;
 			}
@@ -219,24 +219,24 @@ namespace Mono {
 			if (o is sbyte || o is short || o is int || o is byte || o is ushort ||
 				o is uint || o is long || o is ulong || o is float || o is double ||
 				o is decimal || o.GetType ().IsEnum) {
-				v.k = Kind.DOUBLE;
+				v.Kind = Kind.DOUBLE;
 				v.u.d = Convert.ToDouble (o);
 			} else if (o is bool) {
-				v.k = Kind.BOOL;
+				v.Kind = Kind.BOOL;
 				v.u.i32 = ((bool) o) ? 1 : 0;
 			} else if (o is char || o is string || o is Guid) {
-				v.k = Kind.STRING;
+				v.Kind = Kind.STRING;
 				v.u.p = Value.StringToIntPtr (o.ToString ());
 			} else if (o is DateTime) {
-				v.k = Kind.DATETIME;
+				v.Kind = Kind.DATETIME;
 				v.u.i64 = (((DateTime)o).Ticks - new DateTime (1970,1,1).Ticks) / 10000;
 			} else if (o is ScriptObject) {
 				// FIXME: We should ref the SO here
-				v.k = Kind.NPOBJ;
+				v.Kind = Kind.NPOBJ;
 				v.u.p = ((ScriptObject)o).Handle;
 			} else {
 				// FIXME: We should ref the SO here
-				v.k = Kind.NPOBJ;
+				v.Kind = Kind.NPOBJ;
 				v.u.p = ManagedObject.GetManagedObject (o).Handle;
 			}
 		}

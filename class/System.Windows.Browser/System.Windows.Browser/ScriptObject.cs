@@ -273,7 +273,7 @@ namespace System.Windows.Browser {
 			Mono.Value res;
 			NativeMethods.html_object_get_property (PluginHost.Handle, h, name, out res);
 			using (res)
-				if (res.k != Mono.Kind.INVALID)
+				if (res.Kind != Mono.Kind.INVALID)
 					result = ScriptObjectHelper.FromValue (res);
 			return result;
 		}
@@ -316,7 +316,7 @@ namespace System.Windows.Browser {
 				throw new InvalidOperationException ();
 
 			using (res)
-				if (res.k != Mono.Kind.INVALID)
+				if (res.Kind != Mono.Kind.INVALID)
 					result = ScriptObjectHelper.FromValue (res);
 
 			return result;
@@ -337,7 +337,7 @@ namespace System.Windows.Browser {
 				if (!NativeMethods.html_object_invoke_self (PluginHost.Handle, Handle, vargs, (uint)length, out res))
 					throw new InvalidOperationException ();
 
-				if (res.k != Mono.Kind.INVALID)
+				if (res.Kind != Mono.Kind.INVALID)
 					result = ScriptObjectHelper.FromValue (res);
 			}
 			finally {
@@ -408,7 +408,7 @@ namespace System.Windows.Browser {
 
 				EventInfo einfo = events[scriptAlias];
 
-				if (value.k != Kind.NPOBJ)
+				if (value.Kind != Kind.NPOBJ)
 					throw new InvalidOperationException ("html bridge only allows function objects as event delegates");
 
 				ScriptObject event_object = ScriptObjectHelper.FromValue (value) as ScriptObject;

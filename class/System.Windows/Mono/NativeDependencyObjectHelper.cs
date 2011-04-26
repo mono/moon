@@ -208,7 +208,7 @@ namespace Mono {
 			}
 			
 			if (value == null) {
-				using (var val = new Value { k = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true }) {
+				using (var val = new Value { Kind = NativeMethods.dependency_property_get_property_type(dp.Native), IsNull = true }) {
 					var v = val;
 					NativeMethods.dependency_object_set_value (wrapper.NativeHandle, dp.Native, ref v);
 				}

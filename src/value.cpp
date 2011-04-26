@@ -44,11 +44,7 @@ namespace Moonlight {
  * Value implementation
  */
 
-static const int NullFlag = 1;
-static const int GCHandleFlag = 1 << 1;
-static const int NoUnrefFlag = 1 << 2;
-
-static const int EqualityMask = NullFlag | GCHandleFlag;
+static const guint32 EqualityMask = NullMask | GCHandleMask | KindMask;
 
 Value*
 Value::CreateUnrefPtr (EventObject* dob)
@@ -75,7 +71,7 @@ Value::CreateUnrefPtr (Uri *uri)
 	Value *result = new Value ();
 	/* We could clone 'uri' and delete it, but instead we just stuff it into our fields to save a malloc/free.
 	 * This method is somewhat badly named for 'Uri', but it's the name the generator generates */
-	result->k = Type::URI;
+	result->SetKind (Type::URI);
 	result->u.uri = uri;
 	result->SetIsNull (false);
 	LOG_VALUE ("unref [delete] Value [%p] %s\n", result, result->GetName());
@@ -91,7 +87,7 @@ Value::Clone (Value *v, Types *types)
 	if (!types)
 		types = Deployment::GetCurrent()->GetTypes();
 
-	if (!v->GetIsNull () && types->Find (v->k)->IsDependencyObject ()) {
+	if (!v->GetIsNull () && types->Find (v->GetKind())->IsDependencyObject ()) {
 		return Value::CreateUnrefPtr (v->AsDependencyObject()->Clone (types));
 	}
 	else {
@@ -99,60 +95,35 @@ Value::Clone (Value *v, Types *types)
 	}
 }
 
-Type::Kind
-Value::GetKind () const
-{
-	return k;
-}
-
-bool
-Value::GetNeedUnref () const
-{
-	return (padding & NoUnrefFlag) == 0;
-}
-
 void
 Value::SetNeedUnref (bool needUnref)
 {
 	if (needUnref)
-		padding &= ~NoUnrefFlag;
+		kind |= NeedUnrefMask;
 	else
-		padding |= NoUnrefFlag;
-}
-
-bool
-Value::GetIsManaged () const
-{
-	return (padding & GCHandleFlag) == GCHandleFlag;
-}
-
-bool
-Value::GetIsNull () const
-{
-	return (padding & NullFlag) == NullFlag;
+		kind &= ~NeedUnrefMask;
 }
 
 void
 Value::SetIsNull (bool isNull)
 {
 	if (isNull)
-		padding |= NullFlag;
+		kind |= NullMask;
 	else
-		padding &= ~NullFlag;
+		kind &= ~NullMask;
 }
 
 void
 Value::Init ()
 {
-	padding = 0;
-	boxed_valuetype = NULL;
+	kind = 0;
 	memset (&u, 0, sizeof (u));
 	SetIsNull (true);
 }
 
 Value::Value()
 {
-	k = Type::INVALID;
+	SetKind (Type::INVALID);
 	Init ();
 }
 
@@ -164,13 +135,13 @@ Value::Value (const Value& v)
 Value::Value (Type::Kind k)
 {
 	Init();
-	this->k = k;
+	this->SetKind (k);
 }
 
 Value::Value(bool z)
 {
 	Init ();
-	k = Type::BOOL;
+	SetKind (Type::BOOL);
 	u.i32 = z;
 	SetIsNull (false);
 }
@@ -178,7 +149,7 @@ Value::Value(bool z)
 Value::Value (double d)
 {
 	Init ();
-	k = Type::DOUBLE;
+	SetKind (Type::DOUBLE);
 	u.d = d;
 	SetIsNull (false);
 }
@@ -186,7 +157,7 @@ Value::Value (double d)
 Value::Value (gint64 i, Type::Kind as)
 {
 	Init ();
-	k = as;
+	SetKind (as);
 	u.i64 = i;
 	SetIsNull (false);
 }
@@ -194,7 +165,7 @@ Value::Value (gint64 i, Type::Kind as)
 Value::Value (gint32 i)
 {
 	Init ();
-	k = Type::INT32;
+	SetKind (Type::INT32);
 	u.i32 = i;
 	SetIsNull (false);
 }
@@ -202,7 +173,7 @@ Value::Value (gint32 i)
 Value::Value (gint32 i, Type::Kind as)
 {
 	Init ();
-	k = as;
+	SetKind (as);
 	u.i32 = i;
 	SetIsNull (false);
 }
@@ -210,7 +181,7 @@ Value::Value (gint32 i, Type::Kind as)
 Value::Value (guint32 i)
 {
 	Init ();
-	k = Type::UINT32;
+	SetKind (Type::UINT32);
 	u.ui32 = i;
 	SetIsNull (false);
 }
@@ -218,7 +189,7 @@ Value::Value (guint32 i)
 Value::Value (gunichar c, Type::Kind as)
 {
 	Init ();
-	k = as;
+	SetKind (as);
 	u.c = c;
 	SetIsNull (false);
 }
@@ -226,7 +197,7 @@ Value::Value (gunichar c, Type::Kind as)
 Value::Value (Color c)
 {
 	Init ();
-	k = Type::COLOR;
+	SetKind (Type::COLOR);
 	u.color = g_new (Color, 1);
 	*u.color = Color (c);
 	SetIsNull (false);
@@ -236,16 +207,16 @@ Value::Value (EventObject* obj)
 {
 	Init ();
 	if (obj == NULL) {
-		k = Type::EVENTOBJECT;
+		SetKind (Type::EVENTOBJECT);
 	}
 	else {
 		if (!obj->GetType ()->IsEventObject ()) {
 			g_warning ("creating invalid dependency object Value");
-			k = Type::INVALID;
+			SetKind (Type::INVALID);
 			u.dependency_object = NULL;
 			return;
 		}
-		k = obj->GetObjectType ();
+		SetKind (obj->GetObjectType ());
 		LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 		obj->ref ();
 		SetIsNull (false);
@@ -258,7 +229,7 @@ Value::Value (EventObject* obj)
 Value::Value (FontFamily family)
 {
 	Init ();
-	k = Type::FONTFAMILY;
+	SetKind (Type::FONTFAMILY);
 	u.fontfamily = g_new (FontFamily, 1);
 	u.fontfamily->source = g_strdup (family.source);
 	SetIsNull (false);
@@ -267,7 +238,7 @@ Value::Value (FontFamily family)
 Value::Value (const FontFamily *family)
 {
 	Init ();
-	k = Type::FONTFAMILY;
+	SetKind (Type::FONTFAMILY);
 	if (family) {
 		u.fontfamily = g_new (FontFamily, 1);
 		u.fontfamily->source = g_strdup (family->source);
@@ -278,7 +249,7 @@ Value::Value (const FontFamily *family)
 Value::Value (FontWeight weight)
 {
 	Init ();
-	k = Type::FONTWEIGHT;
+	SetKind (Type::FONTWEIGHT);
 	u.fontweight = g_new (FontWeight, 1);
 	u.fontweight->weight = weight.weight;
 	SetIsNull (false);
@@ -287,7 +258,7 @@ Value::Value (FontWeight weight)
 Value::Value (FontStretch stretch)
 {
 	Init ();
-	k = Type::FONTSTRETCH;
+	SetKind (Type::FONTSTRETCH);
 	u.fontstretch = g_new (FontStretch, 1);
 	u.fontstretch->stretch = stretch.stretch;
 	SetIsNull (false);
@@ -296,7 +267,7 @@ Value::Value (FontStretch stretch)
 Value::Value (FontStyle style)
 {
 	Init ();
-	k = Type::FONTSTYLE;
+	SetKind (Type::FONTSTYLE);
 	u.fontstyle = g_new (FontStyle, 1);
 	u.fontstyle->style = style.style;
 	SetIsNull (false);
@@ -305,7 +276,7 @@ Value::Value (FontStyle style)
 Value::Value (FontSource source)
 {
 	Init ();
-	k = Type::FONTSOURCE;
+	SetKind (Type::FONTSOURCE);
 	u.fontsource = g_new (FontSource, 1);
 	u.fontsource->type = source.type;
 	
@@ -325,7 +296,7 @@ Value::Value (FontSource source)
 Value::Value (FontResource resource)
 {
 	Init ();
-	k = Type::FONTRESOURCE;
+	SetKind (Type::FONTRESOURCE);
 	u.fontresource = new FontResource (resource);
 	SetIsNull (false);
 }
@@ -333,7 +304,7 @@ Value::Value (FontResource resource)
 Value::Value (const PropertyPath *propertypath)
 {
 	Init ();
-	k = Type::PROPERTYPATH;
+	SetKind (Type::PROPERTYPATH);
 	if (propertypath) {
 		u.propertypath = g_new0 (PropertyPath, 1);
 		*u.propertypath = *propertypath;
@@ -344,7 +315,7 @@ Value::Value (const PropertyPath *propertypath)
 Value::Value (Type::Kind kind, void *npobj)
 {
 	Init ();
-	k = kind;
+	SetKind (kind);
 	u.managed_object = npobj;
 	SetIsNull (npobj == NULL);
 }
@@ -352,7 +323,7 @@ Value::Value (Type::Kind kind, void *npobj)
 Value::Value (Point pt)
 {
 	Init ();
-	k = Type::POINT;
+	SetKind (Type::POINT);
 	u.point = g_new (Point, 1);
 	*u.point = Point (pt);
 	SetIsNull (false);
@@ -361,7 +332,7 @@ Value::Value (Point pt)
 Value::Value (const Uri *uri)
 {
 	Init ();
-	k = Type::URI;
+	SetKind (Type::URI);
 	u.uri = Uri::Clone (uri);
 	SetIsNull (false);
 }
@@ -369,7 +340,7 @@ Value::Value (const Uri *uri)
 Value::Value (Rect rect)
 {
 	Init ();
-	k = Type::RECT;
+	SetKind (Type::RECT);
 	u.rect = g_new (Rect, 1);
 	*u.rect = Rect (rect);
 	SetIsNull (false);
@@ -378,7 +349,7 @@ Value::Value (Rect rect)
 Value::Value (Size size)
 {
 	Init ();
-	k = Type::SIZE;
+	SetKind (Type::SIZE);
 	u.size = g_new (Size, 1);
 	*u.size = Size (size);
 	SetIsNull (false);
@@ -387,7 +358,7 @@ Value::Value (Size size)
 Value::Value (RepeatBehavior repeat)
 {
 	Init();
-	k = Type::REPEATBEHAVIOR;
+	SetKind (Type::REPEATBEHAVIOR);
 	u.repeat = g_new (RepeatBehavior, 1);
 	*u.repeat = RepeatBehavior (repeat);
 	SetIsNull (false);
@@ -396,7 +367,7 @@ Value::Value (RepeatBehavior repeat)
 Value::Value (Duration duration)
 {
 	Init();
-	k = Type::DURATION;
+	SetKind (Type::DURATION);
 	u.duration = g_new (Duration, 1);
 	*u.duration = Duration (duration);
 	SetIsNull (false);
@@ -405,7 +376,7 @@ Value::Value (Duration duration)
 Value::Value (KeyTime keytime)
 {
 	Init ();
-	k = Type::KEYTIME;
+	SetKind (Type::KEYTIME);
 	u.keytime = g_new (KeyTime, 1);
 	*u.keytime = KeyTime (keytime);
 	SetIsNull (false);
@@ -414,7 +385,7 @@ Value::Value (KeyTime keytime)
 Value::Value (const char *s, Type::Kind kind, bool take)
 {
 	Init ();
-	k = kind;
+	SetKind (kind);
 	
 	u.s = take ? (char *) s : g_strdup (s);
 	SetIsNull (s == NULL);
@@ -423,7 +394,7 @@ Value::Value (const char *s, Type::Kind kind, bool take)
 Value::Value (GridLength grid_length)
 {
 	Init ();
-	k = Type::GRIDLENGTH;
+	SetKind (Type::GRIDLENGTH);
 	u.grid_length = g_new (GridLength, 1);
 	*u.grid_length = GridLength (grid_length);
 	SetIsNull (false);
@@ -432,7 +403,7 @@ Value::Value (GridLength grid_length)
 Value::Value (Thickness thickness)
 {
 	Init ();
-	k = Type::THICKNESS;
+	SetKind (Type::THICKNESS);
 	u.thickness = g_new (Thickness, 1);
 	*u.thickness = Thickness (thickness);
 	SetIsNull (false);
@@ -441,7 +412,7 @@ Value::Value (Thickness thickness)
 Value::Value (CornerRadius corner)
 {
 	Init ();
-	k = Type::CORNERRADIUS;
+	SetKind (Type::CORNERRADIUS);
 	u.corner = g_new (CornerRadius, 1);
 	*u.corner = CornerRadius (corner);
 	SetIsNull (false);
@@ -450,7 +421,7 @@ Value::Value (CornerRadius corner)
 Value::Value (AudioFormat format)
 {
 	Init ();
-	k = Type::AUDIOFORMAT;
+	SetKind (Type::AUDIOFORMAT);
 	u.audioformat = g_new (AudioFormat, 1);
 	*u.audioformat = AudioFormat (format);
 	SetIsNull (false);
@@ -459,7 +430,7 @@ Value::Value (AudioFormat format)
 Value::Value (VideoFormat format)
 {
 	Init ();
-	k = Type::VIDEOFORMAT;
+	SetKind (Type::VIDEOFORMAT);
 	u.videoformat = g_new (VideoFormat, 1);
 	*u.videoformat = VideoFormat (format);
 	SetIsNull (false);
@@ -468,7 +439,7 @@ Value::Value (VideoFormat format)
 Value::Value (AudioFormat *format)
 {
 	Init ();
-	k = Type::AUDIOFORMAT;
+	SetKind (Type::AUDIOFORMAT);
 	u.audioformat = g_new (AudioFormat, 1);
 	*u.audioformat = AudioFormat (*format);
 	SetIsNull (false);
@@ -477,7 +448,7 @@ Value::Value (AudioFormat *format)
 Value::Value (VideoFormat *format)
 {
 	Init ();
-	k = Type::VIDEOFORMAT;
+	SetKind (Type::VIDEOFORMAT);
 	u.videoformat = g_new (VideoFormat, 1);
 	*u.videoformat = VideoFormat (*format);
 	SetIsNull (false);
@@ -486,7 +457,7 @@ Value::Value (VideoFormat *format)
 Value::Value (GlyphTypeface *typeface)
 {
 	Init ();
-	k = Type::GLYPHTYPEFACE;
+	SetKind (Type::GLYPHTYPEFACE);
 	u.typeface = new GlyphTypeface (typeface);
 	SetIsNull (false);
 }
@@ -494,7 +465,7 @@ Value::Value (GlyphTypeface *typeface)
 Value::Value (ManagedTypeInfo *type_info)
 {
 	Init ();
-	k = Type::MANAGEDTYPEINFO;
+	SetKind (Type::MANAGEDTYPEINFO);
 	u.type_info = type_info ? new ManagedTypeInfo (*type_info) : NULL;
 	SetIsNull (false);
 }
@@ -502,20 +473,20 @@ Value::Value (ManagedTypeInfo *type_info)
 bool
 Value::IsEventObject (Deployment *d) const
 {
-	return d->GetTypes ()->Find (k)->IsEventObject ();
+	return d->GetTypes ()->Find (GetKind())->IsEventObject ();
 }
 
 bool
 Value::IsDependencyObject (Deployment *d) const
 {
-	return d->GetTypes ()->Find (k)->IsDependencyObject ();
+	return d->GetTypes ()->Find (GetKind())->IsDependencyObject ();
 }
 
 GCHandle
 Value::AsGCHandle () const
 {
-	if (boxed_valuetype)
-		return (GCHandle) boxed_valuetype;
+	if (boxed_valuetype.IsAllocated ())
+		return boxed_valuetype;
 	if (GetIsManaged ())
 		return (GCHandle) u.managed_object;
 	if (u.dependency_object == NULL)
@@ -529,7 +500,7 @@ Value::AsGCHandle () const
 bool
 Value::HoldManagedRef (Deployment *deployment)
 {
-	if (GetIsManaged () || boxed_valuetype)
+	if (GetIsManaged () || boxed_valuetype.IsAllocated())
 		return true;
 	if (IsEventObject (deployment)) {
 		// These types are DOs in native and structs in managed,
@@ -549,8 +520,8 @@ Value::HoldManagedRef (Deployment *deployment)
 void
 Value::Strengthen (Deployment *deployment)
 {
-	if (boxed_valuetype && GCHandle (boxed_valuetype).IsWeak ()) {
-		void *handle = boxed_valuetype;
+	if (boxed_valuetype.IsWeak ()) {
+		void *handle = boxed_valuetype.ToIntPtr();
 		boxed_valuetype = deployment->CreateGCHandle (deployment->GetGCHandleTarget (handle)).ToIntPtr ();
 		deployment->FreeGCHandle (boxed_valuetype);
 	}
@@ -571,8 +542,8 @@ Value::Strengthen (Deployment *deployment)
 void
 Value::Weaken (Deployment *deployment)
 {
-	if (boxed_valuetype && GCHandle (boxed_valuetype).IsNormal ()) {
-		void *handle = boxed_valuetype;
+	if (boxed_valuetype.IsNormal ()) {
+		void *handle = boxed_valuetype.ToIntPtr();
 		boxed_valuetype = deployment->CreateWeakGCHandle (deployment->GetGCHandleTarget (handle)).ToIntPtr ();
 		deployment->FreeGCHandle (handle);
 	}
@@ -594,14 +565,13 @@ void
 Value::Copy (const Value& v)
 {
 	boxed_valuetype = v.boxed_valuetype;
-	padding = v.padding;
-	k = v.k;
+	kind = v.kind;
 	u = v.u;
 
-	if (boxed_valuetype != NULL)
-		boxed_valuetype = Deployment::GetCurrent ()->CloneGCHandle (boxed_valuetype).ToIntPtr ();
+	if (boxed_valuetype.IsAllocated())
+		boxed_valuetype = Deployment::GetCurrent ()->CloneGCHandle (boxed_valuetype.ToIntPtr()).ToIntPtr ();
 
-	if ((padding & GCHandleFlag) == GCHandleFlag) {
+	if ((kind & GCHandleMask) == GCHandleMask) {
 		u.managed_object = Deployment::GetCurrent ()->CloneGCHandle (u.managed_object).ToIntPtr ();
 		return;
 	}
@@ -611,7 +581,7 @@ Value::Copy (const Value& v)
 		return;
 
 	/* make a copy of the string instead of just the pointer */
-	switch (k) {
+	switch (GetKind()) {
 	case Type::XMLLANGUAGE:
 	case Type::STRING:
 		u.s = g_strdup (v.u.s);
@@ -772,10 +742,10 @@ Value::Copy (const Value& v)
 void
 Value::FreeValueInternal ()
 {
-	if (boxed_valuetype != NULL)
-		Deployment::GetCurrent ()->FreeGCHandle (boxed_valuetype);
+	if (boxed_valuetype.IsAllocated())
+		Deployment::GetCurrent ()->FreeGCHandle (boxed_valuetype.ToIntPtr());
 
-	if ((padding & GCHandleFlag) == GCHandleFlag) {
+	if ((kind & GCHandleMask) == GCHandleMask) {
 		Deployment::GetCurrent ()->FreeGCHandle ((GCHandle) u.managed_object);
 		return;
 	}
@@ -888,7 +858,7 @@ Value::ToString () const
 {
 	GString *str = g_string_new ("");
 	
-	switch (k) {
+	switch (GetKind()) {
 	case Type::DOUBLE:
 		g_string_append_printf (str, "{ %f }", u.d);
 		break;
@@ -948,10 +918,7 @@ Value::operator!= (const Value &v) const
 bool 
 Value::operator== (const Value &v) const
 {
-	if (k != v.k)
-		return false;
-	
-	if ((padding & EqualityMask) != (v.padding & EqualityMask))
+	if ((kind & EqualityMask) != (v.kind & EqualityMask))
 		return false;
 
 	// If both values are equal and this is null, then both are null.
@@ -959,12 +926,12 @@ Value::operator== (const Value &v) const
 	if (GetIsNull ())
 		return true;
 
-	if ((padding & GCHandleFlag) == GCHandleFlag) {
+	if ((kind & GCHandleMask) == GCHandleMask) {
 		Deployment *deployment = Deployment::GetCurrent ();
 		return deployment->GetGCHandleTarget (u.managed_object) == deployment->GetGCHandleTarget (v.u.managed_object);
 	}
 
-	switch (k) {
+	switch (GetKind()) {
 	case Type::XMLLANGUAGE:
 	case Type::STRING:
 		if (u.s == NULL){
@@ -1134,7 +1101,7 @@ Value::GetName ()
 {
 	GString *str = g_string_new ("");
 
-	switch (k) {
+	switch (GetKind()) {
 	case Type::DOUBLE:
 		g_string_append_printf (str, "DOUBLE");
 		break;
