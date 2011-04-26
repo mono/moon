@@ -503,6 +503,7 @@ EXTRA_DIST = \
 	$(libmoon_la_SOURCES_OPENSLES) \
 	$(libmoon_la_SOURCES_CURL) \
 	$(libmoon_la_SOURCES_GALLIUM) \
+	$(libmoon_la_SOURCES_OPENGL) \
 	$(libmoon_la_SOURCES_GL) \
 	$(libmoon_la_SOURCES_GLX) \
 	$(libmoon_la_SOURCES_CGL)
