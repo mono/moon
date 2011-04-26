@@ -28,6 +28,7 @@
 #include "textbox.h"
 
 #include <mono/io-layer/atomic.h>
+#include <mono/utils/mono-membar.h>
 
 namespace Moonlight {
 
@@ -551,7 +552,8 @@ EventObject::unref ()
 		// TODO: we should disallow resurrection, it's not thread-safe
 		// if we got resurrected and unreffed, we'd be deleted by now
 		// in which case we'll double free here.
-		v = InterlockedIncrement (&refcount);
+		mono_memory_barrier ();
+		v = refcount;
 		if (v == 0)
 			delete this;
 			
