@@ -148,11 +148,14 @@ AC_SUBST(LOADER_LIBS)
 
 DOCDIR=$(pkg-config --variable=sourcesdir monodoc)
 
-if test x$with_ff3 = xyes; then
+if test x$with_ff4 = xyes; then
+   MOZILLA_CFLAGS=$FF4_CFLAGS
+elif test x$with_ff3 = xyes; then
    MOZILLA_CFLAGS=$FF3_CFLAGS
 else
    MOZILLA_CFLAGS=$FF2_CFLAGS
 fi
+
 SHOCKER_CFLAGS="$MOON_PROG_CFLAGS $MOZILLA_CFLAGS $IMAGEMAGICK_CFLAGS $XTST_CFLAGS"
 SHOCKER_LIBS="$IMAGEMAGICK_LIBS $XTST_LIBS"
 AC_SUBST(SHOCKER_CFLAGS)
@@ -363,6 +366,7 @@ cat <<EOF
           Plugin Installer (.xpi): $user_plugin
           Gecko 1.8 (Firefox 2): $with_ff2 $ff2_reason
           Gecko 1.9 (Firefox 3): $with_ff3 $ff3_reason
+          Gecko 2.0 (Firefox 4): $with_ff4 $ff4_reason
 EOF
 fi
 

@@ -6,7 +6,7 @@ AC_DEFUN([MOONLIGHT_CHECK_FIREFOX_XPI],
 	AC_SUBST([avcodec_libdir])
 
 	user_plugin="yes"
-	if test x$with_ff3 = xno -a x$with_ff2 = xno; then
+	if test x$with_ff4 = xno -a x$with_ff3 = xno -a x$with_ff2 = xno; then
 		user_plugin="no"
 	fi
 
