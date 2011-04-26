@@ -467,7 +467,7 @@ void show_reftrace (void *obj)
 	storable_stack_trace_object *object;
 	storable_stack_trace_entry *entry;
 	int id = eo->GetId ();
-	const char *tname = eo->GetTypeName ();
+	const char *tname = Deployment::GetCurrent ()->GetTypes ()->Find (eo->GetObjectType ())->GetName ();
 
 	object = (storable_stack_trace_object *) g_hash_table_lookup (stored_objects, obj);
 
