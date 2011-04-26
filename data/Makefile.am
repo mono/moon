@@ -28,6 +28,7 @@ moonlight-desktop-4.0.pc: $(srcdir)/moonlight-desktop-4.0.pc.in Makefile
 	mv $@.tmp $@
 
 EXTRA_DIST=				\
+	$(pluginlib_DATA)		\
 	moonlight-web-4.0.pc.in		\
 	moonlight-desktop-4.0.pc.in
 
