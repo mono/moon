@@ -38,6 +38,7 @@ moonlight_gtk_SNK = $(srcdir)/moonlight-gtk.snk
 Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/moonlight/System.Windows.dll
 	gmcs -debug -out:$@ -target:library -unsafe -doc:moonlight-gtk.xml \
 		-keyfile:$(moonlight_gtk_SNK) -pkg:gtk-sharp-2.0 \
+		-r:$(top_builddir)/class/lib/2.1_raw/System.dll \
 		-r:$(top_builddir)/class/lib/moonlight/System.Windows.dll \
 		$(moonlight_gtk_dll_CS)
 
