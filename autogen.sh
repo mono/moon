@@ -9,7 +9,8 @@ test -z "$srcdir" && srcdir=.
 
 configure_mono=1
 build_mono=1
-mono_flags="--with-sgen=no"
+use_sgen_in_mono=no
+mono_flags=""
 mono_path=../mono
 mcs_path=../mono/mcs
 mono_basic_path=../mono-basic
@@ -22,34 +23,57 @@ for arg; do
   case "$arg" in
     --with-manual-mono=yes | --with-manual-mono )
       build_mono=0
-      configure_mono=0 ;;
+      configure_mono=0
+      ;;
     --with-manual-mono=build )
       build_mono=1
-      configure_mono=0 ;;
+      configure_mono=0
+      ;;
     --with-mcs-path* )
-      mcs_path=$(echo $arg|sed -e 's,.*=,,') ;;
+      mcs_path=$(echo $arg|sed -e 's,.*=,,')
+      ;;
     --with-mono-path* )
-      mono_path=$(echo $arg|sed -e 's,.*=,,') ;;
+      mono_path=$(echo $arg|sed -e 's,.*=,,')
+      ;;
     --with-mono-basic-path* )
-      mono_basic_path=$(echo $arg|sed -e 's,.*=,,') ;;
+      mono_basic_path=$(echo $arg|sed -e 's,.*=,,')
+      ;;
     --with-manual-gallium=yes | --with-manual-gallium )
       build_gallium=0
-      configure_gallium=0 ;;
+      configure_gallium=0
+      ;;
     --with-manual-gallium=build )
       build_gallium=1
-      configure_gallium=0 ;;
+      configure_gallium=0
+      ;;
     --with-gallium-path* )
-      gallium_path=$(echo $arg|sed -e 's,.*=,,') ;;
+      gallium_path=$(echo $arg|sed -e 's,.*=,,')
+      ;;
     --with-sgen=yes | --with-sgen )
-      mono_flags="--with-moon-gc=sgen" ;;
+      use_sgen=yes
+      ;;
     --with-cairo=system )
-      build_cairo=0 ;;
+      build_cairo=0
+      ;;
     --with-curl=system )
-      build_curl=0 ;;
+      build_curl=0
+      ;;
+    --host* )
+      # pass the host arg on to mono
+      mono_flags="$mono_flags $arg"
+      ;;
+    --build* )
+      # pass the build arg on to mono
+      mono_flags="$mono_flags $arg"
+      ;;
   esac
 done
 
-
+if [ x"$use_sgen" = "xyes" ]; then
+      mono_flags="$mono_flags --with-moon-gc=sgen"
+else
+      mono_flags="$mono_flags --with-sgen=no"
+fi
 
 
 if [ -n "$MONO_PATH" ]; then
