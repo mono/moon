@@ -100,7 +100,7 @@ dnl
 dnl Export Variables
 dnl
 
-GMCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -sdk:2 -lib:\$(abs_top_builddir)/class/lib/moonlight,\$(abs_top_builddir)/class/lib/moonlight-bootstrap,\$(abs_top_builddir)/class/lib/2.1_raw -d:NET_3_0"
+GMCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -sdk:2 -lib:\$(abs_top_builddir)/class/lib/moonlight,\$(abs_top_builddir)/class/lib/moonlight-bootstrap -d:NET_3_0"
 SMCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -nostdlib -lib:\$(abs_top_builddir)/class/lib/2.1 -r:mscorlib.dll -r:System.Net"
 MCS="mono \$(abs_top_builddir)/class/lib/mcs.exe \$(CSCFLAGS) -lib:\$(abs_top_builddir)/class/lib/moonlight,\$(abs_top_builddir)/class/lib/moonlight-bootstrap"
 AC_SUBST(GMCS)
