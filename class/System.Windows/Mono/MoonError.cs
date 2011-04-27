@@ -42,7 +42,7 @@ namespace Mono
 		private int line_number;
 		private IntPtr message;
 
-		private uint gchandle_ptr;
+		private GCHandle gchandle;
 		
 		public int Number {
 			get { return number; }
@@ -64,13 +64,8 @@ namespace Mono
 			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAuto (message); }
 		}
 		
-		public IntPtr GCHandlePtr {
-			get { return (IntPtr) gchandle_ptr; }
-			private set { gchandle_ptr = (uint) value.ToInt32 (); }
-		}
-		
 		public GCHandle GCHandle {
-			get { return GCHandle.FromIntPtr (GCHandlePtr); }
+			get { return gchandle; }
 		}
 		
 		public void Dispose ()
@@ -80,10 +75,8 @@ namespace Mono
 				message = IntPtr.Zero;
 			}
 			
-			if (GCHandlePtr != IntPtr.Zero) {
-				GCHandle.FromIntPtr (GCHandlePtr).Free ();
-				GCHandlePtr = IntPtr.Zero;
-			}
+			if (gchandle.IsAllocated)
+				gchandle.Free ();
 		}
 		
 		public MoonError (Exception ex)
@@ -91,7 +84,7 @@ namespace Mono
 			number = 9;
 			code = 0;
 			message = Value.StringToIntPtr (ex.Message);
-			gchandle_ptr = (uint) GCHandle.ToIntPtr (GCHandle.Alloc (ex));
+			gchandle = GCHandle.Alloc (ex);
 
 			XamlParseException p = ex as XamlParseException;
 			if (p != null) {

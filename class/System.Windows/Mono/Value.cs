@@ -150,7 +150,7 @@ namespace Mono {
 		[FieldOffset(0)]
 		public uint k;
 		[FieldOffset(4)]
-		public uint boxed_valuetype;
+		public GCHandle boxed_valuetype;
 		[FieldOffset(8)]
 		public ValUnion u;
 
@@ -189,8 +189,8 @@ namespace Mono {
 				return null;
 			}
 
-			if (value->boxed_valuetype != 0) {
-				return GCHandle.FromIntPtr ((IntPtr)value->boxed_valuetype).Target;
+			if (value->boxed_valuetype.IsAllocated) {
+				return value->boxed_valuetype.Target;
 			}
 
 			if (value->IsGCHandle) {
@@ -463,7 +463,7 @@ namespace Mono {
 			
 			unsafe {
 				if (box_value_types && (v is ValueType || v is string)) {
-					value.boxed_valuetype = (uint)GCHandle.ToIntPtr (GCHandle.Alloc (v));
+					value.boxed_valuetype = GCHandle.Alloc (v);
 				}
 
 				if (v is IEasingFunction && !(v is EasingFunctionBase))

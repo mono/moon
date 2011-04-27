@@ -204,7 +204,7 @@ namespace Mono {
 			string msg = err.Message;
 			Exception ex = null;
 			
-			if (err.GCHandlePtr != IntPtr.Zero) {
+			if (err.GCHandle.IsAllocated) {
 				// We need to get this before calling Dispose.
 				ex = err.GCHandle.Target as Exception;
 			}

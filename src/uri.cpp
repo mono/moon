@@ -53,7 +53,6 @@ void
 Uri::Init ()
 {
 	deployment = Deployment::GetCurrent ();
-	gchandle = GCHandle::Zero;
 	scheme = NULL;
 	host = NULL;
 	port = 0;
