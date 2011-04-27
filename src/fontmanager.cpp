@@ -1001,6 +1001,8 @@ FontResource::operator== (const FontResource &v) const
 		return v.resource.typeface == resource.typeface;
 	case FontResourceTypeResourceId:
 		return strcmp (v.resource.id, resource.id) == 0;
+	default:
+		return false;
 	}
 }
 

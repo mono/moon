@@ -448,7 +448,7 @@ MoonWindowingSystemCocoa::AddTimeout (gint priority, gint ms, MoonSourceFunc tim
 
 	[[NSRunLoop mainRunLoop] addTimer: timer forMode: NSRunLoopCommonModes];
 	// FIXME: 64-bit evil
-	return (guint) timer;
+	return GPOINTER_TO_UINT(timer);
 }
 
 void
@@ -476,7 +476,7 @@ MoonWindowingSystemCocoa::AddIdle (MoonSourceFunc idle, gpointer data)
 
 	[pool release];
 	// FIXME: 64-bit evil
-	return (guint) timer;
+	return GPOINTER_TO_UINT(timer);
 }
 
 void

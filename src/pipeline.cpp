@@ -2796,7 +2796,7 @@ MediaThreadPool::WorkerLoop (void *data)
 	}
 	pthread_mutex_unlock (&mutex);
 	
-	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %" G_GUINT32_FORMAT ": Started thread with index %i.\n", (int) pthread_self (), self_index);
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %p: Started thread with index %i.\n", (void*)pthread_self (), self_index);
 	
 	g_return_val_if_fail (self_index >= 0, NULL);
 	
@@ -2854,11 +2854,11 @@ MediaThreadPool::WorkerLoop (void *data)
 		
 		media->SetCurrentDeployment (true);
 
-		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %" G_GUINT32_FORMAT ": got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %p: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (void*) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
 		
 		node->closure->Call ();
 		
-		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %" G_GUINT32_FORMAT ": processed node %p\n", (int) pthread_self (), node);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %p: processed node %p\n", (void*) pthread_self (), node);
 		
 		delete node;
 
@@ -2875,7 +2875,7 @@ MediaThreadPool::WorkerLoop (void *data)
 
 	Deployment::UnregisterThread ();
 
-	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %" G_GUINT32_FORMAT ": Exited (index: %i).\n", (int) pthread_self (), self_index);
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %p: Exited (index: %i).\n", (void*) pthread_self (), self_index);
 	
 	return NULL;
 }

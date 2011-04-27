@@ -404,8 +404,8 @@ Deployment::GetCurrent()
 		}			
 		
 		if (mismatch) {
-			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %u, (tls) deployment: %p, deployment->domain: %p, (mono_domain_get) current_domain: %p, root_domain: %p, hash deployment: %p\n",
-				(int) pthread_self (), deployment, deployment->domain, current_domain, root_domain, g_hash_table_lookup (current_hash, current_domain));
+			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %p, (tls) deployment: %p, deployment->domain: %p, (mono_domain_get) current_domain: %p, root_domain: %p, hash deployment: %p\n",
+					(void*) pthread_self (), deployment, deployment->domain, current_domain, root_domain, g_hash_table_lookup (current_hash, current_domain));
 			pthread_mutex_lock (&hash_mutex);
 			if (current_hash != NULL)
 				deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
@@ -438,9 +438,9 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 {
 #if DEBUG
 	if (deployment && mono_domain_get () != deployment->domain) {
-		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i domain mismatch, is: %p\n", deployment, (int) pthread_self (), mono_domain_get ());
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %p domain mismatch, is: %p\n", deployment, (void*) pthread_self (), mono_domain_get ());
 	} else if (pthread_getspecific (tls_key) != deployment) {
-		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %i deployment mismatch, is: %p\n", deployment, (int) pthread_self (), pthread_getspecific (tls_key));
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %p deployment mismatch, is: %p\n", deployment, (void*) pthread_self (), pthread_getspecific (tls_key));
 	}
 #endif
 	
