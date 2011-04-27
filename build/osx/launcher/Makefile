@@ -1,0 +1,2 @@
+all:
+	g++ main.c -o main -I/Users/toshok/src/mono/mono -I/Users/toshok/src/mono/mono/eglib -I/Users/toshok/src/mono/mono/eglib/src -I/Users/toshok/src/mono/moon/src -I/Users/toshok/src/mono/moon/src/pal -I/Users/toshok/src/mono/moon/cairo/src -I/opt/moonlight-osx/include/freetype2/ -I/opt/moonlight-osx/include/ -L/opt/moonlight-osx/lib/ -lmoon /Users/toshok/src/mono/mono/mono/mini/.libs/libmono-moon.a -framework CoreFoundation
