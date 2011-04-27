@@ -71,17 +71,17 @@ all: ivt-check.exe detect.exe
 	mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
-	mcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
+	$(MCS) $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
 
 find-sc.exe: find-sc.cs Moonlight.SecurityModel.dll
-	mcs find-sc.cs -debug -out:$@ $(LIBS)
+	$(MCS) find-sc.cs -debug -out:$@ $(LIBS)
 
 compat: find-sc.exe
 	mkdir -p compatibility
 	mono find-sc.exe $(SILVERLIGHT_PLATFORM_CODE) compatibility
 
 detect.exe: detect.cs Moonlight.SecurityModel.dll
-	mcs detect.cs -debug -out:$@ $(LIBS)
+	$(MCS) detect.cs -debug -out:$@ $(LIBS)
  
 $(MERGED_SECURITY_ATTRIBUTES_INFO): ivt-check detect.exe $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO) $(TRUSTED_ASSEMBLIES)
 
@@ -91,16 +91,16 @@ validate: find-sc.exe
 	diff -u compatibility moonlight
 
 audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
+	$(MCS) $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
 
 ivt-check.exe: $(srcdir)/ivt-check.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
+	$(MCS) $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
 
 ivt-detect.exe: $(srcdir)/ivt-detect.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/ivt-detect.cs -debug -out:$@ $(LIBS)
+	$(MCS) $(srcdir)/ivt-detect.cs -debug -out:$@ $(LIBS)
 
 ivt-compat.exe: $(srcdir)/ivt-compat.cs Moonlight.SecurityModel.dll
-	mcs $(srcdir)/ivt-compat.cs -debug -out:$@ $(LIBS)
+	$(MCS) $(srcdir)/ivt-compat.cs -debug -out:$@ $(LIBS)
 
 # everything that we install in the plugin directory is (somewhat) trusted - even non-platform assemblies
 TRUSTED_ASSEMBLIES= \

@@ -16,8 +16,8 @@ do
 done
 
 if [ x$profile = xdesktop ] ; then
-mcs -lib:@prefix@/lib/$libdir -r:mscorlib.dll -r:System.dll -r:System.Core.dll "$@"
+mono @prefix@/lib/moonlight/mcs.exe -lib:@prefix@/lib/$libdir -r:mscorlib.dll -r:System.dll -r:System.Core.dll "$@"
 else
-mcs -lib:@prefix@/lib/$libdir -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"
+mono @prefix@/lib/moonlight/mcs.exe -lib:@prefix@/lib/$libdir -r:mscorlib.dll -r:System.dll -r:System.Windows.dll -r:System.Windows.Browser.dll -r:System.Core.dll -r:System.Net.dll -r:System.Xml.dll "$@"
 fi
 

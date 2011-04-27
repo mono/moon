@@ -26,6 +26,8 @@ MCS_ASSEMBLIES = \
 
 MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/moonlight_raw/%.dll)
 
+MCS_COMPILER = $(MCS_PATH)/mcs/mcs.exe
+
 if HAVE_MONO_BASIC
 MONO_BASIC_TUNER_ASSEMBLIES = Microsoft.VisualBasic
 MONO_BASIC_DLLFILES = $(MONO_BASIC_PATH)/class/lib/2.1/Microsoft.VisualBasic.dll
@@ -89,13 +91,14 @@ $(MONO_BASIC_DLLFILES):
 	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune
 endif
 
-working.stamp: $(INPUT_FILES)
+working.stamp: $(INPUT_FILES) $(MCS_COMPILER)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
 	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb
+	cp $(MCS_COMPILER) ../lib
 	touch $(WORKING_FILES) working.stamp
 
-output.stamp: working.stamp $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll
+output.stamp: working.stamp $(top_srcdir)/class/lib/tuner/Mono.Tuner.dll $(MCS_COMPILER)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i $(srcdir)/../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)

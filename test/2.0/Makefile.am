@@ -9,3 +9,4 @@ SUBDIRS=	\
 	Mono.Moonlight.UnitTesting	\
 	Microsoft.SilverlightControls	\
 	moon-unit
+

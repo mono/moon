@@ -117,6 +117,7 @@ void
 Value::Init ()
 {
 	kind = 0;
+	boxed_valuetype = GCHandle::Zero;
 	memset (&u, 0, sizeof (u));
 	SetIsNull (true);
 }

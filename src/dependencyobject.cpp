@@ -1836,14 +1836,14 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, const Val
 		if (current_value) {
 			if (clearManagedRef && current_value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
 				current_value->Strengthen (deployment);
-				clearManagedRef (this, current_value->AsGCHandle (), property);
+				clearManagedRef (this, current_value->AsGCHandle ().ToIntPtr (), property);
 			}
 		}
 
 		// replace it with the new value
 		if (new_value) {
 			if (addManagedRef && new_value->HoldManagedRef (deployment) && !deployment->IsShuttingDown ()) {
-				addManagedRef (this, new_value->AsGCHandle (), property);
+				addManagedRef (this, new_value->AsGCHandle ().ToIntPtr (), property);
 				new_value->Weaken (deployment);
 			}
 

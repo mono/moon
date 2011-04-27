@@ -7,11 +7,8 @@ moon_DATA = respack.exe
 EXTRA_DIST = \
 	respack.cs
 
-CLEANFILES = 		\
-	respack 	\
-	respack.exe	\
-	respack.exe.mdb \
-	unrespack
+clean-local:
+	-rm respack respack.exe respack.exe.mdb unrespack
 
 respack.exe: $(srcdir)/respack.cs
 	gmcs -d:LINQ -debug -out:$@ $(srcdir)/respack.cs $(srcdir)/../Options.cs -r:System.Windows.Forms.dll

@@ -84,9 +84,9 @@ endif
 examples:
 	@(cd docs/examples; $(MAKE) check)
 
-clean-local:
-	@(cd tests; $(MAKE) clean)
-	@(cd docs; $(MAKE) clean)
+#clean-local:
+#	@(cd tests; $(MAKE) clean)
+#	@(cd docs; $(MAKE) clean)
 
 #
 # Build source and binary rpms. For rpm-3.0 and above, the ~/.rpmmacros

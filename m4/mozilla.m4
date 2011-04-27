@@ -103,7 +103,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	dnl Put it all together
 	dnl
 
-	if test x$with_ff2 = xyes -o x$with_ff3 = xyes; then
+	if test x$with_ff2 = xyes -o x$with_ff3 = xyes -o x$with_ff4 = xyes; then
 		with_mozilla=yes
   	fi
 

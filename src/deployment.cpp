@@ -682,10 +682,10 @@ Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* nativ
 {
 	MonoObject *loader;
 	MonoObject *exc = NULL;
-	GCHandle resource_base;
+	void *resource_base = NULL;
 
 	if (resourceBase)
-		resource_base = resourceBase->GetGCHandle ();
+		resource_base = resourceBase->GetGCHandle ().ToIntPtr ();
 	
 	if (moon_load_xaml == NULL)
 		return GCHandle::Zero;

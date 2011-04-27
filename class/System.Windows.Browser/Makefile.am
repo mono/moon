@@ -25,8 +25,6 @@ if USE_2_1_LAUNCHER
 CSCFLAGS += -d:NET_2_1_LAUNCHER
 endif
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -r:System.Core.dll
-SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll $(CSCFLAGS) -r:System.Core.dll
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 

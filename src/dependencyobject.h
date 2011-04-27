@@ -55,7 +55,7 @@ typedef void (* DestroyUnmanagedEvent) (EventObject *object, int event_id, int t
 typedef void (* HandlerMethod) (EventObject *object, int token, gpointer data);
 
 /* @CBindingRequisite */
-typedef void (* ManagedRefCallback) (EventObject *referer, GCHandle referent, const void *id);
+typedef void (* ManagedRefCallback) (EventObject *referer, void *referent_gchandle, const void *id);
 /* @CBindingRequisite */
 typedef void (* MentorChangedCallback) (EventObject *object, EventObject *mentor);
 

@@ -4,8 +4,6 @@ if HEAPVIZ
 CSCFLAGS += -d:HEAPVIZ
 endif
 
-SMCS = mcs -nostdlib -lib:../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
-
 SOURCES = \
     $(srcdir)/UnitTestHarness/AsynchronousAttribute.cs\
     $(srcdir)/UnitTestHarness/BugAttribute.cs\

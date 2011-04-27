@@ -17,8 +17,6 @@ REFERENCES = \
 
 CSCFLAGS = /codepage:65001  -d:SILVERLIGHT -debug+ -noconfig $(REFERENCES)
 
-SMCS = mcs -nostdlib -lib:../../../../class/lib/2.1 -r:mscorlib.dll $(CSCFLAGS)
-
 sources =							\
 	$(SDK_SRCDIR)/Common.cs				\
 	$(SDK_SRCDIR)/LiveReference.cs		\
