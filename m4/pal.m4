@@ -68,6 +68,7 @@ elif test "x$with_pal" = "xcocoa"; then
 	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 
 
 	PAL=cocoa
+	use_2_1_launcher=true
 
 	PKG_CHECK_MODULES(FREETYPE2, freetype2, [
 		AC_DEFINE([HAVE_FREETYPE2], [1], 
@@ -94,6 +95,7 @@ elif test "x$with_pal" = "xandroid"; then
 	GLIB_LIBS='-L$(MONO_PATH)/eglib/src -leglib -lm' 
 
 	PAL=android
+	use_2_1_launcher=true
 
 	PKG_CHECK_MODULES(FREETYPE2, freetype2, [
 		AC_DEFINE([HAVE_FREETYPE2], [1], 
@@ -107,5 +109,6 @@ fi
 AM_CONDITIONAL(GTK_PAL, test x$with_pal = xgtk)
 AM_CONDITIONAL(COCOA_PAL, test x$with_pal = xcocoa)
 AM_CONDITIONAL(ANDROID_PAL, test x$with_pal = xandroid)
+AM_CONDITIONAL(USE_2_1_LAUNCHER, test x$use_2_1_launcher = xtrue)
 AC_SUBST([PAL])
 ])

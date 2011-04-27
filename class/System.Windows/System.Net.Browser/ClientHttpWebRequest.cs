@@ -143,7 +143,7 @@ namespace System.Net.Browser {
 
 		protected override void CheckProtocolViolation ()
 		{
-#if ANDROID_HACK
+#if NET_2_1_LAUNCHER
 			return;
 #endif
 

@@ -70,7 +70,7 @@ namespace System.Windows.Browser
 				// document.location.search
 				Dictionary<string, string> res = new Dictionary<string, string> ();
 
-#if !ANDROID_HACK
+#if !NET_2_1_LAUNCHER
 				ScriptObject loc = (ScriptObject) GetProperty ("location");
 				string search = (string) loc.GetProperty ("search");
 
@@ -114,7 +114,8 @@ namespace System.Windows.Browser
 
 		public Uri DocumentUri {
 			get {
-#if ANDROID_HACK
+#if NET_2_1_LAUNCHER
+				// FIXME android specific here.
 				return new Uri ("file:///data/local/tmp");
 #else
 				ScriptObject location = GetProperty ("location") as ScriptObject;
@@ -161,7 +162,7 @@ namespace System.Windows.Browser
 		
 		public bool IsReady {
 			get {
-#if ANDROID_HACK
+#if NET_2_1_LAUNCHER
 				return true;
 #else
 				throw new NotImplementedException ();

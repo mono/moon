@@ -109,12 +109,13 @@ namespace System.Windows.Interop {
 
 				init_params = new Dictionary<string,string> ();
 
-#if !ANDROID_HACK
+#if !NET_2_1_LAUNCHER
 				if (PluginHost.Handle != IntPtr.Zero) {
 #endif
 					char [] param_separator = new char [] { ',' };
 
-#if ANDROID_HACK
+#if NET_2_1_LAUNCHER
+					// FIXME android specific
 					var paramFile = "/data/local/tmp/AdaptiveStreaming.xap/initParams";
 					string param_string = "";
 					if (File.Exists (paramFile)) {
@@ -142,7 +143,7 @@ namespace System.Windows.Interop {
 							}
 						}
 					}
-#if !ANDROID_HACK
+#if !NET_2_1_LAUNCHER
 				}
 #endif
 

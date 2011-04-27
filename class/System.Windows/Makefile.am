@@ -39,6 +39,9 @@ endif
 if HEAPVIZ
 CSCFLAGS += -d:HEAPVIZ
 endif
+if USE_2_1_LAUNCHER
+CSCFLAGS += -d:NET_2_1_LAUNCHER
+endif
 
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
 SMCS = mcs -nostdlib -lib:../lib/2.1 -r:mscorlib.dll -r:System.Net $(CSCFLAGS)

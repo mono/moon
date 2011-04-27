@@ -34,7 +34,7 @@ namespace System.Net.Browser {
 
 		public WebRequest Create (Uri uri)
 		{
-#if ANDROID_HACK
+#if NET_2_1_LAUNCHER
 			return new ClientHttpWebRequest (uri);
 #else
 			return new BrowserHttpWebRequest (uri);

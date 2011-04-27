@@ -166,7 +166,7 @@ namespace System.Net.Browser {
 			HttpWebRequest wreq = GetHttpWebRequest (uri);
 			wreq.Method = method;
 			// store exception, to throw later, if we have no policy or are not allowed by the policy
-#if !ANDROID_HACK
+#if !NET_2_1_LAUNCHER
 			if ((policy == null) || !policy.IsAllowed (wreq)) {
 				if ((policy == null) || (policy.Exception == null))
 					async_result.Exception = new SecurityException ();
