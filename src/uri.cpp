@@ -53,6 +53,7 @@ void
 Uri::Init ()
 {
 	deployment = Deployment::GetCurrent ();
+	gchandle = GCHandle::Zero;
 	scheme = NULL;
 	host = NULL;
 	port = 0;
@@ -132,7 +133,7 @@ Uri::Clone (const Uri *uri_to_clone)
 	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle ().IsAllocated ())
 		gchandle = uri_to_clone->deployment->CloneGCHandle (uri_to_clone->GetGCHandle ());
 
-	return new Uri (gchandle);
+	return gchandle.IsAllocated () ? new Uri (gchandle) : NULL;
 }
 
 Uri *
@@ -143,7 +144,7 @@ Uri::CloneWithScheme (const Uri *uri_to_clone, const char *scheme)
 	if (uri_to_clone != NULL && uri_to_clone->GetGCHandle ().IsAllocated ())
 		gchandle = GCHandle (uri_to_clone->deployment->GetUriFunctions ()->clone_with_scheme (uri_to_clone->GetGCHandle ().ToIntPtr (), scheme));
 
-	return new Uri (gchandle);
+	return gchandle.IsAllocated () ? new Uri (gchandle) : NULL;
 }
 
 Uri *

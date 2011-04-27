@@ -58,7 +58,7 @@ WeakRefBase::Set (EventObject *ptr)
 		// If 'id' is NULL then it means this WeakRef should not be mirrored in managed code
 		if (id && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since setManagedRef is a managed callback */
-			obj->clearManagedRef (obj, field->GetManagedHandle (), id);
+			obj->clearManagedRef (obj, field->GetManagedHandle ().ToIntPtr (), id);
 		}
 	}
 
@@ -69,7 +69,7 @@ WeakRefBase::Set (EventObject *ptr)
 		// If 'id' is NULL then it means this WeakRef should not be mirrored in managed code
 		if (id && !obj->GetDeployment ()->IsShuttingDown ()) {
 			/* We have to check if we're shutting down, since setManagedRef is a managed callback */
-			obj->addManagedRef (obj, field->GetManagedHandle (), id);
+			obj->addManagedRef (obj, field->GetManagedHandle ().ToIntPtr (), id);
 		}
 	}
 }
