@@ -19,6 +19,7 @@
 #include "projection.h"
 #include "effect.h"
 #include "region.h"
+#include "debug.h"
 
 #define IS_TRANSLUCENT(x) (x * 255 < 254.5)
 
@@ -49,7 +50,7 @@ OpenGLContext::Initialize ()
 	}
 
 	if (atof (version) < MIN_GL_VERSION) {
-		g_warning ("Insufficient OpenGL version: %s", version);
+		moon_debug ("Moonlight: Insufficient OpenGL version: %s", version);
 		return false;
 	}
 
