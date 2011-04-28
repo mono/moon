@@ -147,6 +147,7 @@ enum RuntimeDebugExtraFlag {
 	RUNTIME_DEBUG_PLAYLIST_EX       = 1 << 6,
 	RUNTIME_DEBUG_PIPELINE_EX       = 1 << 7,
 	RUNTIME_DEBUG_MMS_EX            = 1 << 8,
+	RUNTIME_DEBUG_NPSTREAM          = 1 << 9,
 };
 
 struct MoonlightDebugOption {

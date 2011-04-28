@@ -34,6 +34,8 @@ NPStreamRequest::NewStream (NPStream *stream)
 {
 	BrowserHttpResponse *response;
 
+	LOG_NPSTREAM ("NPStreamRequest::NewStream (%p url: %s end: %i) this: %p\n", stream, stream->url, stream->end, this);
+
 	this->stream = stream;
 	if (IsAborted ()) {
 		AbortImpl ();
@@ -52,6 +54,8 @@ NPStreamRequest::NewStream (NPStream *stream)
 void
 NPStreamRequest::DestroyStream ()
 {
+	LOG_NPSTREAM ("NPStreamRequest::DestroyStream () stream: %p\n", stream);
+
 	if (stream != NULL)
 		stream = NULL;
 }
@@ -70,6 +74,8 @@ NPStreamRequest::SendImpl ()
 	g_return_if_fail (instance != NULL);
 
 	err = MOON_NPN_GetURLNotify (instance->GetInstance (), GetUri ()->GetHttpRequestString (), NULL, this);
+
+	LOG_NPSTREAM ("NPStreamRequest::SendImpl () url: %s result: %i (%s)\n", GetUri ()->GetHttpRequestString (), err, err == NPERR_NO_ERROR ? "no error" : "error");
 
 	if (err == NPERR_NO_ERROR) {
 		/* This is a ref to ensure that we don't get deleted while the browser have a pointer to us */
@@ -107,6 +113,8 @@ NPStreamRequest::AbortImpl ()
 {
 	VERIFY_MAIN_THREAD;
 
+	LOG_NPSTREAM ("NPStreamRequest::AbortImpl () stream: %p\n", stream);
+
 	if (stream != NULL) {
 		MOON_NPN_DestroyStream (GetInstance ()->GetInstance (), stream, NPRES_USER_BREAK);
 
@@ -133,6 +141,11 @@ NPStreamRequest::SetHeaderImpl (const char *name, const char *value, bool disabl
 void
 NPStreamRequest::UrlNotify (const char *url, NPReason reason)
 {
+	LOG_NPSTREAM ("NPStreamRequest::UrlNotify (%s, %i = %s) stream: %p\n",
+		url, reason,
+		reason == NPRES_DONE ? "success" : (reason == NPRES_USER_BREAK ? "user break" : (reason == NPRES_NETWORK_ERR ? "network error" : "unknown error")),
+		stream);
+
 	switch (reason) {
 	case NPRES_DONE:
 		Succeeded ();

@@ -45,8 +45,6 @@
 #endif
 
 #define w(x) x
-// Debug NPStreams
-#define nps(x)//x
 
 namespace Moonlight {
 
@@ -1069,7 +1067,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 
 	request = (NPStreamRequest *) stream->notifyData;
 
-	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p) request: %p url: %s\n", type, stream, seekable, stype, request, stream->url));
+	LOG_NPSTREAM ("PluginInstance::NewStream (%p, %p, %i, %p) request: %p url: %s\n", type, stream, seekable, stype, request, stream->url);
 
 	if (request == NULL) {
 		/* We'll automatically get a stream for the src attribute on the embed tag */
@@ -1111,7 +1109,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 NPError
 PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 {
-	nps (printf ("PluginInstance::DestroyStream (%p, %i)\n", stream, reason));
+	LOG_NPSTREAM ("PluginInstance::DestroyStream (%p, %i)\n", stream, reason);
 
 	Deployment::SetCurrent (deployment);
 
@@ -1301,7 +1299,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 gint32
 PluginInstance::WriteReady (NPStream *stream)
 {
-	nps (printf ("PluginInstance::WriteReady (%p)\n", stream));
+	LOG_NPSTREAM ("PluginInstance::WriteReady (%p)\n", stream);
 	
 	Deployment::SetCurrent (deployment);
 
@@ -1318,7 +1316,7 @@ PluginInstance::WriteReady (NPStream *stream)
 gint32
 PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer)
 {
-	nps (printf ("PluginInstance::Write (%p, %i/%i, %i, %p)\n", stream, offset, stream->end, len, buffer));
+	LOG_NPSTREAM ("PluginInstance::Write (%p, %i/%i, %i, %p)\n", stream, offset, stream->end, len, buffer);
 	
 	Deployment::SetCurrent (deployment);
 
@@ -1375,7 +1373,7 @@ PluginInstance::splashscreen_error_tickcall (EventObject *data)
 void
 PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
-	nps (printf ("PluginInstance::UrlNotify (%s, %i, %p)\n", url, reason, notifyData));
+	LOG_NPSTREAM ("PluginInstance::UrlNotify (%s, %i, %p)\n", url, reason, notifyData);
 	
 	Deployment::SetCurrent (deployment);
 	

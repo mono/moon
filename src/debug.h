@@ -106,6 +106,7 @@ G_END_DECLS
 #define LOG_OOB(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_OOB)) moon_debug (__VA_ARGS__);
 #define LOG_CUSTOM(x,...)		if (G_UNLIKELY (debug_flags & (x))) moon_debug (__VA_ARGS__);
 #define LOG_CAPTURE(...)        if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_CAPTURE)) moon_debug (__VA_ARGS__);
+#define LOG_NPSTREAM(...)       if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_NPSTREAM)) moon_debug (__VA_ARGS__);
 
 #else
 
@@ -151,6 +152,7 @@ G_END_DECLS
 #define LOG_OOB(...)
 #define LOG_CUSTOM(...)
 #define LOG_CAPTURE(...)
+#define LOG_NPSTREAM(...)
 
 #endif /* LOGGING */
 

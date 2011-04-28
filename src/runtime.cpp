@@ -239,6 +239,7 @@ static struct MoonlightDebugOption debug_extras[] = {
 	{ "pipeline-ex",       RUNTIME_DEBUG_PIPELINE_EX },
 	{ "playlist-ex",       RUNTIME_DEBUG_PLAYLIST_EX },
 	{ "pulse-ex",          RUNTIME_DEBUG_PULSE_EX },
+	{ "npstream",          RUNTIME_DEBUG_NPSTREAM },
 	{ NULL }
 };
 
