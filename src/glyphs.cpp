@@ -589,7 +589,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			
 			errno = 0;
 			glyph->code_units = strtoul (inptr, &end, 10);
-			if (glyph->code_units == 0 || (glyph->code_units == G_MAXUINT && errno != 0)) {
+			if (glyph->code_units == 0 || (glyph->code_units == G_MAXUINT32 && errno != 0)) {
 				// invalid cluster
 				d(print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; CodeUnitCount cannot be 0"));
 				delete glyph;
@@ -613,7 +613,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			
 			errno = 0;
 			glyph->glyph_count = strtoul (inptr, &end, 10);
-			if (glyph->glyph_count == 0 || (glyph->glyph_count == G_MAXUINT && errno != 0)) {
+			if (glyph->glyph_count == 0 || (glyph->glyph_count == G_MAXUINT32 && errno != 0)) {
 				// invalid cluster
 				d(print_parse_error (in, inptr, errno ? strerror (errno) : "invalid cluster mapping; GlyphCount cannot be 0"));
 				delete glyph;
@@ -641,7 +641,7 @@ Glyphs::SetIndicesInternal (const char *in)
 		if (*inptr >= '0' && *inptr <= '9') {
 			errno = 0;
 			glyph->index = strtoul (inptr, &end, 10);
-			if ((glyph->index == 0 || glyph->index == G_MAXUINT) && errno != 0) {
+			if ((glyph->index == 0 || glyph->index == G_MAXUINT32) && errno != 0) {
 				// invalid glyph index
 				d(print_parse_error (in, inptr, strerror (errno)));
 				delete glyph;
