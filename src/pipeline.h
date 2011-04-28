@@ -1461,40 +1461,48 @@ public:
 	// Warning, full 64-bit reads appear to be causing a SIGBUS on some android devices, lets do a 32-bit read and OR it.
 	gint64   ReadBE_I64 () {
 		CHECKSIZE (8);
-		gint64 a = (guint64) ReadBE_I32 ();
-		gint64 b = (guint64) ReadBE_I32 ();
+		gint64 v;
+		gint32 *vp = (gint32 *) &v;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; vp++;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4;
 
-		return GINT64_FROM_BE ((b << 32) + a);
+		return GINT64_FROM_BE (v);
 	}
 	gint32   ReadBE_I32 () { CHECKSIZE (4); gint32  result = GINT32_FROM_BE  (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; return result; }
 	gint16   ReadBE_I16 () { CHECKSIZE (2); gint16  result = GINT16_FROM_BE  (*(gint16  *) (((gint8  *) memory) + pos)); pos += 2; return result; }
 	gint8    ReadBE_I8  () { CHECKSIZE (1); gint8   result =                 (*(gint8   *) (((gint8  *) memory) + pos)); pos += 1; return result; }
 	guint64  ReadBE_U64 () {
 		CHECKSIZE (8);
-		guint64 a = (guint64) ReadBE_U32 ();
-		guint64 b = (guint64) ReadBE_U32 ();
+		gint64 v;
+		gint32 *vp = (gint32 *) &v;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; vp++;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4;
 
-		return GUINT64_FROM_BE ((b << 32) + a);
+		return GUINT64_FROM_BE (v);
 	}
 	guint32  ReadBE_U32 () { CHECKSIZE (4); guint32 result = GUINT32_FROM_BE (*(guint32 *) (((guint8 *) memory) + pos)); pos += 4; return result; }
 	guint16  ReadBE_U16 () { CHECKSIZE (2); guint16 result = GUINT16_FROM_BE (*(guint16 *) (((guint8 *) memory) + pos)); pos += 2; return result; }
 	guint8   ReadBE_U8  () { CHECKSIZE (1); guint8  result =                 (*(guint8  *) (((guint8 *) memory) + pos)); pos += 1; return result; }
 	gint64   ReadLE_I64 () {
 		CHECKSIZE (8);
-		gint64 a = (guint64) ReadLE_I32 ();
-		gint64 b = (guint64) ReadLE_I32 ();
+		gint64 v;
+		gint32 *vp = (gint32 *) &v;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; vp++;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4;
 
-		return GINT64_FROM_LE ((b << 32) + a);
+		return GINT64_FROM_LE (v);
 	}
 	gint32   ReadLE_I32 () { CHECKSIZE (4); gint32  result = GINT32_FROM_LE  (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; return result; }
 	gint16   ReadLE_I16 () { CHECKSIZE (2); gint16  result = GINT16_FROM_LE  (*(gint16  *) (((gint8  *) memory) + pos)); pos += 2; return result; }
 	gint8    ReadLE_I8  () { CHECKSIZE (1); gint8   result =                 (*(gint8   *) (((gint8  *) memory) + pos)); pos += 1; return result; }
 	guint64  ReadLE_U64 () {
 		CHECKSIZE (8);
-		guint64 a = (guint64) ReadLE_U32 ();
-		guint64 b = (guint64) ReadLE_U32 ();
+		gint64 v;
+		gint32 *vp = (gint32 *) &v;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; vp++;
+		*vp = (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4;
 
-		return GUINT64_FROM_LE ((b << 32) + a);
+		return GUINT64_FROM_LE (v);
 	}
 	guint32  ReadLE_U32 () { CHECKSIZE (4); guint32 result = GUINT32_FROM_LE (*(guint32 *) (((guint8 *) memory) + pos)); pos += 4; return result; }
 	guint16  ReadLE_U16 () { CHECKSIZE (2); guint16 result = GUINT16_FROM_LE (*(guint16 *) (((guint8 *) memory) + pos)); pos += 2; return result; }
