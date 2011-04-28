@@ -1,15 +1,12 @@
 /* @SkipFile */
-#import "window-cocoa.h"
+#import "pal-cocoa.h"
 #import <AppKit/AppKit.h>
 
 @interface MLTimer : NSTimer {
-	Moonlight::MoonSourceFunc timeout;
-	gpointer userInfo;
+	Moonlight::MoonWindowingSystemCocoa *windowingSystem;
 }
 
-@property Moonlight::MoonSourceFunc timeout;
-@property gpointer userInfo;
-
+- (id) initWithWindowingSystem: (Moonlight::MoonWindowingSystemCocoa*) windowingSystem;
 - (void) onTick: (NSTimer *) theTimer;
 
 @end

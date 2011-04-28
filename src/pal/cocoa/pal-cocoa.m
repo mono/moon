@@ -9,6 +9,8 @@
 #include "im-cocoa.h"
 #include "debug.h"
 
+#include <sys/time.h>
+
 #include <glib.h>
 
 #include <cairo.h>
@@ -356,6 +358,25 @@ private:
 	MLEvent *event;
 };
 
+static gint32
+get_now_in_millis (void)
+{
+        struct timeval tv;
+#ifdef CLOCK_MONOTONIC
+	struct timespec tspec;
+	if (clock_gettime (CLOCK_MONOTONIC, &tspec) == 0) {
+		return tspec.tv_sec * 1000 + tspec.tv_nsec / 1000000;
+	}
+#endif
+
+        if (gettimeofday (&tv, NULL) == 0) {
+                return tv.tv_sec * 1000  + tv.tv_usec / 1000;
+        }
+
+	// XXX error
+	return 0;
+}
+
 /// our windowing system
 
 MoonWindowingSystemCocoa::MoonWindowingSystemCocoa (bool out_of_browser)
@@ -437,57 +458,114 @@ MoonWindowingSystemCocoa::GetSystemColor (SystemColor id)
 	g_assert_not_reached ();
 }
 
+class CocoaSource {
+public:
+	CocoaSource (int source_id, int priority, int interval, MoonSourceFunc source_func, gpointer data)
+	{
+		this->source_id = source_id;
+		this->priority = priority;
+		this->interval = interval;
+		this->source_func = source_func;
+		this->data = data;
+		time_remaining = interval;
+		pending_destroy = false;
+	}
+
+	bool InvokeSourceFunc ()
+	{
+		return source_func (data);
+	}
+
+	static gint Compare (gconstpointer p1, gconstpointer p2)
+	{
+		const CocoaSource *source1 = (const CocoaSource*)p1;
+		const CocoaSource *source2 = (const CocoaSource*)p2;
+
+		gint result = source1->time_remaining - source2->time_remaining;
+		if (result != 0)
+			return result;
+
+		// reverse source1 and source2 here from above, since lower
+		// priority values represent higher priorities
+		return source2->priority - source1->priority;
+	}
+
+	// this one must be signed
+	gint32 time_remaining;
+
+	bool pending_destroy;
+	guint source_id;
+	int priority;
+	gint32 interval;
+	MoonSourceFunc source_func;
+	gpointer data;
+};
+
+void
+MoonWindowingSystemCocoa::RemoveSource (guint sourceId)
+{
+	sourceMutex.Lock ();
+
+	for (GList *l = sources; l; l = l->next) {
+		CocoaSource *s = (CocoaSource*)l->data;
+		if (s->source_id == sourceId) {
+			if (emitting_sources) {
+				s->pending_destroy = true;
+			}
+			else {
+				sources = g_list_delete_link (sources, l);
+				delete s;
+			}
+			break;
+		}
+	}
+
+	sourceMutex.Unlock ();
+}
+
 guint
 MoonWindowingSystemCocoa::AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data)
 {
-	MLTimer *mtimer = [[MLTimer alloc] init];
-	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (ms/2000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
+	sourceMutex.Lock ();
 
-	mtimer.timeout = timeout;
-	mtimer.userInfo = data;
+	int new_source_id = source_id;
 
-	[[NSRunLoop mainRunLoop] addTimer: timer forMode: NSRunLoopCommonModes];
-	// FIXME: 64-bit evil
-	return GPOINTER_TO_UINT(timer);
+	CocoaSource *new_source = new CocoaSource (new_source_id, priority, ms, timeout, data);
+
+	sources = g_list_insert_sorted (sources, new_source, CocoaSource::Compare);
+
+	source_id ++;
+
+	sourceMutex.Unlock ();
+
+	return new_source_id;
 }
 
 void
 MoonWindowingSystemCocoa::RemoveTimeout (guint timeoutId)
 {
-	// FIXME: 64-bit evil
-	NSTimer *timer = (NSTimer *) timeoutId;
-
-	[[timer userInfo] autorelease];
-	[timer invalidate];
+	RemoveSource (timeoutId);
 }
 
 guint
 MoonWindowingSystemCocoa::AddIdle (MoonSourceFunc idle, gpointer data)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	/* This is horrible, what we probably want is 1 timer we run at a low resolution that will pump some idle events we track in a seperate queue */
-	MLTimer *mtimer = [[MLTimer alloc] init];
-	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (500/2000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: YES];
+	sourceMutex.Lock ();
 
-	mtimer.timeout = idle;
-	mtimer.userInfo = data;
+	int new_source_id = source_id;
 
-	[[NSRunLoop mainRunLoop] addTimer: timer forMode: NSRunLoopCommonModes];
+	CocoaSource *new_source = new CocoaSource (new_source_id, MOON_PRIORITY_DEFAULT_IDLE, 0, idle, data);
+	sources = g_list_insert_sorted (sources, new_source, CocoaSource::Compare);
+	source_id ++;
 
-	[pool release];
-	// FIXME: 64-bit evil
-	return GPOINTER_TO_UINT(timer);
+	sourceMutex.Unlock ();
+	return new_source_id;
 }
 
 void
-MoonWindowingSystemCocoa::RemoveIdle (guint idle_id)
+MoonWindowingSystemCocoa::RemoveIdle (guint idleId)
 {
-	// FIXME: 64-bit evil
-	NSTimer *timer = (NSTimer *) idle_id;
-
-	[[timer userInfo] autorelease];
-	[timer invalidate];
-	[timer autorelease];
+	RemoveSource (idleId);
 }
 
 MoonIMContext*
@@ -540,11 +618,111 @@ MoonWindowingSystemCocoa::CreatePixbufLoader (const char *imageType)
 }
 
 void
+MoonWindowingSystemCocoa::OnTick ()
+{
+	gint32 after = get_now_in_millis ();
+
+	sourceMutex.Lock();
+	emitting_sources = true;
+
+	GList *sources_to_dispatch = NULL;
+
+	if (sources) {
+		int max_priority = G_MAXINT;
+		gint32 delta = before - after;
+		GList *l = sources;
+
+		while (l) {
+			CocoaSource *s = (CocoaSource*)l->data;
+
+			if (s->time_remaining + delta < 0) {
+				if (max_priority == G_MAXINT) {
+					// first time through here, so we do what glib does, and limit the sources we
+					// dispatch on to those at or above this priority.
+					max_priority = s->priority;
+					sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
+				}
+				else {
+					s->time_remaining += delta;
+					if (s->priority >= max_priority && s->time_remaining < 0)
+						sources_to_dispatch = g_list_prepend (sources_to_dispatch, s);
+				}
+			}
+			else {
+				s->time_remaining += delta;
+			}
+
+			l = l->next;
+		}
+
+		sources_to_dispatch = g_list_reverse (sources_to_dispatch);
+	}
+
+	sourceMutex.Unlock ();
+
+	for (GList *l = sources_to_dispatch; l; l = l->next) {
+		CocoaSource *s = (CocoaSource*)l->data;
+		if (!s->pending_destroy)
+			s->pending_destroy = !s->InvokeSourceFunc ();
+	}
+
+	g_list_free (sources_to_dispatch);
+
+	sourceMutex.Lock ();
+	for (GList *l = sources; l;) {
+		CocoaSource *s = (CocoaSource*)l->data;
+		if (s->pending_destroy) {
+			GList *next = l->next;
+			sources = g_list_delete_link (sources, l);
+			delete s;
+			l = next;
+		}
+		else {
+			l = l->next;
+		}
+	}
+
+	emitting_sources = false;
+	sourceMutex.Unlock();
+
+	AddCocoaTimer ();
+}
+
+void
+MoonWindowingSystemCocoa::AddCocoaTimer ()
+{
+	int timeout = -1;
+
+	sourceMutex.Lock ();
+	if (sources != NULL) {
+		CocoaSource *s = (CocoaSource*)sources->data;
+		timeout = s->time_remaining;
+		if (timeout < 0)
+			timeout = 0;
+	}
+	sourceMutex.Unlock ();
+
+	if (timeout >= 0) {
+		if (timeout == 0)
+			timeout == 100;
+
+		MLTimer *mtimer = [[MLTimer alloc] initWithWindowingSystem: this];
+		NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (timeout/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: NO];
+
+		[[NSRunLoop mainRunLoop] addTimer: timer forMode: NSRunLoopCommonModes];
+		before = get_now_in_millis ();
+	}
+}
+
+void
 MoonWindowingSystemCocoa::RunMainLoop (MoonWindow *window, bool quit_on_window_close)
 {
 	if (window) {
 		window->Show ();
 	}
+
+	/* add the first Timer.  we'll add a new one each tick based on how much time we need to sleep */
+	AddCocoaTimer ();
 
 	[NSApp run];
 }

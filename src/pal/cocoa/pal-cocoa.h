@@ -5,6 +5,8 @@
 
 #include "pal.h"
 
+#include "mutex.h"
+
 namespace Moonlight {
 
 class MoonWindowingSystemCocoa : public MoonWindowingSystem {
@@ -27,7 +29,7 @@ public:
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
 	
 	virtual Color *GetSystemColor (SystemColor id);
-	
+
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
 	virtual void RemoveTimeout (guint timeoutId);
 
@@ -58,9 +60,21 @@ public:
 
 	virtual gchar *GetUserConfigFolder ();
 
+	void OnTick ();
+
 private:
+	void RemoveSource (guint sourceId);
+	void AddCocoaTimer ();
+
 	void *pool;
 	int stride;
+
+	// glib terminology here.  we mean "timeouts and idles"
+	GList *sources;
+	guint source_id;
+	bool emitting_sources;
+	Mutex sourceMutex;
+	guint32 before;
 };
 
 class MoonInstallerServiceCocoa : public MoonInstallerService {

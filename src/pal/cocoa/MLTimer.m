@@ -2,13 +2,15 @@
 
 @implementation MLTimer
 
-@synthesize timeout;
-@synthesize userInfo;
+- (id) initWithWindowingSystem: (Moonlight::MoonWindowingSystemCocoa*) winsys
+{
+	windowingSystem = winsys;
+	return self;
+}
 
 - (void) onTick: (NSTimer *) timer
 {
-	if (!timeout (userInfo))
-		[timer invalidate];
+	windowingSystem->OnTick ();
 }
 
 @end
