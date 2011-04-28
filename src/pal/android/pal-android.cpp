@@ -568,7 +568,7 @@ MoonWindowingSystemAndroid::MoonWindowingSystemAndroid (bool out_of_browser)
 	gscreen = swrast_screen_create (null_sw_create ());
 #endif
 
-	source_id = 0;
+	source_id = 1;
 	sources = NULL;
 }
 
