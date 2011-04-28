@@ -75,6 +75,8 @@ private:
 	bool emitting_sources;
 	Mutex sourceMutex;
 	guint32 before;
+
+	gpointer timer;
 };
 
 class MoonInstallerServiceCocoa : public MoonInstallerService {

@@ -174,14 +174,13 @@ MoonWindowCocoa::DisableEvents ()
 void
 MoonWindowCocoa::GrabFocus ()
 {
-	g_warning ("implement me: GrabFocus");
+	[(MLWindow *)window makeKeyWindow];
 }
 
 bool
 MoonWindowCocoa::HasFocus ()
 {
-	g_warning ("implement me: HasFocus");
-	return YES;
+	return [(MLWindow *)window isKeyWindow];
 }
 
 void

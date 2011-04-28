@@ -381,6 +381,9 @@ get_now_in_millis (void)
 
 MoonWindowingSystemCocoa::MoonWindowingSystemCocoa (bool out_of_browser)
 {
+	source_id = 1;
+	timer = NULL;
+
 	ProcessSerialNumber psn = { 0, kCurrentProcess };
 	pool = [[NSAutoreleasePool alloc] init];
 
@@ -520,6 +523,11 @@ MoonWindowingSystemCocoa::RemoveSource (guint sourceId)
 		}
 	}
 
+	if (!sources && timer) {
+		[(NSTimer*)timer invalidate];
+		timer = NULL;
+	}
+
 	sourceMutex.Unlock ();
 }
 
@@ -554,7 +562,7 @@ MoonWindowingSystemCocoa::AddIdle (MoonSourceFunc idle, gpointer data)
 
 	int new_source_id = source_id;
 
-	CocoaSource *new_source = new CocoaSource (new_source_id, MOON_PRIORITY_DEFAULT_IDLE, 0, idle, data);
+	CocoaSource *new_source = new CocoaSource (new_source_id, MOON_PRIORITY_DEFAULT_IDLE, 100, idle, data);
 	sources = g_list_insert_sorted (sources, new_source, CocoaSource::Compare);
 	source_id ++;
 
@@ -662,8 +670,11 @@ MoonWindowingSystemCocoa::OnTick ()
 
 	for (GList *l = sources_to_dispatch; l; l = l->next) {
 		CocoaSource *s = (CocoaSource*)l->data;
-		if (!s->pending_destroy)
-			s->pending_destroy = !s->InvokeSourceFunc ();
+		if (!s->pending_destroy) {
+			bool pending_destroy = !s->InvokeSourceFunc ();
+			if (!s->pending_destroy)
+				s->pending_destroy = pending_destroy;
+		}
 	}
 
 	g_list_free (sources_to_dispatch);
@@ -703,13 +714,10 @@ MoonWindowingSystemCocoa::AddCocoaTimer ()
 	sourceMutex.Unlock ();
 
 	if (timeout >= 0) {
-		if (timeout == 0)
-			timeout == 100;
-
 		MLTimer *mtimer = [[MLTimer alloc] initWithWindowingSystem: this];
-		NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval: (timeout/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: NO];
+		timer = [NSTimer scheduledTimerWithTimeInterval: (timeout/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: NO];
 
-		[[NSRunLoop mainRunLoop] addTimer: timer forMode: NSRunLoopCommonModes];
+		[[NSRunLoop mainRunLoop] addTimer: (NSTimer*)timer forMode: NSRunLoopCommonModes];
 		before = get_now_in_millis ();
 	}
 }
