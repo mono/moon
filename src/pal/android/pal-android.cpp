@@ -1092,7 +1092,7 @@ MoonWindowingSystemAndroid::OnInputEvent (android_app* app, AInputEvent* aevent)
 	return 1;
 }
 
-gint32
+static gint32
 get_now_in_millis (void)
 {
         struct timeval tv;
