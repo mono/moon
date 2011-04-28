@@ -99,9 +99,9 @@ void
 Value::SetNeedUnref (bool needUnref)
 {
 	if (needUnref)
-		kind |= NeedUnrefMask;
+		kind &= ~DoesNotNeedUnrefMask;
 	else
-		kind &= ~NeedUnrefMask;
+		kind |= DoesNotNeedUnrefMask;
 }
 
 void

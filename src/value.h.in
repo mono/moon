@@ -76,9 +76,9 @@ class PlaylistEntry;
 
 #define NullMask      ((guint32)1 << 31)
 #define GCHandleMask  ((guint32)1 << 30)
-#define NeedUnrefMask ((guint32)1 << 29)
+#define DoesNotNeedUnrefMask ((guint32)1 << 29)
 
-#define FlagMask (NullMask | GCHandleMask | NeedUnrefMask)
+#define FlagMask (NullMask | GCHandleMask | DoesNotNeedUnrefMask)
 #define KindMask ~FlagMask
 
 
@@ -150,7 +150,7 @@ public:
 	bool GetIsNull () const { return (kind & NullMask) == NullMask; }
 	void SetIsNull (bool isNull);
 
-	bool GetNeedUnref () const { return (kind & NeedUnrefMask) == NeedUnrefMask; }
+	bool GetNeedUnref () const { return (kind & DoesNotNeedUnrefMask) == 0; }
 	void SetNeedUnref (bool needUnref);
 
 	static bool AreEqual (const Value *v1, const Value *v2);

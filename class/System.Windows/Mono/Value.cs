@@ -144,7 +144,7 @@ namespace Mono {
 		// Note: Keep these flags in sync with the native version
 		const uint NullMask      = (uint)1 << 31;
 		const uint GCHandleMask  = (uint)1 << 30;
-		const uint NeedUnrefMask = (uint)1 << 29;
+		const uint DoesNotNeedUnrefMask = (uint)1 << 29;
 		const uint KindMask      = (uint)0x1fffffff;
 
 		[FieldOffset(0)]
