@@ -14,7 +14,7 @@
 
 #if INCLUDE_OPENSLES
 
-#define LOG_OSL(...) g_debug (__VA_ARGS__)
+#define LOG_OSL(...) moon_debug (__VA_ARGS__)
 
 #include "audio-opensles.h"
 
@@ -150,7 +150,7 @@ OpenSLESSource::InitializeOpenSLES ()
 	for (int i = 0; i < NUM_BUFFERS_IN_QUEUE; i ++)
 	  buffers[i] = g_malloc (BUFFER_SIZE);
 
-	g_debug ("channel count = %d\n", GetAudioStream()->GetChannels());
+	moon_debug ("channel count = %d\n", GetAudioStream()->GetChannels());
 
 	// configure audio source
 	SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, NUM_BUFFERS_IN_QUEUE};
@@ -202,10 +202,10 @@ OpenSLESSource::InitializeOpenSLES ()
 					       &playerBufferQueue);
 	CHECK_RESULT_BOOL ("playerObject->GetInterface(SL_IID_ANDROIDBUFFERQUEUE)");
 
-	g_debug ("1");
+	moon_debug ("1");
 	// register callback on the buffer queue
 	result = (*playerBufferQueue)->RegisterCallback(playerBufferQueue, OpenSLESSource::NextBufferCallback, this);
-	g_debug ("2");
+	moon_debug ("2");
 	CHECK_RESULT_BOOL ("playerBufferQueue->RegisterCallback()");
 
 	// set the player's state to playing
@@ -460,13 +460,13 @@ OpenSLESPlayer::Initialize ()
 
 		result = (*capabilities)->QuerySupportedProfiles (capabilities, &profilesSupported);
 		CHECK_RESULT_BOOL ("capabilities->QuerySupportedProfiles");
-		g_debug ("supported profiles:");
+		moon_debug ("supported profiles:");
 		if (profilesSupported & SL_PROFILES_PHONE)
-			g_debug ("   PHONE");
+			moon_debug ("   PHONE");
 		if (profilesSupported & SL_PROFILES_MUSIC)
-			g_debug ("   MUSIC");
+			moon_debug ("   MUSIC");
 		if (profilesSupported & SL_PROFILES_GAME)
-			g_debug ("   GAME");
+			moon_debug ("   GAME");
 	}
 #endif
 
