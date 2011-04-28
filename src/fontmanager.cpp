@@ -584,10 +584,10 @@ utf16be_parse_int (guint16 **in, int *inleft, int *retval)
 		
 		digit = (c - '0');
 		
-		if (val > (LONG_MAX / 10))
+		if (val > (G_MAXUSHORT / 10))
 			return false;
 		
-		if (val == (LONG_MAX / 10) && digit > (LONG_MAX % 10))
+		if (val == (G_MAXUSHORT / 10) && digit > (G_MAXUSHORT % 10))
 			return false;
 		
 		val = (val * 10) + digit;
