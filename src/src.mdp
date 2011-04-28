@@ -87,7 +87,6 @@
     <File subtype="Code" buildaction="Nothing" name="Makefile.am" />
     <File subtype="Code" buildaction="Compile" name="media.cpp" />
     <File subtype="Code" buildaction="Nothing" name="media.h" />
-    <File subtype="Code" buildaction="Nothing" name="moon-path.c" />
     <File subtype="Code" buildaction="Nothing" name="moon-path.h" />
     <File subtype="Code" buildaction="Compile" name="mediaplayer.cpp" />
     <File subtype="Code" buildaction="Nothing" name="mediaplayer.h" />
@@ -164,7 +163,6 @@
     <File subtype="Code" buildaction="Nothing" name="contentcontrol.h" />
     <File subtype="Code" buildaction="Compile" name="grid.cpp" />
     <File subtype="Code" buildaction="Nothing" name="grid.h" />
-    <File subtype="Code" buildaction="Compile" name="moon-curves.c" />
     <File subtype="Code" buildaction="Nothing" name="moon-curves.h" />
     <File subtype="Code" buildaction="Compile" name="mp3.cpp" />
     <File subtype="Code" buildaction="Nothing" name="mp3.h" />
@@ -347,13 +345,11 @@
     <File subtype="Code" buildaction="Nothing" name="context-cairo.h" />
     <File subtype="Code" buildaction="Nothing" name="context-gallium.h" />
     <File subtype="Code" buildaction="Nothing" name="context-gl.h" />
-    <File subtype="Code" buildaction="Nothing" name="context-glx.h" />
     <File subtype="Code" buildaction="Nothing" name="gchandle.h" />
     <File subtype="Code" buildaction="Nothing" name="richtextlayout.h" />
     <File subtype="Code" buildaction="Nothing" name="surface-gallium.h" />
     <File subtype="Code" buildaction="Nothing" name="surface-gallium-egl.h" />
     <File subtype="Code" buildaction="Nothing" name="surface-gl.h" />
-    <File subtype="Code" buildaction="Nothing" name="surface-glx.h" />
     <File subtype="Code" buildaction="Nothing" name="textlayout.h" />
     <File subtype="Code" buildaction="Nothing" name="textpointer.h" />
     <File subtype="Code" buildaction="Nothing" name="textselection.h" />
@@ -361,13 +357,11 @@
     <File subtype="Code" buildaction="Compile" name="context-cairo.cpp" />
     <File subtype="Code" buildaction="Compile" name="context-gallium.cpp" />
     <File subtype="Code" buildaction="Compile" name="context-gl.cpp" />
-    <File subtype="Code" buildaction="Compile" name="context-glx.cpp" />
     <File subtype="Code" buildaction="Compile" name="gchandle.cpp" />
     <File subtype="Code" buildaction="Compile" name="richtextlayout.cpp" />
     <File subtype="Code" buildaction="Compile" name="surface-gallium.cpp" />
     <File subtype="Code" buildaction="Compile" name="surface-gallium-egl.cpp" />
     <File subtype="Code" buildaction="Compile" name="surface-gl.cpp" />
-    <File subtype="Code" buildaction="Compile" name="surface-glx.cpp" />
     <File subtype="Code" buildaction="Compile" name="textlayout.cpp" />
     <File subtype="Code" buildaction="Compile" name="textpointer.cpp" />
     <File subtype="Code" buildaction="Compile" name="textselection.cpp" />
@@ -404,6 +398,24 @@
     <File subtype="Code" buildaction="Compile" name="medialog.cpp" />
     <File subtype="Code" buildaction="Compile" name="cpu.cpp" />
     <File subtype="Code" buildaction="Nothing" name="cpu.h" />
+    <File subtype="Code" buildaction="Compile" name="context-cgl.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="context-cgl.h" />
+    <File subtype="Code" buildaction="Compile" name="context-egl.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="context-egl.h" />
+    <File subtype="Code" buildaction="Compile" name="context-opengl.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="context-opengl.h" />
+    <File subtype="Code" buildaction="Compile" name="audio-opensles.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="audio-opensles.h" />
+    <File subtype="Code" buildaction="Compile" name="gkeyfile.c" />
+    <File subtype="Code" buildaction="Nothing" name="gkeyfile.h" />
+    <File subtype="Code" buildaction="Nothing" name="jpeg.h" />
+    <File subtype="Code" buildaction="Nothing" name="jpeg.xaml" />
+    <File subtype="Code" buildaction="Compile" name="surface-cgl.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="surface-cgl.h" />
+    <File subtype="Code" buildaction="Compile" name="surface-egl.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="surface-egl.h" />
+    <File subtype="Code" buildaction="Compile" name="surface-opengl.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="surface-opengl.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
