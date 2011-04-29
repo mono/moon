@@ -88,6 +88,8 @@ MoonWindowCocoa::ConnectToContainerPlatformWindow (gpointer container_window)
 MoonClipboard*
 MoonWindowCocoa::GetClipboard (MoonClipboardType clipboardType)
 {
+	if (clipboardType == MoonClipboard_Primary)
+		return NULL; // OSX doesn't have a primary clipboard
 	g_assert_not_reached ();
 }
 
