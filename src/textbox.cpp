@@ -3222,8 +3222,8 @@ PasswordBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 // TextBoxView
 //
 
-#define CURSOR_BLINK_ON_MULTIPLIER    2
-#define CURSOR_BLINK_OFF_MULTIPLIER   1
+#define CURSOR_BLINK_ON_MULTIPLIER    4
+#define CURSOR_BLINK_OFF_MULTIPLIER   2
 #define CURSOR_BLINK_DELAY_MULTIPLIER 3
 #define CURSOR_BLINK_DIVIDER          3
 
