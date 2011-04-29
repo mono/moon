@@ -3,9 +3,9 @@ System.Boolean System.Net.NetworkInformation.NetworkInterface::GetIsNetworkAvail
 	20110208	spouliot - a7e40bc - pinvoke renamed (now prefixed with _moonlight_cbinding_*)
 	r156737		spouliot - pinvoke into NetworkChange.runtime_get_network_service and NetworkChange.moon_network_service_get_is_network_available (libmoon)
 
-!SSC-215E6676FF50B39A6FC8EECA5182B582
-System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
-	20110411	spouliot - validate arguments for before calling Poll_internal (icall) and convert its return value, on error, into a SocketException
+!SSC-F900CA2058EED6F0EC30C07543DA8D15
+System.Boolean System.Net.Sockets.Socket::ConnectAsyncReal(System.Net.Sockets.SocketAsyncEventArgs)
+	20110429	spouliot - e2f43dd7 - if the policy fails then call socket_pool_queue (icall) with Worker.Dispatcher and 'result' (SocketAsyncResult) so the Connect event is fired
 
 !SSC-A220A097363AC1B57D54F7195F45F06D
 System.Boolean System.Net.Sockets.Socket::ReceiveAsync(System.Net.Sockets.SocketAsyncEventArgs)
@@ -18,6 +18,10 @@ System.Boolean System.Net.Sockets.Socket::SendAsync(System.Net.Sockets.SocketAsy
 	20110321	spouliot - 36d63134 / 1a264619 / cc3d2b03 - avoid Worker creation and minimize delegate allocations
 	20101108	spouliot - no source change / compiler (lock related) change?
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on Socket/Worker.Send [SecurityCritical] using a SocketAsyncResult built with a byte[] buffer ot a (ArraySegment) BufferList
+
+!SSC-CD0FC267FBF6D7E524783028C0F7DE80
+System.IAsyncResult System.Net.Sockets.Socket::BeginConnect(System.Net.EndPoint,System.AsyncCallback,System.Object)
+	20110429	spouliot - call Connect_internal (icall) and if the connection cannot be synchronous calls socket_pool_queue (icall) with Worker.Dispatcher and 'req' (SocketAsyncResult)
 
 !SSC-EC6FF98D85748B926E04257E3A474606
 System.Int32 System.Net.Sockets.Socket::Receive(System.Collections.Generic.IList`1<System.ArraySegment`1<System.Byte>>,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
@@ -57,10 +61,6 @@ System.Void System.Net.Sockets.Socket/SocketAsyncResult::Complete()
 	20101013	spouliot - 936c28a - only call queue.Dequeue if queue.Count > 0
 	20101004	spouliot - 430b2940 - call socket_pool_queue [SecurityCritical] on non-null 'sac' which represents the queued delegate returned by Socket/SocketAsyncResult::GetDelegate [SecurityCritical]
 
-!SSC-A878A65839BD50B4206AF10DF599EF48
-System.Void System.Net.Sockets.Socket/Worker::Connect()
-	20110411	spouliot - connect to an IPEndPoint or a list of IPAddress, for the later case it calls Connect_internal [SecurityCritical] on the serialized address until one can connect
-
 !SSC-1CA1DEF92148258BDF457B8C9C529EA1
 System.Void System.Net.Sockets.Socket/Worker::Send()
 	20110411	spouliot - cc3d2b03 - if there's no error (==0) and some data available (Size >0) then call socket_pool_queue (icall) using 'Worker.Dispatcher' and 'result'
@@ -74,14 +74,13 @@ System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,Sy
 System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
 	r142142		spouliot - calls Thread.Abort on the socket blocking_thread
 
-!SSC-EDEADD404ED8BAD03201350F891920DB
-System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
-	r142747		spouliot - DnsEndPoint change
-	r142142		spouliot - calls Connect_internal (icall)
-
 !SSC-E5FBCF079D93072593B503BB0057B6E1
 System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 	r142142		spouliot - calls into Close_internal (icall) and calls Thread.Abort on the socket blocking_thread
+
+!SSC-1D435C6B20073FB4172363194114B81D
+System.Void System.Net.Sockets.Socket::set_Blocking(System.Boolean)
+	20110429	spouliot - calls Blocking_internal (icall). Can be used before/after calling Connect_internal (so it's not tuned out anymore)
 
 !SSC-A469AE7A36476C3AF7A6A79E045ED9FB
 System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)

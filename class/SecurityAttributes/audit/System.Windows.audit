@@ -26,8 +26,9 @@ Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind
 	20110105	spouliot - 90a532c - use NativeHandle property instead of '_native' field when pinvoking event_object_get_object_type
 	r142142		spouliot - pinvoke into event_object_get_object_type
 
-!SSC-9F1BEA84B437ACAC302FEC5D229DC80B
+!SSC-279CE30153536E19CA3AD14E7D153967
 Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
+	20110429	spouliot - no source change / likely compiler related (like KIND.* re-numbering)
 	20110411	spouliot - a4e14bf - add another 'type.FullName' as argument to types_register_type (pinvoke) to ensure only built-in types can register their (non-full) names
 	20110125	spouliot - no source change / likely compiler related (like KIND.* re-numbering)
 	20110104	spouliot - Kind.UNMANAGEDMATRIX[3D] values incremented
@@ -1346,8 +1347,9 @@ System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDi
 System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 	20110321	spouliot - if no 'destinationType' match then, as a last resort, it pinvokes into value_from_str and call Value.ToObject [SecurityCritical] to return a managed object from the original string
 
-!SSC-895BD47CA901B80E870584F312492499
+!SSC-AEADF276EC5FB3C1D529A52641F2A08C
 System.Object Mono.MoonlightTypeConverter::ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)
+	20110429	spouliot - no source change (compiler?)
 	20110321	spouliot - determine 'destinationKind' but calling Types.TypeToKind [SecurityCritical] with the 'destinationType' argument
 
 !SSC-929947FCBDF3123948DFCF75660EBAA0
@@ -1536,8 +1538,9 @@ System.Void Mono.Helper::.cctor()
 	20110104	spouliot - a6369c6 - new static Dictionary classTypeConverters and cachedConverters are created
 	r142078		spouliot - type not SC anymore. static field DefaultCulture is set to CultureInfo.GetCultureInfo("en-US") [SecurityCritical]
 
-!SSC-8DA68C28B8F21524DA6A60C72A558298
+!SSC-5C7BF904EDD1D8F1EB825ED0FD2445B0
 System.Void Mono.MoonError::Dispose()
+	20110429	spouliot - fb2928e - field gchandle_ptr (uint) has been replaced with gchandle (GCHandle)
 	20110411	spouliot - pinvoke runtime_gfree on 'message' (if not IntPtr.Zero) and call GCHandle.Free [SecurityCritical] on 'gchandle_ptr' (if not IntPtr.Zero)
 
 !SSC-4F5B15EC6B8E5966660FAC97E82A4392
@@ -1559,8 +1562,9 @@ System.Void Mono.NativeDependencyObjectHelper::ClearStrongRef(System.IntPtr,Syst
 System.Void Mono.NativeDependencyObjectHelper::ClearValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 	r143068		spouliot - call dependency_object_clear_value [SecurityCritical] using parameter's native handles and 'true'
 
-!SSC-8123F3B5939CAC2C0F3CB464FC788D6F
+!SSC-F2D8599A13162B30BAC3C9BB2437460D
 System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
+	20110429	spouliot - b709809 - set 'Kind' property instead of the 'k' field when creating a new Value
 	20110411	spouliot - cce30ab - simply check if 'd[' is dp is CustomDependencyProperty when calling Value.FromObject
 	20101019	spouliot - 693df0c - removed ArgumentException check for non-nullable DP and valuetype PropertyType
 	20100924	spouliot - 2e5308c - few changes, all reverted
@@ -1859,8 +1863,9 @@ System.Void System.Windows.Controls.RichTextBox::PostOnKeyDown(System.Windows.In
 System.Void System.Windows.Controls.RichTextBox::SelectAll()
 	r159388		spouliot - pinvoke into rich_text_box_select_all using 'native' field
 
-!SSC-C17FBE47B97CB6719E35D61C83BCF958
+!SSC-3364DFF7B95B24A382ED655B0502852F
 System.Void System.Windows.Controls.TextBlock::.cctor()
+	20110429	spouliot - no source change / likely compiler related
 	20110223	spouliot - no source change / likely compiler related
 	20110125	spouliot - no source change / likely compiler related
 	20110105	no direct source change, however Mono.Kind changed from 387->386 causing IL changes
@@ -1871,8 +1876,9 @@ System.Void System.Windows.Controls.TextBlock::.cctor()
 	20101108	spouliot - no source change / compiler ?
 	r145986		spouliot - call TextProperty.AddPropertyChangeCallback [SecurityCritical] on private TextChanged (to raise UIA events)
 
-!SSC-FF1522185EF70EEED2E57EC8A8EADC7B
+!SSC-DCAE8EAD1D893547A397557E7AB51B65
 System.Void System.Windows.Controls.TextBox::.cctor()
+	20110429	spouliot - no source change / likely compiler related
 	20110223	spouliot - no source change / likely compiler related
 	20110125	spouliot - no source change / likely compiler related
 	20110105	no direct source change, however Mono.Kind changed from 388->387 causing IL changes
@@ -2516,8 +2522,9 @@ System.Void System.Windows.Threading.DispatcherTimer::Start()
 System.Void System.Windows.Threading.DispatcherTimer::Stop()
 	r142142		spouliot - pinvoke into dispatcher_timer_stop (autogenerated) using (internal) internalTimer.native field
 
-!SSC-4CC67BFF956B342B8C5946882B7528AE
+!SSC-83561B81EE4FA4EAF5DA1FD67A0058E9
 System.Void System.Windows.UIElement::.cctor()
+	20110429	spouliot - no source change / likely compiler related
 	20110223	spouliot - no source change / likely compiler related
 	20110125	spouliot - no source change / likely compiler related
 	20110105	spouliot - no direct source change but Mono.Kind value changes from 424 to 423 resulting in different IL
@@ -2622,8 +2629,9 @@ System.Windows.DependencyProperty Mono.Xaml.XamlTypeConverter::ConvertDependency
 System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
 	r152055		spouliot - calls Types [SecurityCritical] KindToType method to format an exception string
 
-!SSC-B038F8F7EB965168CBA076329C6CA0A0
+!SSC-9E15D94CAD33ABDDCE538A79327A88FE
 System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
+	20110429	spouliot - b709809 - set 'Kind' property instead of the 'k' field when creating a new Value
 	20110411	spouliot - cce30abd - if default_value is different from UnsetValue then call Value.FromObject with 'default_value' and true (instead of false) to box valuetypes
 	20110125	spouliot - 1f89602 - 'default_value' is now passed when creating a new CustomDependencyProperty
 	r157797		spouliot - additional check that PropertyType is not typeof(object)

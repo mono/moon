@@ -64,8 +64,9 @@ System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.S
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		spouliot - call construct_internal_locale_from_current_locale (icall in locales.c)
 
-!SSC-056021F86D1E7B656CCF41C8C89D5978
+!SSC-849F75F4D7803BA232A2F91B0D79BB8F
 System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator0::MoveNext()
+	20110429	spouliot - no source change (compiler?)
 	r159898		spouliot - no source change (compiler?)
 	r155643		spouliot - validatations splitted outside EnumerateKind (in EnumerateCheck)
 	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
@@ -75,8 +76,9 @@ System.Boolean System.IO.Directory/<EnumerateKind>c__Iterator0::MoveNext()
 System.Boolean System.IO.Directory::Exists(System.String)
 	r155643		spouliot - call SecurityManager.CheckElevatedPermissions [SecurityCritical] to return FALSE unless executing under elevated trust (no exception)
 
-!SSC-EA0A3E8256205477B69C6E3EECBC7F1B
+!SSC-5D6051C1CB75912FEF86A7675398947C
 System.Boolean System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::MoveNext()
+	20110429	spouliot - no source change (compiler?)
 	r159898		spouliot - no source change (compiler?)
 	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
@@ -2022,8 +2024,9 @@ System.Void System.Globalization.RegionInfo::.ctor(System.String)
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
-!SSC-E311E3B381000D39A73BD0FB5C202577
+!SSC-0E53A8602F5D5E7946F4D9F96F6DD66F
 System.Void System.IO.Directory/<EnumerateKind>c__Iterator0::Dispose()
+	20110429	spouliot - no source change (compiler?)
 	r159898		spouliot - no source change (compiler?)
 	r155069		spouliot - compiler renamed symbol c__Iterator1 -> c__Iterator0
 	r153896		spouliot - compiler generated code used by EnumerateKind [SecurityCritical]
@@ -2044,8 +2047,9 @@ System.Void System.IO.Directory::EnumerateCheck(System.String,System.String,Syst
 System.Void System.IO.Directory::Move(System.String,System.String)
 	r155643		spouliot - call SecurityManager.EnsureElevatedPermissions [SecurityCritical] to ensure caller is platform/critical or application runs in elevated trust
 
-!SSC-C46002173F1A159BAF6BDA8217D585D8
+!SSC-93F02CC78CE53BF8D7ADC8766403D22F
 System.Void System.IO.DirectoryInfo/<EnumerateFileSystemInfos>c__Iterator3::Dispose()
+	20110429	spouliot - no source change (compiler?)
 	r159898		spouliot - no source change (compiler?)
 	r155069		spouliot - compiler renamed symbol c__Iterator4 -> c__Iterator3
 	r153896		spouliot - compiler generated code used by EnumerateFileSystemInfos [SecurityCritical]
