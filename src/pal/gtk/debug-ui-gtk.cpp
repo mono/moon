@@ -258,7 +258,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 	if (!node_is_self) {
 		gtk_tree_store_append (store, &iter, node);
 
-		char *markup = g_strdup_printf ("<b>%s</b>", obj->GetName() ? obj->GetName() : "");
+		char *markup = g_strdup_printf ("<b>%s</b> (%p)", obj->GetName() ? obj->GetName() : "", obj);
 		gtk_tree_store_set (store, &iter,
 				    COL_NAME, markup,
 				    COL_TYPE_NAME, obj->GetTypeName(),
@@ -323,7 +323,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 				char *markup;
 
 				if (v->Is (col->GetDeployment (), Type::DEPENDENCY_OBJECT))
-					markup = g_strdup_printf ("<i>[%d]</i> <b>%s</b>", i, v->AsDependencyObject()->GetName() ? v->AsDependencyObject()->GetName() : "");
+					markup = g_strdup_printf ("<i>[%d]</i> <b>%s</b> (%p)", i, v->AsDependencyObject()->GetName() ? v->AsDependencyObject()->GetName() : "", v->AsDependencyObject());
 				else
 					markup = g_strdup_printf ("<i>[%d]</i>", i);
 
