@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define __MOON_CGL__
-
 #include "context-cgl.h"
 
 namespace Moonlight {

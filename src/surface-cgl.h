@@ -15,8 +15,6 @@
 
 #include <OpenGL/OpenGL.h>
 
-#ifdef __MOON_CGL__
-
 namespace Moonlight {
 
 class MOON_API CGLSurface : public OpenGLSurface {
@@ -30,7 +28,5 @@ private:
 };
 
 };
-
-#endif /* __MOON_CGL__ */
 
 #endif /* __MOON_SURFACE_CGL_H__ */

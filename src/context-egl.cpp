@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define __MOON_EGL__
-
 #include "context-egl.h"
 #include "projection.h"
 #include "effect.h"

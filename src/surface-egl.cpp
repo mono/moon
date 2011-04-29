@@ -12,8 +12,6 @@
 
 #include <string.h>
 
-#define __MOON_EGL__
-
 #include "surface-egl.h"
 
 namespace Moonlight {

@@ -25,7 +25,6 @@
 #include "enums.h"
 #include "context-cairo.h"
 
-#define __MOON_EGL__
 #define EGL_EGLEXT_PROTOTYPES 1
 
 #ifdef USE_EGL

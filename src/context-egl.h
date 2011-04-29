@@ -14,8 +14,6 @@
 #include "context-gl.h"
 #include "surface-egl.h"
 
-#ifdef __MOON_EGL__
-
 namespace Moonlight {
 
 class MOON_API MoonEGLContext : public GLContext {
@@ -101,6 +99,4 @@ private:
 
 };
 
-#endif /* __MOON_EGL__ */
-
-#endif /* __MOON_CONTEXT_GLX_H__ */
+#endif /* __MOON_CONTEXT_EGL_H__ */

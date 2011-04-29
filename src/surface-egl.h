@@ -17,8 +17,6 @@
 #include <EGL/eglext.h>
 #include <GLES/gl.h>
 
-#ifdef __MOON_EGL__
-
 namespace Moonlight {
 
 class MOON_API MoonEGLSurface : public GLSurface {
@@ -41,7 +39,5 @@ private:
 };
 
 };
-
-#endif /* __MOON_EGL__ */
 
 #endif /* __MOON_SURFACE_EGL_H__ */

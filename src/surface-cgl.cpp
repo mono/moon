@@ -12,8 +12,6 @@
 
 #include <string.h>
 
-#define __MOON_CGL__
-
 #include "surface-cgl.h"
 
 namespace Moonlight {

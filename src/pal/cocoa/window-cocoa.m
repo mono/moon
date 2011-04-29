@@ -33,7 +33,6 @@
 #include "cairo-quartz.h"
 
 #ifdef USE_CGL
-#define __MOON_CGL__
 #include "context-cgl.h"
 #endif
 
