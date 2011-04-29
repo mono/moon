@@ -148,11 +148,11 @@ namespace Mono {
 		const uint KindMask      = (uint)0x1fffffff;
 
 		[FieldOffset(0)]
-		public uint k;
+		uint k;
 		[FieldOffset(4)]
-		public GCHandle boxed_valuetype;
+		GCHandle boxed_valuetype;
 		[FieldOffset(8)]
-		public ValUnion u;
+		internal ValUnion u;
 
 		public Kind Kind {
 			get { return (Kind)(k & KindMask); }
