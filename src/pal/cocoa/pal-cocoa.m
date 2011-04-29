@@ -16,7 +16,7 @@
 #include <cairo.h>
 
 #include "MLEvent.h"
-#include "MLTimer.h"
+#include "MLTimerContext.h"
 
 #include <AppKit/AppKit.h>
 
@@ -361,7 +361,7 @@ private:
 static gint32
 get_now_in_millis (void)
 {
-        struct timeval tv;
+	struct timeval tv;
 #ifdef CLOCK_MONOTONIC
 	struct timespec tspec;
 	if (clock_gettime (CLOCK_MONOTONIC, &tspec) == 0) {
@@ -369,9 +369,9 @@ get_now_in_millis (void)
 	}
 #endif
 
-        if (gettimeofday (&tv, NULL) == 0) {
-                return tv.tv_sec * 1000  + tv.tv_usec / 1000;
-        }
+	if (gettimeofday (&tv, NULL) == 0) {
+		return tv.tv_sec * 1000  + tv.tv_usec / 1000;
+	}
 
 	// XXX error
 	return 0;
@@ -523,11 +523,6 @@ MoonWindowingSystemCocoa::RemoveSource (guint sourceId)
 		}
 	}
 
-	if (!sources && timer) {
-		[(NSTimer*)timer invalidate];
-		timer = NULL;
-	}
-
 	sourceMutex.Unlock ();
 }
 
@@ -545,6 +540,8 @@ MoonWindowingSystemCocoa::AddTimeout (gint priority, gint ms, MoonSourceFunc tim
 	source_id ++;
 
 	sourceMutex.Unlock ();
+
+	AddCocoaTimer ();
 
 	return new_source_id;
 }
@@ -631,6 +628,10 @@ MoonWindowingSystemCocoa::OnTick ()
 	gint32 after = get_now_in_millis ();
 
 	sourceMutex.Lock();
+
+	[(NSTimer*)timer invalidate];
+	timer = NULL;
+
 	emitting_sources = true;
 
 	GList *sources_to_dispatch = NULL;
@@ -705,21 +706,26 @@ MoonWindowingSystemCocoa::AddCocoaTimer ()
 	int timeout = -1;
 
 	sourceMutex.Lock ();
+	if (timer != NULL) {
+		sourceMutex.Unlock ();
+		return;
+	}
 	if (sources != NULL) {
 		CocoaSource *s = (CocoaSource*)sources->data;
 		timeout = s->time_remaining;
 		if (timeout < 0)
 			timeout = 0;
 	}
-	sourceMutex.Unlock ();
 
 	if (timeout >= 0) {
-		MLTimer *mtimer = [[MLTimer alloc] initWithWindowingSystem: this];
-		timer = [NSTimer scheduledTimerWithTimeInterval: (timeout/1000.0) target: mtimer selector: SEL("onTick:") userInfo: mtimer repeats: NO];
+		MLTimerContext *timerContext = [[MLTimerContext alloc] initWithWindowingSystem: this];
+		timer = [NSTimer scheduledTimerWithTimeInterval: (timeout/1000.0) target: timerContext selector: SEL("onTick:") userInfo: timerContext repeats: NO];
 
 		[[NSRunLoop mainRunLoop] addTimer: (NSTimer*)timer forMode: NSRunLoopCommonModes];
 		before = get_now_in_millis ();
 	}
+
+	sourceMutex.Unlock ();
 }
 
 void

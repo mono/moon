@@ -1,6 +1,6 @@
-#import "MLTimer.h"
+#import "MLTimerContext.h"
 
-@implementation MLTimer
+@implementation MLTimerContext
 
 - (id) initWithWindowingSystem: (Moonlight::MoonWindowingSystemCocoa*) winsys
 {

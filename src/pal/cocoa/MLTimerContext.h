@@ -2,7 +2,7 @@
 #import "pal-cocoa.h"
 #import <AppKit/AppKit.h>
 
-@interface MLTimer : NSTimer {
+@interface MLTimerContext : NSTimer {
 	Moonlight::MoonWindowingSystemCocoa *windowingSystem;
 }
 

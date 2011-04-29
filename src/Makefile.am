@@ -107,7 +107,7 @@ libmoon_include_headers = 	\
 	pal/gtk/debug-ui-gtk.h	\
 	pal/gtk/nocodec-ui-gtk.h		\
 	pal/cocoa/MLEvent.h	\
-	pal/cocoa/MLTimer.h	\
+	pal/cocoa/MLTimerContext.h	\
 	pal/cocoa/MLView.h		\
 	pal/cocoa/MLWindow.h		\
 	pal/cocoa/clipboard-cocoa.h	\
@@ -338,7 +338,7 @@ libmoon_la_SOURCES_PAL_COCOA = \
 	pal/cocoa/MLView.m		\
 	pal/cocoa/MLWindow.m		\
 	pal/cocoa/MLEvent.m	\
-	pal/cocoa/MLTimer.m	\
+	pal/cocoa/MLTimerContext.m	\
 	pal/cocoa/clipboard-cocoa.m	\
 	pal/cocoa/config-dialog-cocoa.m\
 	pal/cocoa/im-cocoa.m	\
