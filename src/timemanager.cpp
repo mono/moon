@@ -88,8 +88,8 @@ TimeManager::TimeManager ()
 	else
 		source = new SystemTimeSource(Deployment::GetCurrent ());
 
-	current_timeout = FPS_TO_DELAY (DEFAULT_FPS);  /* something suitably small */
 	max_fps = MAXIMUM_FPS;
+	current_timeout = FPS_TO_DELAY (max_fps);
 	flags = (TimeManagerOp) (TIME_MANAGER_UPDATE_CLOCKS | TIME_MANAGER_RENDER | TIME_MANAGER_TICK_CALL /*| TIME_MANAGER_UPDATE_INPUT*/);
 
 	start_time = source->GetNow ();
@@ -161,7 +161,7 @@ TimeManager::Start()
 void
 TimeManager::Stop ()
 {
-	stop_time = source->GetNow();
+	stop_time = current_global_time;
 	was_stopped = true;
 	source->Stop ();
 	source_tick_pending = false;
@@ -294,7 +294,7 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 		dispatcher_calls.LinkedList ()->Remove (call);
 	dispatcher_calls.Unlock ();
 
-#if PUT_TIME_MANAGER_T_SLEEP
+#if PUT_TIME_MANAGER_TO_SLEEP
 	tick_calls.Lock ();
 	dispatcher_calls.Lock ();
 	if (tick_calls.IsEmpty() && dispatcher_calls.LinkedList()->IsEmpty()) {
@@ -485,6 +485,9 @@ TimeManager::SourceTick ()
 	flags = (TimeManagerOp)0;
 #endif
 
+	current_global_time = source->GetNow();
+	current_global_time_usec = current_global_time / 10;
+
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
 		STARTTICKTIMER (tm_tick_call, "TimeManager::Tick - Call");
 		InvokeTickCalls ();
@@ -493,8 +496,6 @@ TimeManager::SourceTick ()
 
 	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {
 		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
-		current_global_time = source->GetNow();
-		current_global_time_usec = current_global_time / 10;
 
 		bool need_another_tick = root_clock->UpdateFromParentTime (GetCurrentTime());
 
