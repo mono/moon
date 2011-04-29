@@ -415,6 +415,31 @@ namespace MoonTest.System.Windows.Data {
 		}
 
 		[TestMethod]
+		public void CommitEdit_SelectsNextElement ()
+		{
+			View.MoveCurrentToFirst ();
+			Editable.EditItem (View.CurrentItem);
+
+			Assert.AreEqual (0, View.CurrentPosition, "#1");
+			Editable.CommitEdit ();
+			Assert.AreEqual (0, View.CurrentPosition, "#2");
+		}
+
+		[TestMethod]
+		public void CommitEdit_SelectsNextElement_Grouped ()
+		{
+			Source.GroupDescriptions.Add (new ConcretePropertyGroupDescription {
+				GroupNameFromItemFunc = (item, level, culture) => Items.IndexOf (item) % 2 == 0 ? "A" : "B"
+			});
+			View.MoveCurrentToFirst ();
+			Editable.EditItem (View.CurrentItem);
+
+			Assert.AreEqual (0, View.CurrentPosition, "#1");
+			Editable.CommitEdit ();
+			Assert.AreEqual (1, View.CurrentPosition, "#2");
+		}
+
+		[TestMethod]
 		public void SourceIsEnumerable ()
 		{
 			// Raw enumerables are not editable and have their own

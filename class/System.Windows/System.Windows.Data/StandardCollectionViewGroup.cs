@@ -38,13 +38,20 @@ namespace System.Windows.Data {
 			Sorters = sorters;
 		}
 
-		internal void AddItem (object item, bool allowSorting)
+		internal void AddItem (object item, bool allowSorting, IList wrappedList)
 		{
 			int index = ProtectedItems.Count;
-			if (allowSorting && Sorters.Count > 0 && !(item is CollectionViewGroup)) {
-				var comparer = new PropertyComparer (Sorters);
+			if (allowSorting && !(item is CollectionViewGroup)) {
+				var comparer = Sorters.Count > 0 ? new PropertyComparer (Sorters) : null;
+
 				for (int i = 0; i < ProtectedItems.Count; i++) {
-					if (comparer.Compare (item, ProtectedItems [i]) < 0) {
+					int comparison;
+					if (comparer != null)
+						comparison = comparer.Compare (item, ProtectedItems [i]);
+					else
+						comparison = wrappedList.IndexOf (item).CompareTo (wrappedList.IndexOf (ProtectedItems [i]));
+
+					if (comparison < 0) {
 						index = i;
 						break;
 					}

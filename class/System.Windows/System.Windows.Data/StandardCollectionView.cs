@@ -72,7 +72,7 @@ namespace System.Windows.Data {
 
 			UpdateCanAddNewAndRemove ();
 			filteredList = new ObservableList<object> ();
-			RootGroup = new RootCollectionViewGroup (null, null, 0, false, SortDescriptions);
+			RootGroup = new RootCollectionViewGroup (SourceCollection, null, null, 0, false, SortDescriptions);
 			CurrentPosition = -1;
 			IsEmpty = ActiveList.Count == 0;
 			MoveCurrentToPosition (0);
@@ -439,7 +439,7 @@ namespace System.Windows.Data {
 			CurrentAddItem = newObject;
 			IsAddingNew = true;
 			if (Grouping) {
-				RootGroup.AddItem (newObject, false);
+				RootGroup.AddItem (newObject, false, SourceCollection);
 				HandleRootGroupCollectionChanged (RootGroup, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, newObject, RootGroup.IndexOfSubtree (newObject)));
 			}
 			AddToSourceCollection (newObject);
@@ -576,10 +576,8 @@ namespace System.Windows.Data {
 					RootGroup.RemoveInSubtree (editItem);
 					RootGroup.AddInSubtree (editItem, Culture, GroupDescriptions);
 					DeferCurrentChanged = false;
-					newIndex = IndexOf (currentSelection);
-				}
-
-				if (originalIndex != newIndex) {
+					MoveCurrentTo (IndexOf (currentSelection) + 1);
+				} else if (originalIndex != newIndex) {
 					MoveCurrentTo (IndexOf (currentSelection));
 				}
 			}

@@ -14,10 +14,14 @@ namespace System.Windows {
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-		public RootCollectionViewGroup (StandardCollectionViewGroup parent, object name, int depth, bool isBottomLevel, SortDescriptionCollection sorters)
+		IList WrappedList {
+			get; set;
+		}
+
+		public RootCollectionViewGroup (IList wrappedList, StandardCollectionViewGroup parent, object name, int depth, bool isBottomLevel, SortDescriptionCollection sorters)
 			: base (parent, name, depth, isBottomLevel, sorters)
 		{
-
+			WrappedList = wrappedList;
 		}
 
 
@@ -35,7 +39,7 @@ namespace System.Windows {
 		{
 			int depth = group.Depth;
 			if (group.IsBottomLevel) {
-				group.AddItem (item, allowSorting);
+				group.AddItem (item, allowSorting, WrappedList);
 				CollectionChanged.Raise (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, item, IndexOfSubtree (item)));
 			} else {
 				var desc = descriptions [group.Depth];
@@ -63,7 +67,7 @@ namespace System.Windows {
 			if (!added) {
 				int depth = group.Depth + 1;
 				var g = new StandardCollectionViewGroup (group, name, depth, depth == descriptions.Count, group.Sorters);
-				group.AddItem (g, allowSorting);
+				group.AddItem (g, allowSorting, WrappedList);
 				AddInSubtree (g, item, culture, descriptions, allowSorting);
 			}
 		}
