@@ -35,7 +35,10 @@ MapKeyCodeToKey (gunichar uc)
 		return KeyENTER;
 	case ' ':
 		return KeySPACE;
-
+	case 0x08:
+		return KeyBACKSPACE;
+	case 0x7f:
+		return KeyBACKSPACE;
 	// FIXME: lots more here
 
 	default:
