@@ -22,6 +22,28 @@
 
 using namespace Moonlight;
 
+static Key
+MapKeyCodeToKey (gunichar uc)
+{
+	if (uc >= 0x80)
+		return KeyUNKNOWN;
+
+	switch ((char)uc) {
+	case '\t': return KeyTAB;
+	case '\r':
+	case '\n':
+		return KeyENTER;
+	case ' ':
+		return KeySPACE;
+
+	// FIXME: lots more here
+
+	default:
+		return KeyUNKNOWN;
+	}
+}
+
+// this class is kinda broken in that it doesn't/can't track the down/up state of modifier keys.
 class MoonKeyEventCocoa : public MoonKeyEvent {
 public:
 	MoonKeyEventCocoa (MLEvent *event)
@@ -46,7 +68,25 @@ public:
 
 	virtual Key GetSilverlightKey ()
 	{
-		g_assert_not_reached ();
+		if ([event.event type] == NSFlagsChanged) {
+			unsigned int flags = [event.event modifierFlags];
+			if (flags & NSShiftKeyMask)
+				return KeySHIFT;
+			else if (flags & NSAlphaShiftKeyMask)
+				return KeyCAPSLOCK;
+			else if (flags & NSAlternateKeyMask
+				 /* do we want the command key to map to alt as well? i would guess not... */
+				 /*|| flags & NSCommandKeyMask */)
+				return KeyALT;
+			else if (flags & NSControlKeyMask)
+				return KeyALT;
+			else
+				return KeyUNKNOWN;
+		}
+		else {
+			gunichar uc = GetUnicode();
+			return MapKeyCodeToKey (uc);
+		}
 	}
 
 	virtual int GetPlatformKeycode ()
@@ -81,7 +121,7 @@ public:
 
 	bool IsRelease ()
 	{
-		g_assert_not_reached ();
+		return [event.event type] == NSKeyUp;
 	}
 
 	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
@@ -585,25 +625,29 @@ MoonWindowingSystemCocoa::CreateEventFromPlatformEvent (gpointer platformEvent)
 	MLEvent *evt = (MLEvent *) platformEvent;
 
 	switch ([evt.event type]) {
-		case NSMouseEntered:
-			return new MoonCrossingEventEnteredCocoa (evt);
-		case NSMouseExited:
-			return new MoonCrossingEventExitedCocoa (evt);
-			break;
-		case NSLeftMouseDragged:
-		case NSRightMouseDragged:
-		case NSOtherMouseDragged:
-		case NSMouseMoved:
-			return new MoonMotionEventCocoa (evt);
-		case NSLeftMouseUp:
-		case NSRightMouseUp:
-		case NSOtherMouseUp:
-		case NSLeftMouseDown:
-		case NSRightMouseDown:
-		case NSOtherMouseDown:
-			return new MoonButtonEventCocoa (evt);
-		default:
-			g_assert_not_reached ();
+	case NSMouseEntered:
+		return new MoonCrossingEventEnteredCocoa (evt);
+	case NSMouseExited:
+		return new MoonCrossingEventExitedCocoa (evt);
+		break;
+	case NSLeftMouseDragged:
+	case NSRightMouseDragged:
+	case NSOtherMouseDragged:
+	case NSMouseMoved:
+		return new MoonMotionEventCocoa (evt);
+	case NSLeftMouseUp:
+	case NSRightMouseUp:
+	case NSOtherMouseUp:
+	case NSLeftMouseDown:
+	case NSRightMouseDown:
+	case NSOtherMouseDown:
+		return new MoonButtonEventCocoa (evt);
+	case NSFlagsChanged:
+	case NSKeyDown:
+	case NSKeyUp:
+		return new MoonKeyEventCocoa (evt);
+	default:
+		g_assert_not_reached ();
 	}
 
 	return NULL;
