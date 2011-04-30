@@ -25,20 +25,29 @@ using namespace Moonlight;
 static Key
 MapKeyCodeToKey (gunichar uc)
 {
-	if (uc >= 0x80)
-		return KeyUNKNOWN;
-
-	switch ((char)uc) {
-	case '\t': return KeyTAB;
-	case '\r':
-	case '\n':
+	switch (uc) {
+	case NSRightArrowFunctionKey:
+		return KeyRIGHT;
+	case NSLeftArrowFunctionKey:
+		return KeyLEFT;
+	case NSUpArrowFunctionKey:
+		return KeyUP;
+	case NSDownArrowFunctionKey:
+		return KeyDOWN;
+	case 0x09:
+		return KeyTAB;
+	case 0x0a:
+	case 0x0d:
 		return KeyENTER;
-	case ' ':
+	case 0x20:
 		return KeySPACE;
 	case 0x08:
 		return KeyBACKSPACE;
 	case 0x7f:
 		return KeyBACKSPACE;
+	case 0x1b:
+		return KeyESCAPE;
+
 	// FIXME: lots more here
 
 	default:
