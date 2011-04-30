@@ -1844,6 +1844,29 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Polygon::PointsProperty) {
+
+		// kind of a micro-optimization, if the new points is the same as the old
+		// we don't invalidate.
+		PointCollection *new_points = args->GetNewValue()->AsPointCollection();
+		PointCollection *old_points = args->GetOldValue()->AsPointCollection();
+		
+		if (new_points && old_points) {
+			if (new_points->GetCount() == old_points->GetCount()) {
+				bool equal = true;
+				for (int i = 0; i < new_points->GetCount(); i ++) {
+					if (*new_points->GetValueAt(i)->AsPoint () != *old_points->GetValueAt(i)->AsPoint ()) {
+						equal = false;
+						break;
+					}
+				}
+				if (equal) {
+					NotifyListenersOfPropertyChange (args, error);
+					// return, but do not invalidate
+					return;
+				}
+			}
+		}
+
 		InvalidateNaturalBounds ();
 	}
 
