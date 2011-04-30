@@ -30,7 +30,7 @@
 #include "debug.h"
 
 #ifndef HAVE_POSIX_MEMALIGN
-int
+extern "C" int 
 posix_memalign (void **ptr, size_t alignment, size_t size) throw ()
 {
 	*ptr = (void *) malloc (size);
@@ -42,15 +42,6 @@ posix_memalign (void **ptr, size_t alignment, size_t size) throw ()
 #endif /* ! HAVE_POSIX_MEMALIGN */
 
 namespace Moonlight {
-
-extern "C" int posix_memalign (void **ptr, size_t alignment, size_t size)
-{
-	*ptr = (void *) malloc (size);
-	if (!*ptr)
-		return errno;
-
-	return 0;
-}
 
 void
 MoonWindowingSystem::SetWindowlessCtor (MoonWindowlessCtor ctor)
