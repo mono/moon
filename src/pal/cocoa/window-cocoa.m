@@ -247,6 +247,12 @@ MoonWindowCocoa::SetHeight (double height)
 void
 MoonWindowCocoa::SetTitle (const char *title)
 {
+	if (title == NULL)
+		title = "";
+
+	NSString *titleNSString = [[NSString alloc] initWithUTF8String: title];
+
+	[(MLWindow *)window setTitle: titleNSString];
 }
 
 void

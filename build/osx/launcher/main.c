@@ -76,6 +76,8 @@ main (int argc, char **argv) {
 	deployment->SetXapFilename (argv[1]);
 	deployment->SetXapLocation (Uri::Create ("file:///Users/toshok/src/moonlight-android/moonlight-activity/DemoApp.xap"));
 
+	window->SetTitle (argv[1]);
+
 	surface->AddXamlHandler (Surface::ErrorEvent, error_handler, NULL);
 	surface->unref ();
 
