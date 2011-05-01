@@ -25,6 +25,8 @@ using namespace Moonlight;
 const char *mono_config =
 "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 "<configuration>"
+"<dllmap dll=\"moon\" target=\"/opt/moonlight-osx/lib/libmoon.dylib\" />"
+"<dllmap dll=\"libmoon\" target=\"/opt/moonlight-osx/lib/libmoon.dylib\" />"
 "<dllmap dll=\"libmoon.so.0\" target=\"/opt/moonlight-osx/lib/libmoon.dylib\" />"
 "<dllmap dll=\"moonplugin\" target=\"/opt/moonlight-osx/lib/libmoon.dylib\" />"
 "</configuration>";
@@ -46,11 +48,11 @@ main (int argc, char **argv) {
 	char *data_dir;
 
 //	setenv ("MONO_PATH", "/opt/mono/lib/mono/2.0:/opt/moonlight-osx/lib/mono/moonlight/", 1);
-	setenv ("MONO_PATH", "/Users/toshok/src/mono/moon/class/lib/2.1", 1);
+	setenv ("MONO_PATH", "/Users/plasma/Work/darwoon/moon/class/lib/2.1", 1);
 	//setenv ("MOONLIGHT_DEBUG", "mediaplayer", 1);
 	setenv ("MOONLIGHT_OVERRIDES", "curlbridge=yes", 1);
 	setenv ("MOONLIGHT_DISABLE_INCOMPLETE_MESSAGE", "1", 1);
-	setenv ("XAP_URI", "file://Users/toshok/tmp/xap", 1);
+	setenv ("XAP_URI", "file://Users/plasma/tmp/xap", 1);
 
 	mono_config_parse_memory(mono_config);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
