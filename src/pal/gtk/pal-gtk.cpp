@@ -283,15 +283,15 @@ MapGdkToModifier (int state)
 {
 	MoonModifier modifier = 0;
 
-	if (event->state & GDK_SHIFT_MASK)
+	if (state & GDK_SHIFT_MASK)
 		modifier |= MoonModifier_Shift;
-	if (event->state & GDK_LOCK_MASK)
+	if (state & GDK_LOCK_MASK)
 		modifier |= MoonModifier_CapsLock;
-	if (event->state & GDK_CONTROL_MASK)
+	if (state & GDK_CONTROL_MASK)
 		modifier |= MoonModifier_Control;
-	if (event->state & GDK_CONTROL_MOD1)
+	if (state & GDK_MOD1_MASK)
 		modifier |= MoonModifier_Alt;
-	if (event->state & GDK_CONTROL_META)
+	if (state & GDK_META_MASK)
 		modifier |= MoonModifier_Windows;
 
 	// XXX what about the crazy people running gtk on macs?
