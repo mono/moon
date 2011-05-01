@@ -130,9 +130,11 @@ MoonWindowCocoa::SetCursor (CursorType cursor)
 void
 MoonWindowCocoa::Invalidate (Rect r)
 {
-//	NSRect frame = [view frame];
-
-//	[view setNeedsDisplayInRect: NSMakeRect (r.x, frame.size.height - r.y - r.height, r.width, r.height)];
+	// With a flipped view to do partial invalidations we want to invalidate as per
+	// below, however currently this is causing some non-deterministic render 
+	// corruption on the Cgl backend.  Disable this until we resolve that issue
+	//
+	// [(MLView *)view setNeedsDisplayInRect: NSMakeRect (r.x, r.y, r.width, r.height)];
 	[(MLView *)view setNeedsDisplayInRect: [(MLView *)view frame]];
 }
 
