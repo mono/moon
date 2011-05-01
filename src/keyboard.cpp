@@ -20,10 +20,11 @@ struct ModifierMap {
 	MoonModifier mod;
 	ModifierKeys key;
 } modifier_map[] = {
-	{ MoonModifier_Mod1,    ModifierKeyAlt     },
+	{ MoonModifier_Shift, ModifierKeyShift },
 	{ MoonModifier_Control, ModifierKeyControl },
-	{ MoonModifier_Shift,   ModifierKeyShift   },
-	{ MoonModifier_Meta,    ModifierKeyWindows },
+	{ MoonModifier_Alt, ModifierKeyAlt },
+	{ MoonModifier_Windows, ModifierKeyWindows },
+	{ MoonModifier_Apple, ModifierKeyApple }
 };
 
 ModifierKeys Keyboard::modifiers = ModifierKeyNone;

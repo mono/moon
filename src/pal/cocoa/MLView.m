@@ -64,6 +64,11 @@
 	moonwindow->KeyUpEvent (event);
 }
 
+- (void)flagsChanged: (NSEvent *) event
+{
+	moonwindow->FlagsChangedEvent (event);
+}
+
 - (void) setFrame: (NSRect) frame
 {
 	[super setFrame: frame];

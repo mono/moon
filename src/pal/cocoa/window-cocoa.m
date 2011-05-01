@@ -89,7 +89,8 @@ MoonWindowCocoa::GetClipboard (MoonClipboardType clipboardType)
 {
 	if (clipboardType == MoonClipboard_Primary)
 		return NULL; // OSX doesn't have a primary clipboard
-	g_assert_not_reached ();
+
+	return new MoonClipboardCocoa (this, clipboardType);
 }
 
 gpointer
@@ -327,6 +328,21 @@ MoonWindowCocoa::KeyDownEvent (void *evt)
 
 void
 MoonWindowCocoa::KeyUpEvent (void *evt)
+{
+	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
+	MoonEventStatus status = MoonEventNotHandled;
+
+	SetCurrentDeployment ();
+
+	if (surface) {
+		MoonKeyEvent *mevent = (MoonKeyEvent*)Runtime::GetWindowingSystem ()->CreateEventFromPlatformEvent (event);
+		status = mevent->DispatchToWindow (this);
+		delete mevent;
+	}
+}
+
+void
+MoonWindowCocoa::FlagsChangedEvent (void *evt)
 {
 	MLEvent *event = [[MLEvent alloc] initWithEvent: (NSEvent *) evt view: (MLView *) this->view];
 	MoonEventStatus status = MoonEventNotHandled;

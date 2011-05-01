@@ -15,33 +15,52 @@ using namespace Moonlight;
 MoonClipboardCocoa::MoonClipboardCocoa (MoonWindowCocoa *win, MoonClipboardType clipboardType)
 {
 	pasteboard = [NSPasteboard generalPasteboard];
-
-	// FIXME: We only handle text currently
-	[pasteboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:nil];
 }
 
 bool
 MoonClipboardCocoa::ContainsText ()
 {
-	g_assert_not_reached ();
+	NSArray *classes = [[NSArray alloc] initWithObjects:[NSString class], nil];
+	NSDictionary *options = [NSDictionary dictionary];
+	return [(NSPasteboard*)pasteboard canReadObjectsForClasses:classes options:options];
 }
 
 void
-MoonClipboardCocoa::SetText (const char *text, int length)
+MoonClipboardCocoa::SetText (const char *text)
 {
-	NSString *string = [[NSString alloc] initWithBytes: text length: length encoding: NSUTF8StringEncoding];
+	NSString *string = [[NSString alloc] initWithBytes: text length: strlen (text) encoding: NSUTF8StringEncoding];
 
-	[pasteboard setString:string forType:NSStringPboardType];
+	NSArray *array = [[NSArray alloc] initWithObjects: string, nil];
+
+	[(NSPasteboard*)pasteboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:nil];
+
+	if ([(NSPasteboard*)pasteboard writeObjects: array])
+		printf ("succeeded in saving text\n");
 }
 
 void
 MoonClipboardCocoa::AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data)
 {
-	g_assert_not_reached ();
+	char *text = GetText ();
+
+	cb (this, text, data);
+
+	g_free (text);
 }
 
 char*
 MoonClipboardCocoa::GetText ()
 {
-	g_assert_not_reached ();
+	NSArray *classes = [[NSArray alloc] initWithObjects:[NSString class], nil];
+	NSDictionary *options = [NSDictionary dictionary];
+	NSArray *copiedItems = [(NSPasteboard*)pasteboard readObjectsForClasses:classes options:options];
+	if (copiedItems != nil) {
+		// Do something with the contents...
+		printf ("copiedItems count = %d", [copiedItems count]);
+		NSString *str = [copiedItems objectAtIndex: 0];
+
+		return g_strdup ([str UTF8String]);
+	}
+
+	return NULL;
 }

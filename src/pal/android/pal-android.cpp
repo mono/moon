@@ -307,7 +307,7 @@ public:
 		int mods = 0;
 
 		if (android_metastate & AMETA_ALT_ON)
-			mods |= MoonModifier_Meta; // why couldn't gtk just use *ALT*?  is this the right modifier? FIXME
+			mods |= MoonModifier_Alt;
 		if (android_metastate & AMETA_SHIFT_ON)
 			mods |= MoonModifier_Shift;
 		if (android_metastate & AMETA_SYM_ON)
@@ -418,7 +418,7 @@ public:
 		int mods = 0;
 
 		if (metastate & AMETA_ALT_ON)
-			mods |= MoonModifier_Meta; // why couldn't gtk just use *ALT*?  is this the right modifier? FIXME
+			mods |= MoonModifier_Alt;
 		if (metastate & AMETA_SHIFT_ON)
 			mods |= MoonModifier_Shift;
 		if (metastate & AMETA_SYM_ON)
@@ -525,7 +525,7 @@ public:
 		int mods = 0;
 
 		if (metastate & AMETA_ALT_ON)
-			mods |= MoonModifier_Meta; // why couldn't gtk just use *ALT*?  is this the right modifier? FIXME
+			mods |= MoonModifier_Alt;
 		if (metastate & AMETA_SHIFT_ON)
 			mods |= MoonModifier_Shift;
 		if (metastate & AMETA_SYM_ON)
@@ -930,6 +930,12 @@ MoonWindowingSystemAndroid::CreateEventFromPlatformEvent (gpointer platformEvent
 
 	// FIXME
 	return NULL;
+}
+
+MoonModifier
+MoonWindowingSystemAndroid::GetCommandModifier ()
+{
+	return MoonModifier_Control;
 }
 
 guint

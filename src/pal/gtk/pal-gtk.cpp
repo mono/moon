@@ -278,6 +278,28 @@ MapGdkToVKey (GdkEventKey *event)
 	}
 }
 
+static MoonModifier
+MapGdkToModifier (int state)
+{
+	MoonModifier modifier = 0;
+
+	if (event->state & GDK_SHIFT_MASK)
+		modifier |= MoonModifier_Shift;
+	if (event->state & GDK_LOCK_MASK)
+		modifier |= MoonModifier_CapsLock;
+	if (event->state & GDK_CONTROL_MASK)
+		modifier |= MoonModifier_Control;
+	if (event->state & GDK_CONTROL_MOD1)
+		modifier |= MoonModifier_Alt;
+	if (event->state & GDK_CONTROL_META)
+		modifier |= MoonModifier_Windows;
+
+	// XXX what about the crazy people running gtk on macs?
+	// XXX what does gtk generate for the _Apple key?
+
+	return modifier;
+}
+
 class MoonKeyEventGtk : public MoonKeyEvent {
 public:
 	MoonKeyEventGtk (GdkEvent *event)
@@ -327,7 +349,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		return (MoonModifier) event->state;
+		return MapGdkToModifier (event->state);
 	}
 	
 	virtual bool IsModifier ()
@@ -440,7 +462,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		return (MoonModifier) event->state;
+		return MapGdkToModifier (event->state);
 	}
 
 	bool IsRelease ()
@@ -522,7 +544,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		return (MoonModifier) event->state;
+		return MapGdkToModifier (event->state);
 	}
 
 	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
@@ -577,7 +599,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		return (MoonModifier) event->state;
+		return MapGdkToModifier (event->state);
 	}
 	
 	virtual bool IsEnter ()
@@ -680,7 +702,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		return (MoonModifier) event->state;
+		return MapGdkToModifier (event->state);
 	}
 
 	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
@@ -1249,6 +1271,12 @@ MoonWindowingSystemGtk::CreateEventFromPlatformEvent (gpointer platformEvent)
 		printf ("unhandled gtk event %d\n", gdk->type);
 		return NULL;
 	}
+}
+
+MoonModifier
+MoonWindowingSystemGtk::GetCommandModifier ()
+{
+	return MoonModifier_Control;
 }
 
 guint

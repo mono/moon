@@ -529,9 +529,9 @@ TextBoxUndoStack::Peek ()
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
 
-#define CONTROL_MASK MoonModifier_Control
+#define COMMAND_MASK Runtime::GetWindowingSystem()->GetCommandModifier()
 #define SHIFT_MASK   MoonModifier_Shift
-#define ALT_MASK     MoonModifier_Mod1
+#define ALT_MASK     MoonModifier_Alt
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
@@ -963,7 +963,7 @@ TextBoxBase::KeyPressBackSpace (MoonModifier modifiers)
 		// BackSpace w/ active selection: delete the selected text
 		length = abs (cursor - anchor);
 		start = MIN (anchor, cursor);
-	} else if ((modifiers & CONTROL_MASK) != 0) {
+	} else if ((modifiers & COMMAND_MASK) != 0) {
 		// Ctrl+BackSpace: delete the word ending at the cursor
 		start = CursorPrevWord (cursor);
 		length = cursor - start;
@@ -1019,7 +1019,7 @@ TextBoxBase::KeyPressDelete (MoonModifier modifiers)
 		// Delete w/ active selection: delete the selected text
 		length = abs (cursor - anchor);
 		start = MIN (anchor, cursor);
-	} else if ((modifiers & CONTROL_MASK) != 0) {
+	} else if ((modifiers & COMMAND_MASK) != 0) {
 		// Ctrl+Delete: delete the word starting at the cursor
 		length = CursorNextWord (cursor) - cursor;
 		start = cursor;
@@ -1063,7 +1063,7 @@ TextBoxBase::KeyPressPageDown (MoonModifier modifiers)
 	int cursor = selection_cursor;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor down one page from its current position
@@ -1095,7 +1095,7 @@ TextBoxBase::KeyPressPageUp (MoonModifier modifiers)
 	int cursor = selection_cursor;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor up one page from its current position
@@ -1128,7 +1128,7 @@ TextBoxBase::KeyPressDown (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor down by one line from its current position
@@ -1162,7 +1162,7 @@ TextBoxBase::KeyPressUp (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor up by one line from its current position
@@ -1198,7 +1198,7 @@ TextBoxBase::KeyPressHome (MoonModifier modifiers)
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 	
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the cursor to the beginning of the buffer
 		cursor = 0;
 	} else {
@@ -1235,7 +1235,7 @@ TextBoxBase::KeyPressEnd (MoonModifier modifiers)
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 	
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the cursor to the end of the buffer
 		cursor = buffer->len;
 	} else {
@@ -1272,7 +1272,7 @@ TextBoxBase::KeyPressRight (MoonModifier modifiers)
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 	
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the cursor to beginning of the next word
 		cursor = CursorNextWord (cursor);
 	} else if ((modifiers & SHIFT_MASK) == 0 && anchor != cursor) {
@@ -1314,7 +1314,7 @@ TextBoxBase::KeyPressLeft (MoonModifier modifiers)
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
 	
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
 		cursor = CursorPrevWord (cursor);
 	} else if ((modifiers & SHIFT_MASK) == 0 && anchor != cursor) {
@@ -1546,7 +1546,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		if (is_read_only)
 			break;
 		
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+		if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
 			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
@@ -1562,7 +1562,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		}
 		break;
 	case KeyINSERT:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+		if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Insert => Paste
 			if (is_read_only)
 				break;
@@ -1573,7 +1573,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			}
 			
 			handled = true;
-		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+		} else if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == COMMAND_MASK) {
 			// Control+Insert => Copy
 			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
@@ -1610,7 +1610,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		handled = KeyPressUp (modifiers);
 		break;
 	default:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+		if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == COMMAND_MASK) {
 			switch (key) {
 			case KeyA:
 				// Ctrl+A => Select All
@@ -1718,7 +1718,7 @@ TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 		KeyPressUnichar ('\r');
 		break;
 	default:
-		if ((event->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
+		if ((event->GetModifiers () & (COMMAND_MASK | ALT_MASK)) == 0) {
 			// normal character input
 			if ((c = event->GetUnicode ()))
 				KeyPressUnichar (c);

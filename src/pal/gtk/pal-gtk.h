@@ -42,6 +42,7 @@ public:
 
 	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent);
 
+	virtual MoonModifier GetCommandModifier ();
 	virtual guint GetCursorBlinkTimeout (MoonWindow *window);
 
 	virtual MoonPixbufLoader* CreatePixbufLoader (const char *imageType);

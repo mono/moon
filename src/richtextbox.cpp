@@ -547,9 +547,9 @@ RichTextBoxActionSetSelectionText::AppendText (const char *text_)
 #define SELECTION_CHANGED       (1 << 0)
 #define CONTENT_CHANGED         (1 << 1)
 
-#define CONTROL_MASK MoonModifier_Control
+#define COMMAND_MASK Runtime::GetWindowingSystem()->GetCommandModifier()
 #define SHIFT_MASK   MoonModifier_Shift
-#define ALT_MASK     MoonModifier_Mod1
+#define ALT_MASK     MoonModifier_Alt
 
 static MoonWindow *
 GetNormalWindow (RichTextBox *textbox)
@@ -814,7 +814,7 @@ RichTextBox::KeyPressBackSpace (MoonModifier modifiers)
 	return true;
 
 #if false
-	else if ((modifiers & CONTROL_MASK) != 0) {
+	else if ((modifiers & COMMAND_MASK) != 0) {
 		// Ctrl+BackSpace: delete the word ending at the cursor
 		start = CursorPrevWord (cursor);
 		length = cursor - start;
@@ -872,7 +872,7 @@ RichTextBox::KeyPressDelete (MoonModifier modifiers)
 	}
 	
 #if 0
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// Ctrl+Delete: delete the word starting at the cursor
 		length = CursorNextWord (cursor) - cursor;
 		start = cursor;
@@ -924,7 +924,7 @@ RichTextBox::KeyPressPageUp (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0) {
 		return false;
 	}
 	
@@ -952,7 +952,7 @@ RichTextBox::KeyPressDown (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0) {
 		return false;
 	}
 	
@@ -980,7 +980,7 @@ RichTextBox::KeyPressUp (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0) {
+	if ((modifiers & (COMMAND_MASK | ALT_MASK)) != 0) {
 		return false;
 	}
 	
@@ -1012,7 +1012,7 @@ RichTextBox::KeyPressHome (MoonModifier modifiers)
 	TextPointer moving = selection->GetMoving_np ();
 	TextPointer new_moving;
 
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the moving pointer to the beginning of the buffer
 		new_moving = TextPointer (this, CONTENT_START, LogicalDirectionForward);
 
@@ -1054,7 +1054,7 @@ RichTextBox::KeyPressEnd (MoonModifier modifiers)
 	TextPointer moving = selection->GetMoving_np ();
 	TextPointer new_moving;
 
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the moving pointer to the end of the buffer
 		new_moving = TextPointer (this, CONTENT_END, LogicalDirectionForward);
 	} else {
@@ -1094,7 +1094,7 @@ RichTextBox::KeyPressRight (MoonModifier modifiers)
 	TextPointer moving = selection->GetMoving_np ();
 	TextPointer new_moving;
 
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the cursor to the beginning of the next word
 		new_moving = CursorNextWord (moving);
 	} else {
@@ -1133,7 +1133,7 @@ RichTextBox::KeyPressLeft (MoonModifier modifiers)
 	TextPointer moving = selection->GetMoving_np ();
 	TextPointer new_moving;
 
-	if ((modifiers & CONTROL_MASK) != 0) {
+	if ((modifiers & COMMAND_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
 		new_moving = CursorPrevWord (moving);
 	} else {
@@ -1290,7 +1290,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		if (GetIsReadOnly())
 			break;
 		
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+		if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				// FIXME: what about cutting xaml?  do
@@ -1315,7 +1315,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		}
 		break;
 	case KeyINSERT:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+		if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Insert => Paste
 			if (GetIsReadOnly())
 				break;
@@ -1326,7 +1326,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 			}
 			
 			handled = true;
-		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+		} else if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == COMMAND_MASK) {
 			// Control+Insert => Copy
 			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				// FIXME: what about cutting xaml?  do
@@ -1368,7 +1368,7 @@ RichTextBox::OnKeyDown (KeyEventArgs *args)
 		handled = KeyPressUp (modifiers);
 		break;
 	default:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+		if ((modifiers & (COMMAND_MASK | ALT_MASK | SHIFT_MASK)) == COMMAND_MASK) {
 			switch (key) {
 			case KeyA:
 				// Ctrl+A => Select All
@@ -1487,7 +1487,7 @@ RichTextBox::PostOnKeyDown (KeyEventArgs *args)
 		KeyPressUnichar ('\r');
 		break;
 	default:
-		if ((event->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
+		if ((event->GetModifiers () & (COMMAND_MASK | ALT_MASK)) == 0) {
 			// normal character input
 			if ((c = event->GetUnicode ()))
 				KeyPressUnichar (c);

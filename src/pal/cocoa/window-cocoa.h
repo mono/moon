@@ -83,6 +83,7 @@ public:
 	void ButtonReleaseEvent (gpointer evt);
 	void KeyDownEvent (gpointer evt);
 	void KeyUpEvent (gpointer evt);
+	void FlagsChangedEvent (gpointer evt);
 
 	void ClearPlatformContext ();
 private:

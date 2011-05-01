@@ -102,18 +102,12 @@ struct Color;
 
 enum MoonModifier {
 	MoonModifier_Shift    = 1 << 0,
-	MoonModifier_Lock     = 1 << 1,
+	MoonModifier_CapsLock = 1 << 1,
 	MoonModifier_Control  = 1 << 2,
-
-	MoonModifier_Mod1	    = 1 << 3,
-	MoonModifier_Mod2	    = 1 << 4,
-	MoonModifier_Mod3	    = 1 << 5,
-	MoonModifier_Mod4	    = 1 << 6,
-	MoonModifier_Mod5	    = 1 << 7,
-
-	MoonModifier_Super    = 1 << 26,
-	MoonModifier_Hyper    = 1 << 27,
-	MoonModifier_Meta     = 1 << 28,
+	MoonModifier_Alt      = 1 << 3,
+	MoonModifier_Windows  = 1 << 4,
+	MoonModifier_Apple    = 1 << 5,
+	MoonModifier_NumLock  = 1 << 6
 };
 
 
@@ -331,6 +325,8 @@ public:
 	virtual MoonIMContext* CreateIMContext () = 0;
 
 	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent) = 0;
+
+	virtual MoonModifier GetCommandModifier () = 0;
 
 	virtual guint GetCursorBlinkTimeout (MoonWindow *window) = 0;
 

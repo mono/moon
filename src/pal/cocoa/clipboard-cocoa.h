@@ -15,7 +15,7 @@ public:
 	MoonClipboardCocoa (MoonWindowCocoa *win, MoonClipboardType clipboardType);
 
 	virtual bool ContainsText ();
-	virtual void SetText (const char *text, int length);
+	virtual void SetText (const char *text);
 	virtual void AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data);
 	virtual char* GetText ();
 

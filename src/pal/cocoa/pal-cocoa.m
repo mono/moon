@@ -25,6 +25,15 @@ using namespace Moonlight;
 static Key
 MapKeyCodeToKey (gunichar uc)
 {
+	if (uc >= (int)'a' && uc <= (int)'z')
+		return (Key)(KeyA + ((char)uc - 'a'));
+
+	if (uc >= (int)'A' && uc <= (int)'Z')
+		return (Key)(KeyA + ((char)uc - 'A'));
+
+	if (uc >= (int)'0' && uc <= (int)'9')
+		return (Key)(KeyDIGIT0 + ((char)uc - '0'));
+
 	switch (uc) {
 	case NSRightArrowFunctionKey:
 		return KeyRIGHT;
@@ -120,15 +129,27 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		// FIXME map modifiers
-		return (MoonModifier) [event.event modifierFlags];
+		int modifiers = 0;
+		unsigned int flags = [event.event modifierFlags];
+
+		if (flags & NSShiftKeyMask)
+			modifiers |= MoonModifier_Shift;
+		if (flags & NSAlphaShiftKeyMask)
+			modifiers |= MoonModifier_CapsLock;
+		if (flags & NSAlternateKeyMask)
+			modifiers |= MoonModifier_Alt;
+		if (flags & NSCommandKeyMask)
+			modifiers |= MoonModifier_Apple;
+		if (flags & NSControlKeyMask)
+			modifiers |= MoonModifier_Control;
+
+		return (MoonModifier)modifiers;
 	}
 
 
 	virtual bool IsModifier ()
 	{
-		// FIXME 
-		return NO;
+		return [event.event type] == NSFlagsChanged;
 	}
 
 	bool IsRelease ()
@@ -663,6 +684,12 @@ MoonWindowingSystemCocoa::CreateEventFromPlatformEvent (gpointer platformEvent)
 	}
 
 	return NULL;
+}
+
+MoonModifier
+MoonWindowingSystemCocoa::GetCommandModifier ()
+{
+	return MoonModifier_Apple;
 }
 
 guint
