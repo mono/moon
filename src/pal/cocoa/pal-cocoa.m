@@ -64,6 +64,25 @@ MapKeyCodeToKey (gunichar uc)
 	}
 }
 
+static MoonModifier
+MapCocoaToModifier (unsigned int flags)
+{
+	int modifiers = 0;
+
+	if (flags & NSShiftKeyMask)
+		modifiers |= MoonModifier_Shift;
+	if (flags & NSAlphaShiftKeyMask)
+		modifiers |= MoonModifier_CapsLock;
+	if (flags & NSAlternateKeyMask)
+		modifiers |= MoonModifier_Alt;
+	if (flags & NSCommandKeyMask)
+		modifiers |= MoonModifier_Apple;
+	if (flags & NSControlKeyMask)
+		modifiers |= MoonModifier_Control;
+
+	return (MoonModifier)modifiers;
+}
+
 // this class is kinda broken in that it doesn't/can't track the down/up state of modifier keys.
 class MoonKeyEventCocoa : public MoonKeyEvent {
 public:
@@ -129,23 +148,8 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		int modifiers = 0;
-		unsigned int flags = [event.event modifierFlags];
-
-		if (flags & NSShiftKeyMask)
-			modifiers |= MoonModifier_Shift;
-		if (flags & NSAlphaShiftKeyMask)
-			modifiers |= MoonModifier_CapsLock;
-		if (flags & NSAlternateKeyMask)
-			modifiers |= MoonModifier_Alt;
-		if (flags & NSCommandKeyMask)
-			modifiers |= MoonModifier_Apple;
-		if (flags & NSControlKeyMask)
-			modifiers |= MoonModifier_Control;
-
-		return (MoonModifier)modifiers;
+		return MapCocoaToModifier ([event.event modifierFlags]);
 	}
-
 
 	virtual bool IsModifier ()
 	{
@@ -206,12 +210,11 @@ public:
 	{
 	}
 
-	// FIXME: this needs to return true...
-	virtual bool HasModifiers () { return false; }
+	virtual bool HasModifiers () { return true; }
 
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return MapCocoaToModifier ([event.event modifierFlags]);
 	}
 
 	virtual bool IsEnter ()
@@ -270,12 +273,11 @@ public:
 		g_assert_not_reached ();
 	}
 
-	// FIXME: this needs to return true...
-	virtual bool HasModifiers () { return false; }
+	virtual bool HasModifiers () { return true; }
 
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return MapCocoaToModifier ([event.event modifierFlags]);
 	}
 
 	bool IsRelease ()
@@ -348,12 +350,11 @@ public:
 		g_assert_not_reached ();
 	}
 
-	// FIXME: this needs to return true...
-	virtual bool HasModifiers () { return false; }
+	virtual bool HasModifiers () { return true; }
 
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return MapCocoaToModifier ([event.event modifierFlags]);
 	}
 
 	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
