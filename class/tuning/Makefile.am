@@ -95,6 +95,7 @@ endif
 working.stamp: $(INPUT_FILES) $(MCS_COMPILER)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
+	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb
 	cp $(MCS_COMPILER) ../lib
 	touch $(WORKING_FILES) working.stamp
 
