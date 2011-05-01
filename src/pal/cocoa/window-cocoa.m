@@ -130,10 +130,7 @@ MoonWindowCocoa::SetCursor (CursorType cursor)
 void
 MoonWindowCocoa::Invalidate (Rect r)
 {
-//	NSRect frame = [view frame];
-
-//	[view setNeedsDisplayInRect: NSMakeRect (r.x, frame.size.height - r.y - r.height, r.width, r.height)];
-	[(MLView *)view setNeedsDisplayInRect: [(MLView *)view frame]];
+	[(MLView *)view setNeedsDisplayInRect: NSMakeRect (r.x, r.y, r.width, r.height)];
 }
 
 void
