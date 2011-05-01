@@ -139,25 +139,9 @@ MoonWindowCocoa::Invalidate (Rect r)
 	 */
 
 	/*
-	int inval_x = (int) r.x;
-	int inval_y = (int) r.y;
-	int inval_width = (int) r.width;
-	int inval_height = (int) r.height;
+	r = r.Intersection (Rect (0, 0, GetWidth(), GetHeight())).RoundOut ();
 
-	if (inval_x < 0) inval_x = 0;
-	if (inval_y < 0) inval_y = 0;
-	if (inval_x > width) {
-		inval_x = 0;
-		inval_width = 0;
-	}
-	if (inval_y > height) {
-		inval_y = 0;
-		inval_height = 0;
-	}
-
-	if (inval_x + inval_width > width) inval_width = width - inval_x;
-	if (inval_y + inval_height > height) inval_height = height - inval_y;
-	[(MLView *)view setNeedsDisplayInRect: NSMakeRect (inval_x, inval_y, inval_width, inval_height)];
+	[(MLView *)view setNeedsDisplayInRect: NSMakeRect ((float) r.x, (float) r.y, (float) r.width, (float) r.height)];
 	*/
 	[(MLView *)view setNeedsDisplayInRect: [(MLView *)view frame]];
 }
