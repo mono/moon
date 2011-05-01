@@ -130,11 +130,35 @@ MoonWindowCocoa::SetCursor (CursorType cursor)
 void
 MoonWindowCocoa::Invalidate (Rect r)
 {
-	// With a flipped view to do partial invalidations we want to invalidate as per
-	// below, however currently this is causing some non-deterministic render 
-	// corruption on the Cgl backend.  Disable this until we resolve that issue
-	//
-	// [(MLView *)view setNeedsDisplayInRect: NSMakeRect (r.x, r.y, r.width, r.height)];
+	/*
+	 * For some reason the render layer is delivering invalidations with bogus bounds
+	 * This wreaks havoc with Cgl.  To do proper partial invalidations we need to 
+	 * correct the bounds before passing them to Cgl
+	 *
+	 * This code is currently buggy with the framerate counter, and as such is disable
+	 */
+
+	/*
+	int inval_x = (int) r.x;
+	int inval_y = (int) r.y;
+	int inval_width = (int) r.width;
+	int inval_height = (int) r.height;
+
+	if (inval_x < 0) inval_x = 0;
+	if (inval_y < 0) inval_y = 0;
+	if (inval_x > width) {
+		inval_x = 0;
+		inval_width = 0;
+	}
+	if (inval_y > height) {
+		inval_y = 0;
+		inval_height = 0;
+	}
+
+	if (inval_x + inval_width > width) inval_width = width - inval_x;
+	if (inval_y + inval_height > height) inval_height = height - inval_y;
+	[(MLView *)view setNeedsDisplayInRect: NSMakeRect (inval_x, inval_y, inval_width, inval_height)];
+	*/
 	[(MLView *)view setNeedsDisplayInRect: [(MLView *)view frame]];
 }
 
