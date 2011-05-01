@@ -34,8 +34,7 @@ MoonClipboardCocoa::SetText (const char *text)
 
 	[(NSPasteboard*)pasteboard declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:nil];
 
-	if ([(NSPasteboard*)pasteboard writeObjects: array])
-		printf ("succeeded in saving text\n");
+	[(NSPasteboard*)pasteboard writeObjects: array];
 }
 
 void
@@ -55,8 +54,6 @@ MoonClipboardCocoa::GetText ()
 	NSDictionary *options = [NSDictionary dictionary];
 	NSArray *copiedItems = [(NSPasteboard*)pasteboard readObjectsForClasses:classes options:options];
 	if (copiedItems != nil) {
-		// Do something with the contents...
-		printf ("copiedItems count = %d", [copiedItems count]);
 		NSString *str = [copiedItems objectAtIndex: 0];
 
 		return g_strdup ([str UTF8String]);
