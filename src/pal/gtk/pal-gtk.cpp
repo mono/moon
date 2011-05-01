@@ -281,18 +281,18 @@ MapGdkToVKey (GdkEventKey *event)
 static MoonModifier
 MapGdkToModifier (int state)
 {
-	MoonModifier modifier = 0;
+	MoonModifier modifier = (MoonModifier)0;
 
 	if (state & GDK_SHIFT_MASK)
-		modifier |= MoonModifier_Shift;
+		modifier = (MoonModifier)(modifier | MoonModifier_Shift);
 	if (state & GDK_LOCK_MASK)
-		modifier |= MoonModifier_CapsLock;
+		modifier = (MoonModifier)(modifier | MoonModifier_CapsLock);
 	if (state & GDK_CONTROL_MASK)
-		modifier |= MoonModifier_Control;
+		modifier = (MoonModifier)(modifier | MoonModifier_Control);
 	if (state & GDK_MOD1_MASK)
-		modifier |= MoonModifier_Alt;
+		modifier = (MoonModifier)(modifier | MoonModifier_Alt);
 	if (state & GDK_META_MASK)
-		modifier |= MoonModifier_Windows;
+		modifier = (MoonModifier)(modifier | MoonModifier_Windows);
 
 	// XXX what about the crazy people running gtk on macs?
 	// XXX what does gtk generate for the _Apple key?
