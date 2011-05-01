@@ -168,21 +168,21 @@ private:
 	MLEvent *event;
 };
 
-class MoonCrossingEventEnteredCocoa : public MoonCrossingEvent {
+class MoonCrossingEventCocoa : public MoonCrossingEvent {
 public:
-	MoonCrossingEventEnteredCocoa (MLEvent *event)
+	MoonCrossingEventCocoa (MLEvent *event)
 	{
 		this->event = [event retain];
 	}
 
-	virtual ~MoonCrossingEventEnteredCocoa ()
+	virtual ~MoonCrossingEventCocoa ()
 	{
 		[event release];
 	}
 
 	virtual MoonEvent* Clone ()
 	{
-		return new MoonCrossingEventEnteredCocoa (event);
+		return new MoonCrossingEventCocoa (event);
 	}
 
 	virtual gpointer GetPlatformEvent ()
@@ -216,70 +216,7 @@ public:
 
 	virtual bool IsEnter ()
 	{
-		return YES;
-	}
-
-	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
-	{
-		if (!window || !window->GetSurface())
-			return MoonEventNotHandled;
-
-		return window->GetSurface()->HandleUICrossing (this);
-	}
-
-private:
-	MLEvent *event;
-};
-
-class MoonCrossingEventExitedCocoa : public MoonCrossingEvent {
-public:
-	MoonCrossingEventExitedCocoa (MLEvent *event)
-	{
-		this->event = [event retain];
-	}
-
-	virtual ~MoonCrossingEventExitedCocoa ()
-	{
-		[event release];
-	}
-
-	virtual MoonEvent* Clone ()
-	{
-		return new MoonCrossingEventExitedCocoa (event);
-	}
-
-	virtual gpointer GetPlatformEvent ()
-	{
-		return event;
-	}
-
-	virtual Moonlight::Point GetPosition ()
-	{
-		NSPoint loc = [event.view convertPoint: [event.event locationInWindow] fromView: nil];
-		loc.y = event.view.frame.size.height - loc.y;
-		return Moonlight::Point (loc.x, loc.y);
-	}
-
-	virtual double GetPressure ()
-	{
-		return 0.0;
-	}
-
-	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
-	{
-	}
-
-	// FIXME: this needs to return true...
-	virtual bool HasModifiers () { return false; }
-
-	virtual MoonModifier GetModifiers ()
-	{
-		g_assert_not_reached ();
-	}
-
-	virtual bool IsEnter ()
-	{
-		return NO;
+		return [event.event type] == NSMouseEntered;
 	}
 
 	virtual MoonEventStatus DispatchToWindow (MoonWindow *window)
@@ -659,9 +596,8 @@ MoonWindowingSystemCocoa::CreateEventFromPlatformEvent (gpointer platformEvent)
 
 	switch ([evt.event type]) {
 	case NSMouseEntered:
-		return new MoonCrossingEventEnteredCocoa (evt);
 	case NSMouseExited:
-		return new MoonCrossingEventExitedCocoa (evt);
+		return new MoonCrossingEventCocoa (evt);
 		break;
 	case NSLeftMouseDragged:
 	case NSRightMouseDragged:
