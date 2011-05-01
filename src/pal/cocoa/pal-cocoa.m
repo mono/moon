@@ -392,6 +392,7 @@ get_now_in_millis (void)
 
 MoonWindowingSystemCocoa::MoonWindowingSystemCocoa (bool out_of_browser)
 {
+	sources = NULL;
 	source_id = 1;
 	timer = NULL;
 
