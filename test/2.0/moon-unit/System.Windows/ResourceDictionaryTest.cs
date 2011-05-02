@@ -464,6 +464,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
+		[MoonlightBug ("This should throw an exception but the test below this _XamlReader variant does not")]
 		public void Contains_TypeAndStringInResourceDictionary_TypeSecond()
 		{
 			var rd = new ResourceDictionary();
@@ -474,6 +475,45 @@ namespace MoonTest.System.Windows
 			Assert.Throws<ArgumentException>(() => {
 				rd.Add(typeof(Button), new Style { TargetType = typeof(Button) });
 			}, "#3");
+		}
+
+		[TestMethod]
+		public void TypeAndStringInResourceDictionary_XamlReader_BuiltinType ()
+		{
+			Canvas c = (Canvas)XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	 <Canvas.Resources>
+			<Style TargetType=""Button"" x:Key=""System.Windows.Controls.Button"" />
+			<Style TargetType=""Button"">
+				<Setter Property=""Width"" Value=""0.0"" />
+			</Style>
+	</Canvas.Resources>
+</Canvas>
+");
+			Assert.AreEqual(2, c.Resources.Count, "#1");
+			Assert.IsTrue(c.Resources.Contains(typeof(Button)), "#2");
+			Assert.IsTrue(c.Resources.Contains("System.Windows.Controls.Button"), "#3");
+		}
+
+		[TestMethod]
+		public void TypeAndStringInResourceDictionary_XamlReader_CustomType ()
+		{
+			Canvas c = (Canvas)XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:clr=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"">
+	 <Canvas.Resources>
+			<Style TargetType=""clr:MyControl"" x:Key=""MoonTest.System.Windows.MyControl"" />
+			<Style TargetType=""clr:MyControl"">
+				<Setter Property=""Width"" Value=""0.0"" />
+			</Style>
+	</Canvas.Resources>
+</Canvas>
+");
+			Assert.AreEqual(2, c.Resources.Count, "#1");
+			Assert.IsTrue(c.Resources.Contains(typeof(MyControl)), "#2");
+			Assert.IsTrue(c.Resources.Contains("MoonTest.System.Windows.MyControl"), "#3");
 		}
 
 		[TestMethod]

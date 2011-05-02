@@ -361,7 +361,7 @@ namespace System.Windows {
 			if (s == null || s.TargetType != key)
 				throw new ArgumentException ("Type as key can only be used with Styles whose target type is the same as the key");
 
-			if (managedDict != null && (managedDict.ContainsKey (key) || (key is Type && managedDict.ContainsKey (key.ToString ()))))
+			if (managedDict != null && (managedDict.ContainsKey (key)))
 				throw new ArgumentException ("An item with the same key has already been added");
 
 			using (var val = Value.FromObject (value, true)) {
