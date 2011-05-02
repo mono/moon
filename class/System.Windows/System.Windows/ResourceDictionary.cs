@@ -284,6 +284,11 @@ namespace System.Windows {
 			
 			return str_key;
 		}
+
+		static string TypeToString (Type type)
+		{
+			return INTERNAL_TYPE_KEY_MAGIC_COOKIE + type.FullName;
+		}
 		
 		bool RemoveInternal (object key)
 		{
@@ -301,16 +306,9 @@ namespace System.Windows {
 				return NativeMethods.resource_dictionary_remove (native, (string)key);
 			}
 			else if (key is Type) {
-				bool rv;
-
 				if (managedDict != null)
 					managedDict.Remove (key);
-				rv = NativeMethods.resource_dictionary_remove (native, INTERNAL_TYPE_KEY_MAGIC_COOKIE + ((Type)key).AssemblyQualifiedName);
-				if (managedDict != null)
-					managedDict.Remove (((Type)key).FullName);
-				rv = rv || NativeMethods.resource_dictionary_remove (native, ((Type)key).FullName);
-
-				return true;
+				return NativeMethods.resource_dictionary_remove (native, TypeToString ((Type) key));
 			}
 			else
 				throw new ArgumentException ("Key must be a string");
@@ -363,7 +361,7 @@ namespace System.Windows {
 			if (s == null || s.TargetType != key)
 				throw new ArgumentException ("Type as key can only be used with Styles whose target type is the same as the key");
 
-			if (managedDict != null && managedDict.ContainsKey (key))
+			if (managedDict != null && (managedDict.ContainsKey (key) || (key is Type && managedDict.ContainsKey (key.ToString ()))))
 				throw new ArgumentException ("An item with the same key has already been added");
 
 			using (var val = Value.FromObject (value, true)) {
@@ -375,7 +373,7 @@ namespace System.Windows {
 				managedDict[key] = value;
 
 				if (!NativeMethods.resource_dictionary_add (native,
-									    INTERNAL_TYPE_KEY_MAGIC_COOKIE + ((Type)key).AssemblyQualifiedName,
+									    TypeToString ((Type) key),
 									    ref v))
 					managedDict.Remove (key);
 			}

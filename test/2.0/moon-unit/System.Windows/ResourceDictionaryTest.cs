@@ -252,7 +252,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug] // 4.0 profile
 		public void Parse_StyleTargetTypeOnly_sl4 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Style TargetType=""Button""> </Style> </ResourceDictionary>");
@@ -383,7 +382,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug] // 4.0 profile
 		public void Contains_TypeNameAsKeyItemRegisteredInXaml_ReturnsFalse_sl4 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -408,7 +406,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug] // 4.0 profile
 		public void Contains_TypeAsKeyItemRegisteredInXaml_ReturnsTrue_sl4 ()
 		{
 			ResourceDictionary rd = (ResourceDictionary) XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -447,6 +444,36 @@ namespace MoonTest.System.Windows
 
 			bool contains = rd.Contains ("System.Windows.Controls.Button");
 			Assert.IsFalse (contains);
+		}
+
+		 [TestMethod]
+		[MinRuntimeVersion(4)]
+		public void Contains_TypeAndStringInResourceDictionary_TypeFirst()
+		{
+			var rd = new ResourceDictionary();
+			rd.Add(typeof(Button), new Style { TargetType = typeof(Button) });
+			rd.Add("System.Windows.Controls.Button", "System.Windows.Controls.Button");
+
+			Assert.IsTrue(rd.Contains(typeof(Button)), "#1");
+			Assert.IsTrue(rd.Contains("System.Windows.Controls.Button"), "#2");
+
+			rd.Remove(typeof(Button));
+			Assert.IsFalse(rd.Contains(typeof(Button)), "#3");
+			Assert.IsTrue(rd.Contains("System.Windows.Controls.Button"), "#4");
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void Contains_TypeAndStringInResourceDictionary_TypeSecond()
+		{
+			var rd = new ResourceDictionary();
+			rd.Add("System.Windows.Controls.Button", "System.Windows.Controls.Button");
+			Assert.IsTrue(rd.Contains("System.Windows.Controls.Button"), "#1");
+			Assert.IsFalse (rd.Contains(typeof (Button)), "#2");
+
+			Assert.Throws<ArgumentException>(() => {
+				rd.Add(typeof(Button), new Style { TargetType = typeof(Button) });
+			}, "#3");
 		}
 
 		[TestMethod]

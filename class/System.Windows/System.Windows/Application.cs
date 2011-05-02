@@ -409,10 +409,12 @@ namespace System.Windows {
 					rd = new ResourceDictionary();
 
 				assemblyToGenericXaml[type.Assembly] = rd;
-
 			}
 
-			return rd[type.FullName] as Style;
+			if (Deployment.Current.MajorVersion < 4)
+				return rd[type.FullName] as Style;
+			else
+				return rd[type] as Style;
 		}
 
 		public static void LoadComponent (object component, Uri resourceLocator)

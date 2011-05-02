@@ -202,7 +202,7 @@ namespace Mono.Xaml {
 			get { return type; }
 		}
 
-		public string GetDictionaryKey ()
+		public object GetDictionaryKey ()
 		{
 			if (X_Key != null)
 				return X_Key;
@@ -211,7 +211,7 @@ namespace Mono.Xaml {
 
 			Style s = Object as Style;
 			if (s != null && s.TargetType != null)
-				return s.TargetType.ToString ();
+				return s.TargetType;
 
 			return null;
 		}
