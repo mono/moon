@@ -111,9 +111,8 @@ enum MoonModifier {
 };
 
 
-#define MOON_PRIORITY_HIGH         -100
-#define MOON_PRIORITY_DEFAULT      0
-#define MOON_PRIORITY_HIGH_IDLE    100
+#define MOON_PRIORITY_HIGH         0
+#define MOON_PRIORITY_DEFAULT      200
 #define MOON_PRIORITY_DEFAULT_IDLE 200
 
 enum MoonWindowType {
