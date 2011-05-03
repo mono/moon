@@ -582,6 +582,14 @@ CurlDownloaderResponse::HeaderReceived (void *ptr, size_t size)
 		g_free (statusLine);
 		g_strfreev (strs);
 
+		// strip off any ending \r\n
+		// fixes #287 in ff4/chrome
+		for (int i = 0; statusText [i] != 0; i++) {
+			if (statusText [i] == '\n' || statusText [i] == '\r') {
+				statusText [i] = 0;
+				break;
+			}
+		}
 		SetStatus (status, statusText);
 
 		/* if we got 100, curl still needs to send the body of the POST
