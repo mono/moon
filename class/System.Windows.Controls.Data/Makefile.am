@@ -102,7 +102,7 @@ RESOURCES = 	\
 	-res:System.Windows.Controls.Resource.resources
 
 $(assemblysl): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources System.Windows.Controls.Resource.resources
-	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ $(RESOURCES)
+	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -lib:$(top_builddir)/class/lib/2.1 -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ $(RESOURCES)
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll

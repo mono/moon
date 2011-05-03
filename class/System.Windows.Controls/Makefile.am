@@ -79,7 +79,7 @@ $(assembly).g.resources: $(MSSDKCONTROLS)/App.xaml $(MSSDKCONTROLS)/themes/gener
 	$(AM_V_GEN)mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(assemblysl): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources
-	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
+	$(AM_V_GEN)$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -lib:$(top_builddir)/class/lib/2.1 -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
 	$(AM_V_at)sn -q -R $@ $(srcdir)/../mono.snk 
 
 $(assemblydesktop): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources
