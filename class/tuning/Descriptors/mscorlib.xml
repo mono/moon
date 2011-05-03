@@ -28,6 +28,7 @@
 		<type fullname="System.Reflection.Emit.TypeBuilderInstantiation" preserve="all" />
 		<type fullname="System.Resources.RuntimeResourceSet" preserve="all" />
 		<type fullname="System.Runtime.InteropServices.Marshal" />
+		<type fullname="System.Runtime.InteropServices.StructLayoutAttribute" preserve="all" />
 		<type fullname="System.Security.SecurityCriticalAttribute" preserve="all" />
 		<type fullname="System.Security.SecuritySafeCriticalAttribute" preserve="all" />
 		<type fullname="System.Security.SecurityTransparentAttribute" preserve="all" />

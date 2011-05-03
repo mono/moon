@@ -1,0 +1,17 @@
+DO NOT MANUALLY EDIT THE .info FILES
+
+See the ../Descriptors/*.xml files to let the tuner include more, 
+internalized, types/methods into Moonlight assemblies.
+
+
+Update instructions
+-------------------
+
+Use the mono-api-info.exe (from /mcs/tools/corcompare) to generate .info 
+files from Silverlight assemblies. E.g. 
+
+mono mono-api-info.exe $SL/System.Core.dll > System.Core.info
+
+Note that System.Windows.dll and System.Windows.Browser.dll are not tuned,
+like other mcs-based assemblies, so those .info files are not needed.
+
