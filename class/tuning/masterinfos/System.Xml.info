@@ -1,14 +1,38 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <assemblies>
   <assembly name="System.Xml" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
-      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
-      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
-      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.Resources.SatelliteContractVersionAttribute">
+        <properties>
+          <property name="Version" value="2.0.5.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute">
+        <properties>
+          <property name="DelaySign" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute">
+        <properties>
+          <property name="InformationalVersion" value="4.0.60310.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute">
+        <properties>
+          <property name="CultureName" value="en-US" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute">
+        <properties>
+          <property name="KeyFile" value="f:\dd\Tools\devdiv\silverlightplatformpublickey.snk" />
+        </properties>
+      </attribute>
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute">
+        <properties>
+          <property name="CompilationRelaxations" value="8" />
+        </properties>
+      </attribute>
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
@@ -17,44 +41,94 @@
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.ServiceModel, PublicKey=0024000004800000940000000602000000240000525341310004000001000100B5FC90E7027F67871E773A8FDE8938C81DD402BA65B9201D60593E96C492651E889CC13F1415EBB53FAC1131AE0BD333C5EE6021672D9718EA31A8AEBD0DA0072F25D87DBA6FC90FFD598ED4DA35E44C398C454307E8E33B8426143DAEC9F596836F97C8F74750E5975C64E2189F45DEF46B2A2B1247ADC3652BF5C308055DA9" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Runtime.Serialization, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Windows, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="True" />
+          <property name="AssemblyName" value="System.Xml.Serialization, PublicKey=0024000004800000940000000602000000240000525341310004000001000100B5FC90E7027F67871E773A8FDE8938C81DD402BA65B9201D60593E96C492651E889CC13F1415EBB53FAC1131AE0BD333C5EE6021672D9718EA31A8AEBD0DA0072F25D87DBA6FC90FFD598ED4DA35E44C398C454307E8E33B8426143DAEC9F596836F97C8F74750E5975C64E2189F45DEF46B2A2B1247ADC3652BF5C308055DA9" />
         </properties>
       </attribute>
-      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-      <attribute name="System.CLSCompliantAttribute" />
-      <attribute name="System.Reflection.AssemblyTitleAttribute" />
-      <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
-      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
-      <attribute name="System.Reflection.AssemblyProductAttribute" />
-      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+        <properties>
+          <property name="Value" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.CLSCompliantAttribute">
+        <properties>
+          <property name="IsCompliant" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyTitleAttribute">
+        <properties>
+          <property name="Title" value="System.Xml.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDescriptionAttribute">
+        <properties>
+          <property name="Description" value="System.Xml.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute">
+        <properties>
+          <property name="DefaultAlias" value="System.Xml.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCompanyAttribute">
+        <properties>
+          <property name="Company" value="Microsoft Corporation" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyProductAttribute">
+        <properties>
+          <property name="Product" value="Microsoft® Silverlight" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute">
+        <properties>
+          <property name="Copyright" value="© Microsoft Corporation.  All rights reserved." />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute">
+        <properties>
+          <property name="Version" value="4.0.60310.0" />
+        </properties>
+      </attribute>
     </attributes>
     <namespaces>
       <namespace name="System.Xml">
         <classes>
-          <class name="ConformanceLevel" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="ConformanceLevel" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Auto" attrib="32854" fieldtype="System.Xml.ConformanceLevel" value="0" />
               <field name="Document" attrib="32854" fieldtype="System.Xml.ConformanceLevel" value="2" />
               <field name="Fragment" attrib="32854" fieldtype="System.Xml.ConformanceLevel" value="1" />
             </fields>
           </class>
-          <class name="DtdProcessing" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="DtdProcessing" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Ignore" attrib="32854" fieldtype="System.Xml.DtdProcessing" value="1" />
               <field name="Parse" attrib="32854" fieldtype="System.Xml.DtdProcessing" value="2" />
@@ -63,14 +137,14 @@
           </class>
           <class name="IXmlLineInfo" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <properties>
-              <property name="LineNumber" attrib="0" ptype="System.Int32" params="">
+              <property name="LineNumber" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_LineNumber()" attrib="3526" abstract="true" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="LinePosition" attrib="0" ptype="System.Int32" params="">
+              <property name="LinePosition" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_LinePosition()" attrib="3526" abstract="true" virtual="true" returntype="System.Int32">
                     <parameters />
@@ -103,10 +177,15 @@
               </method>
             </methods>
           </class>
-          <class name="NamespaceHandling" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="NamespaceHandling" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
             <attributes>
               <attribute name="System.FlagsAttribute" />
             </attributes>
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Default" attrib="32854" fieldtype="System.Xml.NamespaceHandling" value="0" />
               <field name="OmitDuplicates" attrib="32854" fieldtype="System.Xml.NamespaceHandling" value="1" />
@@ -119,19 +198,12 @@
               </constructor>
             </constructors>
             <methods>
-              <method name="Add(System.Char[], System.Int32, System.Int32)" attrib="198" virtual="true" returntype="System.String">
-                <parameters>
-                  <parameter name="key" position="0" attrib="0" type="System.Char[]" />
-                  <parameter name="start" position="1" attrib="0" type="System.Int32" />
-                  <parameter name="len" position="2" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
               <method name="Add(System.String)" attrib="198" virtual="true" returntype="System.String">
                 <parameters>
                   <parameter name="key" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Get(System.Char[], System.Int32, System.Int32)" attrib="198" virtual="true" returntype="System.String">
+              <method name="Add(System.Char[], System.Int32, System.Int32)" attrib="198" virtual="true" returntype="System.String">
                 <parameters>
                   <parameter name="key" position="0" attrib="0" type="System.Char[]" />
                   <parameter name="start" position="1" attrib="0" type="System.Int32" />
@@ -143,16 +215,33 @@
                   <parameter name="value" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="Get(System.Char[], System.Int32, System.Int32)" attrib="198" virtual="true" returntype="System.String">
+                <parameters>
+                  <parameter name="key" position="0" attrib="0" type="System.Char[]" />
+                  <parameter name="start" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="len" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
             </methods>
           </class>
-          <class name="NewLineHandling" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="NewLineHandling" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Entitize" attrib="32854" fieldtype="System.Xml.NewLineHandling" value="1" />
               <field name="None" attrib="32854" fieldtype="System.Xml.NewLineHandling" value="2" />
               <field name="Replace" attrib="32854" fieldtype="System.Xml.NewLineHandling" value="0" />
             </fields>
           </class>
-          <class name="ReadState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="ReadState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Closed" attrib="32854" fieldtype="System.Xml.ReadState" value="4" />
               <field name="EndOfFile" attrib="32854" fieldtype="System.Xml.ReadState" value="3" />
@@ -161,7 +250,12 @@
               <field name="Interactive" attrib="32854" fieldtype="System.Xml.ReadState" value="1" />
             </fields>
           </class>
-          <class name="WriteState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="WriteState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Attribute" attrib="32854" fieldtype="System.Xml.WriteState" value="3" />
               <field name="Closed" attrib="32854" fieldtype="System.Xml.WriteState" value="5" />
@@ -263,6 +357,12 @@
                   <parameter name="dateTimeOption" position="1" attrib="0" type="System.Xml.XmlDateTimeSerializationMode" />
                 </parameters>
               </method>
+              <method name="ToDateTimeOffset(System.String, System.String)" attrib="150" static="true" returntype="System.DateTimeOffset">
+                <parameters>
+                  <parameter name="s" position="0" attrib="0" type="System.String" />
+                  <parameter name="format" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="ToDateTimeOffset(System.String, System.String[])" attrib="150" static="true" returntype="System.DateTimeOffset">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -272,12 +372,6 @@
               <method name="ToDateTimeOffset(System.String)" attrib="150" static="true" returntype="System.DateTimeOffset">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="ToDateTimeOffset(System.String, System.String)" attrib="150" static="true" returntype="System.DateTimeOffset">
-                <parameters>
-                  <parameter name="s" position="0" attrib="0" type="System.String" />
-                  <parameter name="format" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="ToDecimal(System.String)" attrib="150" static="true" returntype="System.Decimal">
@@ -312,7 +406,11 @@
               </method>
               <method name="ToSByte(System.String)" attrib="150" static="true" returntype="System.SByte">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -321,6 +419,83 @@
               <method name="ToSingle(System.String)" attrib="150" static="true" returntype="System.Single">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToString(System.SByte)" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
+                </attributes>
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.SByte" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int32)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Single)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Single" />
+                </parameters>
+              </method>
+              <method name="ToString(System.TimeSpan)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.TimeSpan" />
+                </parameters>
+              </method>
+              <method name="ToString(System.DateTime, System.Xml.XmlDateTimeSerializationMode)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
+                  <parameter name="dateTimeOption" position="1" attrib="0" type="System.Xml.XmlDateTimeSerializationMode" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int16)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int16" />
+                </parameters>
+              </method>
+              <method name="ToString(System.DateTimeOffset)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTimeOffset" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Decimal)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Decimal" />
+                </parameters>
+              </method>
+              <method name="ToString(System.UInt64)" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
+                </attributes>
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.UInt64" />
+                </parameters>
+              </method>
+              <method name="ToString(System.UInt32)" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
+                </attributes>
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.UInt32" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Char)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </method>
               <method name="ToString(System.DateTimeOffset, System.String)" attrib="150" static="true" returntype="System.String">
@@ -334,39 +509,6 @@
                   <parameter name="value" position="0" attrib="0" type="System.Guid" />
                 </parameters>
               </method>
-              <method name="ToString(System.DateTimeOffset)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.DateTimeOffset" />
-                </parameters>
-              </method>
-              <method name="ToString(System.SByte)" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.SByte" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Int16)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int16" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Int32)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Char)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Decimal)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Decimal" />
-                </parameters>
-              </method>
               <method name="ToString(System.Boolean)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Boolean" />
@@ -377,41 +519,9 @@
                   <parameter name="value" position="0" attrib="0" type="System.Int64" />
                 </parameters>
               </method>
-              <method name="ToString(System.DateTime, System.Xml.XmlDateTimeSerializationMode)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
-                  <parameter name="dateTimeOption" position="1" attrib="0" type="System.Xml.XmlDateTimeSerializationMode" />
-                </parameters>
-              </method>
               <method name="ToString(System.Double)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Double" />
-                </parameters>
-              </method>
-              <method name="ToString(System.TimeSpan)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.TimeSpan" />
-                </parameters>
-              </method>
-              <method name="ToString(System.UInt32)" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.UInt32" />
-                </parameters>
-              </method>
-              <method name="ToString(System.UInt64)" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.UInt64" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Single)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Single" />
                 </parameters>
               </method>
               <method name="ToTimeSpan(System.String)" attrib="150" static="true" returntype="System.TimeSpan">
@@ -421,7 +531,11 @@
               </method>
               <method name="ToUInt16(System.String)" attrib="150" static="true" returntype="System.UInt16">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -429,7 +543,11 @@
               </method>
               <method name="ToUInt32(System.String)" attrib="150" static="true" returntype="System.UInt32">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -437,7 +555,11 @@
               </method>
               <method name="ToUInt64(System.String)" attrib="150" static="true" returntype="System.UInt64">
                 <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
+                  <attribute name="System.CLSCompliantAttribute">
+                    <properties>
+                      <property name="IsCompliant" value="False" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -475,7 +597,12 @@
               </method>
             </methods>
           </class>
-          <class name="XmlDateTimeSerializationMode" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlDateTimeSerializationMode" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Local" attrib="32854" fieldtype="System.Xml.XmlDateTimeSerializationMode" value="0" />
               <field name="RoundtripKind" attrib="32854" fieldtype="System.Xml.XmlDateTimeSerializationMode" value="3" />
@@ -485,10 +612,18 @@
           </class>
           <class name="XmlException" type="class" base="System.SystemException" charset="Ansi" layout="Auto">
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
                 <parameters>
                   <parameter name="message" position="0" attrib="0" type="System.String" />
                   <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.Exception, System.Int32, System.Int32)" attrib="6278">
@@ -499,38 +634,30 @@
                   <parameter name="linePosition" position="3" attrib="0" type="System.Int32" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="message" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="LineNumber" attrib="0" ptype="System.Int32" params="">
+              <property name="LineNumber" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_LineNumber()" attrib="2182" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="LinePosition" attrib="0" ptype="System.Int32" params="">
+              <property name="LinePosition" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_LinePosition()" attrib="2182" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Message" attrib="0" ptype="System.String" params="">
+              <property name="Message" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Message()" attrib="2246" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="SourceUri" attrib="0" ptype="System.String" params="">
+              <property name="SourceUri" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_SourceUri()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -552,14 +679,14 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="DefaultNamespace" attrib="0" ptype="System.String" params="">
+              <property name="DefaultNamespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DefaultNamespace()" attrib="2502" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable" params="">
+              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable">
                 <methods>
                   <method name="get_NameTable()" attrib="2502" virtual="true" returntype="System.Xml.XmlNameTable">
                     <parameters />
@@ -611,7 +738,12 @@
               </method>
             </methods>
           </class>
-          <class name="XmlNamespaceScope" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlNamespaceScope" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="All" attrib="32854" fieldtype="System.Xml.XmlNamespaceScope" value="0" />
               <field name="ExcludeXml" attrib="32854" fieldtype="System.Xml.XmlNamespaceScope" value="1" />
@@ -625,16 +757,16 @@
               </constructor>
             </constructors>
             <methods>
+              <method name="Add(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
+                <parameters>
+                  <parameter name="array" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="Add(System.Char[], System.Int32, System.Int32)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
                 <parameters>
                   <parameter name="array" position="0" attrib="0" type="System.Char[]" />
                   <parameter name="offset" position="1" attrib="0" type="System.Int32" />
                   <parameter name="length" position="2" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="Add(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
-                <parameters>
-                  <parameter name="array" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="Get(System.Char[], System.Int32, System.Int32)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
@@ -651,7 +783,12 @@
               </method>
             </methods>
           </class>
-          <class name="XmlNodeType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlNodeType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Attribute" attrib="32854" fieldtype="System.Xml.XmlNodeType" value="2" />
               <field name="CDATA" attrib="32854" fieldtype="System.Xml.XmlNodeType" value="4" />
@@ -675,6 +812,14 @@
           </class>
           <class name="XmlParserContext" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <constructors>
+              <constructor name=".ctor(System.Xml.XmlNameTable, System.Xml.XmlNamespaceManager, System.String, System.Xml.XmlSpace)" attrib="6278">
+                <parameters>
+                  <parameter name="nt" position="0" attrib="0" type="System.Xml.XmlNameTable" />
+                  <parameter name="nsMgr" position="1" attrib="0" type="System.Xml.XmlNamespaceManager" />
+                  <parameter name="xmlLang" position="2" attrib="0" type="System.String" />
+                  <parameter name="xmlSpace" position="3" attrib="0" type="System.Xml.XmlSpace" />
+                </parameters>
+              </constructor>
               <constructor name=".ctor(System.Xml.XmlNameTable, System.Xml.XmlNamespaceManager, System.String, System.String, System.String, System.String, System.String, System.String, System.Xml.XmlSpace)" attrib="6278">
                 <parameters>
                   <parameter name="nt" position="0" attrib="0" type="System.Xml.XmlNameTable" />
@@ -686,6 +831,15 @@
                   <parameter name="baseURI" position="6" attrib="0" type="System.String" />
                   <parameter name="xmlLang" position="7" attrib="0" type="System.String" />
                   <parameter name="xmlSpace" position="8" attrib="0" type="System.Xml.XmlSpace" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Xml.XmlNameTable, System.Xml.XmlNamespaceManager, System.String, System.Xml.XmlSpace, System.Text.Encoding)" attrib="6278">
+                <parameters>
+                  <parameter name="nt" position="0" attrib="0" type="System.Xml.XmlNameTable" />
+                  <parameter name="nsMgr" position="1" attrib="0" type="System.Xml.XmlNamespaceManager" />
+                  <parameter name="xmlLang" position="2" attrib="0" type="System.String" />
+                  <parameter name="xmlSpace" position="3" attrib="0" type="System.Xml.XmlSpace" />
+                  <parameter name="enc" position="4" attrib="0" type="System.Text.Encoding" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.Xml.XmlNameTable, System.Xml.XmlNamespaceManager, System.String, System.String, System.String, System.String, System.String, System.String, System.Xml.XmlSpace, System.Text.Encoding)" attrib="6278">
@@ -702,26 +856,9 @@
                   <parameter name="enc" position="9" attrib="0" type="System.Text.Encoding" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.Xml.XmlNameTable, System.Xml.XmlNamespaceManager, System.String, System.Xml.XmlSpace)" attrib="6278">
-                <parameters>
-                  <parameter name="nt" position="0" attrib="0" type="System.Xml.XmlNameTable" />
-                  <parameter name="nsMgr" position="1" attrib="0" type="System.Xml.XmlNamespaceManager" />
-                  <parameter name="xmlLang" position="2" attrib="0" type="System.String" />
-                  <parameter name="xmlSpace" position="3" attrib="0" type="System.Xml.XmlSpace" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Xml.XmlNameTable, System.Xml.XmlNamespaceManager, System.String, System.Xml.XmlSpace, System.Text.Encoding)" attrib="6278">
-                <parameters>
-                  <parameter name="nt" position="0" attrib="0" type="System.Xml.XmlNameTable" />
-                  <parameter name="nsMgr" position="1" attrib="0" type="System.Xml.XmlNamespaceManager" />
-                  <parameter name="xmlLang" position="2" attrib="0" type="System.String" />
-                  <parameter name="xmlSpace" position="3" attrib="0" type="System.Xml.XmlSpace" />
-                  <parameter name="enc" position="4" attrib="0" type="System.Text.Encoding" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="BaseURI" attrib="0" ptype="System.String" params="">
+              <property name="BaseURI" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_BaseURI()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -733,7 +870,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="DocTypeName" attrib="0" ptype="System.String" params="">
+              <property name="DocTypeName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DocTypeName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -745,7 +882,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Encoding" attrib="0" ptype="System.Text.Encoding" params="">
+              <property name="Encoding" attrib="0" ptype="System.Text.Encoding">
                 <methods>
                   <method name="get_Encoding()" attrib="2182" returntype="System.Text.Encoding">
                     <parameters />
@@ -757,7 +894,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="InternalSubset" attrib="0" ptype="System.String" params="">
+              <property name="InternalSubset" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_InternalSubset()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -769,7 +906,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NamespaceManager" attrib="0" ptype="System.Xml.XmlNamespaceManager" params="">
+              <property name="NamespaceManager" attrib="0" ptype="System.Xml.XmlNamespaceManager">
                 <methods>
                   <method name="get_NamespaceManager()" attrib="2182" returntype="System.Xml.XmlNamespaceManager">
                     <parameters />
@@ -781,7 +918,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable" params="">
+              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable">
                 <methods>
                   <method name="get_NameTable()" attrib="2182" returntype="System.Xml.XmlNameTable">
                     <parameters />
@@ -793,7 +930,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="PublicId" attrib="0" ptype="System.String" params="">
+              <property name="PublicId" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_PublicId()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -805,7 +942,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="SystemId" attrib="0" ptype="System.String" params="">
+              <property name="SystemId" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_SystemId()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -817,7 +954,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="XmlLang" attrib="0" ptype="System.String" params="">
+              <property name="XmlLang" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_XmlLang()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -829,7 +966,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="XmlSpace" attrib="0" ptype="System.Xml.XmlSpace" params="">
+              <property name="XmlSpace" attrib="0" ptype="System.Xml.XmlSpace">
                 <methods>
                   <method name="get_XmlSpace()" attrib="2182" returntype="System.Xml.XmlSpace">
                     <parameters />
@@ -848,37 +985,37 @@
               <field name="Empty" attrib="54" fieldtype="System.Xml.XmlQualifiedName" />
             </fields>
             <constructors>
-              <constructor name=".ctor(System.String, System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
-                  <parameter name="ns" position="1" attrib="0" type="System.String" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.String, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="IsEmpty" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsEmpty" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsEmpty()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -907,20 +1044,24 @@
                   <parameter name="b" position="1" attrib="0" type="System.Xml.XmlQualifiedName" />
                 </parameters>
               </method>
+              <method name="ToString()" attrib="198" virtual="true" returntype="System.String">
+                <parameters />
+              </method>
               <method name="ToString(System.String, System.String)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                   <parameter name="ns" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ToString()" attrib="198" virtual="true" returntype="System.String">
-                <parameters />
-              </method>
             </methods>
           </class>
           <class name="XmlReader" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.IDisposable" />
@@ -931,98 +1072,80 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="AttributeCount" attrib="0" ptype="System.Int32" params="">
+              <property name="AttributeCount" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_AttributeCount()" attrib="3526" abstract="true" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="BaseURI" attrib="0" ptype="System.String" params="">
+              <property name="BaseURI" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_BaseURI()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="CanReadBinaryContent" attrib="0" ptype="System.Boolean" params="">
+              <property name="CanReadBinaryContent" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CanReadBinaryContent()" attrib="2502" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="CanReadValueChunk" attrib="0" ptype="System.Boolean" params="">
+              <property name="CanReadValueChunk" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CanReadValueChunk()" attrib="2502" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="CanResolveEntity" attrib="0" ptype="System.Boolean" params="">
+              <property name="CanResolveEntity" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CanResolveEntity()" attrib="2502" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Depth" attrib="0" ptype="System.Int32" params="">
+              <property name="Depth" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Depth()" attrib="3526" abstract="true" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="EOF" attrib="0" ptype="System.Boolean" params="">
+              <property name="EOF" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_EOF()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="HasAttributes" attrib="0" ptype="System.Boolean" params="">
+              <property name="HasAttributes" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_HasAttributes()" attrib="2502" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="HasValue" attrib="0" ptype="System.Boolean" params="">
+              <property name="HasValue" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_HasValue()" attrib="2502" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsDefault" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsDefault" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsDefault()" attrib="2502" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsEmptyElement" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsEmptyElement" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsEmptyElement()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
                     <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Item" attrib="0" ptype="System.String" params="System.Int32">
-                <methods>
-                  <method name="get_Item(System.Int32)" attrib="2502" virtual="true" returntype="System.String">
-                    <parameters>
-                      <parameter name="i" position="0" attrib="0" type="System.Int32" />
-                    </parameters>
-                  </method>
-                </methods>
-              </property>
-              <property name="Item" attrib="0" ptype="System.String" params="System.String">
-                <methods>
-                  <method name="get_Item(System.String)" attrib="2502" virtual="true" returntype="System.String">
-                    <parameters>
-                      <parameter name="name" position="0" attrib="0" type="System.String" />
-                    </parameters>
                   </method>
                 </methods>
               </property>
@@ -1036,84 +1159,102 @@
                   </method>
                 </methods>
               </property>
-              <property name="LocalName" attrib="0" ptype="System.String" params="">
+              <property name="Item" attrib="0" ptype="System.String" params="System.String">
+                <methods>
+                  <method name="get_Item(System.String)" attrib="2502" virtual="true" returntype="System.String">
+                    <parameters>
+                      <parameter name="name" position="0" attrib="0" type="System.String" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.String" params="System.Int32">
+                <methods>
+                  <method name="get_Item(System.Int32)" attrib="2502" virtual="true" returntype="System.String">
+                    <parameters>
+                      <parameter name="i" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="LocalName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_LocalName()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2502" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="NamespaceURI" attrib="0" ptype="System.String" params="">
+              <property name="NamespaceURI" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_NamespaceURI()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable" params="">
+              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable">
                 <methods>
                   <method name="get_NameTable()" attrib="3526" abstract="true" virtual="true" returntype="System.Xml.XmlNameTable">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="NodeType" attrib="0" ptype="System.Xml.XmlNodeType" params="">
+              <property name="NodeType" attrib="0" ptype="System.Xml.XmlNodeType">
                 <methods>
                   <method name="get_NodeType()" attrib="3526" abstract="true" virtual="true" returntype="System.Xml.XmlNodeType">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Prefix" attrib="0" ptype="System.String" params="">
+              <property name="Prefix" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Prefix()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="ReadState" attrib="0" ptype="System.Xml.ReadState" params="">
+              <property name="ReadState" attrib="0" ptype="System.Xml.ReadState">
                 <methods>
                   <method name="get_ReadState()" attrib="3526" abstract="true" virtual="true" returntype="System.Xml.ReadState">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Settings" attrib="0" ptype="System.Xml.XmlReaderSettings" params="">
+              <property name="Settings" attrib="0" ptype="System.Xml.XmlReaderSettings">
                 <methods>
                   <method name="get_Settings()" attrib="2502" virtual="true" returntype="System.Xml.XmlReaderSettings">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Value" attrib="0" ptype="System.String" params="">
+              <property name="Value" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Value()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="ValueType" attrib="0" ptype="System.Type" params="">
+              <property name="ValueType" attrib="0" ptype="System.Type">
                 <methods>
                   <method name="get_ValueType()" attrib="2502" virtual="true" returntype="System.Type">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="XmlLang" attrib="0" ptype="System.String" params="">
+              <property name="XmlLang" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_XmlLang()" attrib="2502" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="XmlSpace" attrib="0" ptype="System.Xml.XmlSpace" params="">
+              <property name="XmlSpace" attrib="0" ptype="System.Xml.XmlSpace">
                 <methods>
                   <method name="get_XmlSpace()" attrib="2502" virtual="true" returntype="System.Xml.XmlSpace">
                     <parameters />
@@ -1122,7 +1263,7 @@
               </property>
             </properties>
             <methods>
-              <method name="Close()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+              <method name="Close()" attrib="454" virtual="true" returntype="System.Void">
                 <parameters />
               </method>
               <method name="Create(System.IO.Stream)" attrib="150" static="true" returntype="System.Xml.XmlReader">
@@ -1130,28 +1271,11 @@
                   <parameter name="input" position="0" attrib="0" type="System.IO.Stream" />
                 </parameters>
               </method>
-              <method name="Create(System.IO.Stream, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+              <method name="Create(System.IO.TextReader, System.Xml.XmlReaderSettings, System.Xml.XmlParserContext)" attrib="150" static="true" returntype="System.Xml.XmlReader">
                 <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.IO.Stream" />
-                  <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
-                </parameters>
-              </method>
-              <method name="Create(System.String, System.Xml.XmlReaderSettings, System.Xml.XmlParserContext)" attrib="150" static="true" returntype="System.Xml.XmlReader">
-                <parameters>
-                  <parameter name="inputUri" position="0" attrib="0" type="System.String" />
+                  <parameter name="input" position="0" attrib="0" type="System.IO.TextReader" />
                   <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
                   <parameter name="inputContext" position="2" attrib="0" type="System.Xml.XmlParserContext" />
-                </parameters>
-              </method>
-              <method name="Create(System.String)" attrib="150" static="true" returntype="System.Xml.XmlReader">
-                <parameters>
-                  <parameter name="inputUri" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Create(System.String, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
-                <parameters>
-                  <parameter name="inputUri" position="0" attrib="0" type="System.String" />
-                  <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
                 </parameters>
               </method>
               <method name="Create(System.IO.Stream, System.Xml.XmlReaderSettings, System.String)" attrib="150" static="true" returntype="System.Xml.XmlReader">
@@ -1168,17 +1292,34 @@
                   <parameter name="baseUri" position="2" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Create(System.IO.TextReader, System.Xml.XmlReaderSettings, System.Xml.XmlParserContext)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+              <method name="Create(System.String, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+                <parameters>
+                  <parameter name="inputUri" position="0" attrib="0" type="System.String" />
+                  <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
+                </parameters>
+              </method>
+              <method name="Create(System.IO.TextReader, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.IO.TextReader" />
                   <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
-                  <parameter name="inputContext" position="2" attrib="0" type="System.Xml.XmlParserContext" />
                 </parameters>
               </method>
-              <method name="Create(System.Xml.XmlReader, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+              <method name="Create(System.IO.Stream, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
                 <parameters>
-                  <parameter name="reader" position="0" attrib="0" type="System.Xml.XmlReader" />
+                  <parameter name="input" position="0" attrib="0" type="System.IO.Stream" />
                   <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
+                </parameters>
+              </method>
+              <method name="Create(System.IO.TextReader)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.IO.TextReader" />
+                </parameters>
+              </method>
+              <method name="Create(System.String, System.Xml.XmlReaderSettings, System.Xml.XmlParserContext)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+                <parameters>
+                  <parameter name="inputUri" position="0" attrib="0" type="System.String" />
+                  <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
+                  <parameter name="inputContext" position="2" attrib="0" type="System.Xml.XmlParserContext" />
                 </parameters>
               </method>
               <method name="Create(System.IO.Stream, System.Xml.XmlReaderSettings, System.Xml.XmlParserContext)" attrib="150" static="true" returntype="System.Xml.XmlReader">
@@ -1188,16 +1329,19 @@
                   <parameter name="inputContext" position="2" attrib="0" type="System.Xml.XmlParserContext" />
                 </parameters>
               </method>
-              <method name="Create(System.IO.TextReader)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+              <method name="Create(System.String)" attrib="150" static="true" returntype="System.Xml.XmlReader">
                 <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.IO.TextReader" />
+                  <parameter name="inputUri" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Create(System.IO.TextReader, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
+              <method name="Create(System.Xml.XmlReader, System.Xml.XmlReaderSettings)" attrib="150" static="true" returntype="System.Xml.XmlReader">
                 <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.IO.TextReader" />
+                  <parameter name="reader" position="0" attrib="0" type="System.Xml.XmlReader" />
                   <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlReaderSettings" />
                 </parameters>
+              </method>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <parameters />
               </method>
               <method name="Dispose(System.Boolean)" attrib="452" virtual="true" returntype="System.Void">
                 <parameters>
@@ -1210,14 +1354,14 @@
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="GetAttribute(System.Int32)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
-                <parameters>
-                  <parameter name="i" position="0" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
               <method name="GetAttribute(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="GetAttribute(System.Int32)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
+                <parameters>
+                  <parameter name="i" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="IsName(System.String)" attrib="150" static="true" returntype="System.Boolean">
@@ -1230,18 +1374,18 @@
                   <parameter name="str" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="IsStartElement(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
+              <method name="IsStartElement(System.String, System.String)" attrib="454" virtual="true" returntype="System.Boolean">
                 <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="localname" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="IsStartElement()" attrib="454" virtual="true" returntype="System.Boolean">
                 <parameters />
               </method>
-              <method name="IsStartElement(System.String, System.String)" attrib="454" virtual="true" returntype="System.Boolean">
+              <method name="IsStartElement(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
                 <parameters>
-                  <parameter name="localname" position="0" attrib="0" type="System.String" />
-                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="LookupNamespace(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.String">
@@ -1249,10 +1393,9 @@
                   <parameter name="prefix" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="MoveToAttribute(System.String, System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
+              <method name="MoveToAttribute(System.Int32)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
-                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="i" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="MoveToAttribute(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
@@ -1260,9 +1403,10 @@
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="MoveToAttribute(System.Int32)" attrib="454" virtual="true" returntype="System.Void">
+              <method name="MoveToAttribute(System.String, System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
                 <parameters>
-                  <parameter name="i" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="MoveToContent()" attrib="454" virtual="true" returntype="System.Xml.XmlNodeType">
@@ -1367,14 +1511,14 @@
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ReadElementContentAsDateTime()" attrib="454" virtual="true" returntype="System.DateTime">
-                <parameters />
-              </method>
               <method name="ReadElementContentAsDateTime(System.String, System.String)" attrib="454" virtual="true" returntype="System.DateTime">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
                 </parameters>
+              </method>
+              <method name="ReadElementContentAsDateTime()" attrib="454" virtual="true" returntype="System.DateTime">
+                <parameters />
               </method>
               <method name="ReadElementContentAsDecimal()" attrib="454" virtual="true" returntype="System.Decimal">
                 <parameters />
@@ -1403,23 +1547,23 @@
               <method name="ReadElementContentAsFloat()" attrib="454" virtual="true" returntype="System.Single">
                 <parameters />
               </method>
+              <method name="ReadElementContentAsInt()" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
               <method name="ReadElementContentAsInt(System.String, System.String)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ReadElementContentAsInt()" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters />
-              </method>
-              <method name="ReadElementContentAsLong()" attrib="454" virtual="true" returntype="System.Int64">
-                <parameters />
-              </method>
               <method name="ReadElementContentAsLong(System.String, System.String)" attrib="454" virtual="true" returntype="System.Int64">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
                 </parameters>
+              </method>
+              <method name="ReadElementContentAsLong()" attrib="454" virtual="true" returntype="System.Int64">
+                <parameters />
               </method>
               <method name="ReadElementContentAsObject()" attrib="454" virtual="true" returntype="System.Object">
                 <parameters />
@@ -1476,15 +1620,15 @@
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="ReadToFollowing(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="ReadToFollowing(System.String, System.String)" attrib="454" virtual="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceURI" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="ReadToFollowing(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="ReadToNextSibling(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
@@ -1520,7 +1664,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="CheckCharacters" attrib="0" ptype="System.Boolean" params="">
+              <property name="CheckCharacters" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CheckCharacters()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1532,7 +1676,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="CloseInput" attrib="0" ptype="System.Boolean" params="">
+              <property name="CloseInput" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CloseInput()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1544,7 +1688,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="ConformanceLevel" attrib="0" ptype="System.Xml.ConformanceLevel" params="">
+              <property name="ConformanceLevel" attrib="0" ptype="System.Xml.ConformanceLevel">
                 <methods>
                   <method name="get_ConformanceLevel()" attrib="2182" returntype="System.Xml.ConformanceLevel">
                     <parameters />
@@ -1556,7 +1700,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="DtdProcessing" attrib="0" ptype="System.Xml.DtdProcessing" params="">
+              <property name="DtdProcessing" attrib="0" ptype="System.Xml.DtdProcessing">
                 <methods>
                   <method name="get_DtdProcessing()" attrib="2182" returntype="System.Xml.DtdProcessing">
                     <parameters />
@@ -1568,7 +1712,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IgnoreComments" attrib="0" ptype="System.Boolean" params="">
+              <property name="IgnoreComments" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IgnoreComments()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1580,7 +1724,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IgnoreProcessingInstructions" attrib="0" ptype="System.Boolean" params="">
+              <property name="IgnoreProcessingInstructions" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IgnoreProcessingInstructions()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1592,7 +1736,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IgnoreWhitespace" attrib="0" ptype="System.Boolean" params="">
+              <property name="IgnoreWhitespace" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IgnoreWhitespace()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1604,7 +1748,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="LineNumberOffset" attrib="0" ptype="System.Int32" params="">
+              <property name="LineNumberOffset" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_LineNumberOffset()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -1616,7 +1760,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="LinePositionOffset" attrib="0" ptype="System.Int32" params="">
+              <property name="LinePositionOffset" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_LinePositionOffset()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -1628,7 +1772,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="MaxCharactersFromEntities" attrib="0" ptype="System.Int64" params="">
+              <property name="MaxCharactersFromEntities" attrib="0" ptype="System.Int64">
                 <methods>
                   <method name="get_MaxCharactersFromEntities()" attrib="2182" returntype="System.Int64">
                     <parameters />
@@ -1640,7 +1784,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="MaxCharactersInDocument" attrib="0" ptype="System.Int64" params="">
+              <property name="MaxCharactersInDocument" attrib="0" ptype="System.Int64">
                 <methods>
                   <method name="get_MaxCharactersInDocument()" attrib="2182" returntype="System.Int64">
                     <parameters />
@@ -1652,7 +1796,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable" params="">
+              <property name="NameTable" attrib="0" ptype="System.Xml.XmlNameTable">
                 <methods>
                   <method name="get_NameTable()" attrib="2182" returntype="System.Xml.XmlNameTable">
                     <parameters />
@@ -1711,14 +1855,24 @@
               </method>
             </methods>
           </class>
-          <class name="XmlSpace" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlSpace" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Default" attrib="32854" fieldtype="System.Xml.XmlSpace" value="1" />
               <field name="None" attrib="32854" fieldtype="System.Xml.XmlSpace" value="0" />
               <field name="Preserve" attrib="32854" fieldtype="System.Xml.XmlSpace" value="2" />
             </fields>
           </class>
-          <class name="XmlTokenizedType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlTokenizedType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="CDATA" attrib="32854" fieldtype="System.Xml.XmlTokenizedType" value="0" />
               <field name="ENTITIES" attrib="32854" fieldtype="System.Xml.XmlTokenizedType" value="5" />
@@ -1745,28 +1899,28 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Settings" attrib="0" ptype="System.Xml.XmlWriterSettings" params="">
+              <property name="Settings" attrib="0" ptype="System.Xml.XmlWriterSettings">
                 <methods>
                   <method name="get_Settings()" attrib="2502" virtual="true" returntype="System.Xml.XmlWriterSettings">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="WriteState" attrib="0" ptype="System.Xml.WriteState" params="">
+              <property name="WriteState" attrib="0" ptype="System.Xml.WriteState">
                 <methods>
                   <method name="get_WriteState()" attrib="3526" abstract="true" virtual="true" returntype="System.Xml.WriteState">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="XmlLang" attrib="0" ptype="System.String" params="">
+              <property name="XmlLang" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_XmlLang()" attrib="2502" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="XmlSpace" attrib="0" ptype="System.Xml.XmlSpace" params="">
+              <property name="XmlSpace" attrib="0" ptype="System.Xml.XmlSpace">
                 <methods>
                   <method name="get_XmlSpace()" attrib="2502" virtual="true" returntype="System.Xml.XmlSpace">
                     <parameters />
@@ -1775,24 +1929,8 @@
               </property>
             </properties>
             <methods>
-              <method name="Close()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+              <method name="Close()" attrib="454" virtual="true" returntype="System.Void">
                 <parameters />
-              </method>
-              <method name="Create(System.IO.TextWriter)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
-                <parameters>
-                  <parameter name="output" position="0" attrib="0" type="System.IO.TextWriter" />
-                </parameters>
-              </method>
-              <method name="Create(System.IO.Stream, System.Xml.XmlWriterSettings)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
-                <parameters>
-                  <parameter name="output" position="0" attrib="0" type="System.IO.Stream" />
-                  <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlWriterSettings" />
-                </parameters>
-              </method>
-              <method name="Create(System.IO.Stream)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
-                <parameters>
-                  <parameter name="output" position="0" attrib="0" type="System.IO.Stream" />
-                </parameters>
               </method>
               <method name="Create(System.IO.TextWriter, System.Xml.XmlWriterSettings)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
                 <parameters>
@@ -1805,15 +1943,10 @@
                   <parameter name="output" position="0" attrib="0" type="System.Xml.XmlWriter" />
                 </parameters>
               </method>
-              <method name="Create(System.Xml.XmlWriter, System.Xml.XmlWriterSettings)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
+              <method name="Create(System.IO.Stream, System.Xml.XmlWriterSettings)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
                 <parameters>
-                  <parameter name="output" position="0" attrib="0" type="System.Xml.XmlWriter" />
+                  <parameter name="output" position="0" attrib="0" type="System.IO.Stream" />
                   <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlWriterSettings" />
-                </parameters>
-              </method>
-              <method name="Create(System.Text.StringBuilder)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
-                <parameters>
-                  <parameter name="output" position="0" attrib="0" type="System.Text.StringBuilder" />
                 </parameters>
               </method>
               <method name="Create(System.Text.StringBuilder, System.Xml.XmlWriterSettings)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
@@ -1822,10 +1955,34 @@
                   <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlWriterSettings" />
                 </parameters>
               </method>
+              <method name="Create(System.IO.TextWriter)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
+                <parameters>
+                  <parameter name="output" position="0" attrib="0" type="System.IO.TextWriter" />
+                </parameters>
+              </method>
+              <method name="Create(System.Text.StringBuilder)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
+                <parameters>
+                  <parameter name="output" position="0" attrib="0" type="System.Text.StringBuilder" />
+                </parameters>
+              </method>
+              <method name="Create(System.IO.Stream)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
+                <parameters>
+                  <parameter name="output" position="0" attrib="0" type="System.IO.Stream" />
+                </parameters>
+              </method>
+              <method name="Create(System.Xml.XmlWriter, System.Xml.XmlWriterSettings)" attrib="150" static="true" returntype="System.Xml.XmlWriter">
+                <parameters>
+                  <parameter name="output" position="0" attrib="0" type="System.Xml.XmlWriter" />
+                  <parameter name="settings" position="1" attrib="0" type="System.Xml.XmlWriterSettings" />
+                </parameters>
+              </method>
               <method name="Dispose(System.Boolean)" attrib="452" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="disposing" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
+              </method>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <parameters />
               </method>
               <method name="Flush()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
                 <parameters />
@@ -1841,13 +1998,6 @@
                   <parameter name="defattr" position="1" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
-              <method name="WriteAttributeString(System.String, System.String, System.String)" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="ns" position="1" attrib="0" type="System.String" />
-                  <parameter name="value" position="2" attrib="0" type="System.String" />
-                </parameters>
-              </method>
               <method name="WriteAttributeString(System.String, System.String)" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
@@ -1860,6 +2010,13 @@
                   <parameter name="localName" position="1" attrib="0" type="System.String" />
                   <parameter name="ns" position="2" attrib="0" type="System.String" />
                   <parameter name="value" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteAttributeString(System.String, System.String, System.String)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="2" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="WriteBase64(System.Byte[], System.Int32, System.Int32)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
@@ -1972,6 +2129,11 @@
                   <parameter name="ns" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="WriteRaw(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="data" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="WriteRaw(System.Char[], System.Int32, System.Int32)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="buffer" position="0" attrib="0" type="System.Char[]" />
@@ -1979,9 +2141,15 @@
                   <parameter name="count" position="2" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="WriteRaw(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+              <method name="WriteStartAttribute(System.String)" attrib="134" returntype="System.Void">
                 <parameters>
-                  <parameter name="data" position="0" attrib="0" type="System.String" />
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteStartAttribute(System.String, System.String)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="WriteStartAttribute(System.String, System.String, System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
@@ -1991,24 +2159,13 @@
                   <parameter name="ns" position="2" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="WriteStartAttribute(System.String, System.String)" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="ns" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="WriteStartAttribute(System.String)" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="WriteStartDocument()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters />
-              </method>
               <method name="WriteStartDocument(System.Boolean)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="standalone" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
+              </method>
+              <method name="WriteStartDocument()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
               </method>
               <method name="WriteStartElement(System.String, System.String, System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
                 <parameters>
@@ -2017,15 +2174,15 @@
                   <parameter name="ns" position="2" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="WriteStartElement(System.String)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="WriteStartElement(System.String, System.String)" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="ns" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="WriteStartElement(System.String)" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="WriteString(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
@@ -2039,39 +2196,19 @@
                   <parameter name="highChar" position="1" attrib="0" type="System.Char" />
                 </parameters>
               </method>
-              <method name="WriteValue(System.Boolean)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
-              <method name="WriteValue(System.DateTime)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="WriteValue(System.Object)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="WriteValue(System.String)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="WriteValue(System.Double)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Double" />
-                </parameters>
-              </method>
               <method name="WriteValue(System.Int32)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="WriteValue(System.Int64)" attrib="454" virtual="true" returntype="System.Void">
+              <method name="WriteValue(System.Decimal)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
+                  <parameter name="value" position="0" attrib="0" type="System.Decimal" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.Boolean)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
               <method name="WriteValue(System.Single)" attrib="454" virtual="true" returntype="System.Void">
@@ -2079,9 +2216,29 @@
                   <parameter name="value" position="0" attrib="0" type="System.Single" />
                 </parameters>
               </method>
-              <method name="WriteValue(System.Decimal)" attrib="454" virtual="true" returntype="System.Void">
+              <method name="WriteValue(System.Int64)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Decimal" />
+                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.String)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.DateTime)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.Double)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
+              <method name="WriteValue(System.Object)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="WriteWhitespace(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
@@ -2098,7 +2255,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="CheckCharacters" attrib="0" ptype="System.Boolean" params="">
+              <property name="CheckCharacters" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CheckCharacters()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2110,7 +2267,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="CloseOutput" attrib="0" ptype="System.Boolean" params="">
+              <property name="CloseOutput" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CloseOutput()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2122,7 +2279,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="ConformanceLevel" attrib="0" ptype="System.Xml.ConformanceLevel" params="">
+              <property name="ConformanceLevel" attrib="0" ptype="System.Xml.ConformanceLevel">
                 <methods>
                   <method name="get_ConformanceLevel()" attrib="2182" returntype="System.Xml.ConformanceLevel">
                     <parameters />
@@ -2134,7 +2291,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Encoding" attrib="0" ptype="System.Text.Encoding" params="">
+              <property name="Encoding" attrib="0" ptype="System.Text.Encoding">
                 <methods>
                   <method name="get_Encoding()" attrib="2182" returntype="System.Text.Encoding">
                     <parameters />
@@ -2146,7 +2303,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Indent" attrib="0" ptype="System.Boolean" params="">
+              <property name="Indent" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Indent()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2158,7 +2315,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IndentChars" attrib="0" ptype="System.String" params="">
+              <property name="IndentChars" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_IndentChars()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2170,7 +2327,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NamespaceHandling" attrib="0" ptype="System.Xml.NamespaceHandling" params="">
+              <property name="NamespaceHandling" attrib="0" ptype="System.Xml.NamespaceHandling">
                 <methods>
                   <method name="get_NamespaceHandling()" attrib="2182" returntype="System.Xml.NamespaceHandling">
                     <parameters />
@@ -2182,7 +2339,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NewLineChars" attrib="0" ptype="System.String" params="">
+              <property name="NewLineChars" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_NewLineChars()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2194,7 +2351,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NewLineHandling" attrib="0" ptype="System.Xml.NewLineHandling" params="">
+              <property name="NewLineHandling" attrib="0" ptype="System.Xml.NewLineHandling">
                 <methods>
                   <method name="get_NewLineHandling()" attrib="2182" returntype="System.Xml.NewLineHandling">
                     <parameters />
@@ -2206,7 +2363,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NewLineOnAttributes" attrib="0" ptype="System.Boolean" params="">
+              <property name="NewLineOnAttributes" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_NewLineOnAttributes()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2218,7 +2375,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="OmitXmlDeclaration" attrib="0" ptype="System.Boolean" params="">
+              <property name="OmitXmlDeclaration" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_OmitXmlDeclaration()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2261,7 +2418,12 @@
       <namespace name="System.Xml.Schema">
         <classes>
           <class name="XmlSchema" type="class" base="System.Xml.Schema.XmlSchemaObject" charset="Ansi" layout="Auto" />
-          <class name="XmlSchemaForm" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlSchemaForm" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="None" attrib="32854" fieldtype="System.Xml.Schema.XmlSchemaForm" value="0">
                 <attributes>
@@ -2270,12 +2432,20 @@
               </field>
               <field name="Qualified" attrib="32854" fieldtype="System.Xml.Schema.XmlSchemaForm" value="1">
                 <attributes>
-                  <attribute name="System.Xml.Serialization.XmlEnumAttribute" />
+                  <attribute name="System.Xml.Serialization.XmlEnumAttribute">
+                    <properties>
+                      <property name="Name" value="qualified" />
+                    </properties>
+                  </attribute>
                 </attributes>
               </field>
               <field name="Unqualified" attrib="32854" fieldtype="System.Xml.Schema.XmlSchemaForm" value="2">
                 <attributes>
-                  <attribute name="System.Xml.Serialization.XmlEnumAttribute" />
+                  <attribute name="System.Xml.Serialization.XmlEnumAttribute">
+                    <properties>
+                      <property name="Name" value="unqualified" />
+                    </properties>
+                  </attribute>
                 </attributes>
               </field>
             </fields>
@@ -2288,13 +2458,23 @@
             </constructors>
           </class>
           <class name="XmlSchemaSet" type="class" base="System.Object" charset="Ansi" layout="Auto" />
-          <class name="XmlSeverityType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlSeverityType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Error" attrib="32854" fieldtype="System.Xml.Schema.XmlSeverityType" value="0" />
               <field name="Warning" attrib="32854" fieldtype="System.Xml.Schema.XmlSeverityType" value="1" />
             </fields>
           </class>
-          <class name="XmlTypeCode" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="XmlTypeCode" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="AnyAtomicType" attrib="32854" fieldtype="System.Xml.Schema.XmlTypeCode" value="10" />
               <field name="AnyUri" attrib="32854" fieldtype="System.Xml.Schema.XmlTypeCode" value="28" />
@@ -2379,27 +2559,28 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
                 </properties>
               </attribute>
             </attributes>
             <constructors>
-              <constructor name=".ctor(System.String, System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
-                  <parameter name="ns" position="1" attrib="0" type="System.String" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.String, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                  <parameter name="ns" position="1" attrib="0" type="System.String" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2411,7 +2592,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2423,7 +2604,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Order" attrib="0" ptype="System.Int32" params="">
+              <property name="Order" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Order()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -2442,21 +2623,22 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
                 </properties>
               </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="elementName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="ElementName" attrib="0" ptype="System.String" params="">
+              <property name="ElementName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_ElementName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2468,7 +2650,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm" params="">
+              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm">
                 <methods>
                   <method name="get_Form()" attrib="2182" returntype="System.Xml.Schema.XmlSchemaForm">
                     <parameters />
@@ -2480,7 +2662,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IsNullable" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsNullable" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsNullable()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2492,7 +2674,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2504,7 +2686,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Order" attrib="0" ptype="System.Int32" params="">
+              <property name="Order" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Order()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -2523,13 +2705,22 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
                 </properties>
               </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.Type)" attrib="6278">
                 <parameters>
                   <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.Type)" attrib="6278">
@@ -2538,17 +2729,9 @@
                   <parameter name="type" position="1" attrib="0" type="System.Type" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="DataType" attrib="0" ptype="System.String" params="">
+              <property name="DataType" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataType()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2560,7 +2743,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="ElementName" attrib="0" ptype="System.String" params="">
+              <property name="ElementName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_ElementName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2572,7 +2755,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm" params="">
+              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm">
                 <methods>
                   <method name="get_Form()" attrib="2182" returntype="System.Xml.Schema.XmlSchemaForm">
                     <parameters />
@@ -2584,7 +2767,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IsNullable" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsNullable" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsNullable()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2596,7 +2779,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2608,7 +2791,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="NestingLevel" attrib="0" ptype="System.Int32" params="">
+              <property name="NestingLevel" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_NestingLevel()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -2620,7 +2803,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Type" attrib="0" ptype="System.Type" params="">
+              <property name="Type" attrib="0" ptype="System.Type">
                 <methods>
                   <method name="get_Type()" attrib="2182" returntype="System.Type">
                     <parameters />
@@ -2636,12 +2819,24 @@
           </class>
           <class name="XmlAttributeAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.Type)" attrib="6278">
                 <parameters>
                   <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="attributeName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.Type)" attrib="6278">
@@ -2650,17 +2845,9 @@
                   <parameter name="type" position="1" attrib="0" type="System.Type" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="attributeName" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="AttributeName" attrib="0" ptype="System.String" params="">
+              <property name="AttributeName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_AttributeName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2672,7 +2859,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="DataType" attrib="0" ptype="System.String" params="">
+              <property name="DataType" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataType()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2684,7 +2871,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm" params="">
+              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm">
                 <methods>
                   <method name="get_Form()" attrib="2182" returntype="System.Xml.Schema.XmlSchemaForm">
                     <parameters />
@@ -2696,7 +2883,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2708,7 +2895,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Type" attrib="0" ptype="System.Type" params="">
+              <property name="Type" attrib="0" ptype="System.Type">
                 <methods>
                   <method name="get_Type()" attrib="2182" returntype="System.Type">
                     <parameters />
@@ -2727,21 +2914,22 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
                 </properties>
               </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="MemberName" attrib="0" ptype="System.String" params="">
+              <property name="MemberName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_MemberName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2760,13 +2948,22 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
                 </properties>
               </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.Type)" attrib="6278">
                 <parameters>
                   <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.Type)" attrib="6278">
@@ -2775,17 +2972,9 @@
                   <parameter name="type" position="1" attrib="0" type="System.Type" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="elementName" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="DataType" attrib="0" ptype="System.String" params="">
+              <property name="DataType" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataType()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2797,7 +2986,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="ElementName" attrib="0" ptype="System.String" params="">
+              <property name="ElementName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_ElementName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2809,7 +2998,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm" params="">
+              <property name="Form" attrib="0" ptype="System.Xml.Schema.XmlSchemaForm">
                 <methods>
                   <method name="get_Form()" attrib="2182" returntype="System.Xml.Schema.XmlSchemaForm">
                     <parameters />
@@ -2821,7 +3010,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IsNullable" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsNullable" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsNullable()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2833,7 +3022,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2845,7 +3034,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Order" attrib="0" ptype="System.Int32" params="">
+              <property name="Order" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Order()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -2857,7 +3046,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Type" attrib="0" ptype="System.Type" params="">
+              <property name="Type" attrib="0" ptype="System.Type">
                 <methods>
                   <method name="get_Type()" attrib="2182" returntype="System.Type">
                     <parameters />
@@ -2873,20 +3062,24 @@
           </class>
           <class name="XmlEnumAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Field" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2902,7 +3095,11 @@
           </class>
           <class name="XmlIgnoreAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
               <constructor name=".ctor()" attrib="6278">
@@ -2915,6 +3112,7 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="True" />
+                  <property name="ValidOn" value="Interface, Method, Struct, Class" />
                 </properties>
               </attribute>
             </attributes>
@@ -2926,7 +3124,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Type" attrib="0" ptype="System.Type" params="">
+              <property name="Type" attrib="0" ptype="System.Type">
                 <methods>
                   <method name="get_Type()" attrib="2182" returntype="System.Type">
                     <parameters />
@@ -2945,6 +3143,7 @@
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="AllowMultiple" value="False" />
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
                 </properties>
               </attribute>
             </attributes>
@@ -2956,20 +3155,24 @@
           </class>
           <class name="XmlRootAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="ReturnValue, Interface, Enum, Struct, Class" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="elementName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="DataType" attrib="0" ptype="System.String" params="">
+              <property name="DataType" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataType()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2981,7 +3184,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="ElementName" attrib="0" ptype="System.String" params="">
+              <property name="ElementName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_ElementName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2993,7 +3196,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IsNullable" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsNullable" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsNullable()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -3005,7 +3208,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -3021,7 +3224,11 @@
           </class>
           <class name="XmlSchemaProviderAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Interface, Struct, Class" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
               <constructor name=".ctor(System.String)" attrib="6278">
@@ -3031,7 +3238,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="IsAny" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsAny" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsAny()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -3043,7 +3250,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="MethodName" attrib="0" ptype="System.String" params="">
+              <property name="MethodName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_MethodName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -3054,20 +3261,24 @@
           </class>
           <class name="XmlTextAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="ReturnValue, Parameter, Field, Property" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.Type)" attrib="6278">
                 <parameters>
                   <parameter name="type" position="0" attrib="0" type="System.Type" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="DataType" attrib="0" ptype="System.String" params="">
+              <property name="DataType" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataType()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -3079,7 +3290,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Type" attrib="0" ptype="System.Type" params="">
+              <property name="Type" attrib="0" ptype="System.Type">
                 <methods>
                   <method name="get_Type()" attrib="2182" returntype="System.Type">
                     <parameters />
@@ -3095,20 +3306,24 @@
           </class>
           <class name="XmlTypeAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Interface, Enum, Struct, Class" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="typeName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="AnonymousType" attrib="0" ptype="System.Boolean" params="">
+              <property name="AnonymousType" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_AnonymousType()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -3120,7 +3335,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="IncludeInSchema" attrib="0" ptype="System.Boolean" params="">
+              <property name="IncludeInSchema" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IncludeInSchema()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -3132,7 +3347,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Namespace" attrib="0" ptype="System.String" params="">
+              <property name="Namespace" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Namespace()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -3144,7 +3359,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="TypeName" attrib="0" ptype="System.String" params="">
+              <property name="TypeName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_TypeName()" attrib="2182" returntype="System.String">
                     <parameters />

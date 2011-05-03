@@ -1,76 +1,146 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <assemblies>
   <assembly name="System" version="2.0.5.0">
     <attributes>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Windows.Browser, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Diagnostics.DebuggableAttribute" />
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Windows, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Net, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
-      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute">
+        <properties>
+          <property name="CompilationRelaxations" value="8" />
+        </properties>
+      </attribute>
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
-      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-      <attribute name="System.CLSCompliantAttribute" />
-      <attribute name="System.Reflection.AssemblyTitleAttribute" />
-      <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
-      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
-      <attribute name="System.Reflection.AssemblyProductAttribute" />
-      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
-      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
-      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
-      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
-      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
         <properties>
-          <property name="AllInternalsVisible" value="False" />
+          <property name="Value" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.CLSCompliantAttribute">
+        <properties>
+          <property name="IsCompliant" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyTitleAttribute">
+        <properties>
+          <property name="Title" value="System.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDescriptionAttribute">
+        <properties>
+          <property name="Description" value="System.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute">
+        <properties>
+          <property name="DefaultAlias" value="System.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCompanyAttribute">
+        <properties>
+          <property name="Company" value="Microsoft Corporation" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyProductAttribute">
+        <properties>
+          <property name="Product" value="Microsoft® Silverlight" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute">
+        <properties>
+          <property name="Copyright" value="© Microsoft Corporation.  All rights reserved." />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute">
+        <properties>
+          <property name="Version" value="4.0.60310.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute">
+        <properties>
+          <property name="InformationalVersion" value="4.0.60310.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.SatelliteContractVersionAttribute">
+        <properties>
+          <property name="Version" value="2.0.5.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute">
+        <properties>
+          <property name="CultureName" value="en-US" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute">
+        <properties>
+          <property name="DelaySign" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute">
+        <properties>
+          <property name="KeyFile" value="f:\dd\Tools\devdiv\silverlightplatformpublickey.snk" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="Microsoft.WlcProfile, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="Microsoft.WlcProfile.Internal, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Core, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Xml, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.Runtime.Serialization, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
+          <property name="AssemblyName" value="System.ServiceModel.Web, PublicKey=00240000048000009400000006020000002400005253413100040000010001008D56C76F9E8649383049F383C44BE0EC204181822A6C31CF5EB7EF486944D032188EA1D3920763712CCB12D75FB77E9811149E6148E5D32FBAAB37611C1878DDC19E20EF135D0CB2CFF2BFEC3D115810C3D9069638FE4BE215DBF795861920E5AB6F7DB2E2CEEF136AC23D5DD2BF031700AEC232F6C6B1C785B4305C123B37AB" />
         </properties>
       </attribute>
     </attributes>
@@ -100,10 +170,15 @@
               </constructor>
             </constructors>
           </class>
-          <class name="GenericUriParserOptions" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="GenericUriParserOptions" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
             <attributes>
               <attribute name="System.FlagsAttribute" />
             </attributes>
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="AllowEmptyAuthority" attrib="32854" fieldtype="System.GenericUriParserOptions" value="2" />
               <field name="Default" attrib="32854" fieldtype="System.GenericUriParserOptions" value="0" />
@@ -128,7 +203,11 @@
           </class>
           <class name="Uri" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.ComponentModel.TypeConverterAttribute" />
+              <attribute name="System.ComponentModel.TypeConverterAttribute">
+                <properties>
+                  <property name="ConverterTypeName" value="System.UriTypeConverter" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="SchemeDelimiter" attrib="54" fieldtype="System.String" />
@@ -144,21 +223,15 @@
               <field name="UriSchemeNntp" attrib="54" fieldtype="System.String" />
             </fields>
             <constructors>
+              <constructor name=".ctor(System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="uriString" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
               <constructor name=".ctor(System.Uri, System.String)" attrib="6278">
                 <parameters>
                   <parameter name="baseUri" position="0" attrib="0" type="System.Uri" />
                   <parameter name="relativeUri" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Uri, System.Uri)" attrib="6278">
-                <parameters>
-                  <parameter name="baseUri" position="0" attrib="0" type="System.Uri" />
-                  <parameter name="relativeUri" position="1" attrib="0" type="System.Uri" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="uriString" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.UriKind)" attrib="6278">
@@ -167,100 +240,106 @@
                   <parameter name="uriKind" position="1" attrib="0" type="System.UriKind" />
                 </parameters>
               </constructor>
+              <constructor name=".ctor(System.Uri, System.Uri)" attrib="6278">
+                <parameters>
+                  <parameter name="baseUri" position="0" attrib="0" type="System.Uri" />
+                  <parameter name="relativeUri" position="1" attrib="0" type="System.Uri" />
+                </parameters>
+              </constructor>
             </constructors>
             <properties>
-              <property name="AbsolutePath" attrib="0" ptype="System.String" params="">
+              <property name="AbsolutePath" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_AbsolutePath()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="AbsoluteUri" attrib="0" ptype="System.String" params="">
+              <property name="AbsoluteUri" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_AbsoluteUri()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="DnsSafeHost" attrib="0" ptype="System.String" params="">
+              <property name="DnsSafeHost" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DnsSafeHost()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Fragment" attrib="0" ptype="System.String" params="">
+              <property name="Fragment" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Fragment()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Host" attrib="0" ptype="System.String" params="">
+              <property name="Host" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Host()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsAbsoluteUri" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsAbsoluteUri" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsAbsoluteUri()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsUnc" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsUnc" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsUnc()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="LocalPath" attrib="0" ptype="System.String" params="">
+              <property name="LocalPath" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_LocalPath()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="OriginalString" attrib="0" ptype="System.String" params="">
+              <property name="OriginalString" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_OriginalString()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Port" attrib="0" ptype="System.Int32" params="">
+              <property name="Port" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Port()" attrib="2182" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Query" attrib="0" ptype="System.String" params="">
+              <property name="Query" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Query()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Scheme" attrib="0" ptype="System.String" params="">
+              <property name="Scheme" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Scheme()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="UserEscaped" attrib="0" ptype="System.Boolean" params="">
+              <property name="UserEscaped" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_UserEscaped()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="UserInfo" attrib="0" ptype="System.String" params="">
+              <property name="UserInfo" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_UserInfo()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -351,10 +430,10 @@
               <method name="ToString()" attrib="198" virtual="true" returntype="System.String">
                 <parameters />
               </method>
-              <method name="TryCreate(System.String, System.UriKind, out System.Uri&amp;)" attrib="150" static="true" returntype="System.Boolean">
+              <method name="TryCreate(System.Uri, System.Uri, out System.Uri&amp;)" attrib="150" static="true" returntype="System.Boolean">
                 <parameters>
-                  <parameter name="uriString" position="0" attrib="0" type="System.String" />
-                  <parameter name="uriKind" position="1" attrib="0" type="System.UriKind" />
+                  <parameter name="baseUri" position="0" attrib="0" type="System.Uri" />
+                  <parameter name="relativeUri" position="1" attrib="0" type="System.Uri" />
                   <parameter name="result" position="2" attrib="2" type="System.Uri&amp;" direction="out" />
                 </parameters>
               </method>
@@ -365,10 +444,10 @@
                   <parameter name="result" position="2" attrib="2" type="System.Uri&amp;" direction="out" />
                 </parameters>
               </method>
-              <method name="TryCreate(System.Uri, System.Uri, out System.Uri&amp;)" attrib="150" static="true" returntype="System.Boolean">
+              <method name="TryCreate(System.String, System.UriKind, out System.Uri&amp;)" attrib="150" static="true" returntype="System.Boolean">
                 <parameters>
-                  <parameter name="baseUri" position="0" attrib="0" type="System.Uri" />
-                  <parameter name="relativeUri" position="1" attrib="0" type="System.Uri" />
+                  <parameter name="uriString" position="0" attrib="0" type="System.String" />
+                  <parameter name="uriKind" position="1" attrib="0" type="System.UriKind" />
                   <parameter name="result" position="2" attrib="2" type="System.Uri&amp;" direction="out" />
                 </parameters>
               </method>
@@ -384,11 +463,12 @@
           </class>
           <class name="UriBuilder" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <constructors>
-              <constructor name=".ctor(System.String, System.String, System.Int32)" attrib="6278">
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
-                  <parameter name="scheme" position="0" attrib="0" type="System.String" />
-                  <parameter name="host" position="1" attrib="0" type="System.String" />
-                  <parameter name="portNumber" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="uri" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.String, System.Int32, System.String)" attrib="6278">
@@ -397,6 +477,24 @@
                   <parameter name="host" position="1" attrib="0" type="System.String" />
                   <parameter name="port" position="2" attrib="0" type="System.Int32" />
                   <parameter name="pathValue" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Uri)" attrib="6278">
+                <parameters>
+                  <parameter name="uri" position="0" attrib="0" type="System.Uri" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String, System.String, System.Int32)" attrib="6278">
+                <parameters>
+                  <parameter name="scheme" position="0" attrib="0" type="System.String" />
+                  <parameter name="host" position="1" attrib="0" type="System.String" />
+                  <parameter name="portNumber" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="schemeName" position="0" attrib="0" type="System.String" />
+                  <parameter name="hostName" position="1" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.String, System.String, System.Int32, System.String, System.String)" attrib="6278">
@@ -408,28 +506,9 @@
                   <parameter name="extraValue" position="4" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.String, System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="schemeName" position="0" attrib="0" type="System.String" />
-                  <parameter name="hostName" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="uri" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Uri)" attrib="6278">
-                <parameters>
-                  <parameter name="uri" position="0" attrib="0" type="System.Uri" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="Fragment" attrib="0" ptype="System.String" params="">
+              <property name="Fragment" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Fragment()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -441,7 +520,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Host" attrib="0" ptype="System.String" params="">
+              <property name="Host" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Host()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -453,7 +532,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Password" attrib="0" ptype="System.String" params="">
+              <property name="Password" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Password()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -465,7 +544,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Path" attrib="0" ptype="System.String" params="">
+              <property name="Path" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Path()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -477,7 +556,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Port" attrib="0" ptype="System.Int32" params="">
+              <property name="Port" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Port()" attrib="2182" returntype="System.Int32">
                     <parameters />
@@ -489,7 +568,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Query" attrib="0" ptype="System.String" params="">
+              <property name="Query" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Query()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -501,7 +580,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Scheme" attrib="0" ptype="System.String" params="">
+              <property name="Scheme" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Scheme()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -513,14 +592,14 @@
                   </method>
                 </methods>
               </property>
-              <property name="Uri" attrib="0" ptype="System.Uri" params="">
+              <property name="Uri" attrib="0" ptype="System.Uri">
                 <methods>
                   <method name="get_Uri()" attrib="2182" returntype="System.Uri">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="UserName" attrib="0" ptype="System.String" params="">
+              <property name="UserName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_UserName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -547,10 +626,15 @@
               </method>
             </methods>
           </class>
-          <class name="UriComponents" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="UriComponents" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
             <attributes>
               <attribute name="System.FlagsAttribute" />
             </attributes>
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="AbsoluteUri" attrib="32854" fieldtype="System.UriComponents" value="127" />
               <field name="Fragment" attrib="32854" fieldtype="System.UriComponents" value="64" />
@@ -570,7 +654,12 @@
               <field name="UserInfo" attrib="32854" fieldtype="System.UriComponents" value="2" />
             </fields>
           </class>
-          <class name="UriFormat" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="UriFormat" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="SafeUnescaped" attrib="32854" fieldtype="System.UriFormat" value="3" />
               <field name="Unescaped" attrib="32854" fieldtype="System.UriFormat" value="2" />
@@ -579,30 +668,40 @@
           </class>
           <class name="UriFormatException" type="class" base="System.FormatException" charset="Ansi" layout="Auto">
             <constructors>
-              <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
-                <parameters>
-                  <parameter name="textString" position="0" attrib="0" type="System.String" />
-                  <parameter name="e" position="1" attrib="0" type="System.Exception" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="textString" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.String, System.Exception)" attrib="6278">
+                <parameters>
+                  <parameter name="textString" position="0" attrib="0" type="System.String" />
+                  <parameter name="e" position="1" attrib="0" type="System.Exception" />
+                </parameters>
               </constructor>
             </constructors>
           </class>
-          <class name="UriIdnScope" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="UriIdnScope" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="All" attrib="32854" fieldtype="System.UriIdnScope" value="2" />
               <field name="AllExceptIntranet" attrib="32854" fieldtype="System.UriIdnScope" value="1" />
               <field name="None" attrib="32854" fieldtype="System.UriIdnScope" value="0" />
             </fields>
           </class>
-          <class name="UriKind" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="UriKind" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Absolute" attrib="32854" fieldtype="System.UriKind" value="1" />
               <field name="Relative" attrib="32854" fieldtype="System.UriKind" value="2" />
@@ -714,8 +813,9 @@
             <attributes>
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
-                  <property name="AllowMultiple" value="False" />
                   <property name="Inherited" value="False" />
+                  <property name="AllowMultiple" value="False" />
+                  <property name="ValidOn" value="All" />
                 </properties>
               </attribute>
             </attributes>
@@ -728,14 +828,14 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Tool" attrib="0" ptype="System.String" params="">
+              <property name="Tool" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Tool()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Version" attrib="0" ptype="System.String" params="">
+              <property name="Version" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Version()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -754,6 +854,9 @@
               <interface name="System.Collections.Generic.IEnumerable`1[T]" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
+            <generic-parameters>
+              <generic-parameter name="T" attributes="0" />
+            </generic-parameters>
             <methods>
               <method name="Add(T)" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
                 <parameters>
@@ -814,9 +917,21 @@
           </class>
           <class name="LinkedList`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute">
+                <properties>
+                  <property name="Value" value="Count = {Count}" />
+                </properties>
+              </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="False" />
+                </properties>
+              </attribute>
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute">
+                <properties>
+                  <property name="ProxyTypeName" value="System.Collections.Generic.System_CollectionDebugView`1" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.ICollection`1[T]" />
@@ -824,32 +939,35 @@
               <interface name="System.Collections.ICollection" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
+            <generic-parameters>
+              <generic-parameter name="T" attributes="0" />
+            </generic-parameters>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.Collections.Generic.IEnumerable`1[T])" attrib="6278">
                 <parameters>
                   <parameter name="collection" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="Count" attrib="0" ptype="System.Int32" params="">
+              <property name="Count" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="First" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]" params="">
+              <property name="First" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]">
                 <methods>
                   <method name="get_First()" attrib="2182" returntype="System.Collections.Generic.LinkedListNode`1[T]">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Last" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]" params="">
+              <property name="Last" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]">
                 <methods>
                   <method name="get_Last()" attrib="2182" returntype="System.Collections.Generic.LinkedListNode`1[T]">
                     <parameters />
@@ -858,19 +976,13 @@
               </property>
             </properties>
             <methods>
-              <method name="AddAfter(System.Collections.Generic.LinkedListNode`1[T], System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
-                  <parameter name="newNode" position="1" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
-                </parameters>
-              </method>
               <method name="AddAfter(System.Collections.Generic.LinkedListNode`1[T], T)" attrib="134" returntype="System.Collections.Generic.LinkedListNode`1[T]">
                 <parameters>
                   <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
                   <parameter name="value" position="1" attrib="0" type="T" />
                 </parameters>
               </method>
-              <method name="AddBefore(System.Collections.Generic.LinkedListNode`1[T], System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
+              <method name="AddAfter(System.Collections.Generic.LinkedListNode`1[T], System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
                   <parameter name="newNode" position="1" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
@@ -882,9 +994,10 @@
                   <parameter name="value" position="1" attrib="0" type="T" />
                 </parameters>
               </method>
-              <method name="AddFirst(System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
+              <method name="AddBefore(System.Collections.Generic.LinkedListNode`1[T], System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
+                  <parameter name="newNode" position="1" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
                 </parameters>
               </method>
               <method name="AddFirst(T)" attrib="134" returntype="System.Collections.Generic.LinkedListNode`1[T]">
@@ -892,7 +1005,7 @@
                   <parameter name="value" position="0" attrib="0" type="T" />
                 </parameters>
               </method>
-              <method name="AddLast(System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
+              <method name="AddFirst(System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
                 </parameters>
@@ -900,6 +1013,11 @@
               <method name="AddLast(T)" attrib="134" returntype="System.Collections.Generic.LinkedListNode`1[T]">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="T" />
+                </parameters>
+              </method>
+              <method name="AddLast(System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
                 </parameters>
               </method>
               <method name="Clear()" attrib="486" virtual="true" returntype="System.Void">
@@ -929,14 +1047,14 @@
               <method name="GetEnumerator()" attrib="134" returntype="System.Collections.Generic.LinkedList`1+Enumerator[T]">
                 <parameters />
               </method>
-              <method name="Remove(System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
-                </parameters>
-              </method>
               <method name="Remove(T)" attrib="486" virtual="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="T" />
+                </parameters>
+              </method>
+              <method name="Remove(System.Collections.Generic.LinkedListNode`1[T])" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="node" position="0" attrib="0" type="System.Collections.Generic.LinkedListNode`1[T]" />
                 </parameters>
               </method>
               <method name="RemoveFirst()" attrib="134" returntype="System.Void">
@@ -953,8 +1071,11 @@
                   <interface name="System.IDisposable" />
                   <interface name="System.Collections.IEnumerator" />
                 </interfaces>
+                <generic-parameters>
+                  <generic-parameter name="T" attributes="0" />
+                </generic-parameters>
                 <properties>
-                  <property name="Current" attrib="0" ptype="T" params="">
+                  <property name="Current" attrib="0" ptype="T">
                     <methods>
                       <method name="get_Current()" attrib="2534" virtual="true" returntype="T">
                         <parameters />
@@ -975,8 +1096,15 @@
           </class>
           <class name="LinkedListNode`1" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="False" />
+                </properties>
+              </attribute>
             </attributes>
+            <generic-parameters>
+              <generic-parameter name="T" attributes="0" />
+            </generic-parameters>
             <constructors>
               <constructor name=".ctor(T)" attrib="6278">
                 <parameters>
@@ -985,28 +1113,28 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="List" attrib="0" ptype="System.Collections.Generic.LinkedList`1[T]" params="">
+              <property name="List" attrib="0" ptype="System.Collections.Generic.LinkedList`1[T]">
                 <methods>
                   <method name="get_List()" attrib="2182" returntype="System.Collections.Generic.LinkedList`1[T]">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Next" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]" params="">
+              <property name="Next" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]">
                 <methods>
                   <method name="get_Next()" attrib="2182" returntype="System.Collections.Generic.LinkedListNode`1[T]">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Previous" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]" params="">
+              <property name="Previous" attrib="0" ptype="System.Collections.Generic.LinkedListNode`1[T]">
                 <methods>
                   <method name="get_Previous()" attrib="2182" returntype="System.Collections.Generic.LinkedListNode`1[T]">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Value" attrib="0" ptype="T" params="">
+              <property name="Value" attrib="0" ptype="T">
                 <methods>
                   <method name="get_Value()" attrib="2182" returntype="T">
                     <parameters />
@@ -1022,32 +1150,47 @@
           </class>
           <class name="Queue`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
-              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute">
+                <properties>
+                  <property name="ProxyTypeName" value="System.Collections.Generic.System_QueueDebugView`1" />
+                </properties>
+              </attribute>
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute">
+                <properties>
+                  <property name="Value" value="Count = {Count}" />
+                </properties>
+              </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="False" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.IEnumerable`1[T]" />
               <interface name="System.Collections.ICollection" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
+            <generic-parameters>
+              <generic-parameter name="T" attributes="0" />
+            </generic-parameters>
             <constructors>
-              <constructor name=".ctor(System.Collections.Generic.IEnumerable`1[T])" attrib="6278">
-                <parameters>
-                  <parameter name="collection" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.Int32)" attrib="6278">
                 <parameters>
                   <parameter name="capacity" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.Collections.Generic.IEnumerable`1[T])" attrib="6278">
+                <parameters>
+                  <parameter name="collection" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="Count" attrib="0" ptype="System.Int32" params="">
+              <property name="Count" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
                     <parameters />
@@ -1098,8 +1241,11 @@
                   <interface name="System.IDisposable" />
                   <interface name="System.Collections.IEnumerator" />
                 </interfaces>
+                <generic-parameters>
+                  <generic-parameter name="T" attributes="0" />
+                </generic-parameters>
                 <properties>
-                  <property name="Current" attrib="0" ptype="T" params="">
+                  <property name="Current" attrib="0" ptype="T">
                     <methods>
                       <method name="get_Current()" attrib="2534" virtual="true" returntype="T">
                         <parameters />
@@ -1120,32 +1266,47 @@
           </class>
           <class name="Stack`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute">
+                <properties>
+                  <property name="ProxyTypeName" value="System.Collections.Generic.System_StackDebugView`1" />
+                </properties>
+              </attribute>
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="False" />
+                </properties>
+              </attribute>
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute">
+                <properties>
+                  <property name="Value" value="Count = {Count}" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.IEnumerable`1[T]" />
               <interface name="System.Collections.ICollection" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
+            <generic-parameters>
+              <generic-parameter name="T" attributes="0" />
+            </generic-parameters>
             <constructors>
-              <constructor name=".ctor(System.Collections.Generic.IEnumerable`1[T])" attrib="6278">
-                <parameters>
-                  <parameter name="collection" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.Int32)" attrib="6278">
                 <parameters>
                   <parameter name="capacity" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.Collections.Generic.IEnumerable`1[T])" attrib="6278">
+                <parameters>
+                  <parameter name="collection" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="Count" attrib="0" ptype="System.Int32" params="">
+              <property name="Count" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
                     <parameters />
@@ -1196,8 +1357,11 @@
                   <interface name="System.IDisposable" />
                   <interface name="System.Collections.IEnumerator" />
                 </interfaces>
+                <generic-parameters>
+                  <generic-parameter name="T" attributes="0" />
+                </generic-parameters>
                 <properties>
-                  <property name="Current" attrib="0" ptype="T" params="">
+                  <property name="Current" attrib="0" ptype="T">
                     <methods>
                       <method name="get_Current()" attrib="2534" virtual="true" returntype="T">
                         <parameters />
@@ -1231,21 +1395,21 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Cancelled" attrib="0" ptype="System.Boolean" params="">
+              <property name="Cancelled" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Cancelled()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Error" attrib="0" ptype="System.Exception" params="">
+              <property name="Error" attrib="0" ptype="System.Exception">
                 <methods>
                   <method name="get_Error()" attrib="2182" returntype="System.Exception">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="UserState" attrib="0" ptype="System.Object" params="">
+              <property name="UserState" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_UserState()" attrib="2182" returntype="System.Object">
                     <parameters />
@@ -1292,14 +1456,14 @@
           </class>
           <class name="AsyncOperation" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <properties>
-              <property name="SynchronizationContext" attrib="0" ptype="System.Threading.SynchronizationContext" params="">
+              <property name="SynchronizationContext" attrib="0" ptype="System.Threading.SynchronizationContext">
                 <methods>
                   <method name="get_SynchronizationContext()" attrib="2182" returntype="System.Threading.SynchronizationContext">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="UserSuppliedState" attrib="0" ptype="System.Object" params="">
+              <property name="UserSuppliedState" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_UserSuppliedState()" attrib="2182" returntype="System.Object">
                     <parameters />
@@ -1308,7 +1472,7 @@
               </property>
             </properties>
             <methods>
-              <method name="Finalize()" attrib="196" virtual="true" returntype="System.Void">
+              <method name="~AsyncOperation()" attrib="196" virtual="true" returntype="System.Void">
                 <parameters />
               </method>
               <method name="OperationCompleted()" attrib="134" returntype="System.Void">
@@ -1330,7 +1494,7 @@
           </class>
           <class name="AsyncOperationManager" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
             <properties>
-              <property name="SynchronizationContext" attrib="0" ptype="System.Threading.SynchronizationContext" params="">
+              <property name="SynchronizationContext" attrib="0" ptype="System.Threading.SynchronizationContext">
                 <methods>
                   <method name="get_SynchronizationContext()" attrib="2198" static="true" returntype="System.Threading.SynchronizationContext">
                     <attributes>
@@ -1364,21 +1528,21 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="CancellationPending" attrib="0" ptype="System.Boolean" params="">
+              <property name="CancellationPending" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_CancellationPending()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsBusy" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsBusy" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsBusy()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="WorkerReportsProgress" attrib="0" ptype="System.Boolean" params="">
+              <property name="WorkerReportsProgress" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_WorkerReportsProgress()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1390,7 +1554,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="WorkerSupportsCancellation" attrib="0" ptype="System.Boolean" params="">
+              <property name="WorkerSupportsCancellation" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_WorkerSupportsCancellation()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1427,30 +1591,34 @@
                   <parameter name="e" position="0" attrib="0" type="System.ComponentModel.RunWorkerCompletedEventArgs" />
                 </parameters>
               </method>
+              <method name="ReportProgress(System.Int32)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="percentProgress" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
               <method name="ReportProgress(System.Int32, System.Object)" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="percentProgress" position="0" attrib="0" type="System.Int32" />
                   <parameter name="userState" position="1" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ReportProgress(System.Int32)" attrib="134" returntype="System.Void">
-                <parameters>
-                  <parameter name="percentProgress" position="0" attrib="0" type="System.Int32" />
-                </parameters>
+              <method name="RunWorkerAsync()" attrib="134" returntype="System.Void">
+                <parameters />
               </method>
               <method name="RunWorkerAsync(System.Object)" attrib="134" returntype="System.Void">
                 <parameters>
                   <parameter name="argument" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="RunWorkerAsync()" attrib="134" returntype="System.Void">
-                <parameters />
-              </method>
             </methods>
           </class>
           <class name="BindableAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="All" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.BindableAttribute" />
@@ -1458,20 +1626,14 @@
               <field name="Yes" attrib="54" fieldtype="System.ComponentModel.BindableAttribute" />
             </fields>
             <constructors>
-              <constructor name=".ctor(System.ComponentModel.BindableSupport)" attrib="6278">
-                <parameters>
-                  <parameter name="flags" position="0" attrib="0" type="System.ComponentModel.BindableSupport" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.ComponentModel.BindableSupport, System.ComponentModel.BindingDirection)" attrib="6278">
-                <parameters>
-                  <parameter name="flags" position="0" attrib="0" type="System.ComponentModel.BindableSupport" />
-                  <parameter name="direction" position="1" attrib="0" type="System.ComponentModel.BindingDirection" />
-                </parameters>
-              </constructor>
               <constructor name=".ctor(System.Boolean)" attrib="6278">
                 <parameters>
                   <parameter name="bindable" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.ComponentModel.BindableSupport)" attrib="6278">
+                <parameters>
+                  <parameter name="flags" position="0" attrib="0" type="System.ComponentModel.BindableSupport" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.Boolean, System.ComponentModel.BindingDirection)" attrib="6278">
@@ -1480,16 +1642,22 @@
                   <parameter name="direction" position="1" attrib="0" type="System.ComponentModel.BindingDirection" />
                 </parameters>
               </constructor>
+              <constructor name=".ctor(System.ComponentModel.BindableSupport, System.ComponentModel.BindingDirection)" attrib="6278">
+                <parameters>
+                  <parameter name="flags" position="0" attrib="0" type="System.ComponentModel.BindableSupport" />
+                  <parameter name="direction" position="1" attrib="0" type="System.ComponentModel.BindingDirection" />
+                </parameters>
+              </constructor>
             </constructors>
             <properties>
-              <property name="Bindable" attrib="0" ptype="System.Boolean" params="">
+              <property name="Bindable" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Bindable()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Direction" attrib="0" ptype="System.ComponentModel.BindingDirection" params="">
+              <property name="Direction" attrib="0" ptype="System.ComponentModel.BindingDirection">
                 <methods>
                   <method name="get_Direction()" attrib="2182" returntype="System.ComponentModel.BindingDirection">
                     <parameters />
@@ -1508,14 +1676,24 @@
               </method>
             </methods>
           </class>
-          <class name="BindableSupport" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="BindableSupport" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Default" attrib="32854" fieldtype="System.ComponentModel.BindableSupport" value="2" />
               <field name="No" attrib="32854" fieldtype="System.ComponentModel.BindableSupport" value="0" />
               <field name="Yes" attrib="32854" fieldtype="System.ComponentModel.BindableSupport" value="1" />
             </fields>
           </class>
-          <class name="BindingDirection" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="BindingDirection" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="OneWay" attrib="32854" fieldtype="System.ComponentModel.BindingDirection" value="0" />
               <field name="TwoWay" attrib="32854" fieldtype="System.ComponentModel.BindingDirection" value="1" />
@@ -1523,7 +1701,11 @@
           </class>
           <class name="BrowsableAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="All" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.BrowsableAttribute" />
@@ -1538,7 +1720,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Browsable" attrib="0" ptype="System.Boolean" params="">
+              <property name="Browsable" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Browsable()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -1559,17 +1741,17 @@
           </class>
           <class name="CancelEventArgs" type="class" base="System.EventArgs" charset="Ansi" layout="Auto">
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.Boolean)" attrib="6278">
                 <parameters>
                   <parameter name="cancel" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="Cancel" attrib="0" ptype="System.Boolean" params="">
+              <property name="Cancel" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Cancel()" attrib="2182" returntype="System.Boolean">
                     <attributes>
@@ -1591,118 +1773,122 @@
           </class>
           <class name="CategoryAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="All" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="category" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="Action" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Action" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Action()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Appearance" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Appearance" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Appearance()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Asynchronous" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Asynchronous" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Asynchronous()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Behavior" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Behavior" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Behavior()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Category" attrib="0" ptype="System.String" params="">
+              <property name="Category" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Category()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Data" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Data" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Data()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Default" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Default" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Default()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Design" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Design" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Design()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="DragDrop" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="DragDrop" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_DragDrop()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Focus" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Focus" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Focus()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Format" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Format" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Format()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Key" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Key" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Key()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Layout" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Layout" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Layout()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Mouse" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="Mouse" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_Mouse()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="WindowStyle" attrib="0" ptype="System.ComponentModel.CategoryAttribute" params="">
+              <property name="WindowStyle" attrib="0" ptype="System.ComponentModel.CategoryAttribute">
                 <methods>
                   <method name="get_WindowStyle()" attrib="2198" static="true" returntype="System.ComponentModel.CategoryAttribute">
                     <parameters />
@@ -1728,36 +1914,40 @@
           </class>
           <class name="ComplexBindingPropertiesAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Class" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.ComplexBindingPropertiesAttribute" />
             </fields>
             <constructors>
-              <constructor name=".ctor(System.String, System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="dataSource" position="0" attrib="0" type="System.String" />
-                  <parameter name="dataMember" position="1" attrib="0" type="System.String" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="dataSource" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.String, System.String)" attrib="6278">
+                <parameters>
+                  <parameter name="dataSource" position="0" attrib="0" type="System.String" />
+                  <parameter name="dataMember" position="1" attrib="0" type="System.String" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="DataMember" attrib="0" ptype="System.String" params="">
+              <property name="DataMember" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataMember()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="DataSource" attrib="0" ptype="System.String" params="">
+              <property name="DataSource" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataSource()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -1779,23 +1969,27 @@
           <class name="ComponentCollection" type="class" base="System.Object" charset="Ansi" layout="Auto" />
           <class name="DefaultBindingPropertyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Class" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.DefaultBindingPropertyAttribute" />
             </fields>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -1816,7 +2010,11 @@
           </class>
           <class name="DefaultEventAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Class" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.DefaultEventAttribute" />
@@ -1829,7 +2027,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -1850,7 +2048,11 @@
           </class>
           <class name="DefaultPropertyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Class" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.DefaultPropertyAttribute" />
@@ -1863,7 +2065,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -1884,37 +2086,17 @@
           </class>
           <class name="DefaultValueAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="All" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
-              <constructor name=".ctor(System.Double)" attrib="6278">
+              <constructor name=".ctor(System.Type, System.String)" attrib="6278">
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Double" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Single)" attrib="6278">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Single" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Boolean)" attrib="6278">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Boolean" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Object)" attrib="6278">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-              <constructor name=".ctor(System.Int64)" attrib="6278">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                  <parameter name="value" position="1" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.Char)" attrib="6278">
@@ -1922,10 +2104,9 @@
                   <parameter name="value" position="0" attrib="0" type="System.Char" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.Type, System.String)" attrib="6278">
+              <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
-                  <parameter name="type" position="0" attrib="0" type="System.Type" />
-                  <parameter name="value" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.Byte)" attrib="6278">
@@ -1933,9 +2114,9 @@
                   <parameter name="value" position="0" attrib="0" type="System.Byte" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.Int32)" attrib="6278">
+              <constructor name=".ctor(System.Double)" attrib="6278">
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="value" position="0" attrib="0" type="System.Double" />
                 </parameters>
               </constructor>
               <constructor name=".ctor(System.Int16)" attrib="6278">
@@ -1943,9 +2124,34 @@
                   <parameter name="value" position="0" attrib="0" type="System.Int16" />
                 </parameters>
               </constructor>
+              <constructor name=".ctor(System.Single)" attrib="6278">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Single" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Int32)" attrib="6278">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Int64)" attrib="6278">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.Object)" attrib="6278">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </constructor>
             </constructors>
             <properties>
-              <property name="Value" attrib="0" ptype="System.Object" params="">
+              <property name="Value" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_Value()" attrib="2502" virtual="true" returntype="System.Object">
                     <parameters />
@@ -1971,30 +2177,34 @@
           </class>
           <class name="DescriptionAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="All" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.DescriptionAttribute" />
             </fields>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="description" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="Description" attrib="0" ptype="System.String" params="">
+              <property name="Description" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Description()" attrib="2502" virtual="true" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="DescriptionValue" attrib="0" ptype="System.String" params="">
+              <property name="DescriptionValue" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DescriptionValue()" attrib="2180" returntype="System.String">
                     <parameters />
@@ -2020,7 +2230,11 @@
           </class>
           <class name="DesignTimeVisibleAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Interface, Class" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.DesignTimeVisibleAttribute" />
@@ -2028,17 +2242,17 @@
               <field name="Yes" attrib="54" fieldtype="System.ComponentModel.DesignTimeVisibleAttribute" />
             </fields>
             <constructors>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
               <constructor name=".ctor(System.Boolean)" attrib="6278">
                 <parameters>
                   <parameter name="visible" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
             </constructors>
             <properties>
-              <property name="Visible" attrib="0" ptype="System.Boolean" params="">
+              <property name="Visible" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Visible()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2066,14 +2280,14 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Argument" attrib="0" ptype="System.Object" params="">
+              <property name="Argument" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_Argument()" attrib="2182" returntype="System.Object">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Cancel" attrib="0" ptype="System.Boolean" params="">
+              <property name="Cancel" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Cancel()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2085,7 +2299,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="Result" attrib="0" ptype="System.Object" params="">
+              <property name="Result" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_Result()" attrib="2182" returntype="System.Object">
                     <parameters />
@@ -2132,20 +2346,24 @@
           </class>
           <class name="EditorBrowsableAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Delegate, Interface, Event, Field, Property, Method, Constructor, Enum, Struct, Class" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
               <constructor name=".ctor(System.ComponentModel.EditorBrowsableState)" attrib="6278">
                 <parameters>
                   <parameter name="state" position="0" attrib="0" type="System.ComponentModel.EditorBrowsableState" />
                 </parameters>
               </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
             </constructors>
             <properties>
-              <property name="State" attrib="0" ptype="System.ComponentModel.EditorBrowsableState" params="">
+              <property name="State" attrib="0" ptype="System.ComponentModel.EditorBrowsableState">
                 <methods>
                   <method name="get_State()" attrib="2182" returntype="System.ComponentModel.EditorBrowsableState">
                     <parameters />
@@ -2164,7 +2382,12 @@
               </method>
             </methods>
           </class>
-          <class name="EditorBrowsableState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="EditorBrowsableState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Advanced" attrib="32854" fieldtype="System.ComponentModel.EditorBrowsableState" value="2" />
               <field name="Always" attrib="32854" fieldtype="System.ComponentModel.EditorBrowsableState" value="0" />
@@ -2173,7 +2396,7 @@
           </class>
           <class name="IChangeTracking" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <properties>
-              <property name="IsChanged" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsChanged" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsChanged()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
                     <parameters />
@@ -2192,7 +2415,7 @@
               <interface name="System.IDisposable" />
             </interfaces>
             <properties>
-              <property name="Site" attrib="0" ptype="System.ComponentModel.ISite" params="">
+              <property name="Site" attrib="0" ptype="System.ComponentModel.ISite">
                 <methods>
                   <method name="get_Site()" attrib="3526" abstract="true" virtual="true" returntype="System.ComponentModel.ISite">
                     <parameters />
@@ -2211,13 +2434,17 @@
           </class>
           <class name="IContainer" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="True" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.IDisposable" />
             </interfaces>
             <properties>
-              <property name="Components" attrib="0" ptype="System.ComponentModel.ComponentCollection" params="">
+              <property name="Components" attrib="0" ptype="System.ComponentModel.ComponentCollection">
                 <methods>
                   <method name="get_Components()" attrib="3526" abstract="true" virtual="true" returntype="System.ComponentModel.ComponentCollection">
                     <parameters />
@@ -2226,15 +2453,15 @@
               </property>
             </properties>
             <methods>
+              <method name="Add(System.ComponentModel.IComponent)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="component" position="0" attrib="0" type="System.ComponentModel.IComponent" />
+                </parameters>
+              </method>
               <method name="Add(System.ComponentModel.IComponent, System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="component" position="0" attrib="0" type="System.ComponentModel.IComponent" />
                   <parameter name="name" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Add(System.ComponentModel.IComponent)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="component" position="0" attrib="0" type="System.ComponentModel.IComponent" />
                 </parameters>
               </method>
               <method name="Remove(System.ComponentModel.IComponent)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
@@ -2246,10 +2473,14 @@
           </class>
           <class name="IDataErrorInfo" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
             </attributes>
             <properties>
-              <property name="Error" attrib="0" ptype="System.String" params="">
+              <property name="Error" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Error()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
@@ -2297,34 +2528,38 @@
           </class>
           <class name="ISite" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="True" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.IServiceProvider" />
             </interfaces>
             <properties>
-              <property name="Component" attrib="0" ptype="System.ComponentModel.IComponent" params="">
+              <property name="Component" attrib="0" ptype="System.ComponentModel.IComponent">
                 <methods>
                   <method name="get_Component()" attrib="3526" abstract="true" virtual="true" returntype="System.ComponentModel.IComponent">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Container" attrib="0" ptype="System.ComponentModel.IContainer" params="">
+              <property name="Container" attrib="0" ptype="System.ComponentModel.IContainer">
                 <methods>
                   <method name="get_Container()" attrib="3526" abstract="true" virtual="true" returntype="System.ComponentModel.IContainer">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="DesignMode" attrib="0" ptype="System.Boolean" params="">
+              <property name="DesignMode" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_DesignMode()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Name" attrib="0" ptype="System.String" params="">
+              <property name="Name" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Name()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
                     <parameters />
@@ -2353,21 +2588,21 @@
               <interface name="System.IServiceProvider" />
             </interfaces>
             <properties>
-              <property name="Container" attrib="0" ptype="System.ComponentModel.IContainer" params="">
+              <property name="Container" attrib="0" ptype="System.ComponentModel.IContainer">
                 <methods>
                   <method name="get_Container()" attrib="3526" abstract="true" virtual="true" returntype="System.ComponentModel.IContainer">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Instance" attrib="0" ptype="System.Object" params="">
+              <property name="Instance" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_Instance()" attrib="3526" abstract="true" virtual="true" returntype="System.Object">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="PropertyDescriptor" attrib="0" ptype="System.ComponentModel.PropertyDescriptor" params="">
+              <property name="PropertyDescriptor" attrib="0" ptype="System.ComponentModel.PropertyDescriptor">
                 <methods>
                   <method name="get_PropertyDescriptor()" attrib="3526" abstract="true" virtual="true" returntype="System.ComponentModel.PropertyDescriptor">
                     <parameters />
@@ -2384,7 +2619,12 @@
               </method>
             </methods>
           </class>
-          <class name="ListSortDirection" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="ListSortDirection" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="Ascending" attrib="32854" fieldtype="System.ComponentModel.ListSortDirection" value="0" />
               <field name="Descending" attrib="32854" fieldtype="System.ComponentModel.ListSortDirection" value="1" />
@@ -2392,12 +2632,19 @@
           </class>
           <class name="LookupBindingPropertiesAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="Class" />
+                </properties>
+              </attribute>
             </attributes>
             <fields>
               <field name="Default" attrib="54" fieldtype="System.ComponentModel.LookupBindingPropertiesAttribute" />
             </fields>
             <constructors>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
               <constructor name=".ctor(System.String, System.String, System.String, System.String)" attrib="6278">
                 <parameters>
                   <parameter name="dataSource" position="0" attrib="0" type="System.String" />
@@ -2406,33 +2653,30 @@
                   <parameter name="lookupMember" position="3" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
             </constructors>
             <properties>
-              <property name="DataSource" attrib="0" ptype="System.String" params="">
+              <property name="DataSource" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DataSource()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="DisplayMember" attrib="0" ptype="System.String" params="">
+              <property name="DisplayMember" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_DisplayMember()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="LookupMember" attrib="0" ptype="System.String" params="">
+              <property name="LookupMember" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_LookupMember()" attrib="2182" returntype="System.String">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="ValueMember" attrib="0" ptype="System.String" params="">
+              <property name="ValueMember" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_ValueMember()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2461,14 +2705,14 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="ProgressPercentage" attrib="0" ptype="System.Int32" params="">
+              <property name="ProgressPercentage" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_ProgressPercentage()" attrib="2182" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="UserState" attrib="0" ptype="System.Object" params="">
+              <property name="UserState" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_UserState()" attrib="2182" returntype="System.Object">
                     <parameters />
@@ -2517,7 +2761,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="PropertyName" attrib="0" ptype="System.String" params="">
+              <property name="PropertyName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_PropertyName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2560,7 +2804,11 @@
           <class name="PropertyDescriptor" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto" />
           <class name="ReadOnlyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.AttributeUsageAttribute" />
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="ValidOn" value="All" />
+                </properties>
+              </attribute>
             </attributes>
             <constructors>
               <constructor name=".ctor(System.Boolean)" attrib="6278">
@@ -2570,7 +2818,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="IsReadOnly" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsReadOnly" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsReadOnly()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2600,7 +2848,7 @@
               </constructor>
             </constructors>
             <properties>
-              <property name="Result" attrib="0" ptype="System.Object" params="">
+              <property name="Result" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_Result()" attrib="2182" returntype="System.Object">
                     <parameters />
@@ -2647,15 +2895,15 @@
               </constructor>
             </constructors>
             <methods>
+              <method name="CanConvertFrom(System.Type)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="sourceType" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
               <method name="CanConvertFrom(System.ComponentModel.ITypeDescriptorContext, System.Type)" attrib="454" virtual="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="context" position="0" attrib="0" type="System.ComponentModel.ITypeDescriptorContext" />
                   <parameter name="sourceType" position="1" attrib="0" type="System.Type" />
-                </parameters>
-              </method>
-              <method name="CanConvertFrom(System.Type)" attrib="134" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="sourceType" position="0" attrib="0" type="System.Type" />
                 </parameters>
               </method>
               <method name="CanConvertTo(System.ComponentModel.ITypeDescriptorContext, System.Type)" attrib="454" virtual="true" returntype="System.Boolean">
@@ -2709,30 +2957,35 @@
           </class>
           <class name="TypeConverterAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+                <properties>
+                  <property name="Value" value="True" />
+                </properties>
+              </attribute>
               <attribute name="System.AttributeUsageAttribute">
                 <properties>
                   <property name="Inherited" value="True" />
+                  <property name="ValidOn" value="All" />
                 </properties>
               </attribute>
             </attributes>
             <constructors>
-              <constructor name=".ctor(System.Type)" attrib="6278">
-                <parameters>
-                  <parameter name="type" position="0" attrib="0" type="System.Type" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="typeName" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
+              <constructor name=".ctor(System.Type)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="ConverterTypeName" attrib="0" ptype="System.String" params="">
+              <property name="ConverterTypeName" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_ConverterTypeName()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2747,10 +3000,39 @@
         <classes>
           <class name="Debug" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
             <methods>
+              <method name="Assert(System.Boolean)" attrib="150" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
+                </attributes>
+                <parameters>
+                  <parameter name="condition" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="Assert(System.Boolean, System.String)" attrib="150" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
+                </attributes>
+                <parameters>
+                  <parameter name="condition" position="0" attrib="0" type="System.Boolean" />
+                  <parameter name="message" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="Assert(System.Boolean, System.String, System.String)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="condition" position="0" attrib="0" type="System.Boolean" />
@@ -2760,7 +3042,11 @@
               </method>
               <method name="Assert(System.Boolean, System.String, System.String, System.Object[])" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="condition" position="0" attrib="0" type="System.Boolean" />
@@ -2773,26 +3059,37 @@
                   </parameter>
                 </parameters>
               </method>
-              <method name="Assert(System.Boolean)" attrib="150" static="true" returntype="System.Void">
+              <method name="WriteLine(System.String)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
-                  <parameter name="condition" position="0" attrib="0" type="System.Boolean" />
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Assert(System.Boolean, System.String)" attrib="150" static="true" returntype="System.Void">
+              <method name="WriteLine(System.Object)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
-                  <parameter name="condition" position="0" attrib="0" type="System.Boolean" />
-                  <parameter name="message" position="1" attrib="0" type="System.String" />
+                  <parameter name="value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="WriteLine(System.String, System.Object[])" attrib="150" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
+                  <attribute name="System.Diagnostics.ConditionalAttribute">
+                    <properties>
+                      <property name="ConditionString" value="DEBUG" />
+                    </properties>
+                  </attribute>
                 </attributes>
                 <parameters>
                   <parameter name="format" position="0" attrib="0" type="System.String" />
@@ -2803,22 +3100,6 @@
                   </parameter>
                 </parameters>
               </method>
-              <method name="WriteLine(System.Object)" attrib="150" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
-              <method name="WriteLine(System.String)" attrib="150" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Diagnostics.ConditionalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="message" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
             </methods>
           </class>
         </classes>
@@ -2827,21 +3108,21 @@
         <classes>
           <class name="Capture" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <properties>
-              <property name="Index" attrib="0" ptype="System.Int32" params="">
+              <property name="Index" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Index()" attrib="2182" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Length" attrib="0" ptype="System.Int32" params="">
+              <property name="Length" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Length()" attrib="2182" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Value" attrib="0" ptype="System.String" params="">
+              <property name="Value" attrib="0" ptype="System.String">
                 <methods>
                   <method name="get_Value()" attrib="2182" returntype="System.String">
                     <parameters />
@@ -2857,28 +3138,32 @@
           </class>
           <class name="CaptureCollection" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.Collections.ICollection" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
             <properties>
-              <property name="Count" attrib="0" ptype="System.Int32" params="">
+              <property name="Count" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsReadOnly" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsReadOnly" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsReadOnly()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsSynchronized" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsSynchronized" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsSynchronized()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
@@ -2894,7 +3179,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="SyncRoot" attrib="0" ptype="System.Object" params="">
+              <property name="SyncRoot" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_SyncRoot()" attrib="2534" virtual="true" returntype="System.Object">
                     <parameters />
@@ -2916,14 +3201,14 @@
           </class>
           <class name="Group" type="class" base="System.Text.RegularExpressions.Capture" charset="Ansi" layout="Auto">
             <properties>
-              <property name="Captures" attrib="0" ptype="System.Text.RegularExpressions.CaptureCollection" params="">
+              <property name="Captures" attrib="0" ptype="System.Text.RegularExpressions.CaptureCollection">
                 <methods>
                   <method name="get_Captures()" attrib="2182" returntype="System.Text.RegularExpressions.CaptureCollection">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Success" attrib="0" ptype="System.Boolean" params="">
+              <property name="Success" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_Success()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -2934,28 +3219,32 @@
           </class>
           <class name="GroupCollection" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.Collections.ICollection" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
             <properties>
-              <property name="Count" attrib="0" ptype="System.Int32" params="">
+              <property name="Count" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsReadOnly" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsReadOnly" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsReadOnly()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsSynchronized" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsSynchronized" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsSynchronized()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
@@ -2980,7 +3269,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="SyncRoot" attrib="0" ptype="System.Object" params="">
+              <property name="SyncRoot" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_SyncRoot()" attrib="2534" virtual="true" returntype="System.Object">
                     <parameters />
@@ -3002,14 +3291,14 @@
           </class>
           <class name="Match" type="class" base="System.Text.RegularExpressions.Group" charset="Ansi" layout="Auto">
             <properties>
-              <property name="Empty" attrib="0" ptype="System.Text.RegularExpressions.Match" params="">
+              <property name="Empty" attrib="0" ptype="System.Text.RegularExpressions.Match">
                 <methods>
                   <method name="get_Empty()" attrib="2198" static="true" returntype="System.Text.RegularExpressions.Match">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="Groups" attrib="0" ptype="System.Text.RegularExpressions.GroupCollection" params="">
+              <property name="Groups" attrib="0" ptype="System.Text.RegularExpressions.GroupCollection">
                 <methods>
                   <method name="get_Groups()" attrib="2502" virtual="true" returntype="System.Text.RegularExpressions.GroupCollection">
                     <parameters />
@@ -3030,28 +3319,32 @@
           </class>
           <class name="MatchCollection" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute">
+                <properties>
+                  <property name="MemberName" value="Item" />
+                </properties>
+              </attribute>
             </attributes>
             <interfaces>
               <interface name="System.Collections.ICollection" />
               <interface name="System.Collections.IEnumerable" />
             </interfaces>
             <properties>
-              <property name="Count" attrib="0" ptype="System.Int32" params="">
+              <property name="Count" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_Count()" attrib="2534" virtual="true" returntype="System.Int32">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsReadOnly" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsReadOnly" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsReadOnly()" attrib="2182" returntype="System.Boolean">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="IsSynchronized" attrib="0" ptype="System.Boolean" params="">
+              <property name="IsSynchronized" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_IsSynchronized()" attrib="2534" virtual="true" returntype="System.Boolean">
                     <parameters />
@@ -3067,7 +3360,7 @@
                   </method>
                 </methods>
               </property>
-              <property name="SyncRoot" attrib="0" ptype="System.Object" params="">
+              <property name="SyncRoot" attrib="0" ptype="System.Object">
                 <methods>
                   <method name="get_SyncRoot()" attrib="2534" virtual="true" returntype="System.Object">
                     <parameters />
@@ -3124,23 +3417,23 @@
               <field name="roptions" attrib="5" fieldtype="System.Text.RegularExpressions.RegexOptions" />
             </fields>
             <constructors>
-              <constructor name=".ctor(System.String, System.Text.RegularExpressions.RegexOptions)" attrib="6278">
-                <parameters>
-                  <parameter name="pattern" position="0" attrib="0" type="System.String" />
-                  <parameter name="options" position="1" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
-                </parameters>
+              <constructor name=".ctor()" attrib="6276">
+                <parameters />
               </constructor>
               <constructor name=".ctor(System.String)" attrib="6278">
                 <parameters>
                   <parameter name="pattern" position="0" attrib="0" type="System.String" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor()" attrib="6276">
-                <parameters />
+              <constructor name=".ctor(System.String, System.Text.RegularExpressions.RegexOptions)" attrib="6278">
+                <parameters>
+                  <parameter name="pattern" position="0" attrib="0" type="System.String" />
+                  <parameter name="options" position="1" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
+                </parameters>
               </constructor>
             </constructors>
             <properties>
-              <property name="CacheSize" attrib="0" ptype="System.Int32" params="">
+              <property name="CacheSize" attrib="0" ptype="System.Int32">
                 <methods>
                   <method name="get_CacheSize()" attrib="2198" static="true" returntype="System.Int32">
                     <parameters />
@@ -3152,14 +3445,14 @@
                   </method>
                 </methods>
               </property>
-              <property name="Options" attrib="0" ptype="System.Text.RegularExpressions.RegexOptions" params="">
+              <property name="Options" attrib="0" ptype="System.Text.RegularExpressions.RegexOptions">
                 <methods>
                   <method name="get_Options()" attrib="2182" returntype="System.Text.RegularExpressions.RegexOptions">
                     <parameters />
                   </method>
                 </methods>
               </property>
-              <property name="RightToLeft" attrib="0" ptype="System.Boolean" params="">
+              <property name="RightToLeft" attrib="0" ptype="System.Boolean">
                 <methods>
                   <method name="get_RightToLeft()" attrib="2182" returntype="System.Boolean">
                     <parameters />
@@ -3192,15 +3485,21 @@
               <method name="InitializeReferences()" attrib="132" returntype="System.Void">
                 <parameters />
               </method>
-              <method name="IsMatch(System.String)" attrib="134" returntype="System.Boolean">
+              <method name="IsMatch(System.String, System.String)" attrib="150" static="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="IsMatch(System.String, System.Int32)" attrib="134" returntype="System.Boolean">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
                   <parameter name="startat" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="IsMatch(System.String)" attrib="134" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="IsMatch(System.String, System.String, System.Text.RegularExpressions.RegexOptions)" attrib="150" static="true" returntype="System.Boolean">
@@ -3210,34 +3509,21 @@
                   <parameter name="options" position="2" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
                 </parameters>
               </method>
-              <method name="IsMatch(System.String, System.String)" attrib="150" static="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
               <method name="Match(System.String)" attrib="134" returntype="System.Text.RegularExpressions.Match">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Match(System.String, System.Int32)" attrib="134" returntype="System.Text.RegularExpressions.Match">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="startat" position="1" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="Match(System.String, System.Int32, System.Int32)" attrib="134" returntype="System.Text.RegularExpressions.Match">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="beginning" position="1" attrib="0" type="System.Int32" />
-                  <parameter name="length" position="2" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="Match(System.String, System.String)" attrib="150" static="true" returntype="System.Text.RegularExpressions.Match">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
                   <parameter name="pattern" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Match(System.String, System.Int32)" attrib="134" returntype="System.Text.RegularExpressions.Match">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="startat" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="Match(System.String, System.String, System.Text.RegularExpressions.RegexOptions)" attrib="150" static="true" returntype="System.Text.RegularExpressions.Match">
@@ -3247,9 +3533,17 @@
                   <parameter name="options" position="2" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
                 </parameters>
               </method>
-              <method name="Matches(System.String)" attrib="134" returntype="System.Text.RegularExpressions.MatchCollection">
+              <method name="Match(System.String, System.Int32, System.Int32)" attrib="134" returntype="System.Text.RegularExpressions.Match">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="beginning" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="length" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Matches(System.String, System.String)" attrib="150" static="true" returntype="System.Text.RegularExpressions.MatchCollection">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="Matches(System.String, System.Int32)" attrib="134" returntype="System.Text.RegularExpressions.MatchCollection">
@@ -3265,25 +3559,9 @@
                   <parameter name="options" position="2" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
                 </parameters>
               </method>
-              <method name="Matches(System.String, System.String)" attrib="150" static="true" returntype="System.Text.RegularExpressions.MatchCollection">
+              <method name="Matches(System.String)" attrib="134" returntype="System.Text.RegularExpressions.MatchCollection">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Replace(System.String, System.String, System.Text.RegularExpressions.MatchEvaluator, System.Text.RegularExpressions.RegexOptions)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
-                  <parameter name="evaluator" position="2" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
-                  <parameter name="options" position="3" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
-                </parameters>
-              </method>
-              <method name="Replace(System.String, System.String, System.Text.RegularExpressions.MatchEvaluator)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
-                  <parameter name="evaluator" position="2" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
                 </parameters>
               </method>
               <method name="Replace(System.String, System.Text.RegularExpressions.MatchEvaluator)" attrib="134" returntype="System.String">
@@ -3292,19 +3570,11 @@
                   <parameter name="evaluator" position="1" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
                 </parameters>
               </method>
-              <method name="Replace(System.String, System.Text.RegularExpressions.MatchEvaluator, System.Int32, System.Int32)" attrib="134" returntype="System.String">
+              <method name="Replace(System.String, System.String, System.String)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="evaluator" position="1" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
-                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
-                  <parameter name="startat" position="3" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="Replace(System.String, System.Text.RegularExpressions.MatchEvaluator, System.Int32)" attrib="134" returntype="System.String">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="evaluator" position="1" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
-                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
+                  <parameter name="replacement" position="2" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="Replace(System.String, System.String, System.Int32, System.Int32)" attrib="134" returntype="System.String">
@@ -3323,17 +3593,10 @@
                   <parameter name="options" position="3" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
                 </parameters>
               </method>
-              <method name="Replace(System.String, System.String, System.String)" attrib="150" static="true" returntype="System.String">
+              <method name="Replace(System.String, System.Text.RegularExpressions.MatchEvaluator, System.Int32)" attrib="134" returntype="System.String">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
-                  <parameter name="replacement" position="2" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Replace(System.String, System.String, System.Int32)" attrib="134" returntype="System.String">
-                <parameters>
-                  <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="replacement" position="1" attrib="0" type="System.String" />
+                  <parameter name="evaluator" position="1" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
                   <parameter name="count" position="2" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
@@ -3343,15 +3606,34 @@
                   <parameter name="replacement" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="Split(System.String)" attrib="134" returntype="System.String[]">
+              <method name="Replace(System.String, System.String, System.Text.RegularExpressions.MatchEvaluator)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
+                  <parameter name="evaluator" position="2" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
                 </parameters>
               </method>
-              <method name="Split(System.String, System.Int32)" attrib="134" returntype="System.String[]">
+              <method name="Replace(System.String, System.String, System.Int32)" attrib="134" returntype="System.String">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
-                  <parameter name="count" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="replacement" position="1" attrib="0" type="System.String" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Replace(System.String, System.Text.RegularExpressions.MatchEvaluator, System.Int32, System.Int32)" attrib="134" returntype="System.String">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="evaluator" position="1" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="startat" position="3" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Replace(System.String, System.String, System.Text.RegularExpressions.MatchEvaluator, System.Text.RegularExpressions.RegexOptions)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="pattern" position="1" attrib="0" type="System.String" />
+                  <parameter name="evaluator" position="2" attrib="0" type="System.Text.RegularExpressions.MatchEvaluator" />
+                  <parameter name="options" position="3" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
                 </parameters>
               </method>
               <method name="Split(System.String, System.Int32, System.Int32)" attrib="134" returntype="System.String[]">
@@ -3367,11 +3649,22 @@
                   <parameter name="pattern" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="Split(System.String)" attrib="134" returntype="System.String[]">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="Split(System.String, System.String, System.Text.RegularExpressions.RegexOptions)" attrib="150" static="true" returntype="System.String[]">
                 <parameters>
                   <parameter name="input" position="0" attrib="0" type="System.String" />
                   <parameter name="pattern" position="1" attrib="0" type="System.String" />
                   <parameter name="options" position="2" attrib="0" type="System.Text.RegularExpressions.RegexOptions" />
+                </parameters>
+              </method>
+              <method name="Split(System.String, System.Int32)" attrib="134" returntype="System.String[]">
+                <parameters>
+                  <parameter name="input" position="0" attrib="0" type="System.String" />
+                  <parameter name="count" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="ToString()" attrib="198" virtual="true" returntype="System.String">
@@ -3387,10 +3680,15 @@
               </method>
             </methods>
           </class>
-          <class name="RegexOptions" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+          <class name="RegexOptions" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto" enumtype="System.Int32">
             <attributes>
               <attribute name="System.FlagsAttribute" />
             </attributes>
+            <interfaces>
+              <interface name="System.IComparable" />
+              <interface name="System.IFormattable" />
+              <interface name="System.IConvertible" />
+            </interfaces>
             <fields>
               <field name="CultureInvariant" attrib="32854" fieldtype="System.Text.RegularExpressions.RegexOptions" value="512" />
               <field name="ECMAScript" attrib="32854" fieldtype="System.Text.RegularExpressions.RegexOptions" value="256" />

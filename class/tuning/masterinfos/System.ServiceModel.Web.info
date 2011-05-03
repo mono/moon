@@ -1,49 +1,113 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <assemblies>
   <assembly name="System.ServiceModel.Web" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-      <attribute name="System.CLSCompliantAttribute" />
-      <attribute name="System.Reflection.AssemblyTitleAttribute" />
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute">
+        <properties>
+          <property name="Value" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.CLSCompliantAttribute">
+        <properties>
+          <property name="IsCompliant" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyTitleAttribute">
+        <properties>
+          <property name="Title" value="System.ServiceModel.Web.dll" />
+        </properties>
+      </attribute>
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AssemblyName" value="System.Json, PublicKey=0024000004800000940000000602000000240000525341310004000001000100B5FC90E7027F67871E773A8FDE8938C81DD402BA65B9201D60593E96C492651E889CC13F1415EBB53FAC1131AE0BD333C5EE6021672D9718EA31A8AEBD0DA0072F25D87DBA6FC90FFD598ED4DA35E44C398C454307E8E33B8426143DAEC9F596836F97C8F74750E5975C64E2189F45DEF46B2A2B1247ADC3652BF5C308055DA9" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute">
+        <properties>
+          <property name="Version" value="4.0.60310.0" />
+        </properties>
+      </attribute>
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
-      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
-      <attribute name="System.Reflection.AssemblyProductAttribute" />
-      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
-      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
-      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
-      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
-      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.Reflection.AssemblyDescriptionAttribute">
+        <properties>
+          <property name="Description" value="System.ServiceModel.Web.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute">
+        <properties>
+          <property name="DefaultAlias" value="System.ServiceModel.Web.dll" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCompanyAttribute">
+        <properties>
+          <property name="Company" value="Microsoft Corporation" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyProductAttribute">
+        <properties>
+          <property name="Product" value="Microsoft® Silverlight" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute">
+        <properties>
+          <property name="Copyright" value="© Microsoft Corporation.  All rights reserved." />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute">
+        <properties>
+          <property name="CompilationRelaxations" value="8" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute">
+        <properties>
+          <property name="InformationalVersion" value="4.0.60310.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.SatelliteContractVersionAttribute">
+        <properties>
+          <property name="Version" value="2.0.5.0" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute">
+        <properties>
+          <property name="CultureName" value="en-US" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute">
+        <properties>
+          <property name="DelaySign" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute">
+        <properties>
+          <property name="KeyFile" value="f:\dd\Tools\devdiv\silverlightplatformpublickey.snk" />
+        </properties>
+      </attribute>
     </attributes>
     <namespaces>
       <namespace name="System.Runtime.Serialization.Json">
         <classes>
           <class name="DataContractJsonSerializer" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <constructors>
+              <constructor name=".ctor(System.Type)" attrib="6278">
+                <parameters>
+                  <parameter name="type" position="0" attrib="0" type="System.Type" />
+                </parameters>
+              </constructor>
               <constructor name=".ctor(System.Type, System.Collections.Generic.IEnumerable`1[System.Type])" attrib="6278">
                 <parameters>
                   <parameter name="type" position="0" attrib="0" type="System.Type" />
                   <parameter name="knownTypes" position="1" attrib="0" type="System.Collections.Generic.IEnumerable`1[System.Type]" />
                 </parameters>
               </constructor>
-              <constructor name=".ctor(System.Type)" attrib="6278">
-                <parameters>
-                  <parameter name="type" position="0" attrib="0" type="System.Type" />
-                </parameters>
-              </constructor>
             </constructors>
             <properties>
-              <property name="KnownTypes" attrib="0" ptype="System.Collections.ObjectModel.ReadOnlyCollection`1[System.Type]" params="">
+              <property name="KnownTypes" attrib="0" ptype="System.Collections.ObjectModel.ReadOnlyCollection`1[System.Type]">
                 <methods>
                   <method name="get_KnownTypes()" attrib="2182" returntype="System.Collections.ObjectModel.ReadOnlyCollection`1[System.Type]">
                     <parameters />
@@ -64,18 +128,6 @@
                 </parameters>
               </method>
             </methods>
-          </class>
-          <class name="ExternalTypeMap" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
-            <methods>
-		      <method name="AddExternalType(System.Type,System.Func`2[System.Object,System.String],System.Func`2[System.String,System.Object])" 
-				attrib="134" static="true" returntype="System.Void">
-		        <parameters>
-		          <parameter name="t" position="0" attrib="0" type="System.Type" />
-		          <parameter name="ser" position="1" attrib="0" type="System.Func`2[System.Object,System.String]" />
-		          <parameter name="deser" position="2" attrib="0" type="System.Func`2[System.String,System.Object]" />
-		        </parameters>
-		      </method>
-		    </methods>
           </class>
         </classes>
       </namespace>
