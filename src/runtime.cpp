@@ -442,6 +442,10 @@ Surface::Surface (MoonWindow *window)
 
 	SetRuntimeOptions (moonlight_flags);
 	EnsureManagedPeer ();
+
+	// Must happen after EnsureManagedPeer!
+	layers = MoonUnmanagedFactory::CreateUIElementCollection ();
+	layers->unref ();
 }
 
 Surface::~Surface ()
@@ -760,11 +764,6 @@ Surface::ToplevelLoaded (UIElement *element)
 void
 Surface::AttachLayer (UIElement *layer)
 {
-	if (layers == NULL) {
-		layers = MoonUnmanagedFactory::CreateHitTestCollection ();
-		layers->unref ();
-	}
-
 	if (layer == toplevel)
 		layers->Insert (0, Value(layer));
 	else {
@@ -781,11 +780,6 @@ Surface::AttachLayer (UIElement *layer)
 void
 Surface::DetachLayer (UIElement *layer)
 {
-	if (layers == NULL) {
-		layers = MoonUnmanagedFactory::CreateUIElementCollection ();
-		layers->unref ();
-	}
-
 	// if the layer contained the last UIElement receiving mouse input, clear the input list.
 	if (!input_list->IsEmpty() && ((UIElementNode*)input_list->Last())->uielement == layer) {
 		delete input_list;
