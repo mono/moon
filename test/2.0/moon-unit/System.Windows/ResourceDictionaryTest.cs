@@ -220,7 +220,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[MinRuntimeVersion(4)]
-		[MoonlightBug] // 4.0 profile
 		public void Parse_BothxKeyAndxName_sl4 ()
 		{
 			// no longer throws an exception in sl4
@@ -478,7 +477,25 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void TypeAndStringInResourceDictionary_XamlReader_BuiltinType ()
+		[MaxRuntimeVersion(3)]
+		public void TypeAndStringInResourceDictionary_XamlReader_BuiltinType_sl3 ()
+		{
+			Assert.Throws<XamlParseException> (() => XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	 <Canvas.Resources>
+			<Style TargetType=""Button"" x:Key=""System.Windows.Controls.Button"" />
+			<Style TargetType=""Button"">
+				<Setter Property=""Width"" Value=""0.0"" />
+			</Style>
+	</Canvas.Resources>
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void TypeAndStringInResourceDictionary_XamlReader_BuiltinType_sl4 ()
 		{
 			Canvas c = (Canvas)XamlReader.Load(@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007""
@@ -497,7 +514,26 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		public void TypeAndStringInResourceDictionary_XamlReader_CustomType ()
+		[MaxRuntimeVersion(3)]
+		public void TypeAndStringInResourceDictionary_XamlReader_CustomType_sl3 ()
+		{
+			Assert.Throws<XamlParseException> (() => XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:clr=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit"">
+	 <Canvas.Resources>
+			<Style TargetType=""clr:MyControl"" x:Key=""MoonTest.System.Windows.MyControl"" />
+			<Style TargetType=""clr:MyControl"">
+				<Setter Property=""Width"" Value=""0.0"" />
+			</Style>
+	</Canvas.Resources>
+</Canvas>
+"));
+		}
+
+		[TestMethod]
+		[MinRuntimeVersion(4)]
+		public void TypeAndStringInResourceDictionary_XamlReader_CustomType_sl4 ()
 		{
 			Canvas c = (Canvas)XamlReader.Load(@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007""

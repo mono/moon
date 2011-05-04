@@ -354,9 +354,11 @@ namespace Mono.Xaml {
 
 		internal void RegisterNamedItem (XamlObjectElement element, string name)
 		{
-			IDictionary rd = CurrentDictionary (element);
-			if (rd != null && element.X_Key != null) {
-				throw ParseException ("The name already exists in the tree.");
+			if (Deployment.Current.MajorVersion < 4 && element.DependencyObject == null) {
+				IDictionary rd = CurrentDictionary (element);
+				if (rd != null && element.X_Key != null) {
+					throw ParseException ("The name already exists in the tree.");
+				}
 			}
 
 			if (element.X_Name != null) {
