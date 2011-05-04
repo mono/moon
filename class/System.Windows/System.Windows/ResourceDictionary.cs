@@ -287,7 +287,7 @@ namespace System.Windows {
 
 		static string TypeToString (Type type)
 		{
-			return INTERNAL_TYPE_KEY_MAGIC_COOKIE + type.FullName;
+			return INTERNAL_TYPE_KEY_MAGIC_COOKIE + type.AssemblyQualifiedName;
 		}
 		
 		bool RemoveInternal (object key)
