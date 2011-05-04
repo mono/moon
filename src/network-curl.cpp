@@ -1101,9 +1101,9 @@ CurlHttpHandler::GetData ()
 			//fprintf(stderr, "Moonlight: Curl Error: select (%i,,,,%li): %i: %s\n", available + 1, timeout, errno, strerror (errno));
 		} else if (FD_ISSET (fds [0], &r)) {
 			/* We need to read a byte from our pipe */
-			guint32 tmp;
+			char tmp[1];
 			
-			while (read (fds [0], &tmp, 1) == -1 && errno == EINTR)
+			while (read (fds [0], tmp, 1) == -1 && errno == EINTR)
 				;
 		}
 	} while (!quit);
