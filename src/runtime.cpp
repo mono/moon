@@ -907,6 +907,9 @@ dump_render_list (List *render_list)
 void
 Surface::Paint (Context *ctx, Region *region, bool transparent, bool clear_transparent)
 {
+	if (zombie)
+		return;
+
 	frames++;
 
 #if OCCLUSION_CULLING_STATS
@@ -1114,6 +1117,9 @@ void
 Surface::Realloc ()
 {
 	if (layers == NULL)
+		return;
+
+	if (zombie)
 		return;
 
 	int layers_count = layers->GetCount ();
