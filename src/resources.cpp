@@ -263,15 +263,18 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 			if (p->Is (Type::APPLICATION)) {
 				// we modified the application's resources, so we need to traverse all layers
 
-				CollectionIterator *iterator = p->GetDeployment()->GetSurface()->GetLayers()->GetIterator();
-				while (iterator->Next (NULL)) {
-					Value *v = iterator->GetCurrent(NULL);
-					FrameworkElement *fwe = v->AsFrameworkElement();
+				UIElementCollection *layers = p->GetDeployment()->GetSurface()->GetLayers();
+				if (layers) {
+					CollectionIterator *iterator = layers->GetIterator();
+					while (iterator->Next (NULL)) {
+						Value *v = iterator->GetCurrent(NULL);
+						FrameworkElement *fwe = v->AsFrameworkElement();
+	
+						fwe->StyleResourceChanged (key, style);
+					}
 
-					fwe->StyleResourceChanged (key, style);
+					delete iterator;
 				}
-
-				delete iterator;
 			}
 			else if (p->Is (Type::FRAMEWORKELEMENT)) {
 				// just traverse down from this frameworkelement
