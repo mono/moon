@@ -57,6 +57,10 @@ extern "C" {
 }
 #endif
 
+#if PLATFORM_ANDROID
+typedef char GLchar;
+#endif
+
 #if SANITY
 #define glError() { \
 	GLenum err = glGetError(); \

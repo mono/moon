@@ -310,8 +310,10 @@ public:
 			mods |= MoonModifier_Alt;
 		if (android_metastate & AMETA_SHIFT_ON)
 			mods |= MoonModifier_Shift;
+#if FIXME
 		if (android_metastate & AMETA_SYM_ON)
 			mods |= MoonModifier_Super; // FIXME
+#endif
 
 		return (MoonModifier)mods;
 	}
@@ -421,8 +423,10 @@ public:
 			mods |= MoonModifier_Alt;
 		if (metastate & AMETA_SHIFT_ON)
 			mods |= MoonModifier_Shift;
+#if FIXME
 		if (metastate & AMETA_SYM_ON)
 			mods |= MoonModifier_Super; // FIXME
+#endif
 
 		return (MoonModifier)mods;
 	}
@@ -528,8 +532,10 @@ public:
 			mods |= MoonModifier_Alt;
 		if (metastate & AMETA_SHIFT_ON)
 			mods |= MoonModifier_Shift;
+#if FIXME
 		if (metastate & AMETA_SYM_ON)
 			mods |= MoonModifier_Super; // FIXME
+#endif
 
 		return (MoonModifier)mods;
 	}
