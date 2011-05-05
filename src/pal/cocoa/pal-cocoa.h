@@ -5,8 +5,6 @@
 
 #include "pal.h"
 
-#include "mutex.h"
-
 namespace Moonlight {
 
 class MoonWindowingSystemCocoa : public MoonWindowingSystem {
@@ -74,7 +72,7 @@ private:
 	GList *sources;
 	guint source_id;
 	bool emitting_sources;
-	Mutex sourceMutex;
+	MoonMutex sourceMutex;
 	guint32 before;
 
 	gpointer timer;

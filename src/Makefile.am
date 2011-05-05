@@ -85,7 +85,6 @@ libmoon_include_headers = 	\
 	mp3.h			\
 	multiscaleimage.h	\
 	multiscalesubimage.h	\
-	mutex.h			\
 	notificationwindow.h	\
 	namescope.h		\
 	network.h		\
