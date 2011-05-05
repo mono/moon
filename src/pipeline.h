@@ -16,7 +16,7 @@
 
 #include <glib.h>
 #include <stdio.h>
-#include <pthread.h>
+#include "pal.h"
 #include "utils.h"
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))

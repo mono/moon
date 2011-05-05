@@ -16,7 +16,6 @@
 #define __MOON_PIPELINE_FFMPEG__
 
 #include <glib.h>
-#include <pthread.h>
 
 G_BEGIN_DECLS
 #include <limits.h>

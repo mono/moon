@@ -11,7 +11,6 @@
 
 #define INCLUDED_MONO_HEADERS 1
 
-#include <pthread.h>
 #include <glib.h>
 
 #include <stdlib.h>

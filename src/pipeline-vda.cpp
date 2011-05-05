@@ -20,7 +20,6 @@
 #include <glib.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 #include "pipeline-vda.h"
 #include "pipeline-mp4.h"

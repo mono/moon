@@ -22,7 +22,6 @@
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
-#include <pthread.h>
 
 #include "network.h"
 #include "list.h"

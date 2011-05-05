@@ -2738,6 +2738,7 @@ MediaThreadPool::WorkerLoop (void *data)
 	Media *media = NULL;
 	int self_index = -1;
 	
+#if PAL_THREADS_PTHREADS
 	/*
 	 * Unblock any signals. We inherit the blocked signals from the thread that
 	 * created us, and if that thread happens to be a thread that has signals
@@ -2780,6 +2781,7 @@ MediaThreadPool::WorkerLoop (void *data)
 			return NULL;
 		}
 	}
+#endif
 #endif
 #endif
 	

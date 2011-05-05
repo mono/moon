@@ -15,7 +15,6 @@
 #ifndef __AUDIO_ALSA_H__
 #define __AUDIO_ALSA_H__
 
-#include <pthread.h>
 #include <poll.h>
 #include <asoundlib.h>
 

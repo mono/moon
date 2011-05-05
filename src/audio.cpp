@@ -12,8 +12,6 @@
 
 #include <config.h>
 
-#include <pthread.h>
-
 #include "audio.h"
 #include "audio-alsa.h"
 #include "audio-pulse.h"
