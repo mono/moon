@@ -43,7 +43,7 @@ if test "x$with_pal" = "xgtk"; then
 	PKG_CHECK_MODULES(FONTCONFIG, fontconfig)
 	PKG_CHECK_MODULES(GLIB, glib-2.0)
 
-	PAL_CFLAGS='-DPAL_THREADS_PTHREADS=1'
+	PAL_CFLAGS="-DPAL_THREADS_PTHREADS=1"
 
 	PAL=gtk
 
@@ -79,7 +79,7 @@ elif test "x$with_pal" = "xcocoa"; then
 			[Include support for freetype2 in the font manager])
         ])
 
-	PAL_CFLAGS='-DPAL_THREADS_PTHREADS=1'
+	PAL_CFLAGS="-DPAL_THREADS_PTHREADS=1"
 
 elif test "x$with_pal" = "xandroid"; then
 
@@ -108,7 +108,7 @@ elif test "x$with_pal" = "xandroid"; then
 			[Include support for freetype2 in the font manager])
         ])
 
-	PAL_CFLAGS='-DPAL_THREADS_PTHREADS=1'
+	PAL_CFLAGS="-DPAL_THREADS_PTHREADS=1"
 
 else
 	AC_MSG_ERROR([unknown PAL specified])
@@ -120,4 +120,5 @@ AM_CONDITIONAL(COCOA_PAL, test x$with_pal = xcocoa)
 AM_CONDITIONAL(ANDROID_PAL, test x$with_pal = xandroid)
 AM_CONDITIONAL(USE_2_1_LAUNCHER, test x$use_2_1_launcher = xtrue)
 AC_SUBST([PAL])
+AC_SUBST(PAL_CFLAGS)
 ])
