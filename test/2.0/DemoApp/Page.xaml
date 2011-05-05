@@ -20,7 +20,7 @@
 
     <MediaElement x:Name="mediaElement" Source="file:///data/local/tmp/media.m4v" Width="720" Height="304" AutoPlay="True" Grid.Column="1" Grid.Row="1">
       <MediaElement.RenderTransform>
-        <ScaleTransform x:Name="mediaScale" ScaleX="1.77" ScaleY="1.77" CenterX="640" CenterY="360" />
+        <ScaleTransform x:Name="mediaScale" ScaleX="1.77" ScaleY="1.77" CenterX="360" CenterY="152" />
       </MediaElement.RenderTransform>
     </MediaElement>
     
