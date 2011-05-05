@@ -8,6 +8,7 @@ INCLUDES = \
 	-I/usr/include/X11 \
 	$(MOON_CFLAGS) \
 	$(FF3_CFLAGS) \
+	$(PAL_CFLAGS) \
 	-DWITH_LIBXUL_UNSTABLE \
 	-Wall
 

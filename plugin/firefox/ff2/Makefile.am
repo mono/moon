@@ -8,6 +8,7 @@ INCLUDES = \
 	-I/usr/include/X11 \
 	$(MOON_CFLAGS) \
 	$(FF2_CFLAGS) \
+	$(PAL_CFLAGS) \
 	-Wall
 
 
