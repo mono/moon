@@ -2244,6 +2244,7 @@ class Generator {
 		f ("Type", "MANAGEDTYPEINFO");
 
 		f ("System.Windows.Application", "APPLICATION");
+		f ("System.Windows.DependencyProperty", "DEPENDENCYPROPERTY");
 		f ("System.Windows.Thickness", "THICKNESS");
 		f ("System.Windows.CornerRadius", "CORNERRADIUS");
 		f ("System.Windows.PropertyPath", "PROPERTYPATH");
