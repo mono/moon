@@ -461,7 +461,7 @@ FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
 
 gint32 FfmpegDemuxer::demuxers = 0;
 MoonThread* FfmpegDemuxer::worker_thread = NULL;
-MonoMutex FfmpegDemuxer::worker_mutex;
+MoonMutex FfmpegDemuxer::worker_mutex;
 MoonMutex FfmpegDemuxer::worker_thread_mutex;
 MoonCond FfmpegDemuxer::worker_cond;
 List FfmpegDemuxer::worker_list;
