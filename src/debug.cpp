@@ -395,7 +395,7 @@ struct storable_stack_trace_object {
 	storable_stack_trace_entry *traces_end;
 };
 
-pthread_mutex_t stored_objects_mutex = PTHREAD_MUTEX_INITIALIZER;
+MoonMutex stored_objects_mutex;
 GHashTable *stored_objects = NULL;
 
 static void
@@ -502,7 +502,7 @@ get_managed_frame (gpointer ip)
 }
 
 static GHashTable *ip_hash = NULL;
-static pthread_mutex_t ip_lock = PTHREAD_MUTEX_INITIALIZER;
+static MoonMutex ip_lock;
 
 static void
 stack_trace_prefix_n (FILE *fout, GString *sout, const char *prefix, int maxframes)
