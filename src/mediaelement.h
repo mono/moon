@@ -19,7 +19,6 @@
 #include "frameworkelement.h"
 #include "pipeline.h"
 #include "downloader.h"
-#include "mutex.h"
 #include "enums.h"
 
 namespace Moonlight {
@@ -28,7 +27,7 @@ namespace Moonlight {
 class MediaElement : public FrameworkElement {
  friend class MediaElementPropertyValueProvider;	
  private:	
-	Mutex mutex;
+	MoonMutex mutex;
 	
 	List log_request_queue; // Thread-safe: Accesses to this field needs to use the mutex.
 	List progress_reported_queue; // Thread-safe: Accesses to this field needs to use the mutex.

@@ -1,5 +1,7 @@
 AC_DEFUN([MOONLIGHT_CHECK_PAL],
 [
+	AC_CHECK_HEADERS(pthreads.h)
+
 	AC_ARG_WITH([pal],[  --with-pal=gtk|cocoa|android   Specify which PAL to build (defaults to gtk)], [], [with_pal=gtk])
 
 if test "x$with_pal" = "xgtk"; then
@@ -41,6 +43,8 @@ if test "x$with_pal" = "xgtk"; then
 	PKG_CHECK_MODULES(FONTCONFIG, fontconfig)
 	PKG_CHECK_MODULES(GLIB, glib-2.0)
 
+	PAL_CFLAGS='-DPAL_THREADS_PTHREADS=1'
+
 	PAL=gtk
 
 elif test "x$with_pal" = "xcocoa"; then
@@ -75,6 +79,8 @@ elif test "x$with_pal" = "xcocoa"; then
 			[Include support for freetype2 in the font manager])
         ])
 
+	PAL_CFLAGS='-DPAL_THREADS_PTHREADS=1'
+
 elif test "x$with_pal" = "xandroid"; then
 
 	AC_DEFINE([PAL_ANDROID_WINDOWING],1,[Hack in support for the pal-android so we can start using it.])
@@ -101,6 +107,9 @@ elif test "x$with_pal" = "xandroid"; then
 		AC_DEFINE([HAVE_FREETYPE2], [1], 
 			[Include support for freetype2 in the font manager])
         ])
+
+	PAL_CFLAGS='-DPAL_THREADS_PTHREADS=1'
+
 else
 	AC_MSG_ERROR([unknown PAL specified])
 

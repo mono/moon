@@ -20,7 +20,6 @@
 #include <asoundlib.h>
 
 #include "audio.h"
-#include "mutex.h"
 
 namespace Moonlight {
 
@@ -32,7 +31,7 @@ class AlsaSource : public AudioSource {
 	snd_pcm_uframes_t period_size;
 	snd_pcm_uframes_t buffer_size;
 	
-	Mutex mutex;
+	MoonMutex mutex;
 	
 	bool initialized;
 	bool mmap;
@@ -87,7 +86,7 @@ class AlsaSource : public AudioSource {
 
 class AlsaPlayer : public AudioPlayer {
 	// The audio thread	
-	pthread_t *audio_thread;
+	MoonThread *audio_thread;
 	bool shutdown; // set to true to exit the audio thread.
 	
 	// A list of all the file descriptors in all the 

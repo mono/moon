@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <pthread.h>
 #include "utils.h"
-#include "mutex.h"
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -417,7 +416,7 @@ public:
 class IMediaObject : public EventObject {
 private:
 	Media *media;
-	Mutex media_mutex;
+	MoonMutex media_mutex;
 	// Media event handling
 	// media needs to support event handling on all threads, and EventObject isn't thread-safe
 	class EventData : public List::Node {
@@ -444,7 +443,7 @@ private:
 	};
 	List *events; // list of event handlers
 	List *emit_on_main_thread; // list of lists of emit calls to emit on main thread
-	Mutex event_mutex;
+	MoonMutex event_mutex;
 	
 	void EmitList (List *list);
 	void EmitListMain ();
@@ -483,7 +482,7 @@ private:
 	guint64 last_enqueued_demuxed_pts; // The pts of the last demuxed frame enqueued, initialized to G_MAXUINT64
 	guint64 last_enqueued_decoded_pts; // The pts of the last decoded frame enqueued, initialized to G_MAXUINT64
 	guint64 last_available_pts; // The last pts available, initialized to 0. Note that this field won't be correct for streams which CanSeekToPts.
-	Mutex queue_mutex;
+	MoonMutex queue_mutex;
 	List demuxed_queue; // Our queue of demuxed frames
 	List decoded_queue; // Our queue of decoded frames
 	IMediaDecoder *decoder;
@@ -633,7 +632,7 @@ private:
 	static bool registered_ms_codecs;
 	static bool registered_ms_codecs1;
 
-	Mutex mutex;
+	MoonMutex mutex;
 	
 	guint64 target_pts; // Access must be protected with mutes.
 	guint64 buffering_time; // Access must be protected with mutex.
@@ -822,12 +821,12 @@ public:
  */ 
 class MediaThreadPool {
 private:
-	static pthread_mutex_t mutex;
-	static pthread_cond_t condition; /* signalled when work has been added */
-	static pthread_cond_t completed_condition; /* signalled when work has completed executing */
+	static MoonMutex mutex;
+	static MoonCond condition; /* signalled when work has been added */
+	static MoonCond completed_condition; /* signalled when work has completed executing */
 	static const int max_threads = 4; /* max 4 threads for now */
 	static int count; // the number of created threads 
-	static pthread_t threads [max_threads]; // array of threads
+	static MoonThread* threads [max_threads]; // array of threads
 	static bool valid [max_threads]; // specifies which thread indices are valid.
 	static Media *medias [max_threads]; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
 	static Deployment *deployments [max_threads]; // array of deployments currently being worked on.
@@ -1036,7 +1035,7 @@ private:
 	List seeks; /* The FIFO list of seeked-to pts. All threads may use, locking required. */
 	IMediaStream *pending_stream; // the stream we're waiting for a frame for. media thread only.
 	bool pending_fill_buffers;
-	Mutex mutex;
+	MoonMutex mutex;
 	/*
 	 * We only want frames after the last keyframe before the pts we seeked to.
 	 * Store the seeked-to pts here, so that the IMediaStream can drop frames it
@@ -1253,7 +1252,7 @@ private:
 	// which requires the mutex to be locked, and then a public 
 	// method in IMediaSource which does the locking. No public method
 	// in IMediaSource may be called from the xxxInternal methods.
-	pthread_mutex_t mutex;
+	MoonMutex mutex;
 
 protected:
 	virtual ~IMediaSource ();
@@ -1352,7 +1351,7 @@ private:
 	bool error_occurred;
 	gint64 write_pos;
 	gint64 size;
-	Mutex mutex;
+	MoonMutex mutex;
 	List read_closures;
 	// To avoid locking while reading and writing (since reading is done on 
 	// the media thread and writing on the main thread), we open two file
@@ -1713,21 +1712,12 @@ typedef void (* SeekAsyncCallback) (void *instance, guint64 seekToTime);
 /* @CBindingRequisite */
 typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *mediaStreamDescription);
 
-#if !HAVE_PTHREAD_RWLOCK_RDLOCK
-#define pthread_rwlock_init pthread_mutex_init
-#define pthread_rwlock_destroy pthread_mutex_destroy
-#define pthread_rwlock_unlock pthread_mutex_unlock
-#define pthread_rwlock_wrlock pthread_mutex_lock
-#define pthread_rwlock_rdlock pthread_mutex_lock
-#define pthread_rwlock_t pthread_mutex_t
-#endif
-
 class ExternalDemuxer : public IMediaDemuxer {
 private:
 	void *instance;
 	bool can_seek;
 
-	pthread_rwlock_t rwlock;
+	MoonRWLock rwlock;
 
 	CloseDemuxerCallback close_demuxer_callback;
 	GetDiagnosticAsyncCallback get_diagnostic_async_callback;
@@ -1903,7 +1893,7 @@ public:
 class MarkerStream : public IMediaStream {
 private:
 	MediaMarkerFoundClosure *closure;
-	Mutex mutex;
+	MoonMutex mutex;
 	List list; // a list of markers found while there were no callback.
 	
 protected:

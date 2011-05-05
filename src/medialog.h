@@ -17,13 +17,12 @@
 #include <glib.h>
 
 #include "eventargs.h"
-#include "mutex.h"
 
 namespace Moonlight {
 
 class MediaLog {
 	// every field access in this class must be protected by the mutex
-	Mutex mutex;
+	MoonMutex mutex;
 	char *c_playerid;
 	char *cs_url;
 	char *cs_uri_stem;

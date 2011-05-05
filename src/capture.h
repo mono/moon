@@ -17,7 +17,6 @@
 #include "dependencyobject.h"
 #include "collection.h"
 #include "pal.h"
-#include "mutex.h"
 
 namespace Moonlight {
 
@@ -262,7 +261,7 @@ protected:
 private:
 	MoonCaptureDevice* pal_device; // main thread only
 	List events; // list of events to be emitted (on the main thread). thread-safe
-	Mutex events_mutex;
+	MoonMutex events_mutex;
 
 	guint8 *audio_buffer;
 	guint32 audio_buffer_size;

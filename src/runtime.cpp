@@ -90,7 +90,7 @@ namespace Moonlight {
 #define NO_EVENT_ID -1
 
 bool Surface::main_thread_inited = false;
-pthread_t Surface::main_thread = 0;
+MoonThread* Surface::main_thread = 0;
 
 static MoonWindowingSystem *windowing_system = NULL;
 static MoonInstallerService *installer_service = NULL;
@@ -362,7 +362,7 @@ Surface::Surface (MoonWindow *window)
 {
 	GetDeployment ()->SetSurface (this);
 
-	main_thread = pthread_self ();
+	main_thread = MoonThread::Self();
 	main_thread_inited = true;
 	
 	zombie = false;

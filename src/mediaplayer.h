@@ -18,7 +18,6 @@
 
 #include "pipeline.h"
 #include "audio.h"
-#include "mutex.h"
 #include "context.h"
 
 namespace Moonlight {
@@ -56,7 +55,7 @@ class MediaPlayer : public EventObject {
  	// Some instance variables can be accessed from multiple threads.
  	// This mutex must be locked while these variables are accessed from
  	// any thread.
- 	Mutex mutex; 
+ 	MoonMutex mutex; 
 	AudioSource *audio_unlocked; // mutex must be locked.
 	VideoStream *video_stream;
 	// rendering

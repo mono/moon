@@ -65,8 +65,8 @@ private:
 		virtual ~FrameNode () { this->frame->unref (); }
 	};
 
-	pthread_mutex_t wait_mutex;
-	pthread_cond_t wait_cond; /* signalled when a read has completed */
+	MoonMutex wait_mutex;
+	MoonCond wait_cond; /* signalled when a read has completed */
 
 	static int ReadCallback (void *opaque, uint8_t *buf, int buf_size); /* ffmpeg calls this method when it wants more data. ffmpeg worker thread only */
 	static int64_t SeekCallback (void *opaque, int64_t offset, int whence); /* ffmpeg calls this method when it requests a seek. ffmpeg worker thread only */
@@ -81,10 +81,10 @@ private:
 	static MediaResult ExecuteAsyncReadCallback (MediaClosure *closure); /* since IMediaSource::ReadAsync can only be called on the media thread, whenever the ffmpeg thread needs more data, we enqueue a call to this method from the ffmpeg thread, and this method does the actual read request */
 
 	static gint32 demuxers; /* the number of ffmpeg demuxers, the ffmpeg thread is created when the first demuxer is created, and the ffmpeg thread is shutdown when the last demuxer is destroyed */
-	static pthread_t worker_thread; /* the ffmpeg thread */
-	static pthread_mutex_t worker_thread_mutex; /* demuxers can be created simultaneously on several media threads, this mutex is used to serialize access to the worker_thread variable */
-	static pthread_mutex_t worker_mutex; /* used to serialize access to worker_list and worker_cond */
-	static pthread_cond_t worker_cond; /* signalled when work is added */
+	static MoonThread *worker_thread; /* the ffmpeg thread */
+	static MoonMutex worker_thread_mutex; /* demuxers can be created simultaneously on several media threads, this mutex is used to serialize access to the worker_thread variable */
+	static MoonMutex worker_mutex; /* used to serialize access to worker_list and worker_cond */
+	static MoonCond worker_cond; /* signalled when work is added */
 	static void *WorkerLoop (void *data);
 	static List worker_list; /* the list of work for the ffmpeg thread */
 	void AddWork (List::Node *node);

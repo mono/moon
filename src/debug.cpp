@@ -13,6 +13,7 @@
 #if DEBUG
 #define INCLUDED_MONO_HEADERS 1
 
+#include <pthread.h>
 #include <glib.h>
 #include <mono/mini/jit.h>
 #include <mono/metadata/appdomain.h>
@@ -429,7 +430,7 @@ void store_reftrace (void *obj, const char *done, guint32 refcount)
 	if (symbols < STORABLE_STACK_SIZE)
 		entry->frames [symbols] = NULL; // NULL-terminate the array.
 
-	pthread_mutex_lock (&stored_objects_mutex);
+	stored_objects_mutex.Lock();
 	if (stored_objects == NULL) {
 		stored_objects = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, free_storable_stack_trace_object);
 	} else {
@@ -447,15 +448,15 @@ void store_reftrace (void *obj, const char *done, guint32 refcount)
 		object->traces_end = entry;
 		object->entries++;
 	}
-	pthread_mutex_unlock (&stored_objects_mutex);
+	stored_objects_mutex.Unlock();
 }
 
 void free_reftrace (void *obj)
 {
-	pthread_mutex_lock (&stored_objects_mutex);
+	stored_objects_mutex.Lock();
 	if (stored_objects != NULL)
 		g_hash_table_remove (stored_objects, obj);
-	pthread_mutex_unlock (&stored_objects_mutex);
+	stored_objects_mutex.Unlock();
 }
 
 static void
@@ -521,7 +522,7 @@ stack_trace_prefix_n_with_frames (FILE *fout, GString *sout, const char *prefix,
 	char **names;
 	gpointer ip;
 
-	pthread_mutex_lock (&ip_lock);
+	ip_lock.Lock();
 	
 	for (int i = 2; i < address_count; i++) {
 		bool hashed = false;
@@ -567,7 +568,7 @@ stack_trace_prefix_n_with_frames (FILE *fout, GString *sout, const char *prefix,
 		}
 	}
 	
-	pthread_mutex_unlock (&ip_lock);
+	ip_lock.Unlock();
 }
 
 char *

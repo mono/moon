@@ -830,12 +830,9 @@ AlsaPlayer::Initialize ()
 	fcntl (fds [1], F_SETFL, fcntl (fds [1], F_GETFL) | O_NONBLOCK);
 
 	// Create the audio thread
-	audio_thread = (pthread_t *) g_malloc (sizeof (pthread_t));
-	result = pthread_create (audio_thread, NULL, Loop, this);
+	result = MoonThread::Start (&audio_thread, Loop, this);
 	if (result != 0) {
 		LOG_AUDIO ("AlsaPlayer::Initialize (): could not create audio thread (error code: %i = '%s').\n", result, strerror (result));
-		g_free (audio_thread);
-		audio_thread = NULL;
 		return false;
 	}
 	
@@ -939,12 +936,9 @@ AlsaPlayer::PrepareShutdownInternal ()
 	shutdown = true;
 	if (audio_thread != NULL) {
 		WakeUp ();
-		result = pthread_join (*audio_thread, NULL);
+		result = audio_thread->Join ();
 		if (result != 0) {
 			LOG_AUDIO ("AudioPlayer::Shutdown (): failed to join the audio thread (error code: %i).\n", result);
-		} else {
-			// Only free the thread if we could join it.
-			g_free (audio_thread);
 		}
 		audio_thread = NULL;
 	}

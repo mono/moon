@@ -25,7 +25,7 @@ namespace Moonlight {
 
 #ifdef SANITY
 #define VERIFY_CURL_THREAD 										\
-	if (!pthread_equal (pthread_self (), worker_thread)) {						\
+	if (!MoonThread::IsThread (worker_thread)) {							\
 		printf ("%s: this method should only be called on the curl thread.\n", __func__);	\
 	}
 #else
@@ -190,7 +190,7 @@ CurlHttpHandler::Emit ()
 	List tmp;
 
 	/* Clone the list and invoke the calls with the mutex unlocked */
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	node = (CallData *) calls.First ();
 	while (node != NULL) {
 		next = (CallData *) node->next;
@@ -198,7 +198,7 @@ CurlHttpHandler::Emit ()
 		tmp.Append (node);
 		node = next;
 	}
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 
 	/* Invoke the calls */
 	node = (CallData *) tmp.First ();
@@ -773,7 +773,8 @@ CurlHttpHandler::CurlHttpHandler () :
 	sharecurl(NULL),
 	multicurl(NULL),
 	quit(false),
-	shutting_down(false)
+	shutting_down(false),
+	worker_mutex(MoonMutex(true))
 {
 	// Create our pipe
 	if (pipe (fds) != 0) {
@@ -789,13 +790,6 @@ CurlHttpHandler::CurlHttpHandler () :
 	sharecurl = curl_share_init();
 	multicurl = curl_multi_init ();
 	curl_share_setopt (sharecurl, CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
-
-	pthread_mutexattr_t attribs;
-	pthread_mutexattr_init (&attribs);
-	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init (&worker_mutex, &attribs);
-	pthread_mutexattr_destroy (&attribs);
-	pthread_cond_init (&worker_cond, NULL);
 }
 
 HttpRequest *
@@ -803,7 +797,7 @@ CurlHttpHandler::CreateRequest (HttpRequest::Options options)
 {
 	if (!closure) {
 		closure = new Closure (this);
-		pthread_create (&worker_thread, NULL, getdata_callback, (void*)this);
+		MoonThread::Start (&worker_thread, getdata_callback, this);
 	}
 
 	return new CurlDownloaderRequest (this, options);
@@ -816,9 +810,9 @@ CurlHttpHandler::WakeUp ()
 
 	LOG_CURL ("BRIDGE CurlHttpHandler::WakeUp ()\n");
 
-	pthread_mutex_lock (&worker_mutex);
-	pthread_cond_signal (&worker_cond);
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Lock();
+	worker_cond.Signal();
+	worker_mutex.Unlock();
 
 	// Write until something has been written.
 	do {
@@ -833,13 +827,13 @@ CurlHttpHandler::Dispose ()
 
 	shutting_down = true;
 	if (closure) {
-		pthread_mutex_lock (&worker_mutex);
+		worker_mutex.Lock();
 		quit = true;
 		calls.Clear (true);
-		pthread_mutex_unlock (&worker_mutex);
+		worker_mutex.Unlock();
 		WakeUp ();
 
-		pthread_join (worker_thread, NULL);
+		worker_thread->Join ();
 		closure = NULL;
 	}
 
@@ -879,9 +873,6 @@ CurlHttpHandler::~CurlHttpHandler ()
 		fds [1] = -1;
 	}
 
-	pthread_mutex_destroy (&worker_mutex),
-	pthread_cond_destroy (&worker_cond);
-
 	curl_global_cleanup ();
 }
 
@@ -893,13 +884,13 @@ CurlHttpHandler::RequestHandle ()
 	CURL* handle = NULL;
 	CurlNode *node;
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	node = (CurlNode *) pool.First ();
 	if (node) {
 		handle = node->handle;
 		pool.Remove (node);
 	}
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 
 	if (handle == NULL) {
 		handle = curl_easy_init ();
@@ -915,9 +906,9 @@ CurlHttpHandler::ReleaseHandle (CurlDownloaderRequest *res, CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::ReleaseHandle handle:%p\n", handle);
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	handle_actions.Append (new CurlNode (handle, CurlNode::Release, res));
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 }
 
 void
@@ -932,7 +923,7 @@ CurlHttpHandler::ExecuteHandleActions ()
 	g_assert (IsDataThread () || quit); /* #if SANITY */
 #endif
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	node = (CurlNode *) handle_actions.First ();
 	while (node != NULL) {
 		switch (node->action) {
@@ -966,7 +957,7 @@ CurlHttpHandler::ExecuteHandleActions ()
 		node = (CurlNode *) node->next;
 	}
 	handle_actions.Clear (true);
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 }
 
 void
@@ -974,12 +965,12 @@ CurlHttpHandler::OpenHandle (CurlDownloaderRequest* res, CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::OpenHandle res:%p handle:%p\n", res, handle);
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	if (!quit) {
 		handles.Append (new HandleNode (res));
 		handle_actions.Append (new CurlNode (handle, CurlNode::Add));
 	}
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 
 	WakeUp ();
 }
@@ -989,7 +980,7 @@ CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 {
 	LOG_CURL ("BRIDGE CurlHttpHandler::CloseHandle res:%p handle:%p\n", res, handle);
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	if (!quit) {
 		HandleNode* node = (HandleNode*) handles.Find (find_handle, res);
 		if (node) {
@@ -997,7 +988,7 @@ CurlHttpHandler::CloseHandle (CurlDownloaderRequest* res, CURL* handle)
 			handles.Remove (node);
 		}
 	}
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 }
 
 static void
@@ -1029,11 +1020,11 @@ CurlHttpHandler::GetData ()
 
 	do {
 		/* Wait for work */
-		pthread_mutex_lock (&worker_mutex);
+		worker_mutex.Lock();
 		while (!quit && handles.IsEmpty ()) {
-			pthread_cond_wait (&worker_cond, &worker_mutex);
+			worker_cond.Wait(worker_mutex);
 		}
-		pthread_mutex_unlock (&worker_mutex);
+		worker_mutex.Unlock();
 		if (quit) break;
 
 		/* Check if handles needs work */
@@ -1048,22 +1039,22 @@ CurlHttpHandler::GetData ()
 		/* Check if some handles are done */
 		while ((msg = curl_multi_info_read (multicurl, &msgs))) {
 			if (msg->msg == CURLMSG_DONE) {
-				pthread_mutex_lock (&worker_mutex);
+				worker_mutex.Lock();
 				HandleNode* node = (HandleNode*) handles.Find (find_easy_handle, msg->easy_handle);
 				if (node) {
 					calls.Append (new CallData (this, _close, node->res));
 				}
-				pthread_mutex_unlock (&worker_mutex);
+				worker_mutex.Unlock();
 			}
 		}
 
 		/* Emit callbacks */
-		pthread_mutex_lock (&worker_mutex);
+		worker_mutex.Lock();
 		if (!calls.IsEmpty ()) {
 			this->ref ();
 			Runtime::GetWindowingSystem ()->AddIdle (EmitCallback, this);
 		}
-		pthread_mutex_unlock (&worker_mutex);
+		worker_mutex.Unlock();
 
 		if (running == 0)
 			continue;
@@ -1118,9 +1109,9 @@ CurlHttpHandler::AddCallback (CallData *data)
 {
 	VERIFY_CURL_THREAD
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	calls.Append (data);
-	pthread_mutex_unlock (&worker_mutex);
+	worker_mutex.Unlock();
 }
 
 void
@@ -1133,7 +1124,7 @@ CurlHttpHandler::AddCallback (CallHandler func, CurlDownloaderResponse *res, cha
 bool
 CurlHttpHandler::IsDataThread ()
 {
-	return pthread_equal (pthread_self (), worker_thread);
+	return MoonThread::IsThread (worker_thread);
 }
 
 CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req)

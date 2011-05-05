@@ -40,7 +40,6 @@
 #include "font-utils.h"
 #include "enums.h"
 #include "cairo.h"
-#include "list.h"
 #include "gchandle.h"
 
 // I hate X11
@@ -74,6 +73,7 @@ typedef char GLchar;
 
 // the default for MoonWindowingSystem::GetCursorBlinkTimeout
 #define CURSOR_BLINK_TIMEOUT_DEFAULT  900
+
 
 namespace Moonlight {
 
@@ -577,4 +577,7 @@ public:
 };
 
 };
+
+#include "pal-threads.h"
+
 #endif /* MOON_PAL_H */

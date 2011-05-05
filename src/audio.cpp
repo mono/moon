@@ -883,25 +883,23 @@ AudioListNode::~AudioListNode ()
 
 AudioSources::AudioSources ()
 {
-	pthread_mutex_init (&mutex, NULL);
 	current_generation = 0;
 }
 
 AudioSources::~AudioSources ()
 {
-	pthread_mutex_destroy (&mutex);
 }
 
 void
 AudioSources::Lock ()
 {
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 }
 
 void
 AudioSources::Unlock ()
 {
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 }
 
 void
@@ -1030,7 +1028,7 @@ AudioSources::Length ()
  */
 
 AudioPlayer * AudioPlayer::instance = NULL;
-pthread_mutex_t AudioPlayer::instance_mutex = PTHREAD_MUTEX_INITIALIZER;
+MoonMutex AudioPlayer::instance_mutex;
 
 AudioPlayer::AudioPlayer ()
 {
@@ -1058,11 +1056,11 @@ AudioPlayer *
 AudioPlayer::GetInstance ()
 {
 	AudioPlayer *result;
-	pthread_mutex_lock (&instance_mutex);
+	instance_mutex.Lock();
 	result = instance;
 	if (result)
 		result->ref ();
-	pthread_mutex_unlock (&instance_mutex);
+	instance_mutex.Unlock ();
 	return result;
 }
 
@@ -1084,7 +1082,7 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 		return NULL;
 	}
 	
-	pthread_mutex_lock (&instance_mutex);
+	instance_mutex.Lock();
 	if (instance == NULL) {
 		/* here we get a (global) ref which is unreffed in Shutdown () */
 		instance = CreatePlayer ();
@@ -1092,7 +1090,7 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	inst = instance;
 	if (inst)
 		inst->ref (); /* this is the ref we unref below */
-	pthread_mutex_unlock (&instance_mutex);
+	instance_mutex.Unlock ();
 	
 	if (inst != NULL) {
 		result = inst->AddImpl (mplayer, stream);
@@ -1123,12 +1121,12 @@ AudioPlayer::Shutdown ()
 
 	LOG_AUDIO ("AudioPlayer::Shutdown ()\n");
 	
-	pthread_mutex_lock (&instance_mutex);
+	instance_mutex.Lock();
 	if (instance != NULL) {
 		player = instance;
 		instance = NULL;
 	}
-	pthread_mutex_unlock (&instance_mutex);
+	instance_mutex.Unlock ();
 
 	if (player != NULL)
 		player->unref ();
@@ -1147,7 +1145,7 @@ AudioPlayer::CreateRecorders (AudioRecorder **recorders, guint32 size)
 		return 0;
 	}
 	
-	pthread_mutex_lock (&instance_mutex);
+	instance_mutex.Lock ();
 	if (instance == NULL) {
 		/* here we get a (global) ref which is unreffed in Shutdown () */
 		instance = CreatePlayer ();
@@ -1155,7 +1153,7 @@ AudioPlayer::CreateRecorders (AudioRecorder **recorders, guint32 size)
 	inst = instance;
 	if (inst)
 		inst->ref (); /* this is the ref we unref below */
-	pthread_mutex_unlock (&instance_mutex);
+	instance_mutex.Unlock();
 	
 	if (inst != NULL) {
 		result = inst->CreateRecordersInternal (recorders, size);

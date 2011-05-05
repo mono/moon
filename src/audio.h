@@ -29,7 +29,6 @@ class AudioRecorder;
 
 #include "dependencyobject.h"
 #include "pipeline.h"
-#include "mutex.h"
 
 namespace Moonlight {
 
@@ -96,7 +95,7 @@ class AudioSource : public EventObject {
 	guint32 input_bytes_per_sample; // The number of bytes per sample
 	guint32 output_bytes_per_sample; // The number of bytes per sample in the output. Defaults to same as input_bytes_per_sample.
 	
-	Mutex mutex;
+	MoonMutex mutex;
 	
 	void Lock ();
 	void Unlock ();
@@ -214,7 +213,7 @@ class AudioListNode : public List::Node {
 };
 
 class AudioSources {
-	pthread_mutex_t mutex;
+	MoonMutex mutex;
 	List list;
 	gint32 current_generation;
 	AudioListNode *last_node; // The last node returned by GetNext.
@@ -269,7 +268,7 @@ public:
 class AudioPlayer {
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
-	static pthread_mutex_t instance_mutex;
+	static MoonMutex instance_mutex;
 	
 	static AudioPlayer *CreatePlayer ();
 		

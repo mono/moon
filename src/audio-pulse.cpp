@@ -593,18 +593,10 @@ PulsePlayer::PulsePlayer ()
 	context = NULL;
 	connected = ConnectionUnknown;
 	fetching_recording_devices = false;
-	pthread_mutex_init (&mutex, NULL);
-	pthread_cond_init (&cond, NULL);
-	pthread_mutex_init (&recording_mutex, NULL);
-	pthread_cond_init (&recording_cond, NULL);
 }
 
 PulsePlayer::~PulsePlayer ()
 {
-	pthread_mutex_destroy (&mutex);
-	pthread_cond_destroy (&cond);
-	pthread_mutex_destroy (&recording_mutex);
-	pthread_cond_destroy (&recording_cond);
 }
  
 void
@@ -795,21 +787,21 @@ PulsePlayer::OnContextStateChanged () {
 			source->unref ();
 		}
 		UnlockLoop ();
-		pthread_mutex_lock (&mutex);
+		mutex.Lock();
 		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Signalling main thread that we've connected\n");
 		connected = ConnectionSuccess;
-		pthread_cond_signal (&cond);
-		pthread_mutex_unlock (&mutex);
+		cond.Signal();
+		mutex.Unlock();
 		break;
 	case PA_CONTEXT_TERMINATED:
 		break;
 	case PA_CONTEXT_FAILED:
 	default:
-		pthread_mutex_lock (&mutex);
+		mutex.Lock();
 		LOG_AUDIO ("PulsePlayer::InitializeInternal (): Signalling main thread that we've failed to connect\n");
 		connected = ConnectionFailed;
-		pthread_cond_signal (&cond);
-		pthread_mutex_unlock (&mutex);
+		cond.Signal();
+		mutex.Unlock();
 		g_warning ("Moonlight: Connection failure while trying to connect to pulseaudio daemon: %s\n", pa_strerror (pa_context_errno (context)));
 		break;
 	}
@@ -846,9 +838,9 @@ PulsePlayer::OnSourceInfo (const pa_source_info *i, int eol)
 	}
 	if (eol) {
 		fetching_recording_devices = false;
-		pthread_mutex_lock (&recording_mutex);
-		pthread_cond_signal (&recording_cond);
-		pthread_mutex_unlock (&recording_mutex);
+		recording_mutex.Lock();
+		recording_cond.Signal();
+		recording_mutex.Unlock();
 	}
 }
 
@@ -860,16 +852,16 @@ PulsePlayer::CreateRecordersInternal (AudioRecorder **recorders, guint32 size)
 
 	LOG_CUSTOM (RUNTIME_DEBUG_PULSE | RUNTIME_DEBUG_CAPTURE, "PulsePlayer::CreateRecorder ()\n");
 
-	pthread_mutex_lock (&recording_mutex);
+	recording_mutex.Lock();
 	while (fetching_recording_devices) {
 		/* we're already doing this in another thread */
-		pthread_cond_wait (&recording_cond, &recording_mutex);
+		recording_cond.Wait(recording_mutex);
 	}
 	fetching_recording_devices = true;
 	pa_operation_unref (pa_context_get_source_info_list (GetPAContext (), OnSourceInfoCallback, this));
 	while (fetching_recording_devices) {
 		/* Wait until all sources have been listed */
-		pthread_cond_wait (&recording_cond, &recording_mutex);
+		recording_cond.Wait(recording_mutex);
 	}
 	// first add non-monitor recording sources, so that index 0 has a default device
 	node = (PulseRecorder::SourceNode *) recording_devices.First ();
@@ -886,7 +878,7 @@ PulsePlayer::CreateRecordersInternal (AudioRecorder **recorders, guint32 size)
 		node = (PulseRecorder::SourceNode *) node->next;
 	}
 	recording_devices.Clear (true);
-	pthread_mutex_unlock (&recording_mutex);
+	recording_mutex.Unlock();
 
 	return counter;
 }
@@ -929,7 +921,7 @@ PulsePlayer::Initialize ()
 
 		// It's possible that pulse can return an error to us async
 		// We need to aquire a lock, then start the mainloop
-		pthread_mutex_lock (&mutex);
+		mutex.Lock();
 		
 		// Of course it wont raise the async error unless we try
 		// to start the mainloop
@@ -942,14 +934,14 @@ PulsePlayer::Initialize ()
 			// Wait until pulse has reported the connection status to
 			// us async.
 			LOG_AUDIO ("PulsePlayer::InitializeInternal (): Waiting to see if we can connect.\n");
-			pthread_cond_wait (&cond, &mutex);
+			cond.Wait(mutex);
 		} while (connected == ConnectionUnknown);
 #if DEBUG
 		guint64 duration = get_now () - start;
 		printf ("PulsePlayer::InitializeInternal (): initialization took %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (duration));
 #endif
 
-		pthread_mutex_unlock (&mutex);
+		mutex.Unlock();
 		
 		// At this stag we have had connected set regardless of wether
 		// PA wants to be sync or async
@@ -1008,8 +1000,6 @@ PulseRecorder::PulseRecorder (PulsePlayer *player, SourceNode *info)
 	description = g_strdup (info->description);
 	default_spec = info->sample_spec;
 	recording_format = NULL;
-	pthread_mutex_init (&ready_mutex, NULL);
-	pthread_cond_init (&ready_cond, NULL);
 }
 
 void
@@ -1023,8 +1013,6 @@ PulseRecorder::~PulseRecorder ()
 {
 	g_free (name);
 	delete recording_format;
-	pthread_mutex_destroy (&ready_mutex);
-	pthread_cond_destroy (&ready_cond);
 }
 
 bool
@@ -1129,11 +1117,11 @@ cleanup:
 	player->UnlockLoop ();
 
 	if (result) {
-		pthread_mutex_lock (&ready_mutex);
+		ready_mutex.Lock();
 		while (!is_ready) {
-			pthread_cond_wait (&ready_cond, &ready_mutex);
+			ready_cond.Wait(ready_mutex);
 		}
-		pthread_mutex_unlock (&ready_mutex);
+		ready_mutex.Unlock();
 	}
 
 	return result;
@@ -1195,11 +1183,11 @@ PulseRecorder::Stop ()
 	player->UnlockLoop ();
 
 	// Wait until we've really stopped.
-	pthread_mutex_lock (&ready_mutex);
+	ready_mutex.Lock();
 	while (is_ready) {
-		pthread_cond_wait (&ready_cond, &ready_mutex);
+		ready_cond.Wait(ready_mutex);
 	}
-	pthread_mutex_unlock (&ready_mutex);
+	ready_mutex.Unlock();
 
 	player->LockLoop ();
 	if (pulse_stream) {
@@ -1255,16 +1243,16 @@ PulseRecorder::OnStateChanged (pa_stream *pulse_stream)
 	
 	switch (state) {
 	case PA_STREAM_READY:
-		pthread_mutex_lock (&ready_mutex);
+		ready_mutex.Lock();
 		is_ready = true;
-		pthread_cond_signal (&ready_cond);
-		pthread_mutex_unlock (&ready_mutex);
+		ready_cond.Signal();
+		ready_mutex.Unlock();
 		break;
 	case PA_STREAM_TERMINATED:
-		pthread_mutex_lock (&ready_mutex);
+		ready_mutex.Lock();
 		is_ready = false;
-		pthread_cond_signal (&ready_cond);
-		pthread_mutex_unlock (&ready_mutex);
+		ready_cond.Signal();
+		ready_mutex.Unlock();
 		break;
 	case PA_STREAM_CREATING:
 		break;

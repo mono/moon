@@ -11,6 +11,7 @@
 
 #define INCLUDED_MONO_HEADERS 1
 
+#include <pthread.h>
 #include <glib.h>
 
 #include <stdlib.h>
@@ -43,6 +44,7 @@ G_END_DECLS
 #endif
 #include "uri.h"
 
+#include "pal.h"
 #include <mono/io-layer/atomic.h>
 
 namespace Moonlight {
@@ -61,8 +63,8 @@ MonoProfiler *Deployment::profiler = NULL;
 #endif
 
 gboolean Deployment::initialized = FALSE;
-pthread_key_t Deployment::tls_key = 0;
-pthread_mutex_t Deployment::hash_mutex;
+MoonTlsKey Deployment::tls_key;
+MoonMutex Deployment::hash_mutex;
 GHashTable* Deployment::current_hash = NULL;
 MonoDomain* Deployment::root_domain = NULL;
 Deployment *Deployment::desktop_deployment = NULL;
@@ -124,8 +126,6 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 	Deployment::platform_dir = g_strdup (platform_dir);
 
 	current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-	pthread_key_create (&tls_key, NULL);
-	pthread_mutex_init (&hash_mutex, NULL);
 	
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (create_root_domain) {
@@ -334,14 +334,14 @@ Deployment::CreateDownloader ()
 void
 Deployment::RegisterThread ()
 {
-	LOG_DEPLOYMENT ("Deployment::RegisterThread () thread: %p\n", (void*) pthread_self ());
+	LOG_DEPLOYMENT ("Deployment::RegisterThread () thread: %p\n", MoonThread::Self ());
 	mono_thread_attach (root_domain);
 }
 
 void
 Deployment::UnregisterThread ()
 {
-	LOG_DEPLOYMENT ("Deployment::UnregisterThread () thread: %p\n", (void*) pthread_self ());
+	LOG_DEPLOYMENT ("Deployment::UnregisterThread () thread: %p\n", MoonThread::Self ());
 	mono_thread_detach (mono_thread_current ());
 }
 
@@ -354,7 +354,7 @@ Deployment::GetCurrent()
 	if (!initialized)
 		return NULL;
 
-	deployment = (Deployment *) pthread_getspecific (tls_key);
+	deployment = (Deployment *)MoonThread::GetSpecific(tls_key);
 	current_domain = mono_domain_get ();
 
 	/*
@@ -364,10 +364,10 @@ Deployment::GetCurrent()
 	 */ 
 	if (deployment == NULL && current_domain != NULL) {
 		if (current_domain != NULL) {
-			pthread_mutex_lock (&hash_mutex);
+			hash_mutex.Lock();
 			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
-			pthread_mutex_unlock (&hash_mutex);
-			pthread_setspecific (tls_key, deployment);
+			hash_mutex.Unlock ();
+			MoonThread::SetSpecific (tls_key, deployment);
 			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Couldn't find deployment in our tls, searched current domain %p and found: %p\n", current_domain, deployment);
 		}
 	}
@@ -405,15 +405,15 @@ Deployment::GetCurrent()
 		
 		if (mismatch) {
 			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %p, (tls) deployment: %p, deployment->domain: %p, (mono_domain_get) current_domain: %p, root_domain: %p, hash deployment: %p\n",
-					(void*) pthread_self (), deployment, deployment->domain, current_domain, root_domain, g_hash_table_lookup (current_hash, current_domain));
-			pthread_mutex_lock (&hash_mutex);
+					MoonThread::Self (), deployment, deployment->domain, current_domain, root_domain, g_hash_table_lookup (current_hash, current_domain));
+			hash_mutex.Lock();
 			if (current_hash != NULL)
 				deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
-			pthread_mutex_unlock (&hash_mutex);
+			hash_mutex.Unlock();
 			
 			/* Fixup our tls entry */
 			if (deployment != NULL) {
-				pthread_setspecific (tls_key, deployment);
+				MoonThread::SetSpecific (tls_key, deployment);
 			}
 		}
 	}
@@ -438,9 +438,9 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 {
 #if DEBUG
 	if (deployment && mono_domain_get () != deployment->domain) {
-		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %p domain mismatch, is: %p\n", deployment, (void*) pthread_self (), mono_domain_get ());
-	} else if (pthread_getspecific (tls_key) != deployment) {
-		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %p deployment mismatch, is: %p\n", deployment, (void*) pthread_self (), pthread_getspecific (tls_key));
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %p domain mismatch, is: %p\n", deployment, MoonThread::Self (), mono_domain_get ());
+	} else if (MoonThread::GetSpecific (tls_key) != deployment) {
+		LOG_DEPLOYMENT ("Deployment::SetCurrent (%p), thread: %p deployment mismatch, is: %p\n", deployment, MoonThread::Self (), MoonThread::GetSpecific (tls_key));
 	}
 #endif
 	
@@ -451,7 +451,7 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 			mono_domain_set (root_domain, TRUE);
 		}
 	}
-	pthread_setspecific (tls_key, deployment);
+	MoonThread::SetSpecific (tls_key, deployment);
 }
 
 Deployment::Deployment()
@@ -520,14 +520,11 @@ Deployment::InitializeCommon ()
 #if EVENT_ARG_REUSE
 	change_args = g_ptr_array_new ();
 #endif
-#if OBJECT_TRACKING
-	pthread_mutex_init (&objects_alive_mutex, NULL);
-#endif
-	pthread_setspecific (tls_key, this);
+	MoonThread::SetSpecific (tls_key, this);
 
-	pthread_mutex_lock (&hash_mutex);
+	hash_mutex.Lock();
 	g_hash_table_insert (current_hash, domain, this);
-	pthread_mutex_unlock (&hash_mutex);
+	hash_mutex.Unlock();
 	
 	font_manager = new FontManager ();
 	types = new Types ();
@@ -1108,7 +1105,6 @@ Deployment::~Deployment()
 #endif
 
 #if OBJECT_TRACKING
-	pthread_mutex_destroy (&objects_alive_mutex);
 	if (objects_alive != NULL)
 		g_hash_table_destroy (objects_alive);
 #endif
@@ -1152,13 +1148,13 @@ Deployment::ReportLeaks ()
 		GHashTable *by_type = g_hash_table_new (g_str_hash, g_str_equal);;
 		GPtrArray *top_n_by_type = g_ptr_array_new ();
 
-		pthread_mutex_lock (&objects_alive_mutex);
+		objects_alive_mutex.Lock();
 		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
 		g_hash_table_foreach (objects_alive, accumulate_by_type, by_type);
 		g_hash_table_foreach (by_type, add_keys_to_array, top_n_by_type);
 
 		g_ptr_array_sort_with_data (top_n_by_type, ByTypeComparer, by_type);
-		pthread_mutex_unlock (&objects_alive_mutex);
+		objects_alive_mutex.Unlock();
 
 
 		bool strong_handled = false;
@@ -1606,9 +1602,9 @@ Deployment::ShutdownManaged ()
 		Emit (Deployment::AppDomainUnloadedEvent);
 			
 		/* Remove the domain from the hash table (since from now on the same ptr may get reused in subsquent calls to mono_domain_create_appdomain) */
-		pthread_mutex_lock (&hash_mutex);
+		hash_mutex.Lock();
 		g_hash_table_remove (current_hash, domain);
-		pthread_mutex_unlock (&hash_mutex);
+		hash_mutex.Unlock();
 
 		/* Since the domain ptr may get reused we have to leave the root domain as the current domain */
 		mono_domain_set (root_domain, TRUE);
@@ -1989,11 +1985,11 @@ Deployment::TrackObjectCreated (EventObject *obj)
 	InterlockedIncrement (&objects_created);
 
 #if OBJECT_TRACKING
-	pthread_mutex_lock (&objects_alive_mutex);
+	objects_alive_mutex.Lock ();
 	if (objects_alive == NULL)
 		objects_alive = g_hash_table_new (g_direct_hash, g_direct_equal);
 	g_hash_table_insert (objects_alive, obj, GINT_TO_POINTER (1));
-	pthread_mutex_unlock (&objects_alive_mutex);
+	objects_alive_mutex.Unlock ();
 #endif
 }
 
@@ -2003,9 +1999,9 @@ Deployment::TrackObjectDestroyed (EventObject *obj)
 	InterlockedIncrement (&objects_destroyed);
 	
 #if OBJECT_TRACKING
-	pthread_mutex_lock (&objects_alive_mutex);
+	objects_alive_mutex.Lock();
 	g_hash_table_remove (objects_alive, obj);
-	pthread_mutex_unlock (&objects_alive_mutex);
+	objects_alive_mutex.Unlock();
 #endif
 }
 

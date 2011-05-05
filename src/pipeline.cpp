@@ -2497,11 +2497,11 @@ MemoryBuffer::SeekSet (gint32 position)
  * MediaThreadPool
  */
 
-pthread_mutex_t MediaThreadPool::mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t MediaThreadPool::condition = PTHREAD_COND_INITIALIZER;
-pthread_cond_t MediaThreadPool::completed_condition = PTHREAD_COND_INITIALIZER;
+MoonMutex MediaThreadPool::mutex;
+MoonCond MediaThreadPool::condition;
+MoonCond MediaThreadPool::completed_condition;
 int MediaThreadPool::count = 0;
-pthread_t MediaThreadPool::threads [max_threads];
+MoonThread* MediaThreadPool::threads [max_threads];
 Media *MediaThreadPool::medias [max_threads];
 Deployment *MediaThreadPool::deployments [max_threads];
 bool MediaThreadPool::shutting_down = false;
@@ -2511,10 +2511,9 @@ bool MediaThreadPool::valid [max_threads];
 void
 MediaThreadPool::AddWork (MediaClosure *closure)
 {
-	pthread_attr_t attribs;
 	int result = 0;
 	
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 	
 	if (shutting_down) {
 		LOG_PIPELINE ("Moonlight: could not execute closure because we're shutting down.\n");
@@ -2550,12 +2549,9 @@ MediaThreadPool::AddWork (MediaClosure *closure)
 				valid [i] = false;
 				medias [i] = NULL;
 				deployments [i] = NULL;
-				
-				pthread_attr_init (&attribs);
-				pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
-				result = pthread_create (&threads [i], &attribs, WorkerLoop, NULL);
-				pthread_attr_destroy (&attribs);
-				
+
+				result = MoonThread::StartJoinable (&threads [i], WorkerLoop);
+
 				if (result != 0) {
 					g_warning ("Moonlight: could not create media thread: %s (%i)\n", strerror (result), result);
 				} else {
@@ -2567,9 +2563,9 @@ MediaThreadPool::AddWork (MediaClosure *closure)
 		LOG_PIPELINE ("MediaThreadLoop::AddWork () got %s %p for media %p (%i) on deployment %p, there are %d nodes left.\n",
 			closure->GetDescription (), closure, closure->GetMedia (), GET_OBJ_ID (closure->GetMedia ()), closure->GetDeployment (), queue ? queue->Length () : -1);
 		
-		pthread_cond_signal (&condition);
+		condition.Signal();
 	}
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 }
 
 void
@@ -2582,7 +2578,7 @@ MediaThreadPool::WaitForCompletion (Deployment *deployment)
 	
 	VERIFY_MAIN_THREAD;
 	
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 	do {
 		waiting = false;
 		
@@ -2608,10 +2604,10 @@ MediaThreadPool::WaitForCompletion (Deployment *deployment)
 			timespec ts;
 			ts.tv_sec = 0;
 			ts.tv_nsec = 100000000; /* 0.1 seconds = 100 milliseconds = 100.000.000 nanoseconds */
-			pthread_cond_timedwait (&completed_condition, &mutex, &ts);
+			completed_condition.TimedWait (mutex, &ts);
 		}
 	} while (waiting);
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 }
 
 void
@@ -2625,7 +2621,7 @@ MediaThreadPool::RemoveWork (Media *media)
 	List::Node *current = NULL;
 	int counter = 0;
 	
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 
 	// create a list of nodes to delete
 	current = queue != NULL ? queue->First () : NULL;
@@ -2646,7 +2642,7 @@ MediaThreadPool::RemoveWork (Media *media)
 		current = next;
 	}
 	
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 
 	// We have to delete the list nodes with the
 	// queue mutex unlocked, due to refcounting
@@ -2667,14 +2663,14 @@ bool
 MediaThreadPool::IsThreadPoolThread ()
 {
 	bool result = false;
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 	for (int i = 0; i < count; i++) {
-		if (pthread_equal (pthread_self (), threads [i])) {
+		if (MoonThread::IsThread (threads [i])) {
 			result = true;
 			break;
 		}
 	}
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 	return result;
 }
 
@@ -2699,18 +2695,18 @@ MediaThreadPool::Shutdown ()
 	
 	g_return_if_fail (!shutting_down);
 	
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 	
 	shutting_down = true;
-	pthread_cond_broadcast (&condition);
+	condition.Broadcast();
 	
 	for (int i = 0; i < count; i++) {
 		if (!valid [i])
 			continue;
 		
-		pthread_mutex_unlock (&mutex);
-		pthread_join (threads [i], NULL);
-		pthread_mutex_lock (&mutex);
+		mutex.Unlock();
+		threads[i]->Join ();
+		mutex.Lock();
 	}
 	
 	if (queue != NULL) {
@@ -2721,7 +2717,7 @@ MediaThreadPool::Shutdown ()
 	}
 	count = 0;
 	
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 	
 	// deleting a node can have side-effects, so we first copy the list of nodes, 
 	// clear the original and loop over the copy while deleting the nodes.
@@ -2787,29 +2783,29 @@ MediaThreadPool::WorkerLoop (void *data)
 #endif
 #endif
 	
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 	for (int i = 0; i < count; i++) {
-		if (pthread_equal (threads [i], pthread_self ())) {
+		if (MoonThread::IsThread (threads [i])) {
 			self_index = i;
 			break;
 		}
 	}
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 	
-	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %p: Started thread with index %i.\n", (void*)pthread_self (), self_index);
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %p: Started thread with index %i.\n", MoonThread::Self(), self_index);
 	
 	g_return_val_if_fail (self_index >= 0, NULL);
 	
 	Deployment::RegisterThread ();
 
 	while (!shutting_down) {
-		pthread_mutex_lock (&mutex);
+		mutex.Lock();
 		
 		medias [self_index] = NULL;
 		deployments [self_index] = NULL;
 		/* if anybody was waiting for us to finish working, notify them */
 		if (media != NULL)
-			pthread_cond_signal (&completed_condition);
+			completed_condition.Signal();
 
 		media = NULL;		
 		node = (MediaWork *) (queue != NULL ? queue->First () : NULL);
@@ -2833,7 +2829,7 @@ MediaThreadPool::WorkerLoop (void *data)
 		}
 		
 		if (node == NULL) {
-			pthread_cond_wait (&condition, &mutex);
+			condition.Wait(mutex);
 		} else {
 			queue->Unlink (node);
 		}
@@ -2847,35 +2843,35 @@ MediaThreadPool::WorkerLoop (void *data)
 			deployments [self_index] = media->GetUnsafeDeployment ();
 		}
 		
-		pthread_mutex_unlock (&mutex);
+		mutex.Unlock();
 		
 		if (node == NULL)
 			continue;
 		
 		media->SetCurrentDeployment (true);
 
-		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %p: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (void*) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %p: got %s %p for media %p on deployment %p, there are %d nodes left.\n", MoonThread::Self(), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
 		
 		node->closure->Call ();
 		
-		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %p: processed node %p\n", (void*) pthread_self (), node);
+		LOG_PIPELINE_EX ("MediaThreadLoop::WorkerLoop () %p: processed node %p\n", MoonThread::Self(), node);
 		
 		delete node;
 
 		Deployment::SetCurrent (NULL);
 	}
 	
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 	deployments [self_index] = NULL;
 	medias [self_index] = NULL;
 	/* if anybody was waiting for us to finish working, notify them */
 	if (media != NULL)
-		pthread_cond_signal (&completed_condition);
-	pthread_mutex_unlock (&mutex);
+		completed_condition.Signal();
+	mutex.Unlock();
 
 	Deployment::UnregisterThread ();
 
-	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %p: Exited (index: %i).\n", (void*) pthread_self (), self_index);
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %p: Exited (index: %i).\n", MoonThread::Self(), self_index);
 	
 	return NULL;
 }
@@ -4935,18 +4931,13 @@ IMediaObject::SetMedia (Media *value)
  */
 
 IMediaSource::IMediaSource (Type::Kind kind, Media *media)
-	: IMediaObject (kind, media)
+	: IMediaObject (kind, media),
+	  mutex (MoonMutex (true))
 {
-	pthread_mutexattr_t attribs;
-	pthread_mutexattr_init (&attribs);
-	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init (&mutex, &attribs);
-	pthread_mutexattr_destroy (&attribs);
 }
 
 IMediaSource::~IMediaSource ()
 {
-	pthread_mutex_destroy (&mutex);
 }
 
 void
@@ -4958,13 +4949,13 @@ IMediaSource::Dispose ()
 void
 IMediaSource::Lock ()
 {
-	pthread_mutex_lock (&mutex);
+	mutex.Lock();
 }
 
 void
 IMediaSource::Unlock ()
 {
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock();
 }
 
 void
@@ -5829,15 +5820,12 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 	
 	can_seek = true;
 
-	pthread_rwlock_init (&rwlock, NULL);
-	
 	g_return_if_fail (instance != NULL);
 	g_return_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
 }
 
 ExternalDemuxer::~ExternalDemuxer ()
 {
-	pthread_rwlock_destroy (&rwlock);
 }
 
 void
@@ -5850,7 +5838,7 @@ ExternalDemuxer::Dispose ()
 void
 ExternalDemuxer::ClearCallbacks ()
 {
-	pthread_rwlock_wrlock (&rwlock);
+	rwlock.WriteLock ();
 	close_demuxer_callback = NULL;
 	get_diagnostic_async_callback = NULL;
 	get_sample_async_callback = NULL;
@@ -5858,7 +5846,7 @@ ExternalDemuxer::ClearCallbacks ()
 	seek_async_callback = NULL;
 	switch_media_stream_async_callback = NULL;
 	instance = NULL;
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.WriteUnlock();
 }
 
 void
@@ -5876,7 +5864,7 @@ ExternalDemuxer::AddStream (IMediaStream *stream)
 void 
 ExternalDemuxer::CloseDemuxerInternal ()
 {
-	pthread_rwlock_rdlock (&rwlock);
+	rwlock.ReadLock();
 	if (close_demuxer_callback != NULL) {
 		close_demuxer_callback (instance);
 	} else {
@@ -5884,13 +5872,13 @@ ExternalDemuxer::CloseDemuxerInternal ()
 		moon_debug ("ExternalDemuxer::CloseDemuxerInternal (): no function pointer.\n");
 #endif
 	}
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.ReadUnlock();
 }
 
 void 
 ExternalDemuxer::GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticsKind)
 {
-	pthread_rwlock_rdlock (&rwlock);
+	rwlock.ReadLock();
 	if (get_diagnostic_async_callback != NULL) {	
 		get_diagnostic_async_callback (instance, diagnosticsKind);
 	} else {
@@ -5898,7 +5886,7 @@ ExternalDemuxer::GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind dia
 		moon_debug ("ExternalDemuxer::GetDiagnosticsAsyncInternal (): no function pointer.\n");
 #endif
 	}
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.ReadUnlock();
 }
 
 void 
@@ -5906,7 +5894,7 @@ ExternalDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
 	g_return_if_fail (stream != NULL);
 	
-	pthread_rwlock_rdlock (&rwlock);
+	rwlock.ReadLock();
 	if (get_sample_async_callback != NULL) {
 		get_sample_async_callback (instance, stream->GetStreamType ());
 	} else {
@@ -5914,13 +5902,13 @@ ExternalDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		moon_debug ("ExternalDemuxer::GetFrameAsyncInternal (): no function pointer.\n");
 #endif
 	}
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.ReadUnlock();
 }
 
 void 
 ExternalDemuxer::OpenDemuxerAsyncInternal ()
 {
-	pthread_rwlock_rdlock (&rwlock);
+	rwlock.ReadLock();
 	if (open_demuxer_async_callback != NULL) {	
 		open_demuxer_async_callback (instance, this);
 	} else {
@@ -5928,13 +5916,13 @@ ExternalDemuxer::OpenDemuxerAsyncInternal ()
 		moon_debug ("ExternalDemuxer::OpenDemuxerAsyncInternal (): no function pointer.\n");
 #endif
 	}
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.ReadUnlock();
 }
 
 void 
 ExternalDemuxer::SeekAsyncInternal (guint64 seekToTime)
 {
-	pthread_rwlock_rdlock (&rwlock);
+	rwlock.ReadLock();
 	if (seek_async_callback != NULL) {
 		seek_async_callback (instance, seekToTime);
 	} else {
@@ -5942,7 +5930,7 @@ ExternalDemuxer::SeekAsyncInternal (guint64 seekToTime)
 		moon_debug ("ExternalDemuxer::SeekAsyncInternal (): no function pointer.\n");
 #endif
 	}
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.ReadUnlock();
 }
 
 void 
@@ -5950,7 +5938,7 @@ ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescri
 {
 	g_return_if_fail (mediaStreamDescription != NULL);
 	
-	pthread_rwlock_rdlock (&rwlock);
+	rwlock.ReadLock();
 	if (switch_media_stream_async_callback != NULL) {
 		switch_media_stream_async_callback (instance, mediaStreamDescription);
 	} else {
@@ -5958,7 +5946,7 @@ ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescri
 		moon_debug ("ExternalDemuxer::SwitchMediaStreamAsyncInternal (): no function pointer.\n");
 #endif
 	}
-	pthread_rwlock_unlock (&rwlock);
+	rwlock.ReadUnlock();
 }
 	
 	

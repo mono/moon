@@ -80,8 +80,8 @@ private:
 	PulsePlayer *player;
 	pa_stream *pulse_stream;
 	bool is_ready;
-	pthread_mutex_t ready_mutex;
-	pthread_cond_t ready_cond;
+	MoonMutex ready_mutex;
+	MoonCond ready_cond;
 	char *name;
 	char *description;
 	pa_sample_spec default_spec;
@@ -140,11 +140,11 @@ class PulsePlayer : public AudioPlayer {
 	pa_context *context;
 	pa_threaded_mainloop *loop;
 	pa_mainloop_api *api;
-	pthread_cond_t cond;
-	pthread_mutex_t mutex;
+	MoonCond cond;
+	MoonMutex mutex;
 	
-	pthread_cond_t recording_cond;
-	pthread_mutex_t recording_mutex;
+	MoonCond recording_cond;
+	MoonMutex recording_mutex;
 	bool fetching_recording_devices;
 	List recording_devices;
 

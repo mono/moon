@@ -42,7 +42,6 @@ class WaveFormatExtensible;
 #include "dependencyobject.h"
 #include "downloader.h"
 #include "pipeline.h"
-#include "mutex.h"
 #include "http-streaming.h"
 
 namespace Moonlight {
@@ -364,7 +363,7 @@ class MmsDemuxer : public IMediaDemuxer {
 private:
 	PlaylistEntry *playlist;
 	MmsSource *mms_source;
-	Mutex mutex;
+	MoonMutex mutex;
 
 protected:
 	virtual ~MmsDemuxer () {}

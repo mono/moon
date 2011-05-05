@@ -71,7 +71,6 @@ namespace Moonlight {
 WriteableBitmap::WriteableBitmap ()
 {
 	SetObjectType (Type::WRITEABLEBITMAP);
-	pthread_mutex_init (&surface_mutex, NULL);
 }
 
 gpointer
@@ -98,19 +97,18 @@ WriteableBitmap::InitializeFromBitmapSource (BitmapSource *source)
 
 WriteableBitmap::~WriteableBitmap ()
 {
-	pthread_mutex_destroy (&surface_mutex);
 }
 
 void
 WriteableBitmap::Lock ()
 {
-	pthread_mutex_lock (&surface_mutex);
+	surface_mutex.Lock();
 }
 
 void
 WriteableBitmap::Unlock ()
 {
-	pthread_mutex_unlock (&surface_mutex);
+	surface_mutex.Unlock();
 }
 
 void

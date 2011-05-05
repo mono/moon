@@ -23,13 +23,13 @@ namespace Moonlight {
 
 /* @Namespace=System.Windows.Media.Imaging */
 class WriteableBitmap : public BitmapSource {
- private:
-	pthread_mutex_t surface_mutex;
+private:
+	MoonMutex surface_mutex;
 
- protected:
+protected:
 	virtual ~WriteableBitmap ();
 
- public:
+public:
 	/* @GeneratePInvoke,ManagedAccess=Internal */
 	WriteableBitmap ();
 

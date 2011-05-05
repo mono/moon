@@ -108,9 +108,9 @@ FfmpegDecoder::OpenDecoderAsyncInternal ()
 	int ffmpeg_result = 0;
 	AVCodec *codec = NULL;
 	
-	pthread_mutex_lock (&ffmpeg_mutex);
+	ffmpeg_mutex.Lock();
 	codec = avcodec_find_decoder_by_name (stream->GetCodec ());
-	pthread_mutex_unlock (&ffmpeg_mutex);
+	ffmpeg_mutex.Unlock();
 	
 	LOG_FFMPEG ("FfmpegDecoder::Open (): Found codec: '%s'\n", stream->GetCodec ());
 	
@@ -164,9 +164,9 @@ FfmpegDecoder::OpenDecoderAsyncInternal ()
 		return;
 	}
 
-	pthread_mutex_lock (&ffmpeg_mutex);
+	ffmpeg_mutex.Lock();
 	ffmpeg_result = avcodec_open (context, codec);
-	pthread_mutex_unlock (&ffmpeg_mutex);
+	ffmpeg_mutex.Unlock();
 
 	if (ffmpeg_result < 0) {
 		char *str = g_strdup_printf ("FfmpegDecoder failed to open codec (result: %d = %s)", ffmpeg_result, strerror (AVERROR (ffmpeg_result)));
@@ -185,9 +185,9 @@ FfmpegDecoder::Dispose ()
 {
 	if (context != NULL) {
 		if (context->codec != NULL) {
-			pthread_mutex_lock (&ffmpeg_mutex);
+			ffmpeg_mutex.Lock();
 			avcodec_close (context);
-			pthread_mutex_unlock (&ffmpeg_mutex);
+			ffmpeg_mutex.Unlock();
 		}
 		av_freep (&context->extradata);
 		av_freep (&context);
@@ -467,8 +467,8 @@ pthread_cond_t FfmpegDemuxer::worker_cond = PTHREAD_COND_INITIALIZER;
 List FfmpegDemuxer::worker_list;
 
 #ifdef SANITY
-#define VERIFY_FFMPEG_THREAD 																		\
-	if (!pthread_equal (pthread_self (), worker_thread)) {											\
+#define VERIFY_FFMPEG_THREAD 											\
+	if (!MoonThread::IsThread (worker_thread)) {								\
 		printf ("%s: this method should only be called on the ffmpeg demuxer thread.\n", __func__);	\
 	}
 #else
@@ -524,31 +524,31 @@ FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *
 	pthread_mutex_init (&wait_mutex, NULL);
 	pthread_cond_init (&wait_cond, NULL);
 
-	pthread_mutex_lock (&worker_thread_mutex);
+	worker_thread_mutex.Lock();
 	if (InterlockedExchangeAdd (&demuxers, 1) == 0) {
-		pthread_create (&worker_thread, NULL, WorkerLoop, NULL);
+		MoonThread::Start (&worker_thread, WorkerLoop);
 	}
-	pthread_mutex_unlock (&worker_thread_mutex);
+	worker_thread_mutex.Unlock();
 }
 
 void
 FfmpegDemuxer::Dispose ()
 {
-	pthread_mutex_lock (&worker_thread_mutex);
+	worker_thread_mutex.Lock();
 	if (InterlockedDecrement (&demuxers) == 0) {
 		/* No more demuxers, stop the thread */
-		pthread_mutex_lock (&worker_mutex);
+		worker_mutex.Lock();
 		worker_list.Clear (true);
-		pthread_cond_signal (&worker_cond);
-		pthread_mutex_unlock (&worker_mutex);
+		worker_cond.Signal();
+		worker_mutex.Unlock();
 		/* We need to signal any waiting reads that we don't have to read more */
-		pthread_mutex_lock (&wait_mutex);
-		pthread_cond_signal (&wait_cond);
-		pthread_mutex_unlock (&wait_mutex);
+		wait_mutex.Lock();
+		wait_cond.Signal();
+		wait_mutex.Unlock();
 		/* We need to unlock the worker_mutex before joining the thread, otherwise we'll deadlock. This is also the reason we're using two mutexes. */
 		pthread_join (worker_thread, NULL);
 	} else {
-		pthread_mutex_lock (&worker_mutex);
+		worker_mutex.Lock();
 		/* Remove any pending work for this demuxer */
 		FfmpegNode *next;
 		FfmpegNode *node = (FfmpegNode *) worker_list.First ();
@@ -558,9 +558,9 @@ FfmpegDemuxer::Dispose ()
 				worker_list.Remove (node);
 			node = next;
 		}
-		pthread_mutex_unlock (&worker_mutex);
+		worker_mutex.Unlock();
 	}
-	pthread_mutex_unlock (&worker_thread_mutex);
+	worker_thread_mutex.Unlock();
 
 	if (current_buffer) {
 		current_buffer->unref ();
@@ -603,9 +603,9 @@ FfmpegDemuxer::GetInputFormat (MemoryBuffer *source)
 	data.buf = (guint8 *) source->GetCurrentPtr ();
 	data.buf_size = source->GetRemainingSize ();
 
-	pthread_mutex_lock (&ffmpeg_mutex);
+	ffmpeg_mutex.Lock();
 	AVInputFormat *format = av_probe_input_format (&data, true);
-	pthread_mutex_unlock (&ffmpeg_mutex);
+	ffmpeg_mutex.Unlock();
 
 	LOG_FFMPEG ("FfmpegDemuxer::GetInputFormat (): got format: %s %s\n", format ? format->name : "<none>", format ? format->long_name : "");
 
@@ -627,7 +627,7 @@ FfmpegDemuxer::Seek (guint64 pts)
 
 	VERIFY_FFMPEG_THREAD;
 
-	pthread_mutex_lock (&wait_mutex);
+	wait_mutex.Lock();
 	for (int i = 0; i < GetStreamCount (); i++) {
 		frame_queue [i]->Clear (true);
 	}
@@ -637,7 +637,7 @@ FfmpegDemuxer::Seek (guint64 pts)
 	}
 	current_position = 0;
 	last_buffer = false;
-	pthread_mutex_unlock (&wait_mutex);
+	wait_mutex.Unlock();
 
 	for (int i = 0; i < GetStreamCount (); i++) {
 		int ffmpeg_index = -1;
@@ -681,7 +681,7 @@ FfmpegDemuxer::AsyncReadCallback (MediaClosure *c)
 	MediaReadClosure *closure = (MediaReadClosure *) c;
 	FfmpegDemuxer *demuxer = (FfmpegDemuxer *) closure->GetContext ();
 
-	pthread_mutex_lock (&demuxer->wait_mutex);
+	demuxer->wait_mutex.Lock();
 	if (demuxer->current_buffer)
 		demuxer->current_buffer->unref ();
 	demuxer->current_buffer = closure->GetData ();
@@ -697,8 +697,8 @@ FfmpegDemuxer::AsyncReadCallback (MediaClosure *c)
 		demuxer->read_closure = NULL;
 	}
 	LOG_FFMPEG ("FfmpegDemuxer::AsyncReadCallback (): got data, signalling ffmpeg thread that it can continue reading.\n");
-	pthread_cond_signal (&demuxer->wait_cond);
-	pthread_mutex_unlock (&demuxer->wait_mutex);
+	demuxer->wait_cond.Signal();
+	demuxer->wait_mutex.Unlock();
 
 	return MEDIA_SUCCESS;
 }
@@ -730,7 +730,7 @@ FfmpegDemuxer::Read (uint8_t *buf, int buf_size)
 		return 0;
 	}
 
-	pthread_mutex_lock (&wait_mutex);
+	wait_mutex.Lock();
 
 	/* Request more data if we don't have enough */
 	while (current_buffer == NULL || (current_buffer->GetRemainingSize () < buf_size && !last_buffer)) {
@@ -754,7 +754,7 @@ FfmpegDemuxer::Read (uint8_t *buf, int buf_size)
 			/* We're shutting down the ffmpeg thread */
 			break;
 		}
-		pthread_cond_wait (&wait_cond, &wait_mutex);
+		wait_cond.Wait(wait_mutex);
 	}
 	/* read the data we have */
 	if (current_buffer != NULL) {
@@ -766,7 +766,7 @@ FfmpegDemuxer::Read (uint8_t *buf, int buf_size)
 		LOG_FFMPEG ("FfmpegDemuxer::Read (): reading %u bytes (has %" G_GINT64_FORMAT " bytes available)\n", result, current_buffer->GetRemainingSize ());
 		current_buffer->Read (buf, result);
 	}
-	pthread_mutex_unlock (&wait_mutex);
+	wait_mutex.Unlock();
 
 	media->unref ();
 	
@@ -790,22 +790,22 @@ FfmpegDemuxer::Seek (int64_t offset, int whence)
 	
 	switch (whence) {
 	case SEEK_SET:
-		pthread_mutex_lock (&wait_mutex);
+		wait_mutex.Lock();
 		current_position = offset;
 		if (current_buffer) {
 			current_buffer->unref ();
 			current_buffer = NULL;
 		}
-		pthread_mutex_unlock (&wait_mutex);
+		wait_mutex.Unlock();
 		return offset;
 	case SEEK_CUR:
-		pthread_mutex_lock (&wait_mutex);
+		wait_mutex.Lock();
 		current_position += offset;
 		if (current_buffer) {
 			current_buffer->unref ();
 			current_buffer = NULL;
 		}
-		pthread_mutex_unlock (&wait_mutex);
+		wait_mutex.Unlock();
 		return offset;
 	case AVSEEK_SIZE:
 		return source->GetSize ();
@@ -1013,10 +1013,10 @@ FfmpegDemuxer::AddWork (List::Node *node)
 	if (IsDisposed ())
 		return;
 
-	pthread_mutex_lock (&worker_mutex);
+	worker_mutex.Lock();
 	worker_list.Append (node);
-	pthread_cond_signal (&worker_cond);
-	pthread_mutex_unlock (&worker_mutex);
+	worker_cond.Signal();
+	worker_mutex.Unlock();
 }
 
 void *
@@ -1026,10 +1026,10 @@ FfmpegDemuxer::WorkerLoop (void *data)
 	FfmpegNode *work;
 	LOG_FFMPEG ("FfmpegDemuxer::WorkerLoop () [Starting]\n");
 	do {
-		pthread_mutex_lock (&worker_mutex);
+		worker_mutex.Lock();
 		quit = demuxers == 0;
 		while (!quit && worker_list.First () == NULL) {
-			pthread_cond_wait (&worker_cond, &worker_mutex);
+			worker_cond.Wait(worker_mutex);
 			quit = demuxers == 0;
 		}
 		work = NULL;
@@ -1038,7 +1038,7 @@ FfmpegDemuxer::WorkerLoop (void *data)
 			if (work != NULL)
 				worker_list.Unlink (work);
 		}
-		pthread_mutex_unlock (&worker_mutex);
+		worker_mutex.Unlock();
 		if (work != NULL) {
 			LOG_FFMPEG ("ffmpeg thread got work: %i\n", work->action);
 			work->GetDemuxer ()->SetCurrentDeployment (false);

@@ -26,7 +26,6 @@
 #include "error.h"
 
 #include "pal.h"
-#include "mutex.h"
 
 namespace Moonlight {
 
@@ -341,9 +340,9 @@ public:
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
 
 	static bool main_thread_inited;
-	static pthread_t main_thread;
+	static MoonThread* main_thread;
 	/* @GeneratePInvoke */
-	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
+	static bool InMainThread () { return (!main_thread_inited || MoonThread::IsThread (main_thread)); }
 
 	void ShowDrmMessage ();
 	void ShowJpegMessage ();
@@ -441,7 +440,7 @@ private:
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;
-	Mutex time_manager_mutex;
+	MoonMutex time_manager_mutex;
 	bool ticked_after_attach;
 	static void tick_after_attach_reached (EventObject *data);
 

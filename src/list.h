@@ -14,7 +14,7 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
-#include <pthread.h>
+#include "pal.h"
 
 namespace Moonlight {
 
@@ -86,7 +86,7 @@ public:
 
 class Queue {
 protected:
-	pthread_mutex_t lock;
+	MoonMutex lock;
 	List *list;
 	
 public:

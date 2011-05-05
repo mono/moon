@@ -389,21 +389,13 @@ List::ForEach (NodeAction action, void *data)
 
 
 Queue::Queue ()
+  : lock (MoonMutex(true))
 {
-	pthread_mutexattr_t  mta;
-
-	pthread_mutexattr_init (&mta);
-	
-	pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE);
-
-	pthread_mutex_init (&lock, &mta);
-
 	list = new List ();
 }
 
 Queue::~Queue ()
 {
-	pthread_mutex_destroy (&lock);
 	delete list;
 }
 
@@ -463,13 +455,13 @@ Queue::Pop ()
 void
 Queue::Lock ()
 {
-	pthread_mutex_lock (&lock);
+	lock.Lock();
 }
 
 void
 Queue::Unlock ()
 {
-	pthread_mutex_unlock (&lock);
+	lock.Unlock();
 }
 
 List *

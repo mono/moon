@@ -17,7 +17,6 @@
 #include "fontmanager.h"
 #include "application.h"
 #include "collection.h"
-#include "mutex.h"
 #include "value.h"
 #include "network.h"
 #include "uri.h"
@@ -41,7 +40,7 @@ struct _MonoProfiler {
 	GPtrArray *gchandles;
 	GHashTable *jitted_methods;
 	GPtrArray *stacktraces;
-	Moonlight::Mutex locker;
+	Moonligh::MoonMutex locker;
 
 	_MonoProfiler (bool gchandle, bool jit);
 
@@ -464,7 +463,7 @@ public:
 	
 #if OBJECT_TRACKING
 	GHashTable *objects_alive;
-	pthread_mutex_t objects_alive_mutex;
+	MoonMutex objects_alive_mutex;
 	void ReportLeaks ();
 #endif
 
@@ -539,7 +538,7 @@ private:
 
 	Types* types;
 	Surface *surface;
-	Mutex surface_mutex;
+	MoonMutex surface_mutex;
 	FontManager *font_manager;
 	WeakRef<Application> current_app;
 	MonoDomain *domain;
@@ -555,13 +554,13 @@ private:
 	// tick.
 	bool pending_loaded;
 
-	Mutex medias_mutex;
+	MoonMutex medias_mutex;
 	/* accessed from several threads, needs the medias_mutex locked on all accesses */
 	List *medias;
 
 	/* A list of objects that must be kept alive until told otherwise */
 	GHashTable *keepalive;
-	Mutex keepalive_mutex;
+	MoonMutex keepalive_mutex;
 
 	bool appdomain_initialized;
 	bool appdomain_initialization_result;
@@ -625,8 +624,8 @@ private:
 	static Deployment *desktop_deployment;
 	static GHashTable *current_hash;
 	static gboolean initialized;
-	static pthread_key_t tls_key;
-	static pthread_mutex_t hash_mutex;
+	static MoonTlsKey tls_key;
+	static MoonMutex hash_mutex;
 	static MonoDomain *root_domain;
 	static gint32 deployment_count;
 };

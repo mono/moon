@@ -60,9 +60,9 @@ class CurlHttpHandler : public HttpHandler {
 	bool quit;
 	bool shutting_down;
 	int fds [2]; // file descriptors to select on in addition to curl's file descriptors
-	pthread_t worker_thread;
-	pthread_mutex_t worker_mutex;
-	pthread_cond_t worker_cond;
+	MoonThread *worker_thread;
+	MoonMutex worker_mutex;
+	MoonCond worker_cond;
 
 	// available handles pool
 	List pool; // multi-threaded access, needs worker_mutex locked
