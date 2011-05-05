@@ -40,7 +40,7 @@ struct _MonoProfiler {
 	GPtrArray *gchandles;
 	GHashTable *jitted_methods;
 	GPtrArray *stacktraces;
-	Moonligh::MoonMutex locker;
+	Moonlight::MoonMutex locker;
 
 	_MonoProfiler (bool gchandle, bool jit);
 
