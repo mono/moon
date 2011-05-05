@@ -1,6 +1,6 @@
 AC_DEFUN([MOONLIGHT_CHECK_PAL],
 [
-	AC_CHECK_HEADERS(pthreads.h)
+	AC_CHECK_HEADERS(pthread.h)
 
 	AC_ARG_WITH([pal],[  --with-pal=gtk|cocoa|android   Specify which PAL to build (defaults to gtk)], [], [with_pal=gtk])
 
