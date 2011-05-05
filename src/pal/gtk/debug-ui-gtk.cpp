@@ -1125,7 +1125,7 @@ dump_media_elements ()
 	int counter = 0;
 
 	/* Find all media elements */
-	pthread_mutex_lock (&deployment->objects_alive_mutex);
+	deployment->objects_alive_mutex.Lock();
 	g_hash_table_iter_init (&iter, deployment->objects_alive);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		if (((EventObject *) key)->GetObjectType () != Type::MEDIAELEMENT)
@@ -1133,7 +1133,7 @@ dump_media_elements ()
 		elements [counter++] = (MediaElement *) key;
 		elements [counter - 1]->ref ();
 	}
-	pthread_mutex_unlock (&deployment->objects_alive_mutex);
+	deployment->objects_alive_mutex.Unlock();
 
 	for (int i = 0; i < counter; i++) {
 		MediaElement *mel = elements [i];
@@ -1197,7 +1197,7 @@ debug_media (MoonWindowGtk *window)
 	vbox = GTK_BOX (GTK_DIALOG (data->dialog)->vbox);
 	
 	/* Find all media elements */
-	pthread_mutex_lock (&deployment->objects_alive_mutex);
+	deployment->objects_alive_mutex.Lock();
 	g_hash_table_iter_init (&iter, deployment->objects_alive);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		if (((EventObject *) key)->GetObjectType () != Type::MEDIAELEMENT)
@@ -1227,7 +1227,7 @@ debug_media (MoonWindowGtk *window)
 		gtk_widget_set_size_request (label_scrollwindow, -1, 225);
 		gtk_box_pack_start (vbox, label_scrollwindow, TRUE, TRUE, 0);
 	}
-	pthread_mutex_unlock (&deployment->objects_alive_mutex);
+	deployment->objects_alive_mutex.Unlock();
 	
 	data->update ();	
 	g_signal_connect (data->dialog, "response", G_CALLBACK (debug_media_dialog_response), data);
