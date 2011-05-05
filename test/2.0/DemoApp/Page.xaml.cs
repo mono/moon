@@ -124,9 +124,8 @@ namespace DemoApp
 		    blurApplied = true;
 		    customShaderApplied = true;
 
-#if false
-		    mediaElement.Projection = null;
-#endif
+		    ((PlaneProjection)mediaElement.Projection).RotationX = 0;
+		    ((PlaneProjection)mediaElement.Projection).RotationY = 0;
 		};
 	    }
 
