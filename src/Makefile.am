@@ -90,6 +90,7 @@ libmoon_include_headers = 	\
 	network.h		\
 	openfile.h		\
 	pal/pal.h		\
+	pal/pal-threads.h	\
 	pal/window.h		\
 	pal/capture/pal-linux-capture.h	\
 	pal/capture/pal-linux-audio-capture.h		\
