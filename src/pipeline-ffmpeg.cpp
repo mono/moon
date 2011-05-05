@@ -35,7 +35,7 @@ namespace Moonlight {
 
 #define AUDIO_BUFFER_SIZE (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
-pthread_mutex_t ffmpeg_mutex = PTHREAD_MUTEX_INITIALIZER;
+MoonMutex ffmpeg_mutex;
 
 void
 register_ffmpeg ()
@@ -460,10 +460,10 @@ FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
  */
 
 gint32 FfmpegDemuxer::demuxers = 0;
-pthread_t FfmpegDemuxer::worker_thread;
-pthread_mutex_t FfmpegDemuxer::worker_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t FfmpegDemuxer::worker_thread_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t FfmpegDemuxer::worker_cond = PTHREAD_COND_INITIALIZER;
+MoonThread* FfmpegDemuxer::worker_thread = NULL;
+MonoMutex FfmpegDemuxer::worker_mutex;
+MoonMutex FfmpegDemuxer::worker_thread_mutex;
+MoonCond FfmpegDemuxer::worker_cond;
 List FfmpegDemuxer::worker_list;
 
 #ifdef SANITY
@@ -521,9 +521,6 @@ FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *
 	current_buffer->ref ();
 	io_context = NULL;
 
-	pthread_mutex_init (&wait_mutex, NULL);
-	pthread_cond_init (&wait_cond, NULL);
-
 	worker_thread_mutex.Lock();
 	if (InterlockedExchangeAdd (&demuxers, 1) == 0) {
 		MoonThread::Start (&worker_thread, WorkerLoop);
@@ -546,7 +543,7 @@ FfmpegDemuxer::Dispose ()
 		wait_cond.Signal();
 		wait_mutex.Unlock();
 		/* We need to unlock the worker_mutex before joining the thread, otherwise we'll deadlock. This is also the reason we're using two mutexes. */
-		pthread_join (worker_thread, NULL);
+		worker_thread->Join ();
 	} else {
 		worker_mutex.Lock();
 		/* Remove any pending work for this demuxer */
@@ -589,9 +586,6 @@ FfmpegDemuxer::~FfmpegDemuxer ()
 		g_free (io_context->buffer);
 		av_free (io_context);
 	}
-
-	pthread_mutex_destroy (&wait_mutex);
-	pthread_cond_destroy (&wait_cond);
 }
 
 AVInputFormat * 
