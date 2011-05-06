@@ -189,6 +189,8 @@ CurlHttpHandler::Emit ()
 	CallData *next;
 	List tmp;
 
+	SetCurrentDeployment ();
+
 	/* Clone the list and invoke the calls with the mutex unlocked */
 	worker_mutex.Lock();
 	node = (CallData *) calls.First ();
@@ -457,14 +459,14 @@ CurlDownloaderRequest::AbortImpl () {
 			return;
 
 		state = ABORTED;
-		Close ();
+		Close (CURLE_OK);
 	}
 }
 
 void
-CurlDownloaderRequest::Close ()
+CurlDownloaderRequest::Close (CURLcode curl_code)
 {
-	LOG_CURL ("BRIDGE CurlDownloaderRequest::Close request:%p response:%p\n", this, response);
+	LOG_CURL ("BRIDGE CurlDownloaderRequest::Close (%i = %s) request:%p response:%p\n", curl_code, curl_easy_strerror (curl_code), this, response);
 
 	VERIFY_MAIN_THREAD
 	SetCurrentDeployment ();
@@ -476,10 +478,14 @@ CurlDownloaderRequest::Close ()
 		state = CLOSED;
 
 	if (response) {
-		if (IsAborted ())
+		if (IsAborted ()) {
 			response->Abort ();
-		else
+		} else if (curl_code != CURLE_OK) {
+			Failed (curl_easy_strerror (curl_code));
+			response->Abort ();
+		} else {
 			response->Close ();
+		}
 		response->ClearRequest ();
 		response->unref ();
 		response = NULL;
@@ -741,7 +747,7 @@ public:
 			res->unref_delayed ();
 	}
 	CURL* GetHandle () { return res->GetHandle (); }
-	void Close () { return res->Close (); }
+	void Close () { return res->Close (CURLE_OK); }
 };
 
 static void*
@@ -997,7 +1003,7 @@ _close (CallData *sender)
 	VERIFY_MAIN_THREAD
 
 	CurlDownloaderRequest* req = (CurlDownloaderRequest*) ((CallData*)sender)->req;
-	req->Close ();
+	req->Close (sender->curl_code);
 }
 
 void
@@ -1042,7 +1048,9 @@ CurlHttpHandler::GetData ()
 				worker_mutex.Lock();
 				HandleNode* node = (HandleNode*) handles.Find (find_easy_handle, msg->easy_handle);
 				if (node) {
-					calls.Append (new CallData (this, _close, node->res));
+					CallData *data = new CallData (this, _close, node->res);
+					data->curl_code = msg->data.result;
+					calls.Append (data);
 				}
 				worker_mutex.Unlock();
 			}
@@ -1128,7 +1136,7 @@ CurlHttpHandler::IsDataThread ()
 }
 
 CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req)
-	: bridge(bridge), func(func), res(NULL), req(req), buffer(NULL), size(0), name(NULL), val(NULL)
+	: bridge(bridge), func(func), res(NULL), req(req), buffer(NULL), size(0), name(NULL), val(NULL), curl_code (CURLE_OK)
 {
 	if (bridge)
 		bridge->ref ();
@@ -1137,7 +1145,7 @@ CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderReq
 }
 
 CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val)
-	: bridge(bridge), func(func), res (res), req(NULL), buffer(buffer), size(size), name(name), val(val)
+	: bridge(bridge), func(func), res (res), req(NULL), buffer(buffer), size(size), name(name), val(val), curl_code (CURLE_OK)
 {
 	if (bridge)
 		bridge->ref ();

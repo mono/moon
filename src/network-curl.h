@@ -106,6 +106,7 @@ public:
 	size_t size;
 	const char *name;
 	const char *val;
+	CURLcode curl_code;
 };
 
 class CurlDownloaderRequest : public HttpRequest {
@@ -145,7 +146,7 @@ class CurlDownloaderRequest : public HttpRequest {
 	virtual void SetBodyImpl (const void *ptr, guint32 size);
 
 	bool isPost () { return strstr (GetVerb (), "POST"); }
-	void Close ();
+	void Close (CURLcode curl_code);
 	CURL* GetHandle () { return curl; }
 
 	void Started ();
