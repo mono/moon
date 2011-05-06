@@ -50,6 +50,13 @@ public:
 	static void SetSpecific (MoonTlsKey& key, gpointer data);
 
 private:
+	// we want to outlaw copy ctors and operator= since the platform types might
+	// not be copyable/refcounted/etc, and the dtor called on the other value will
+	// destroy the platform type.
+	MoonThread (const MoonThread&) { }
+	// same with operator=
+	MoonThread& operator=(const MoonThread& rhs) { return *this; }
+
 	ThreadFunc func;
 	gpointer func_arg;
 
@@ -77,6 +84,13 @@ public:
 	void Unlock ();
 
 private:
+	// we want to outlaw copy ctors and operator= since the platform types might
+	// not be copyable/refcounted/etc, and the dtor called on the other value will
+	// destroy the platform type.
+	MoonMutex (const MoonMutex&) { }
+	// same with operator=
+	MoonMutex& operator=(const MoonMutex& rhs) { return *this; }
+
 	friend class MoonCond;
 #if PAL_THREADS_PTHREADS
 	pthread_mutex_t mutex;
@@ -97,6 +111,13 @@ public:
 	void WriteLock ();
 
 private:
+	// we want to outlaw copy ctors and operator= since the platform types might
+	// not be copyable/refcounted/etc, and the dtor called on the other value will
+	// destroy the platform type.
+	MoonRWLock (const MoonRWLock&) { }
+	// same with operator=
+	MoonRWLock& operator=(const MoonRWLock& rhs) { return *this; }
+
 #if PAL_THREADS_PTHREADS
 #if HAVE_PTHREAD_RWLOCK_RDLOCK
 	pthread_rwlock_t lock;
@@ -120,6 +141,13 @@ public:
 	void Broadcast ();
 
 private:
+	// we want to outlaw copy ctors and operator= since the platform types might
+	// not be copyable/refcounted/etc, and the dtor called on the other value will
+	// destroy the platform type.
+	MoonCond (const MoonCond&) { }
+	// same with operator=
+	MoonCond& operator=(const MoonCond& rhs) { return *this; }
+
 #if PAL_THREADS_PTHREADS
 	pthread_cond_t cond;
 #elif PLATFORM_WINDOWS
