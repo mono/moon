@@ -379,8 +379,6 @@
     <File subtype="Code" buildaction="Compile" name="pal/cocoa/install-dialog-cocoa.m" />
     <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLEvent.h" />
     <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLEvent.m" />
-    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLTimer.h" />
-    <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLTimer.m" />
     <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLView.h" />
     <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLView.m" />
     <File subtype="Code" buildaction="Nothing" name="pal/cocoa/pal-cocoa.h" />
@@ -416,6 +414,27 @@
     <File subtype="Code" buildaction="Nothing" name="surface-egl.h" />
     <File subtype="Code" buildaction="Compile" name="surface-opengl.cpp" />
     <File subtype="Code" buildaction="Nothing" name="surface-opengl.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/pal-threads.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/pal-threads.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/fonts/fontconfig/pal-fontconfig.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/fonts/fontconfig/pal-fontconfig.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/fonts-cocoa.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLTimerContext.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLTimerContext.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/cocoa/MLWindow.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/cocoa/MLWindow.m" />
+    <File subtype="Code" buildaction="Nothing" name="pal/android/android_native_app_glue.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/android/clipboard-android.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/android/clipboard-android.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/android/fonts-android.cpp" />
+    <File subtype="Code" buildaction="Compile" name="pal/android/im-android.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/android/im-android.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/android/pal-android.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/android/pal-android.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/android/pixbuf-android.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/android/pixbuf-android.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/android/window-android.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/android/window-android.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
