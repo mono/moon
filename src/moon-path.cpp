@@ -11,6 +11,8 @@
  * 
  */
 
+#include "config.h"
+
 #include "moon-path.h"
 
 namespace Moonlight {

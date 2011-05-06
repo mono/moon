@@ -11,8 +11,8 @@
  *
  */
 
+#include <config.h>
 #include <gtk/gtk.h>
-#include <pthread.h>
 #include <string.h>
 
 #include "debug.h"

@@ -1,3 +1,4 @@
+#include "config.h"
 #import "MLTimerContext.h"
 
 @implementation MLTimerContext

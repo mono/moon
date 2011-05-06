@@ -253,7 +253,8 @@ dist_libmoon_la_SOURCES = 		\
 	namescope.cpp		\
 	openfile.cpp		\
 	pal/pal.cpp		\
-	pal/pal-threads.cpp	\
+	pal/pal-threads-pthreads.cpp	\
+	pal/pal-threads-windows.cpp	\
 	pal/window.cpp		\
 	panel.cpp		\
 	pipeline-asf.cpp	\
