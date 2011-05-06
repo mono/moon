@@ -124,7 +124,9 @@ REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/Microsoft.Silverlight.Testing.dll \
 	-r:$(top_builddir)/test/2.0/moon-unit/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(top_builddir)/test/2.0/moon-unit/Mono.Moonlight.UnitTesting.dll \
-	-r:$(top_builddir)/test/2.0/moon-unit/MoonAtkBridge.dll
+	-r:$(top_builddir)/test/2.0/moon-unit/MoonAtkBridge.dll \
+	-r:$(top_builddir)/class/lib/2.1/System.Xml.Serialization.dll \
+	-r:$(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 
 DLLS_TO_EMBED = \
 	Microsoft.Silverlight.Testing.dll \
@@ -133,6 +135,7 @@ DLLS_TO_EMBED = \
 	Mono.Moonlight.UnitTesting.dll \
 	System.Windows.Controls.dll \
 	System.Windows.Controls.Data.dll \
+	System.Xml.Serialization.dll \
 	MoonAtkBridge.dll
 
 appmanifest_ASSEMBLYPARTS= \
@@ -185,6 +188,9 @@ Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Si
 
 System.Xml.Linq.dll: ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll
 	@cp ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll* .
+
+System.Xml.Serialization.dll: $(top_builddir)/class/lib/2.1/System.Xml.Serialization.dll
+	@cp $(top_builddir)/class/lib/2.1/System.Xml.Serialization.dll* .
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 	@cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
