@@ -1,3 +1,4 @@
+#include "config.h"
 #include "runtime.h"
 #import "MLWindow.h"
 

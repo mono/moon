@@ -7,6 +7,10 @@
 
 #if PAL_THREADS_PTHREADS
 #include <pthread.h>
+#elif PLATFORM_WINDOWS
+#error "windows support not finished"
+#else
+#error "config.h not included before #including pal-threads.h"
 #endif
 
 namespace Moonlight {
@@ -16,228 +20,113 @@ class MoonCond;
 class MoonThread;
 class MoonTlsKey;
 
-#if PAL_THREADS_PTHREADS
-
 class MoonTlsKey {
 public:
-	MoonTlsKey () { pthread_key_create (&tls_key, NULL); }
+	MoonTlsKey ();
+	~MoonTlsKey ();
 private:
 	friend class MoonThread;
+#if PAL_THREADS_PTHREADS
 	pthread_key_t tls_key;
+#elif PLATFORM_WINDOWS
+	DWORD tls_index;
+#endif
 };
 
 class MoonThread {
 public:
 	typedef gpointer (*ThreadFunc) (gpointer);
 
-	bool Join () { return pthread_join (pt, NULL); }
+	bool Join ();
 
 	static int Start (MoonThread **thread, ThreadFunc func, gpointer arg = NULL);
 	static int StartJoinable (MoonThread **thread, ThreadFunc func, gpointer arg = NULL);
 
-	static bool IsThread (MoonThread* other) { return pthread_equal (pthread_self(), other->pt); }
+	static bool IsThread (MoonThread* other);
 
 	static MoonThread* Self ();
 
-	static gpointer GetSpecific (MoonTlsKey& key) { return (gpointer)pthread_getspecific (key.tls_key); }
-	static void SetSpecific (MoonTlsKey& key, gpointer data) { pthread_setspecific (key.tls_key, data); }
+	static gpointer GetSpecific (MoonTlsKey& key);
+	static void SetSpecific (MoonTlsKey& key, gpointer data);
 
 private:
-	pthread_t pt;
-	static pthread_key_t self_tls;
 	ThreadFunc func;
 	gpointer func_arg;
 
-	MoonThread (ThreadFunc func, gpointer func_arg) : func (func), func_arg (func_arg) {}
-	MoonThread () { pt = pthread_self (); }
+	MoonThread (ThreadFunc func, gpointer func_arg);
+	MoonThread ();
 
-	~MoonThread () { }
+	~MoonThread ();
 
-	static void Cleanup (void *data);
+#if PAL_THREADS_PTHREADS
+	pthread_t pt;
+	static pthread_key_t self_tls;
 	static void* Main (void* data);
+	static void Cleanup (void *data);
+#elif PLATFORM_WINDOWS
+	static unsigned int Main (void* data);
+#endif
 };
 
 class MoonMutex {
 public:
-	MoonMutex (bool recursive = false) {
-		if (recursive) {
-			pthread_mutex_init (&mutex, NULL);
-		}
-		else {
-			pthread_mutexattr_t mta;
-			pthread_mutexattr_init (&mta);
-			pthread_mutexattr_settype(&mta, PTHREAD_MUTEX_RECURSIVE);
-			pthread_mutex_init (&mutex, &mta);
-			pthread_mutexattr_destroy (&mta);
-		}
-	}
-	~MoonMutex () { pthread_mutex_destroy (&mutex); }
+	MoonMutex (bool recursive = false);
+	~MoonMutex ();
 
-	void Lock () { pthread_mutex_lock (&mutex); }
-	void Unlock () { pthread_mutex_unlock (&mutex); }
+	void Lock ();
+	void Unlock ();
 
 private:
 	friend class MoonCond;
+#if PAL_THREADS_PTHREADS
 	pthread_mutex_t mutex;
+#elif PLATFORM_WINDOWS
+	CRITICAL_SECTION mutex;
+#endif
 };
 
 class MoonRWLock {
 public:
-	MoonRWLock () {
-#if HAVE_PTHREAD_RWLOCK_RDLOCK
-		pthread_rwlock_init (&lock, NULL);
-#else
-		pthread_mutex_init (&lock, NULL);
-#endif
-	}
+	MoonRWLock ();
+	~MoonRWLock ();
 
-	~MoonRWLock () {
-#if HAVE_PTHREAD_RWLOCK_RDLOCK
-		pthread_rwlock_destroy (&lock);
-#else
-		pthread_mutex_destroy (&lock);
-#endif
-	}
+	void ReadLock ();
+	void ReadUnlock ();
 
-	void ReadUnlock () {
-#if HAVE_PTHREAD_RWLOCK_RDLOCK
-		pthread_rwlock_unlock (&lock);
-#else
-		pthread_mutex_unlock (&lock);
-#endif
-	}
-
-	void WriteUnlock () {
-#if HAVE_PTHREAD_RWLOCK_RDLOCK
-		pthread_rwlock_unlock (&lock);
-#else
-		pthread_mutex_unlock (&lock);
-#endif
-	}
-
-	void ReadLock () {
-#if HAVE_PTHREAD_RWLOCK_RDLOCK
-		pthread_rwlock_rdlock (&lock);
-#else
-		pthread_mutex_lock (&lock);
-#endif
-	}
-
-	void WriteLock () {
-#if HAVE_PTHREAD_RWLOCK_RDLOCK
-		pthread_rwlock_wrlock (&lock);
-#else
-		pthread_mutex_lock (&lock);
-#endif
-	}
+	void WriteUnlock ();
+	void WriteLock ();
 
 private:
+#if PAL_THREADS_PTHREADS
 #if HAVE_PTHREAD_RWLOCK_RDLOCK
 	pthread_rwlock_t lock;
 #else
 	pthread_mutex_t lock;
 #endif
-
-};
-
-class MoonCond {
-public:
-
-	MoonCond () { pthread_cond_init (&cond, NULL); }
-	~MoonCond () { pthread_cond_destroy (&cond); }
-
-	void TimedWait (MoonMutex &mutex, timespec *ts) { pthread_cond_timedwait (&cond, &mutex.mutex, ts); }
-	void Wait (MoonMutex &mutex) { pthread_cond_wait (&cond, &mutex.mutex); }
-	void Signal () { pthread_cond_signal (&cond); }
-	void Broadcast () { pthread_cond_broadcast (&cond); }
-
-private:
-	pthread_cond_t cond;
-};
-
 #elif PLATFORM_WINDOWS
-
-class MoonTlsKey {
-public:
-	MoonTlsKey () { tls_index = TlsAlloc (); }
-
-	~MoonTlsKey () { TlsFree (tls_index); }
-private:
-	friend class MoonThread;
-	DWORD tls_index;
-};
-
-class MoonThread {
-public:
-	typedef gpointer (*ThreadFunc) (gpointer);
-
-	bool Join () { /* FIXME */ }
-
-	static int Start (MoonThread **thread, ThreadFunc func, gpointer arg = NULL);
-	static int StartJoinable (MoonThread **thread, ThreadFunc func, gpointer arg = NULL);
-
-	static bool IsThread (MoonThread* other) { /* FIXME */ }
-
-	static MoonThread* Self ();
-
-	static gpointer GetSpecific (MoonTlsKey& key) { return TlsGetValue (key.tls_index); }
-	static void SetSpecific (MoonTlsKey& key, gpointer data) { TlsSetValue (key.tls_index, data); }
-
-private:
-	MoonThread (ThreadFunc func, gpointer func_arg) : func (func), func_arg (func_arg) {}
-	MoonThread () { /* FIXME */ }
-
-	~MoonThread () { }
-
-	static void Cleanup (void *data);
-	static unsigned int Main (void* data);
-};
-
-class MoonMutex {
-public:
-	MoonMutex (bool recursive = false) { InitializeCriticalSection (&mutex); }
-	~MoonMutex () { DeleteCriticalSection (&mutex); }
-
-	void Lock () { EnterCriticalSection (&mutex); }
-	void Unlock () { LeaveCriticalSection (&mutex); }
-
-private:
-	friend class MoonCond;
-	CRITICAL_SECTION mutex;
-};
-
-class MoonRWLock {
-public:
-	MoonRWLock () { InitializeSRWLock (&lock); }
-
-	~MoonRWLock () { DestroySRWLock (&lock); }
-
-	void ReadUnlock () { ReleaseSWRLockShared (&lock); }
-	void ReadLock () { AcquireSWRLockShared (&lock); }
-
-	void WriteUnlock () { ReleaseSWRLockExclusive (&lock); }
-	void WriteLock () { AcquireSWRLockExclusive (&lock); }
-
-private:
 	SRWLOCK lock;
+#endif
 };
 
 class MoonCond {
 public:
-	MoonCond () { InitializeConditionVariable (&cond); }
-	~MoonCond () { DestroyConditionVariable (&cond); }
 
-	void TimedWait (MoonMutex &mutex, timespec *ts) { SleepConditionVariableCS (&cond, &mutex.mutex, ts.tv_sec * 1000 + ts.tv_nsec / 100000); }
-	void Wait (MoonMutex &mutex) { SleepConditionVariableCS (&cond, &mutex.mutex, INFINITE); }
+	MoonCond ();
+	~MoonCond ();
 
-	void Signal () { WakeConditionVariable (&cond); }
-	void Broadcast () { WakeAllConditionVariable (&cond); }
+	void TimedWait (MoonMutex &mutex, timespec *ts);
+	void Wait (MoonMutex &mutex);
+	void Signal ();
+	void Broadcast ();
 
 private:
+#if PAL_THREADS_PTHREADS
+	pthread_cond_t cond;
+#elif PLATFORM_WINDOWS
 	CONDITION_VARIABLE cond;
+#endif
 };
 
-#endif
 
 };
 

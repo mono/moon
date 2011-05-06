@@ -12,11 +12,14 @@ G_END_DECLS
 
 #define INCLUDED_MONO_HEADERS 1
 
+#include "config.h"
+
+#include "pal.h"
+
 #include "runtime.h"
 #include "deployment.h"
 #include "downloader.h"
 #include "uri.h"
-#include "pal.h"
 #include "window.h"
 #include "debug.h"
 
