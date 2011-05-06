@@ -774,7 +774,7 @@ CurlHttpHandler::CurlHttpHandler () :
 	multicurl(NULL),
 	quit(false),
 	shutting_down(false),
-	worker_mutex(MoonMutex(true))
+	worker_mutex(true)
 {
 	// Create our pipe
 	if (pipe (fds) != 0) {

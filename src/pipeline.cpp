@@ -4934,7 +4934,7 @@ IMediaObject::SetMedia (Media *value)
 
 IMediaSource::IMediaSource (Type::Kind kind, Media *media)
 	: IMediaObject (kind, media),
-	  mutex (MoonMutex (true))
+	  mutex (true)
 {
 }
 

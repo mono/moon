@@ -389,7 +389,7 @@ List::ForEach (NodeAction action, void *data)
 
 
 Queue::Queue ()
-  : lock (MoonMutex(true))
+  : lock (true)
 {
 	list = new List ();
 }
