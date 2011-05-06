@@ -60,7 +60,7 @@ private:
 class MoonMutex {
 public:
 	MoonMutex (bool recursive = false) {
-		if (recursive) {
+		if (!recursive) {
 			pthread_mutex_init (&mutex, NULL);
 		}
 		else {
