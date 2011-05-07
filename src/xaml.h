@@ -14,7 +14,6 @@
 #define __MOON_XAML_H__
 
 #include <glib.h>
-#include <stdint.h>
 
 #include "enums.h"
 #include "uielement.h"

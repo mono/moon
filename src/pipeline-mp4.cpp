@@ -21,6 +21,9 @@
  */
 
 #include <config.h>
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
 
 #include "clock.h"
 #include "pipeline-mp4.h"
