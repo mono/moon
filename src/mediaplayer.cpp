@@ -591,8 +591,12 @@ MediaPlayer::AdvanceFrame ()
 		// no audio to sync to
 		guint64 now = TimeSpan_ToPts (element->GetTimeManager()->GetCurrentTime ());
 		guint64 elapsed_pts = now - start_time;
-		
-		target_pts = elapsed_pts + first_live_pts;
+
+		if (first_live_pts == G_MAXUINT64) {
+			target_pts = elapsed_pts;
+		} else {
+			target_pts = elapsed_pts + first_live_pts;
+		}
 		
 		/*
 		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, start_time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
@@ -707,10 +711,11 @@ MediaPlayer::AdvanceFrame ()
 		this->rendered_frames_per_second = rendered_frames_per_second;
 	}
 
-	gint32 timeout = GetTimeoutInterval () +
+	gint32 interval = GetTimeoutInterval ();
+	gint32 timeout = interval +
 		(MilliSeconds_FromPts (current_pts) -
 		 MilliSeconds_FromPts (target_pts));
-	SetTimeout (MAX (1, timeout));
+	SetTimeout (MIN (interval * 2, MAX (1, timeout)));
 	
 	return;
 }
