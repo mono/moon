@@ -7,7 +7,7 @@
 
 #if PAL_THREADS_PTHREADS
 #include <pthread.h>
-#elif PLATFORM_WINDOWS
+#elif PAL_THREADS_WINDOWS
 #error "windows support not finished"
 #else
 #error "config.h not included before #including pal-threads.h"
@@ -28,7 +28,7 @@ private:
 	friend class MoonThread;
 #if PAL_THREADS_PTHREADS
 	pthread_key_t tls_key;
-#elif PLATFORM_WINDOWS
+#elif PAL_THREADS_WINDOWS
 	DWORD tls_index;
 #endif
 };
@@ -70,7 +70,7 @@ private:
 	static pthread_key_t self_tls;
 	static void* Main (void* data);
 	static void Cleanup (void *data);
-#elif PLATFORM_WINDOWS
+#elif PAL_THREADS_WINDOWS
 	static unsigned int Main (void* data);
 #endif
 };
@@ -94,7 +94,7 @@ private:
 	friend class MoonCond;
 #if PAL_THREADS_PTHREADS
 	pthread_mutex_t mutex;
-#elif PLATFORM_WINDOWS
+#elif PAL_THREADS_WINDOWS
 	CRITICAL_SECTION mutex;
 #endif
 };
@@ -124,7 +124,7 @@ private:
 #else
 	pthread_mutex_t lock;
 #endif
-#elif PLATFORM_WINDOWS
+#elif PAL_THREADS_WINDOWS
 	SRWLOCK lock;
 #endif
 };
@@ -150,7 +150,7 @@ private:
 
 #if PAL_THREADS_PTHREADS
 	pthread_cond_t cond;
-#elif PLATFORM_WINDOWS
+#elif PAL_THREADS_WINDOWS
 	CONDITION_VARIABLE cond;
 #endif
 };
