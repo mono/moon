@@ -164,51 +164,6 @@ static int my_trace(CURL *handle, curl_infotype type, char *data, size_t size, v
 
 #endif
 
-bool
-CurlHttpHandler::EmitCallback (gpointer http_handler)
-{
-	CurlHttpHandler *handler;
-
-	STARTCALLTIMER (emit_call, "Emit - Call");
-
-	handler = (CurlHttpHandler *) http_handler;
-	handler->Emit ();
-	handler->unref ();
-
-	ENDCALLTIMER (emit_call, "Emit - Call");
-
-	return false;
-}
-
-void
-CurlHttpHandler::Emit ()
-{
-	CallData *node;
-	CallData *next;
-	List tmp;
-
-	SetCurrentDeployment ();
-
-	/* Clone the list and invoke the calls with the mutex unlocked */
-	worker_mutex.Lock();
-	node = (CallData *) calls.First ();
-	while (node != NULL) {
-		next = (CallData *) node->next;
-		calls.Unlink (node);
-		tmp.Append (node);
-		node = next;
-	}
-	worker_mutex.Unlock();
-
-	/* Invoke the calls */
-	node = (CallData *) tmp.First ();
-	while (node != NULL && !IsShuttingDown ()) {
-		node->func (node);
-		node = (CallData *) node->next;
-	}
-
-}
-
 static size_t
 header_received (void *ptr, size_t size, size_t nmemb, void *data)
 {
@@ -269,6 +224,9 @@ get_state_name (int state)
 	}
 }
 
+/*
+ * CurlDownloaderRequest
+ */
 
 CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequest::Options options)
 	: HttpRequest (Type::CURLDOWNLOADERREQUEST, handler, options), headers(NULL), response(NULL),
@@ -405,42 +363,8 @@ CurlDownloaderResponse::CurlDownloaderResponse (CurlHttpHandler *bridge,
 
 	closure = new ResponseClosure (this);
 }
-
-CurlDownloaderResponse::~CurlDownloaderResponse ()
-{
-	g_free (statusText);
-}
-
 void
-CurlDownloaderResponse::ClearRequest ()
 {
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::ClearRequest () request: %p\n", request);
-	request = NULL;
-}
-
-void
-CurlDownloaderResponse::Open ()
-{
-	VERIFY_MAIN_THREAD
-
-	if (IsAborted ())
-		return;
-
-	if (request == NULL)
-		return;
-
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::Open () request: %p handle: %p\n", request, request->GetHandle ());
-	bridge->OpenHandle (request, request->GetHandle ());
-}
-
-static void
-_close_handle (CallData *cd)
-{
-	cd->bridge->CloseHandle (cd->req, cd->req->GetHandle ());
-	cd->req->AddTickCall (_abort);
-}
-
-void
 CurlDownloaderRequest::AbortImpl () {
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::Abort request:%p response:%p\n", this, response);
 
@@ -506,6 +430,45 @@ void
 CurlDownloaderRequest::NotifyFinalUri (const char *value)
 {
 	HttpRequest::NotifyFinalUri (value);
+}
+
+/*
+ * CurlDownloaderResponse
+ */
+
+CurlDownloaderResponse::~CurlDownloaderResponse ()
+{
+	g_free (statusText);
+}
+
+void
+CurlDownloaderResponse::ClearRequest ()
+{
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::ClearRequest () request: %p\n", request);
+	VERIFY_MAIN_THREAD;
+	request = NULL;
+}
+
+void
+CurlDownloaderResponse::Open ()
+{
+	VERIFY_MAIN_THREAD
+
+	if (IsAborted ())
+		return;
+
+	if (request == NULL)
+		return;
+
+	LOG_CURL ("BRIDGE CurlDownloaderResponse::Open () request: %p handle: %p\n", request, request->GetHandle ());
+	bridge->OpenHandle (request, request->GetHandle ());
+}
+
+static void
+_close_handle (CallData *cd)
+{
+	cd->bridge->CloseHandle (cd->req, cd->req->GetHandle ());
+	cd->req->AddTickCall (_abort);
 }
 
 void
@@ -690,6 +653,10 @@ CurlDownloaderResponse::Finished ()
 		request->Succeeded ();
 }
 
+/*
+ * CurlNode
+ */
+
 class CurlNode : public List::Node {
 public:
 	enum Action {
@@ -715,6 +682,9 @@ public:
 	}
 };
 
+/*
+ * HandleNode
+ */
 class HandleNode : public List::Node {
 public:
 	CurlDownloaderRequest* res;
@@ -754,6 +724,10 @@ find_handle (List::Node *node, void *data)
 	HttpRequest* handle = (HttpRequest*)data;
 	return (rn->res == handle);
 }
+
+/*
+ * CurlHttpHandler
+ */
 
 CurlHttpHandler::CurlHttpHandler () :
 	HttpHandler (Type::CURLHTTPHANDLER),
@@ -1115,6 +1089,54 @@ CurlHttpHandler::IsDataThread ()
 {
 	return MoonThread::IsThread (worker_thread);
 }
+
+bool
+CurlHttpHandler::EmitCallback (gpointer http_handler)
+{
+	CurlHttpHandler *handler;
+
+	STARTCALLTIMER (emit_call, "Emit - Call");
+
+	handler = (CurlHttpHandler *) http_handler;
+	handler->Emit ();
+	handler->unref ();
+
+	ENDCALLTIMER (emit_call, "Emit - Call");
+
+	return false;
+}
+
+void
+CurlHttpHandler::Emit ()
+{
+	CallData *node;
+	CallData *next;
+	List tmp;
+
+	SetCurrentDeployment ();
+
+	/* Clone the list and invoke the calls with the mutex unlocked */
+	worker_mutex.Lock();
+	node = (CallData *) calls.First ();
+	while (node != NULL) {
+		next = (CallData *) node->next;
+		calls.Unlink (node);
+		tmp.Append (node);
+		node = next;
+	}
+	worker_mutex.Unlock();
+
+	/* Invoke the calls */
+	node = (CallData *) tmp.First ();
+	while (node != NULL && !IsShuttingDown ()) {
+		node->func (node);
+		node = (CallData *) node->next;
+	}
+}
+
+/*
+ * CallData
+ */
 
 CallData::CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req)
 	: bridge(bridge), func(func), res(NULL), req(req), buffer(NULL), size(0), name(NULL), val(NULL), curl_code (CURLE_OK)
