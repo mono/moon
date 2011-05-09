@@ -5135,7 +5135,7 @@ ASFFrameReader::Reset ()
 void
 ASFFrameReader::AddFrameIndex ()
 {
-	gint64 packet_count = demuxer->GetPacketCount ();
+	guint64 packet_count;
 
 	if (packet_index == G_MAXUINT64) {
 		/* This stream isn't seekable (mms for instance) */
