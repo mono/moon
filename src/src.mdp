@@ -212,7 +212,6 @@
     <File subtype="Code" buildaction="Compile" name="keyboard.cpp" />
     <File subtype="Code" buildaction="Compile" name="popup.cpp" />
     <File subtype="Code" buildaction="Nothing" name="popup.h" />
-    <File subtype="Code" buildaction="Nothing" name="mutex.h" />
     <File subtype="Code" buildaction="Compile" name="application.cpp" />
     <File subtype="Code" buildaction="Nothing" name="application.h" />
     <File subtype="Code" buildaction="Compile" name="bitmapimage.cpp" />
