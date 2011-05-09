@@ -385,6 +385,9 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 guint64
 ASFDemuxer::GetPacketCount ()
 {
+	if (file_properties->IsBroadcast ())
+		return G_MAXUINT64;
+
 	return file_properties->data_packet_count;
 }
 
@@ -726,8 +729,8 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 	data_packet_count = source->ReadLE_U64 ();
 	source->ReadLE_U16 (); /* reserved field */
 	
-	LOG_ASF ("ASFDemuxer::ReadHeader (): Success: data_object_size: %" G_GINT64_FORMAT " data_packet_count: %" G_GINT64_FORMAT "\n",
-		data_object_size, data_packet_count);
+	LOG_ASF ("ASFDemuxer::ReadHeader (): Success: data_object_size: %" G_GINT64_FORMAT " data_packet_count: %" G_GINT64_FORMAT " IsBroadcast: %i\n",
+		data_object_size, data_packet_count, file_properties->IsBroadcast ());
 
 	header_read = true;
 
