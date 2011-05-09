@@ -1,7 +1,7 @@
 if INSTALL_MONODEVELOP_SDK
-SDK_ROOT=$(exec_prefix)/lib/moonlight
-SDK4_DIR=$(DESTDIR)$(SDK_ROOT)/4.0
-SDK4_REDIST_DIR=$(DESTDIR)$(SDK_ROOT)/4.0-redist
+SDK_ROOT=$(DESTDIR)$(exec_prefix)/lib/moonlight
+SDK4_DIR=$(SDK_ROOT)/4.0
+SDK4_REDIST_DIR=$(SDK_ROOT)/4.0-redist
 
 CLASS_DIR=$(top_builddir)/class/lib/2.1
 SCRIPTS_DIR=$(top_builddir)/scripts
