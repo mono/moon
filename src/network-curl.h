@@ -28,7 +28,6 @@
 
 namespace Moonlight {
 
-class ResponseClosure;
 class CurlDownloaderRequest;
 class CurlDownloaderResponse;
 class CallData;
@@ -36,26 +35,14 @@ class CurlHttpHandler;
 
 typedef void ( * CallHandler ) ( CallData * object ) ;
 
-class Closure : public EventObject {
-public:
-	/* @SkipFactories */
-	Closure (CurlHttpHandler *value)
-		: bridge (value)
-	{
-	}
-
-	virtual ~Closure () {}
-
-	CurlHttpHandler* bridge;
-};
-
 class CurlHttpHandler : public HttpHandler {
  public:
 	CURL* sharecurl;
 	CURL* multicurl;
-	DOPtr<Closure> closure;
+	bool thread_started;
 	bool quit;
 	bool shutting_down;
+	bool tick_call_pending;
 	int fds [2]; // file descriptors to select on in addition to curl's file descriptors
 	MoonThread *worker_thread;
 	MoonMutex worker_mutex;
@@ -81,7 +68,7 @@ class CurlHttpHandler : public HttpHandler {
 
 	void GetData ();
 	void AddCallback (CallData *data);
-	void AddCallback (CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
+	void AddCallback (CallHandler func, CurlDownloaderResponse *res, void *buffer, size_t size);
 	bool IsDataThread ();
 	bool IsShuttingDown () { return shutting_down; }
 	static bool EmitCallback (gpointer http_handler);
@@ -92,7 +79,7 @@ class CurlHttpHandler : public HttpHandler {
 
 class CallData : public List::Node {
 public:
-	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderResponse *res, char *buffer, size_t size, const char* name, const char* val);
+	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderResponse *res, void *buffer, size_t size);
 	CallData (CurlHttpHandler *bridge, CallHandler func, CurlDownloaderRequest *req);
 	virtual ~CallData ();
 
@@ -100,10 +87,8 @@ public:
 	CallHandler func;
 	CurlDownloaderResponse *res;
 	CurlDownloaderRequest *req;
-	char *buffer;
+	void *buffer;
 	size_t size;
-	const char *name;
-	const char *val;
 	CURLcode curl_code;
 };
 
@@ -130,7 +115,7 @@ class CurlDownloaderRequest : public HttpRequest {
 	/* @SkipFactories */
 	CurlDownloaderRequest (CurlHttpHandler *bridge, HttpRequest::Options options);
 	virtual ~CurlDownloaderRequest ();
-	virtual void AbortImpl ();
+	virtual void AbortImpl ();  // thread-safe
 	const bool IsAborted () {
 		if (state != ABORTED && bridge->IsShuttingDown ())
 			state = ABORTED;
@@ -154,12 +139,13 @@ class CurlDownloaderRequest : public HttpRequest {
 
 class CurlDownloaderResponse : public HttpResponse {
  private:
-	CurlHttpHandler *bridge;
-	CurlDownloaderRequest *request;
+	CurlHttpHandler *bridge; // thread-safe
+	CurlDownloaderRequest *request; // main thread only
 
 	long status;
-	char* statusText;
-	DOPtr<ResponseClosure> closure;
+	char *statusText; // main thread only
+	char *final_uri; //
+	bool self_ref;
 
 	enum State {
 		STOPPED = 0,
@@ -172,6 +158,10 @@ class CurlDownloaderResponse : public HttpResponse {
 	State state;
 	bool aborted;
 	bool reported_start;
+
+	static void DataReceivedCallback (CallData *data);
+	static void HeaderReceivedCallback (CallData *data);
+	static void NotifyFinalUriCallback (CallData *data);
 
  public:
 	/* @SkipFactories */
@@ -188,33 +178,18 @@ class CurlDownloaderResponse : public HttpResponse {
 	}
 
 	void Open ();
-	void HeaderReceived (void *ptr, size_t size);
-	size_t DataReceived (void *ptr, size_t size);
+	void HeaderReceived (void *ptr, size_t size); // thread-safe
+	size_t DataReceived (void *ptr, size_t size); // thread-safe
+	void NotifyFinalUri (char *uri); // main thread only
 
 	void Started ();
-	void Available (char* buffer, size_t size);
+	void Available (void *buffer, size_t size);
 	void Finished ();
-	void Visitor (const char *name, const char *val);
 	void Close ();
 	CURL* GetHandle () { return request ? request->GetHandle () : NULL; }
 	void ClearRequest ();
 };
 
-class ResponseClosure : public EventObject {
-public:
-	/* @SkipFactories */
-	ResponseClosure (CurlDownloaderResponse *value)
-		: res (value)
-	{
-		res->ref ();
-	}
-
-	virtual ~ResponseClosure ()
-	{
-		res->unref ();
-	}
-	CurlDownloaderResponse *res;
-};
 
 };
 #endif /* __MOON_NETWORK_CURL__ */
