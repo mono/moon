@@ -1298,7 +1298,7 @@ MediaElement::CurrentStateChangedHandler (Playlist *playlist, EventArgs *args)
 void
 MediaElement::MediaErrorHandler (Playlist *playlist, ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s Initializing: %i Uri: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL, flags & Initializing, GetSource ()->ToString ());
+	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s Initializing: %i Uri: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL, flags & Initializing, GetSource () ? GetSource ()->ToString () : NULL);
 	VERIFY_MAIN_THREAD;
 	
 	if (state == MediaElementStateClosed && !(flags & Initializing) && !(flags & ErrorPending))
