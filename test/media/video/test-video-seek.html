@@ -47,7 +47,7 @@
 
 	function logResult ()
 	{
-		TestLogger.LogDebug ("logResult, seeked: " + seeked + ", ready: " + ready + ", current_pos: " + current_pos + ", max_pox: " + max_pos);
+		TestLogger.LogDebug ("logResult, seeked: " + seeked + ", ready: " + ready + ", current_pos: " + current_pos + ", max_pox: " + max_pos + " BufferingProgress: " + mediaElement.BufferingProgress);
 		if (!(seeked && ready)) {
 			setTimeout ("logResult ();", 250);
 			return;
@@ -72,7 +72,7 @@
 	{
 		var diff;
 
-		TestLogger.LogDebug ("doSeek, seeks_done: " + seeks_done + ", seek_interval: " + seek_interval);
+		TestLogger.LogDebug ("doSeek, seeks_done: " + seeks_done + ", seek_interval: " + seek_interval + " BufferingProgress: " + mediaElement.BufferingProgress);
 
 		if (done) {
 			logResult ();
