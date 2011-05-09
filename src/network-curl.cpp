@@ -47,8 +47,6 @@ namespace Moonlight {
 #define ENDCALLTIMER(id,str)
 #endif
 
-class CurlDownloaderRequest;
-class CurlDownloaderResponse;
 
 static size_t header_received (void *ptr, size_t size, size_t nmemb, void *data);
 static size_t data_received (void *ptr, size_t size, size_t nmemb, void *data);
@@ -272,18 +270,9 @@ get_state_name (int state)
 }
 
 
-#if 0
-static void
-_finished (CallData *sender)
-{
-	CurlDownloaderResponse* res = (CurlDownloaderResponse*) ((CallData*)sender)->res;
-	res->Finished ();
-}
-#endif
-
 CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequest::Options options)
 	: HttpRequest (Type::CURLDOWNLOADERREQUEST, handler, options), headers(NULL), response(NULL),
-	  bridge(handler), post(NULL), postlast(NULL), body(NULL), state(NONE), aborting(FALSE)
+	  bridge(handler), body(NULL), state(NONE), aborting(FALSE)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::CurlDownloaderRequest %p\n", this);
 
@@ -309,7 +298,8 @@ CurlDownloaderRequest::CurlDownloaderRequest (CurlHttpHandler *handler, HttpRequ
 	curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
 }
 
-void CurlDownloaderRequest::Started ()
+void
+CurlDownloaderRequest::Started ()
 {
 	HttpRequest::Started (response);
 }
@@ -320,14 +310,16 @@ CurlDownloaderRequest::Succeeded ()
 	HttpRequest::Succeeded ();
 }
 
-void CurlDownloaderRequest::SetHeaderImpl (const char *name, const char *value, bool disable_folding)
+void
+CurlDownloaderRequest::SetHeaderImpl (const char *name, const char *value, bool disable_folding)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::SetHttpHeader %p - %s:%s\n", this, name, value);
 	char *header = g_strdup_printf ("%s: %s", name, value);
 	headers = curl_slist_append(headers, header);
 }
 
-void CurlDownloaderRequest::SetBodyImpl (const void *ptr, guint32 size)
+void
+CurlDownloaderRequest::SetBodyImpl (const void *ptr, guint32 size)
 {
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::SetBody (%p, %u) %p\n", ptr, size, this);
 
@@ -338,7 +330,8 @@ void CurlDownloaderRequest::SetBodyImpl (const void *ptr, guint32 size)
 	body_set = true;
 }
 
-void CurlDownloaderRequest::SendImpl ()
+void
+CurlDownloaderRequest::SendImpl ()
 {
 	LOG_CURL ("BRIDGE CurlDownloaderRequest::Send %p\n", this);
 
@@ -545,18 +538,6 @@ CurlDownloaderResponse::Close ()
 	state = DONE;
 
 	Finished ();
-}
-
-int CurlDownloaderResponse::GetResponseStatus ()
-{
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::GetResponseStatus %p\n", this);
-	return status;
-}
-
-const char * CurlDownloaderResponse::GetResponseStatusText ()
-{
-	LOG_CURL ("BRIDGE CurlDownloaderResponse::GetResponseStatusText %p\n", this);
-	return 0;
 }
 
 void
@@ -1096,7 +1077,7 @@ CurlHttpHandler::GetData ()
 
 		LOG_CURL ("BRIDGE CurlHttpHandler::GetData (): Entering select...\n");
 		if (pselect (available + 1, &r, &w, &x, &tv, NULL) < 0) {
-			// ths is harmless
+			// this is harmless
 			//fprintf(stderr, "Moonlight: Curl Error: select (%i,,,,%li): %i: %s\n", available + 1, timeout, errno, strerror (errno));
 		} else if (FD_ISSET (fds [0], &r)) {
 			/* We need to read a byte from our pipe */

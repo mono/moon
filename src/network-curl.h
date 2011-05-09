@@ -10,12 +10,10 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-
 #ifdef HAVE_CURL
 
 #ifndef __MOON_NETWORK_CURL__
 #define __MOON_NETWORK_CURL__
-
 
 #include <glib.h>
 #include <unistd.h>
@@ -114,8 +112,6 @@ class CurlDownloaderRequest : public HttpRequest {
 	curl_slist *headers;
 	CurlDownloaderResponse *response;
 	CurlHttpHandler *bridge;
-	curl_httppost *post;
-	curl_httppost *postlast;
 	void *body;
 	CURL* curl;
 	bool body_set;
@@ -185,8 +181,6 @@ class CurlDownloaderResponse : public HttpResponse {
 	virtual ~CurlDownloaderResponse ();
 
 	void Abort ();
-	int GetResponseStatus ();
-	const char * GetResponseStatusText ();
 
 	bool IsAborted () {
 		aborted = aborted || bridge->IsShuttingDown ();
