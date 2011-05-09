@@ -14,6 +14,9 @@
 #include <glib.h>
 
 #include <stdlib.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
 #include <mono/mini/jit.h>
 #include <mono/metadata/debug-helpers.h>
 G_BEGIN_DECLS
@@ -51,6 +54,27 @@ namespace Moonlight {
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 extern gint64 provider_property_lookups;
 #endif
+
+#if OBJECT_TRACKING
+struct _MonoProfiler {
+ public:
+	const char *type_name; // Stacktraces are stored only for elements of this type
+	GPtrArray *gchandles;
+	GHashTable *jitted_methods;
+	GPtrArray *stacktraces;
+	Moonlight::MoonMutex locker;
+
+	_MonoProfiler (bool gchandle, bool jit);
+
+	void DumpJittedMethods ();
+	void DumpStrongGCHandles ();
+	void DumpTracesByType ();
+	static void method_jitted (_MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo, int result);
+	static void profiler_shutdown (_MonoProfiler *prof);
+	static void track_gchandle (_MonoProfiler *prof, int op, int type, uintptr_t handle, MonoObject *obj);
+
+};
+#endif /* OBJECT_TRACKING */
 
 /*
  * Deployment

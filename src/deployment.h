@@ -12,10 +12,6 @@
 
 #include <glib.h>
 
-#if HAVE_STDINT_H
-#include <stdint.h>
-#endif
-
 #include "enums.h"
 #include "dependencyobject.h"
 #include "fontmanager.h"
@@ -38,25 +34,6 @@ typedef struct _MonoJitInfo MonoJitInfo;
 
 
 #if OBJECT_TRACKING
-struct _MonoProfiler {
- public:
-	const char *type_name; // Stacktraces are stored only for elements of this type
-	GPtrArray *gchandles;
-	GHashTable *jitted_methods;
-	GPtrArray *stacktraces;
-	Moonlight::MoonMutex locker;
-
-	_MonoProfiler (bool gchandle, bool jit);
-
-	void DumpJittedMethods ();
-	void DumpStrongGCHandles ();
-	void DumpTracesByType ();
-	static void method_jitted (_MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo, int result);
-	static void profiler_shutdown (_MonoProfiler *prof);
-	static void track_gchandle (_MonoProfiler *prof, int op, int type, uintptr_t handle, MonoObject *obj);
-
-};
-
 typedef _MonoProfiler MonoProfiler;
 #endif /* OBJECT_TRACKING */
 
