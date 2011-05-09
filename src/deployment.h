@@ -12,6 +12,10 @@
 
 #include <glib.h>
 
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 #include "enums.h"
 #include "dependencyobject.h"
 #include "fontmanager.h"
