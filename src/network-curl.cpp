@@ -496,6 +496,9 @@ CurlDownloaderResponse::NotifyFinalUriCallback (CallData *data)
 void
 CurlDownloaderResponse::NotifyFinalUri (char *uri)
 {
+	if (request == NULL)
+		return;
+
 	request->NotifyFinalUri (uri);
 }
 
