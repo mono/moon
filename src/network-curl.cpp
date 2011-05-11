@@ -461,6 +461,7 @@ CurlDownloaderResponse::Abort ()
 	VERIFY_MAIN_THREAD;
 
 	if (IsAborted () && self_ref) {
+		self_ref = false;
 		unref (); // no need to stay alive anymore
 	}
 
@@ -478,6 +479,7 @@ CurlDownloaderResponse::Close ()
 	bridge->CloseHandle (request, request->GetHandle ());
 
 	if (self_ref) {
+		self_ref = false;
 		unref (); // no need to stay alive anymore
 	}
 	state = DONE;
