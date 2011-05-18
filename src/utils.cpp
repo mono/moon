@@ -422,24 +422,42 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 	array->pdata[index] = item;
 }
 
+#define COPYBY(TYPE, a, b, n) {		    \
+	long __n = (n) / sizeof (TYPE);	    \
+	register TYPE *__a = (TYPE *) (a);  \
+	register TYPE *__b = (TYPE *) (b);  \
+	                                    \
+	do {                                \
+		*__a++ = *__b++;            \
+	} while (--__n > 0);                \
+}
+
+#define MEMCOPY(dest, src, n) {                     \
+	switch (copy_mode) {                        \
+	case 1: COPYBY (long, dest, src, n); break; \
+	case 2: COPYBY (int, dest, src, n); break;  \
+	default: memcpy (dest, src, n);             \
+	}                                           \
+}
+
 static void
-msort (void *array, void *buf, size_t low, size_t high, size_t size, GCompareFunc compare)
+msort (void *array, void *buf, size_t low, size_t high, size_t size, int copy_mode, GCompareFunc compare)
 {
-	char *al, *am, *ah, *ls, *hs, *lo, *hi, *b;
+	char *a1, *al, *am, *ah, *ls, *hs, *lo, *hi, *b;
 	size_t copied = 0;
 	size_t mid;
 	
 	mid = MID (low, high);
 	
 	if (mid + 1 < high)
-		msort (array, buf, mid + 1, high, size, compare);
+		msort (array, buf, mid + 1, high, size, copy_mode, compare);
 	
 	if (mid > low)
-		msort (array, buf, low, mid, size, compare);
+		msort (array, buf, low, mid, size, copy_mode, compare);
 	
 	ah = ((char *) array) + ((high + 1) * size);
 	am = ((char *) array) + ((mid + 1) * size);
-	al = ((char *) array) + (low * size);
+	a1 = al = ((char *) array) + (low * size);
 	
 	b = (char *) buf;
 	lo = al;
@@ -458,6 +476,12 @@ msort (void *array, void *buf, size_t low, size_t high, size_t size, GCompareFun
 			lo += size;
 		
 		if (lo < am) {
+			if (copied == 0) {
+				/* avoid copying the leading items */
+				a1 = lo;
+				ls = lo;
+			}
+			
 			/* our last compare tells us hi < lo */
 			hi += size;
 			
@@ -465,21 +489,21 @@ msort (void *array, void *buf, size_t low, size_t high, size_t size, GCompareFun
 				hi += size;
 			
 			if (lo > ls) {
-				memcpy (b, ls, lo - ls);
+				MEMCOPY (b, ls, lo - ls);
 				copied += (lo - ls);
 				b += (lo - ls);
 			}
 			
-			memcpy (b, hs, hi - hs);
+			MEMCOPY (b, hs, hi - hs);
 			copied += (hi - hs);
 			b += (hi - hs);
 		} else if (copied) {
-			memcpy (b, ls, lo - ls);
+			MEMCOPY (b, ls, lo - ls);
 			copied += (lo - ls);
 			b += (lo - ls);
 			
 			/* copy everything we needed to re-order back into array */
-			memcpy (al, buf, copied);
+			MEMCOPY (a1, buf, copied);
 			return;
 		} else {
 			/* everything already in order */
@@ -487,15 +511,18 @@ msort (void *array, void *buf, size_t low, size_t high, size_t size, GCompareFun
 		}
 	} while (hi < ah);
 	
-	if (lo < am)
-		memcpy (b, lo, am - lo);
+	if (lo < am) {
+		MEMCOPY (b, lo, am - lo);
+		copied += (am - lo);
+	}
 	
-	memcpy (al, buf, ah - al);
+	MEMCOPY (a1, buf, copied);
 }
 
 void
 MergeSort (void *base, size_t nmemb, size_t size, GCompareFunc compare)
 {
+	int copy_mode;
 	void *tmp;
 	
 	if (nmemb < 2)
@@ -507,7 +534,14 @@ MergeSort (void *base, size_t nmemb, size_t size, GCompareFunc compare)
 		return;
 	}
 	
-	msort (base, tmp, 0, nmemb - 1, size, compare);
+	if ((((char *) base) - ((char *) 0)) % sizeof (long) == 0 && (size % sizeof (long)) == 0)
+		copy_mode = 1;
+	else if ((((char *) base) - ((char *) 0)) % sizeof (int) == 0 && (size % sizeof (int)) == 0)
+		copy_mode = 2;
+	else
+		copy_mode = 0;
+	
+	msort (base, tmp, 0, nmemb - 1, size, copy_mode, compare);
 	
 	free (tmp);
 }
