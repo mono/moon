@@ -30,42 +30,42 @@
 	    <EasingDoubleKeyFrame KeyTime="00:00:02" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:04" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:05" Value="22" EasingFunction="{StaticResource throbEase}"/>
-	    <EasingDoubleKeyFrame keytime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
+	    <EasingDoubleKeyFrame KeyTime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	  </DoubleAnimationUsingKeyFrames>
 	  <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Four" Storyboard.TargetProperty="Height" BeginTime="00:00:01.5">
 	    <EasingDoubleKeyFrame KeyTime="00:00:01" Value="22" EasingFunction="{StaticResource throbEase}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:02" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:04" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:05" Value="22" EasingFunction="{StaticResource throbEase}"/>
-	    <EasingDoubleKeyFrame keytime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
+	    <EasingDoubleKeyFrame KeyTime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	  </DoubleAnimationUsingKeyFrames>
 	  <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Five" Storyboard.TargetProperty="Height" BeginTime="-00:00:02">
 	    <EasingDoubleKeyFrame KeyTime="00:00:01" Value="22" EasingFunction="{StaticResource throbEase}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:02" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:04" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:05" Value="22" EasingFunction="{StaticResource throbEase}"/>
-	    <EasingDoubleKeyFrame keytime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
+	    <EasingDoubleKeyFrame KeyTime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	  </DoubleAnimationUsingKeyFrames>
 	  <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Six" Storyboard.TargetProperty="Height" BeginTime="-00:00:01.5">
 	    <EasingDoubleKeyFrame KeyTime="00:00:01" Value="22" EasingFunction="{StaticResource throbEase}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:02" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:04" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:05" Value="22" EasingFunction="{StaticResource throbEase}"/>
-	    <EasingDoubleKeyFrame keytime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
+	    <EasingDoubleKeyFrame KeyTime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	  </DoubleAnimationUsingKeyFrames>
 	  <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Seven" Storyboard.TargetProperty="Height" BeginTime="-00:00:01">
 	    <EasingDoubleKeyFrame KeyTime="00:00:01" Value="22" EasingFunction="{StaticResource throbEase}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:02" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:04" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:05" Value="22" EasingFunction="{StaticResource throbEase}"/>
-	    <EasingDoubleKeyFrame keytime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
+	    <EasingDoubleKeyFrame KeyTime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	  </DoubleAnimationUsingKeyFrames>
 	  <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Eight" Storyboard.TargetProperty="Height" BeginTime="-00:00:00.5">
 	    <EasingDoubleKeyFrame KeyTime="00:00:01" Value="22" EasingFunction="{StaticResource throbEase}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:02" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:04" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	    <EasingDoubleKeyFrame KeyTime="00:00:05" Value="22" EasingFunction="{StaticResource throbEase}"/>
-	    <EasingDoubleKeyFrame keytime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
+	    <EasingDoubleKeyFrame KeyTime="00:00:06" Value="18" EasingFunction="{StaticResource throbOut}"/>
 	  </DoubleAnimationUsingKeyFrames>
 	</Storyboard>
       </BeginStoryboard>
