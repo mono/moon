@@ -37,12 +37,24 @@ MoonConfigDialogGtk::MoonConfigDialogGtk (MoonWindowGtk *window, Surface *surfac
 {
 	GtkBox *vbox;
 
+#ifdef MOONLIGHT_GTK3
 	dialog = gtk_dialog_new_with_buttons ("Novell Moonlight Configuration", NULL, (GtkDialogFlags)
-					      GTK_DIALOG_NO_SEPARATOR,
+					      GTK_DIALOG_MODAL,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+#else
+	dialog = gtk_dialog_new_with_buttons ("Novell Moonlight Configuration", NULL, (GtkDialogFlags)
+					      GTK_DIALOG_NO_SEPARATOR, 
+					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+#endif
+
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
 
+#ifdef MOONLIGHT_GTK3
+	vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+#else
 	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
+#endif
+
 
 	notebook = gtk_notebook_new ();
 
@@ -74,6 +86,16 @@ MoonConfigDialogGtk::~MoonConfigDialogGtk ()
 	delete pages;
 }
 
+#ifdef MOONLIGHT_GTK3
+void
+MoonConfigDialogGtk::notebook_switch_page (GtkNotebook     *notebook,
+					   GtkWidget *page,
+					   guint            page_num,
+					   MoonConfigDialogGtk *dialog)
+{
+	((ConfigDialogPage*)(*dialog->pages)[page_num])->PageActivated ();
+}
+#else
 void
 MoonConfigDialogGtk::notebook_switch_page (GtkNotebook     *notebook,
 					   GtkNotebookPage *page,
@@ -82,6 +104,8 @@ MoonConfigDialogGtk::notebook_switch_page (GtkNotebook     *notebook,
 {
 	((ConfigDialogPage*)(*dialog->pages)[page_num])->PageActivated ();
 }
+#endif
+
 
 void
 MoonConfigDialogGtk::AddNotebookPage (const char *label_str,
@@ -119,15 +143,32 @@ bug_report_info (AboutConfigDialogPage *page)
 	Deployment *deployment = page->GetDialog()->GetDeployment();
 	MoonWindowGtk *window = page->GetDialog()->GetWindow();
 
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *dlg = gtk_dialog_new_with_buttons ("But Report Info",
+						      NULL /* FIXME parent */,
+						      (GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), 
+						      "Close", GTK_RESPONSE_CLOSE,
+						      NULL);
+#else
 	GtkWidget *dlg = gtk_dialog_new_with_buttons ("But Report Info",
 						      NULL /* FIXME parent */,
 						      (GtkDialogFlags)(GTK_DIALOG_NO_SEPARATOR | GTK_DIALOG_DESTROY_WITH_PARENT),
 						      "Close", GTK_RESPONSE_CLOSE,
 						      NULL);
+#endif
 
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *vbox = gtk_dialog_get_content_area(GTK_DIALOG(dlg));
+#else
 	GtkWidget *vbox = GTK_DIALOG (dlg)->vbox;
+#endif
 
+
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+#else
 	GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+#endif
 	GtkWidget *image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
 						     GTK_ICON_SIZE_BUTTON);
 	GtkWidget *label = gtk_label_new ("Cut and paste the information below into your bug report.  "
@@ -220,7 +261,11 @@ AboutConfigDialogPage::GetContentWidget ()
 			  (GtkAttachOptions)0,
 			  0, 0);
 
+#ifdef MOONLIGHT_GTK3
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
 	vbox = gtk_vbox_new (FALSE, 0);
+#endif
 
 	label = gtk_label_new ("");
 
@@ -293,7 +338,11 @@ PlaybackConfigDialogPage::GetContentWidget ()
 	const char *button_str = "Install Microsoft Media Pack";
 	gboolean sensitive = TRUE;
 
+#ifdef MOONLIGHT_GTK3
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+#else
 	vbox = gtk_vbox_new (FALSE, 2);
+#endif
 
 	if (Media::IsMSCodecsInstalled ()) {
 #if DEBUG
@@ -352,13 +401,25 @@ WebCamMicConfigDialogPage::GetContentWidget ()
 	GtkWidget *align;
 	GtkWidget *mic_align;
 
+#ifdef MOONLIGHT_GTK3
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+	cam_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+	mic_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+#else
 	hbox = gtk_hbox_new (TRUE, 2);
 	cam_box = gtk_vbox_new (FALSE, 2);
 	mic_box = gtk_vbox_new (FALSE, 2);
+#endif
 
 	align = gtk_alignment_new (0.5, 0, 1, 1);
 	cam_label = gtk_label_new ("Video Source");
+
+#ifdef MOONLIGHT_GTK3
+	cam_combo = gtk_combo_box_text_new ();
+#else
 	cam_combo = gtk_combo_box_new_text ();
+#endif
+
 	webcam = gtk_image_new ();
 
 	gtk_container_add (GTK_CONTAINER (align), cam_label);
@@ -368,7 +429,13 @@ WebCamMicConfigDialogPage::GetContentWidget ()
 
 	align = gtk_alignment_new (0.5, 0, 1, 1);
 	mic_label = gtk_label_new ("Audio Source");
+
+#ifdef MOONLIGHT_GTK3
+	mic_combo = gtk_combo_box_text_new ();
+#else
 	mic_combo = gtk_combo_box_new_text ();
+#endif
+
 	mic_align = gtk_alignment_new (0.5, 0.5, 0, 1);
 	microphone = gtk_progress_bar_new ();
 
@@ -381,7 +448,13 @@ WebCamMicConfigDialogPage::GetContentWidget ()
 	gtk_box_pack_start (GTK_BOX (hbox), cam_box, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), mic_box, FALSE, FALSE, 0);
 
+#ifdef MOONLIGHT_GTK3
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (microphone), GTK_ORIENTATION_VERTICAL);
+	gtk_progress_bar_set_inverted (GTK_PROGRESS_BAR (microphone), TRUE);
+#else
 	gtk_progress_bar_set_orientation (GTK_PROGRESS_BAR (microphone), GTK_PROGRESS_BOTTOM_TO_TOP);
+#endif
+
 
 	g_signal_connect (mic_combo, "changed", G_CALLBACK (select_device), this);
 	g_signal_connect (cam_combo, "changed", G_CALLBACK (select_device), this);
@@ -428,7 +501,13 @@ WebCamMicConfigDialogPage::Initialize ()
 	active_index = -1;
 	for (int i = 0; i < audio->GetCount (); i++) {
 		acd = audio->GetValueAt (i)->AsAudioCaptureDevice ();
+
+#ifdef MOONLIGHT_GTK3
+		gtk_combo_box_text_append (GTK_COMBO_BOX_TEXT (mic_combo), NULL, acd->GetFriendlyName ());
+#else
 		gtk_combo_box_append_text (GTK_COMBO_BOX (mic_combo), acd->GetFriendlyName ());
+#endif
+
 		if (acd->GetIsDefaultDevice () && active_index == -1)
 			active_index = i;
 	}
@@ -443,7 +522,13 @@ WebCamMicConfigDialogPage::Initialize ()
 	active_index = -1;
 	for (int i = 0; i < video->GetCount (); i++) {
 		vcd = video->GetValueAt (i)->AsVideoCaptureDevice ();
+
+#ifdef MOONLIGHT_GTK3
+		gtk_combo_box_text_append (GTK_COMBO_BOX_TEXT (cam_combo), NULL, vcd->GetFriendlyName ());
+#else
 		gtk_combo_box_append_text (GTK_COMBO_BOX (cam_combo), vcd->GetFriendlyName ());
+#endif
+
 		if (vcd->GetIsDefaultDevice () && active_index == -1)
 			active_index = i;
 	}
@@ -766,7 +851,11 @@ StorageConfigDialogPage::GetContentWidget ()
 	GtkWidget *vbox;
 	GtkWidget *label;
 
+#ifdef MOONLIGHT_GTK3
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
 	vbox = gtk_vbox_new (FALSE, 0);
+#endif
 
 	label = gtk_label_new ("The following Web sites are currently using application storage on your computer.");
 
@@ -816,7 +905,11 @@ StorageConfigDialogPage::GetContentWidget ()
 	gtk_box_pack_start (GTK_BOX (vbox), scrolled, TRUE, TRUE, 4);
 
 
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+#else
 	GtkWidget *hbox = gtk_hbox_new (TRUE, 4);
+#endif
 
 	delete_button = gtk_button_new_with_label ("Delete...");
 	gtk_widget_set_sensitive (delete_button, FALSE);
@@ -1001,7 +1094,11 @@ PermissionsConfigDialogPage::GetContentWidget ()
 	GtkWidget *vbox;
 	GtkWidget *label;
 
+#ifdef MOONLIGHT_GTK3
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
 	vbox = gtk_vbox_new (FALSE, 0);
+#endif
 
 	label = gtk_label_new ("Permissions");
 
@@ -1044,7 +1141,11 @@ PermissionsConfigDialogPage::GetContentWidget ()
 	gtk_box_pack_start (GTK_BOX (vbox), scrolled, TRUE, TRUE, 4);
 
 
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+#else
 	GtkWidget *hbox = gtk_hbox_new (TRUE, 4);
+#endif
 
 	allow_button = gtk_button_new_with_label ("Allow");
 	gtk_widget_set_sensitive (allow_button, FALSE);
@@ -1266,10 +1367,18 @@ DebugConfigDialogPage::GetContentWidget ()
 	GtkWidget *align;
 
 	align = gtk_alignment_new (0.5, 0.0, 0.0, 1.0);
+#ifdef MOONLIGHT_GTK3
+	hbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+#else
 	hbox = GTK_BOX (gtk_hbox_new (TRUE, 0));
+#endif
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (hbox));
 
+#ifdef MOONLIGHT_GTK3
+	vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 4));
+#else
 	vbox = GTK_BOX (gtk_vbox_new (TRUE, 4));
+#endif
 
 	gtk_box_pack_start (hbox, GTK_WIDGET (vbox), FALSE, FALSE, 0);
 
@@ -1431,7 +1540,13 @@ create_option_treeview (Surface *surface)
 	renderer = gtk_cell_renderer_toggle_new ();
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
 	gtk_tree_view_column_add_attribute (column, renderer, "active", 0);
+
+#ifdef MOONLIGHT_GTK3
+	g_signal_connect (renderer, "toggled", G_CALLBACK (option_cell_toggled), model);
+#else
 	gtk_signal_connect (GTK_OBJECT(renderer), "toggled", G_CALLBACK (option_cell_toggled), model);
+#endif
+
 	gtk_tree_view_append_column (treeview, column);
 
 	column = gtk_tree_view_column_new ();
@@ -1455,11 +1570,19 @@ AdvancedConfigDialogPage::GetContentWidget ()
 
 	Surface *surface = GetDialog()->GetSurface();
 
+#ifdef MOONLIGHT_GTK3
+	vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+#else
 	vbox = GTK_BOX (gtk_vbox_new (FALSE, 0));
+#endif
 
 	// Runtime debug options
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
+#ifdef MOONLIGHT_GTK3
+	gtk_box_pack_start (vbox, gtk_separator_new (GTK_ORIENTATION_HORIZONTAL), FALSE, FALSE, 8);
+#else
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+#endif
 
 	treeview = create_option_treeview (surface);
 
