@@ -72,6 +72,102 @@ swrast_screen_create (struct sw_winsys *ws)
 
 using namespace Moonlight;
 
+#ifdef MOONLIGHT_GTK3
+static Key
+MapKeyvalToKey (guint keyval)
+{
+	switch (keyval) {
+	case GDK_KEY_BackSpace:				return KeyBACKSPACE;
+	case GDK_KEY_Tab: case GDK_KEY_ISO_Left_Tab:		return KeyTAB;
+	case GDK_KEY_Return: case GDK_KEY_KP_Enter:		return KeyENTER;
+	case GDK_KEY_Shift_L: case GDK_KEY_Shift_R:		return KeySHIFT;
+	case GDK_KEY_Control_L: case GDK_KEY_Control_R:		return KeyCTRL;
+	case GDK_KEY_Alt_L: case GDK_KEY_Alt_R:			return KeyALT;
+	case GDK_KEY_Caps_Lock:				return KeyCAPSLOCK;
+	case GDK_KEY_Escape:				return KeyESCAPE;
+	case GDK_KEY_space: case GDK_KEY_KP_Space:		return KeySPACE;
+	case GDK_KEY_Page_Up: case GDK_KEY_KP_Page_Up:		return KeyPAGEUP;
+	case GDK_KEY_Page_Down: case GDK_KEY_KP_Page_Down:	return KeyPAGEDOWN;
+	case GDK_KEY_End: case GDK_KEY_KP_End:			return KeyEND;
+	case GDK_KEY_Home: case GDK_KEY_KP_Home:		return KeyHOME;
+	case GDK_KEY_Left: case GDK_KEY_KP_Left:		return KeyLEFT;
+	case GDK_KEY_Up: case GDK_KEY_KP_Up:			return KeyUP;
+	case GDK_KEY_Right: case GDK_KEY_KP_Right:		return KeyRIGHT;
+	case GDK_KEY_Down: case GDK_KEY_KP_Down:		return KeyDOWN;
+	case GDK_KEY_Insert: case GDK_KEY_KP_Insert:		return KeyINSERT;
+	case GDK_KEY_Delete: case GDK_KEY_KP_Delete:		return KeyDELETE;
+	case GDK_KEY_0: case GDK_KEY_parenright:		return KeyDIGIT0;
+	case GDK_KEY_1: case GDK_KEY_exclam:			return KeyDIGIT1;
+	case GDK_KEY_2: case GDK_KEY_at:			return KeyDIGIT2;
+	case GDK_KEY_3: case GDK_KEY_numbersign:		return KeyDIGIT3;
+	case GDK_KEY_4: case GDK_KEY_dollar:			return KeyDIGIT4;
+	case GDK_KEY_5: case GDK_KEY_percent:			return KeyDIGIT5;
+	case GDK_KEY_6: case GDK_KEY_asciicircum:		return KeyDIGIT6;
+	case GDK_KEY_7: case GDK_KEY_ampersand:			return KeyDIGIT7;
+	case GDK_KEY_8: case GDK_KEY_asterisk:			return KeyDIGIT8;
+	case GDK_KEY_9: case GDK_KEY_parenleft:			return KeyDIGIT9;
+	case GDK_KEY_a: case GDK_KEY_A:				return KeyA;
+	case GDK_KEY_b: case GDK_KEY_B:				return KeyB;
+	case GDK_KEY_c: case GDK_KEY_C:				return KeyC;
+	case GDK_KEY_d: case GDK_KEY_D:				return KeyD;
+	case GDK_KEY_e: case GDK_KEY_E:				return KeyE;
+	case GDK_KEY_f: case GDK_KEY_F:				return KeyF;
+	case GDK_KEY_g: case GDK_KEY_G:				return KeyG;
+	case GDK_KEY_h: case GDK_KEY_H:				return KeyH;
+	case GDK_KEY_i: case GDK_KEY_I:				return KeyI;
+	case GDK_KEY_j: case GDK_KEY_J:				return KeyJ;
+	case GDK_KEY_k: case GDK_KEY_K:				return KeyK;
+	case GDK_KEY_l: case GDK_KEY_L:				return KeyL;
+	case GDK_KEY_m: case GDK_KEY_M:				return KeyM;
+	case GDK_KEY_n: case GDK_KEY_N:				return KeyN;
+	case GDK_KEY_o: case GDK_KEY_O:				return KeyO;
+	case GDK_KEY_p: case GDK_KEY_P:				return KeyP;
+	case GDK_KEY_q: case GDK_KEY_Q:				return KeyQ;
+	case GDK_KEY_r: case GDK_KEY_R:				return KeyR;
+	case GDK_KEY_s: case GDK_KEY_S:				return KeyS;
+	case GDK_KEY_t: case GDK_KEY_T:				return KeyT;
+	case GDK_KEY_u: case GDK_KEY_U:				return KeyU;
+	case GDK_KEY_v: case GDK_KEY_V:				return KeyV;
+	case GDK_KEY_w: case GDK_KEY_W:				return KeyW;
+	case GDK_KEY_x: case GDK_KEY_X:				return KeyX;
+	case GDK_KEY_y: case GDK_KEY_Y:				return KeyY;
+	case GDK_KEY_z: case GDK_KEY_Z:				return KeyZ;
+		
+	case GDK_KEY_F1: case GDK_KEY_KP_F1:			return KeyF1;
+	case GDK_KEY_F2: case GDK_KEY_KP_F2:			return KeyF2;
+	case GDK_KEY_F3: case GDK_KEY_KP_F3:			return KeyF3;
+	case GDK_KEY_F4: case GDK_KEY_KP_F4:			return KeyF4;
+	case GDK_KEY_F5:					return KeyF5;
+	case GDK_KEY_F6:					return KeyF6;
+	case GDK_KEY_F7:					return KeyF7;
+	case GDK_KEY_F8:					return KeyF8;
+	case GDK_KEY_F9:					return KeyF9;
+	case GDK_KEY_F10:					return KeyF10;
+	case GDK_KEY_F11:					return KeyF11;
+	case GDK_KEY_F12:					return KeyF12;
+		
+	case GDK_KEY_KP_0:					return KeyNUMPAD0;
+	case GDK_KEY_KP_1:					return KeyNUMPAD1;
+	case GDK_KEY_KP_2:					return KeyNUMPAD2;
+	case GDK_KEY_KP_3:					return KeyNUMPAD3;
+	case GDK_KEY_KP_4:					return KeyNUMPAD4;
+	case GDK_KEY_KP_5:					return KeyNUMPAD5;
+	case GDK_KEY_KP_6:					return KeyNUMPAD6;
+	case GDK_KEY_KP_7:					return KeyNUMPAD7;
+	case GDK_KEY_KP_8:					return KeyNUMPAD8;
+	case GDK_KEY_KP_9:					return KeyNUMPAD9;
+		
+	case GDK_KEY_KP_Multiply:				return KeyMULTIPLY;
+	case GDK_KEY_KP_Add:				return KeyADD;
+	case GDK_KEY_KP_Subtract:				return KeySUBTRACT;
+	case GDK_KEY_KP_Decimal:				return KeyDECIMAL;
+	case GDK_KEY_KP_Divide:				return KeyDIVIDE;
+		
+	default:
+		return KeyUNKNOWN;
+	}
+}
+#else
 static Key
 MapKeyvalToKey (guint keyval)
 {
@@ -166,7 +262,120 @@ MapKeyvalToKey (guint keyval)
 		return KeyUNKNOWN;
 	}
 }
+#endif
 
+#ifdef MOONLIGHT_GTK3
+static int
+MapGdkToVKey (GdkEventKey *event)
+{
+	if (event->keyval >= GDK_KEY_A && event->keyval <= GDK_KEY_Z)
+		return event->keyval;
+	if (event->keyval >= GDK_KEY_a && event->keyval <= GDK_KEY_z)
+		return event->keyval - GDK_KEY_a + GDK_KEY_A;
+
+	if (event->keyval >= GDK_KEY_F1 && event->keyval <= GDK_KEY_F24)
+		return event->keyval - GDK_KEY_F1 + 0x70;
+
+	if (event->keyval >= GDK_KEY_KP_0 && event->keyval <= GDK_KEY_KP_9)
+		return event->keyval - GDK_KEY_KP_0 + 0x60;
+
+	switch (event->keyval) {
+	case GDK_KEY_Delete:
+		return 0x2e;
+
+	case GDK_KEY_parenright:
+	case GDK_KEY_0:
+		return 0x30;
+
+	case GDK_KEY_exclam:
+	case GDK_KEY_1:
+		return 0x31;
+
+	case GDK_KEY_at:
+	case GDK_KEY_2:
+		return 0x32;
+
+	case GDK_KEY_numbersign:
+	case GDK_KEY_3:
+		return 0x33;
+
+	case GDK_KEY_dollar:
+	case GDK_KEY_4:
+		return 0x34;
+
+	case GDK_KEY_percent:
+	case GDK_KEY_5:
+		return 0x35;
+
+	case GDK_KEY_asciicircum:
+	case GDK_KEY_6:
+		return 0x36;
+
+	case GDK_KEY_ampersand:
+	case GDK_KEY_7:
+		return 0x37;
+
+	case GDK_KEY_multiply:
+	case GDK_KEY_8:
+		return 0x38;
+
+	case GDK_KEY_parenleft:
+	case GDK_KEY_9:
+		return 0x39;
+
+	case GDK_KEY_Num_Lock:
+		return 0x90;
+
+	case GDK_KEY_colon:
+	case GDK_KEY_semicolon:
+		return 0xba;
+
+	case GDK_KEY_equal:
+	case GDK_KEY_plus:
+		return 0xbb;
+
+	case GDK_KEY_comma:
+	case GDK_KEY_less:
+		return 0xbc;
+
+	case GDK_KEY_minus:
+	case GDK_KEY_underscore:
+		return 0xbd;
+
+	case GDK_KEY_period:
+	case GDK_KEY_greater:
+		return 0xbe;
+
+	case GDK_KEY_slash:
+	case GDK_KEY_question:
+		return 0xbf;
+
+	case GDK_KEY_grave:
+	case GDK_KEY_asciitilde:
+		return 0xc0;
+
+	case GDK_KEY_bracketleft:
+	case GDK_KEY_braceleft:
+		return 0xdb;
+
+	case GDK_KEY_backslash:
+	case GDK_KEY_bar:
+		return 0xdc;
+
+	case GDK_KEY_bracketright:
+	case GDK_KEY_braceright:
+		return 0xdd;
+
+	case GDK_KEY_quotedbl:
+	case GDK_KEY_apostrophe:
+		return 0xde;
+
+	default:
+		printf ("default case for keyval 0x%0x keycode %d\n", event->keyval, event->hardware_keycode);
+		return event->hardware_keycode;
+	}
+}
+#else
 static int
 MapGdkToVKey (GdkEventKey *event)
 {
@@ -277,6 +486,7 @@ MapGdkToVKey (GdkEventKey *event)
 		return event->hardware_keycode;
 	}
 }
+#endif
 
 static MoonModifier
 MapGdkToModifier (int state)
@@ -352,6 +562,33 @@ public:
 		return MapGdkToModifier (event->state);
 	}
 	
+#ifdef MOONLIGHT_GTK3
+	virtual bool IsModifier ()
+	{
+#if GTK_CHECK_VERSION(2,10,0)
+	if (gtk_check_version(2,10,0))
+		return event->is_modifier;
+	else
+#endif
+		switch (event->keyval) {
+		case GDK_KEY_Shift_L:
+		case GDK_KEY_Shift_R:
+		case GDK_KEY_Control_L:
+		case GDK_KEY_Control_R:
+		case GDK_KEY_Meta_L:
+		case GDK_KEY_Meta_R:
+		case GDK_KEY_Alt_L:
+		case GDK_KEY_Alt_R:
+		case GDK_KEY_Super_L:
+		case GDK_KEY_Super_R:
+		case GDK_KEY_Hyper_L:
+		case GDK_KEY_Hyper_R:
+			return true;
+		default:
+			return false;
+		}
+	}
+#else
 	virtual bool IsModifier ()
 	{
 #if GTK_CHECK_VERSION(2,10,0)
@@ -377,6 +614,7 @@ public:
 			return false;
 		}
 	}
+#endif
 
 	bool IsRelease ()
 	{
@@ -398,6 +636,26 @@ private:
 	int keycode;
 };
 
+#ifdef MOONLIGHT_GTK3
+static void GetStylusInfoFromDevice (GdkDevice *gdk_device, TabletDeviceType *type, bool *is_inverted)
+{
+	if (!gdk_device)
+		return;
+
+	switch (gdk_device_get_source(gdk_device)) {
+	case GDK_SOURCE_PEN:
+	case GDK_SOURCE_ERASER:
+		*type = TabletDeviceTypeStylus;
+		break;
+	case GDK_SOURCE_MOUSE:
+	case GDK_SOURCE_CURSOR: /* XXX not sure where to lump this in..  in the stylus block? */
+	default:
+		*type = TabletDeviceTypeMouse;
+		break;
+	}
+	*is_inverted = (gdk_device_get_source(gdk_device) == GDK_SOURCE_ERASER);
+}
+#else
 static void GetStylusInfoFromDevice (GdkDevice *gdk_device, TabletDeviceType *type, bool *is_inverted)
 {
 	if (!gdk_device)
@@ -417,6 +675,7 @@ static void GetStylusInfoFromDevice (GdkDevice *gdk_device, TabletDeviceType *ty
 
 	*is_inverted = (gdk_device->source == GDK_SOURCE_ERASER);
 }
+#endif
 
 class MoonButtonEventGtk : public MoonButtonEvent {
 public:
@@ -1012,19 +1271,41 @@ MoonWindowingSystemGtk::ShowConsentDialog (const char *question, const char *det
 	const char *website_full = g_strdup_printf ("Website: <b>%s</b>", website);
 
 	Deployment *deployment = Deployment::GetCurrent ();
+#ifdef MOONLIGHT_GTK3
 	GtkWidget *dialog = gtk_dialog_new_with_buttons ("Moonlight", NULL, (GtkDialogFlags)
-							 (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR),
+							 (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
 							 GTK_STOCK_YES, GTK_RESPONSE_YES,
 							 GTK_STOCK_NO, GTK_RESPONSE_NO,
 							 NULL);
+#else
+	GtkWidget *dialog = gtk_dialog_new_with_buttons ("Moonlight", NULL, (GtkDialogFlags)
+						         (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR),
+							 GTK_STOCK_YES, GTK_RESPONSE_YES,
+							 GTK_STOCK_NO, GTK_RESPONSE_NO,
+							 NULL);
+#endif
 
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+
+#ifdef MOONLIGHT_GTK3
+	g_object_set (GTK_WIDGET (dialog), "resizable", false, NULL);
+#else
 	gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
+#endif
 
 	// HIG HBox
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+#else
 	GtkWidget *hbox = gtk_hbox_new (false, 12);
+#endif
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+
+#ifdef MOONLIGHT_GTK3
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox, true, true, 0);
+#else
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, true, true, 0);
+#endif
 
 	// Message box icon
 	GtkWidget *icon = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION, GTK_ICON_SIZE_DIALOG);
@@ -1032,7 +1313,11 @@ MoonWindowingSystemGtk::ShowConsentDialog (const char *question, const char *det
 	gtk_box_pack_start (GTK_BOX (hbox), icon, false, false, 0);
 
 	// Contents container
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
 	GtkWidget *vbox = gtk_vbox_new (false, 0);
+#endif
 	gtk_box_set_spacing (GTK_BOX (vbox), 10);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, true, true, 0);
 
@@ -1290,8 +1575,13 @@ MoonWindowingSystemGtk::GetCursorBlinkTimeout (MoonWindow *moon_window)
 	if (!(window = GDK_WINDOW (moon_window->GetPlatformWindow ())))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
+#ifdef MOONLIGHT_GTK3
+	if (!(screen = gdk_window_get_screen (window)))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+#else
 	if (!(screen = gdk_drawable_get_screen (window)))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+#endif
 	
 	if (!(settings = gtk_settings_get_for_screen (screen)))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
@@ -1343,8 +1633,13 @@ GetGdkScreen (MoonWindow *moon_window)
 {
 	if (moon_window) {
 		GdkWindow *window = GDK_WINDOW (moon_window->GetPlatformWindow ());
-		if (window) {
+		if (window) 
+		{
+			#ifdef MOONLIGHT_GTK3
+			GdkScreen *screen = gdk_window_get_screen (window);
+			#else
 			GdkScreen *screen = gdk_drawable_get_screen (window);
+			#endif
 			if (screen)
 				return screen;
 		}
@@ -1514,7 +1809,14 @@ MoonInstallerServiceGtk::Install (Deployment *deployment, bool unattended)
 	if (installed) {
 		LOG_OOB ("MoonInstallerServiceGtk::Install (): Spawning oob application.\n");
 		screen = gtk_widget_get_screen ((GtkWidget *) parent);
+
+		#ifdef MOONLIGHT_GTK3
+		char *display = gdk_screen_make_display_name(screen);
+		g_spawn_async (NULL, argv, NULL, (GSpawnFlags) 0, NULL, &display, &pid, NULL);
+		#else
 		gdk_spawn_on_screen (screen, NULL, argv, NULL, (GSpawnFlags) 0, NULL, NULL, &pid, NULL);
+		#endif
+
 		g_free (argv[0]);
 	} else {
 		LOG_OOB ("MoonInstallerServiceGtk::Install (): Not spawning oob application.\n");
