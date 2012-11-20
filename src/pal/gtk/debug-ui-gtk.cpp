@@ -441,11 +441,19 @@ show_debug (MoonWindowGtk* window)
 	Surface *surface = window->GetSurface ();
 	
 	if (!surface) {
+#ifdef MOONLIGHT_GTK3
+		GtkWidget *d = gtk_message_dialog_new (NULL,
+						       GTK_DIALOG_MODAL,
+						       GTK_MESSAGE_ERROR,
+						       GTK_BUTTONS_CLOSE,
+						       "This moonlight host hasn't been initialized with xaml content yet");
+#else		
 		GtkWidget *d = gtk_message_dialog_new (NULL,
 						       GTK_DIALOG_NO_SEPARATOR,
 						       GTK_MESSAGE_ERROR,
 						       GTK_BUTTONS_CLOSE,
 						       "This moonlight host hasn't been initialized with xaml content yet");
+#endif
 		gtk_dialog_run (GTK_DIALOG (d));
 		g_object_unref (d);
 		return;
@@ -715,7 +723,11 @@ show_sources (MoonWindowGtk *window)
 	GtkWidget *tree_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Sources");
 	gtk_window_set_default_size (GTK_WINDOW (tree_win), 600, 400);
+#ifdef MOONLIGHT_GTK3
+	GtkBox *vbox = GTK_BOX (gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
+#else	
 	GtkBox *vbox = GTK_BOX (gtk_vbox_new (false, 0));
+#endif
 
 	GtkTreeStore *tree_store = gtk_tree_store_new (3,
 						       G_TYPE_STRING,
@@ -879,7 +891,11 @@ create_debug_treeview (gboolean is_ex)
 	renderer = gtk_cell_renderer_toggle_new ();
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
 	gtk_tree_view_column_add_attribute (column, renderer, "active", 0);
-	gtk_signal_connect (GTK_OBJECT(renderer), "toggled", G_CALLBACK (debug_cell_toggled), model);
+#ifdef MOONLIGHT_GTK3
+        g_signal_connect (GTK_WIDGET(renderer), "toggled", G_CALLBACK (debug_cell_toggled), model);
+#else
+        gtk_signal_connect (GTK_OBJECT(renderer), "toggled", G_CALLBACK (debug_cell_toggled), model);
+#endif
 	gtk_tree_view_append_column (treeview, column);
 
 	column = gtk_tree_view_column_new ();
@@ -903,13 +919,22 @@ debug_info (MoonWindowGtk *window)
 	GtkBox *vbox;
 	GtkWidget *frame;
 
+#ifdef MOONLIGHT_GTK3
+	dialog = gtk_dialog_new_with_buttons ("Debug Info Options", NULL, (GtkDialogFlags)
+					      GTK_DIALOG_MODAL,
+					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+#else	
 	dialog = gtk_dialog_new_with_buttons ("Debug Info Options", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+#endif  
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
 	
-	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
-
+#ifdef MOONLIGHT_GTK3
+        vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+#else
+        vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
+#endif
 	// Debug options
 	frame = gtk_frame_new ("Debug Options");
 	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
@@ -1186,15 +1211,29 @@ debug_media (MoonWindowGtk *window)
 	data = (debug_media_data *) g_malloc0 (sizeof (debug_media_data));
 	 
 	Deployment::SetCurrent (deployment);
+#ifdef MOONLIGHT_GTK3
+	data->dialog = gtk_dialog_new_with_buttons ("MediaElements", NULL, (GtkDialogFlags)
+					      GTK_DIALOG_MODAL,
+					      "Copy", 16, "Play", 2, "Pause", 4, "Stop", 8, "FillBuffers", 1, GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+#else
 	data->dialog = gtk_dialog_new_with_buttons ("MediaElements", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      "Copy", 16, "Play", 2, "Pause", 4, "Stop", 8, "FillBuffers", 1, GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+#endif	
+#ifdef MOONLIGHT_GTK3
+	g_object_set (GTK_WIDGET (data->dialog), "resizable", true, NULL);
+#else
 	gtk_object_set (GTK_OBJECT (data->dialog), "resizable", true, NULL);
+#endif
 	gtk_window_set_type_hint (GTK_WINDOW (data->dialog), GDK_WINDOW_TYPE_HINT_NORMAL); // to show the maximize button
 
 	gtk_container_set_border_width (GTK_CONTAINER (data->dialog), 8);
 	
+#ifdef MOONLIGHT_GTK3
+        vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(data->dialog)));
+#else
 	vbox = GTK_BOX (GTK_DIALOG (data->dialog)->vbox);
+#endif
 	
 	/* Find all media elements */
 	deployment->objects_alive_mutex.Lock();
