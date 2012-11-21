@@ -59,7 +59,13 @@ struct _InstallDialogPrivate {
 
 static void install_dialog_class_init (InstallDialogClass *klass);
 static void install_dialog_init (InstallDialog *dialog);
+
+#ifdef MOONLIGHT_GTK3
+static void install_dialog_destroy (GtkWidget *obj);
+#else
 static void install_dialog_destroy (GtkObject *obj);
+#endif
+
 static void install_dialog_finalize (GObject *obj);
 
 
@@ -94,7 +100,12 @@ static void
 install_dialog_class_init (InstallDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+#ifdef MOONLIGHT_GTK3	
+	GtkWidgetClass *gtk_object_class = GTK_WIDGET_CLASS (klass);
+#else
 	GtkObjectClass *gtk_object_class = GTK_OBJECT_CLASS (klass);
+#endif
 	
 	parent_class = (GtkDialogClass *) g_type_class_ref (GTK_TYPE_DIALOG);
 	
@@ -115,7 +126,11 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_window_set_resizable ((GtkWindow *) dialog, false);
 	gtk_window_set_modal ((GtkWindow *) dialog, true);
 	
+#ifdef MOONLIGHT_GTK3	
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+#else
 	hbox = gtk_hbox_new (false, 12);
+#endif
 	
 	priv->icon = (GtkImage *) gtk_image_new ();
 	gtk_widget_show ((GtkWidget *) priv->icon);
@@ -138,7 +153,12 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_toggle_button_set_active (priv->desktop, false);
 	gtk_widget_show ((GtkWidget *) priv->desktop);
 	
+	
+#ifdef MOONLIGHT_GTK3	
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+#else
 	vbox = gtk_vbox_new (false, 2);
+#endif
 	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->start_menu, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, (GtkWidget *) priv->desktop, false, false, 0);
 	gtk_widget_show (vbox);
@@ -148,7 +168,11 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_container_add ((GtkContainer *) checkboxes, vbox);
 	gtk_widget_show (checkboxes);
 	
+#ifdef MOONLIGHT_GTK3	
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+#else
 	vbox = gtk_vbox_new (false, 6);
+#endif
 	gtk_box_pack_start ((GtkBox *) vbox, label, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, checkboxes, false, false, 0);
 	gtk_widget_show (vbox);
@@ -163,7 +187,11 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_container_add ((GtkContainer *) secondary, vbox);
 	gtk_widget_show (secondary);
 	
+#ifdef MOONLIGHT_GTK3	
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+#else
 	vbox = gtk_vbox_new (false, 6);
+#endif
 	gtk_box_pack_start ((GtkBox *) vbox, primary, false, false, 0);
 	gtk_box_pack_start ((GtkBox *) vbox, secondary, false, false, 0);
 	gtk_widget_show (vbox);
@@ -173,11 +201,21 @@ install_dialog_init (InstallDialog *dialog)
 	gtk_widget_show (hbox);
 	
 	//container = gtk_dialog_get_content_area ((GtkDialog *) dialog);
+	
+#ifdef MOONLIGHT_GTK3
+	container = gtk_dialog_get_content_area ((GtkDialog *) dialog);
+#else
 	container = ((GtkDialog *) dialog)->vbox;
+#endif
+
 	gtk_container_add ((GtkContainer *) container, hbox);
 	
 	/* Add OK and Cancel buttons */
+
+#ifndef MOONLIGHT_GTK3
 	gtk_dialog_set_has_separator ((GtkDialog *) dialog, false);
+#endif
+
 	gtk_dialog_add_button ((GtkDialog *) dialog, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	priv->ok_button = gtk_dialog_add_button ((GtkDialog *) dialog, "_Install Now", GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response ((GtkDialog *) dialog, GTK_RESPONSE_CANCEL);
@@ -220,11 +258,19 @@ install_dialog_finalize (GObject *obj)
 	G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 
+#ifdef MOONLIGHT_GTK3
+static void
+install_dialog_destroy (GtkWidget *obj)
+{
+	GTK_WIDGET_CLASS (parent_class)->destroy (obj);
+}
+#else
 static void
 install_dialog_destroy (GtkObject *obj)
 {
 	GTK_OBJECT_CLASS (parent_class)->destroy (obj);
 }
+#endif
 
 static void
 icon_loader_notify_cb (NotifyType type, gint64 args, gpointer user_data)
