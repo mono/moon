@@ -13,7 +13,12 @@ using namespace Moonlight;
 MoonClipboardGtk::MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType)
 {
 	GdkWindow *window = GDK_WINDOW (win->GetPlatformWindow ());
+
+#ifdef MOONLIGHT_GTK3
+	GdkDisplay *display = gdk_window_get_display (window);
+#else
 	GdkDisplay *display = gdk_drawable_get_display (GDK_DRAWABLE (window));
+#endif
 
 	GdkAtom gdk_type;
 
