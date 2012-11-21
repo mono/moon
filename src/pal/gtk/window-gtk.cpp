@@ -43,8 +43,9 @@
 #endif
 #undef Visual
 #undef Region
+#ifndef MOONLIGHT_GTK3
 #undef Window
-
+#endif
 #ifdef USE_GLX
 #include "context-opengl.h"
 typedef void (* PFNGLXCOPYSUBBUFFERPROC) (Display *dpy, GLXDrawable drawable, int x, int y, int width, int height);
@@ -58,6 +59,11 @@ typedef void (* PFNGLXCOPYSUBBUFFERPROC) (Display *dpy, GLXDrawable drawable, in
 // Gallium context cache size.
 //
 #define CONTEXT_CACHE_SIZE 1
+
+#ifdef MOONLIGHT_GTK3
+#include <gtk/gtkx.h>
+#endif
+
 
 using namespace Moonlight;
 
@@ -88,8 +94,10 @@ MoonWindowGtk::MoonWindowGtk (MoonWindowType windowType, int w, int h, MoonWindo
 	this->windowType = windowType;
 
 	backing_image_data = NULL;
+#ifndef MOONLIGHT_GTK3
 	backing_store = NULL;
 	backing_store_gc = NULL;
+#endif
 	backing_store_width = backing_store_height = 0;
 
 	switch (windowType) {
@@ -127,10 +135,12 @@ MoonWindowGtk::~MoonWindowGtk ()
 	if (widget != NULL)
 		gtk_widget_destroy (widget);
 
+#ifndef MOONLIGHT_GTK3
 	if (backing_store)
 		g_object_unref (backing_store);
 	if (backing_store_gc)
 		g_object_unref (backing_store_gc);
+#endif
 
 	if (backing_image_data)
 		g_free (backing_image_data);
@@ -160,11 +170,15 @@ MoonWindowGtk::~MoonWindowGtk ()
 void
 MoonWindowGtk::ConnectToContainerPlatformWindow (gpointer container_window)
 {
-	//  GtkPlug container and surface inside
+#ifdef MOONLIGHT_GTK3
+	container = gtk_plug_new (intptr_t(container_window));
+	gtk_widget_set_can_focus(GTK_WIDGET (container),true);
+#else
 	container = gtk_plug_new ((GdkNativeWindow) container_window);
 
 	// Connect signals to container
 	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (container), GTK_CAN_FOCUS);
+#endif
 
 	gtk_widget_add_events (container,
 			       GDK_BUTTON_PRESS_MASK |
@@ -190,6 +204,17 @@ MoonWindowGtk::GetClipboard (MoonClipboardType clipboardType)
 	return new MoonClipboardGtk (this, clipboardType);
 }
 
+#ifdef MOONLIGHT_GTK3
+gpointer
+MoonWindowGtk::GetPlatformWindow ()
+{
+	GtkWidget *w = widget;
+	while (gtk_widget_get_parent(w))
+		w = gtk_widget_get_parent(w);
+
+	return gtk_widget_get_window(w);
+}
+#else
 gpointer
 MoonWindowGtk::GetPlatformWindow ()
 {
@@ -199,6 +224,7 @@ MoonWindowGtk::GetPlatformWindow ()
 
 	return w->window;
 }
+#endif
 
 void
 MoonWindowGtk::InitializeFullScreen (MoonWindow *parent)
@@ -272,7 +298,11 @@ MoonWindowGtk::InitializeCommon ()
 			       GDK_SCROLL_MASK |
 			       GDK_FOCUS_CHANGE_MASK);
 	
+#ifdef MOONLIGHT_GTK3
+	gtk_widget_set_can_focus(widget,true);
+#else
 	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
+#endif
 }
 
 void
@@ -405,8 +435,11 @@ MoonWindowGtk::SetBackgroundColor (Color *color)
 void
 MoonWindowGtk::SetCursor (CursorType cursor)
 {
+#ifdef MOONLIGHT_GTK3
+	if (gtk_widget_get_window(widget)) {
+#else
 	if (widget->window) {
-
+#endif
 		GdkCursor *c = NULL;
 		switch (cursor) {
 		case CursorTypeDefault:
@@ -440,21 +473,46 @@ MoonWindowGtk::SetCursor (CursorType cursor)
 			// Silverlight display no cursor if the enumeration value is invalid (e.g. -1)
 		default:
 			//from gdk-cursor doc :"To make the cursor invisible, use gdk_cursor_new_from_pixmap() to create a cursor with no pixels in it."
+			#ifdef MOONLIGHT_GTK3
+			cairo_surface_t *empty = cairo_image_surface_create_for_data ((unsigned char*)"0x00", CAIRO_FORMAT_A1, 16, 16, cairo_format_stride_for_width(CAIRO_FORMAT_A1, 16));
+			GdkPixbuf *pixbuf = gdk_pixbuf_get_from_surface (empty, 0, 0, 16, 16);
+			c = gdk_cursor_new_from_pixbuf (gdk_display_get_default(), pixbuf, 8, 8);
+			cairo_surface_destroy(empty);
+			#else
 			GdkPixmap *empty = gdk_bitmap_create_from_data (NULL, "0x00", 1, 1);
 			GdkColor empty_color = {0, 0, 0, 0};
 			c = gdk_cursor_new_from_pixmap (empty, empty, &empty_color, &empty_color, 0, 0);
 			g_object_unref (empty);
+			#endif
+
 			break;
 		}
 
-
+		#ifdef MOONLIGHT_GTK3
+		gdk_window_set_cursor (gtk_widget_get_window(widget), c);
+		if (c)
+			g_object_unref (c);
+		#else
 		gdk_window_set_cursor (widget->window, c);
 
 		if (c)
 			gdk_cursor_unref (c);
+		#endif
 	}
 }
 
+#ifdef MOONLIGHT_GTK3
+void
+MoonWindowGtk::Invalidate (Rect r)
+{
+	GtkAllocation allocation;
+	gtk_widget_get_allocation(widget, &allocation);
+	gtk_widget_queue_draw_area (widget,
+				    (int) (allocation.x + r.x), 
+				    (int) (allocation.y + r.y), 
+				    (int) r.width, (int)r.height);
+}
+#else
 void
 MoonWindowGtk::Invalidate (Rect r)
 {
@@ -463,13 +521,23 @@ MoonWindowGtk::Invalidate (Rect r)
 				    (int) (widget->allocation.y + r.y), 
 				    (int) r.width, (int)r.height);
 }
+#endif
 
+#ifdef MOONLIGHT_GTK3
+void
+MoonWindowGtk::ProcessUpdates ()
+{
+	if (gtk_widget_get_window(widget))
+		gdk_window_process_updates (gtk_widget_get_window(widget), false);
+}
+#else
 void
 MoonWindowGtk::ProcessUpdates ()
 {
 	if (widget->window)
 		gdk_window_process_updates (widget->window, false);
 }
+#endif
 
 gboolean
 MoonWindowGtk::HandleEvent (gpointer platformEvent)
@@ -479,11 +547,20 @@ MoonWindowGtk::HandleEvent (gpointer platformEvent)
 	return TRUE;
 }
 
+
+#ifdef MOONLIGHT_GTK3
 void
 MoonWindowGtk::Show ()
 {
 	gtk_widget_show (widget);
-
+	gtk_widget_set_can_focus(widget,true);
+}
+#else
+void
+MoonWindowGtk::Show ()
+{
+	gtk_widget_show (widget);
+	
 	// The window has to be realized for this call to work
 	gtk_widget_set_extension_events (widget, GDK_EXTENSION_EVENTS_CURSOR);
 	/* we need to explicitly enable the devices */
@@ -497,6 +574,7 @@ MoonWindowGtk::Show ()
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 }
+#endif
 
 void
 MoonWindowGtk::Hide ()
@@ -504,6 +582,18 @@ MoonWindowGtk::Hide ()
 	gtk_widget_hide (widget);
 }
 
+#ifdef MOONLIGHT_GTK3
+gboolean
+MoonWindowGtk::draw_event (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+{
+        GtkAllocation allocation;
+        gtk_widget_get_allocation (widget, &allocation);
+
+        MoonWindowGtk *window = (MoonWindowGtk*)user_data;
+        window->ExposeEvent (widget,cr);
+        return true;
+}
+#endif
 void
 MoonWindowGtk::EnableEvents (bool first)
 {
@@ -518,13 +608,22 @@ MoonWindowGtk::EnableEvents (bool first)
 	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in), this);
 	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out), this);
 
+	#ifdef MOONLIGHT_GTK3
+	g_signal_connect (widget, "draw", G_CALLBACK (draw_event), this);
+	#else
 	g_signal_connect (widget, "expose-event", G_CALLBACK (expose_event), this);
+	#endif
 	if (first) {
 		g_signal_connect (widget, "realize", G_CALLBACK (realized), this);
 		g_signal_connect (widget, "unrealize", G_CALLBACK (unrealized), this);
 		
+		#ifdef MOONLIGHT_GTK3
+		if (gtk_widget_get_realized (widget))
+			realized (widget, this);
+		#else
 		if (GTK_WIDGET_REALIZED (widget))
 			realized (widget, this);
+		#endif
 	}
 }
 
@@ -547,9 +646,14 @@ MoonWindowGtk::GrabFocus ()
 bool
 MoonWindowGtk::HasFocus ()
 {
+	#ifdef MOONLIGHT_GTK3
+	return gtk_widget_has_focus (widget);
+	#else
 	return GTK_WIDGET_HAS_FOCUS (widget);
+	#endif
 }
 
+#ifndef MOONLIGHT_GTK3
 gboolean
 MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
@@ -557,7 +661,154 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 
 	return window->ExposeEvent (widget, event);
 }
+#endif
 
+
+#ifdef MOONLIGHT_GTK3
+/**
+* @fn	   gboolean ExposeEvent (GtkWidget *w, cairo_t *cr)
+* @brief   event handler for expose event
+* @param   w		GtkWidget *
+* @param   cr		cairo_t *
+* @return  gboolean
+*/
+gboolean
+MoonWindowGtk::ExposeEvent (GtkWidget *w, cairo_t *cr)
+{
+	SetCurrentDeployment ();
+
+	if (!surface)
+		return true;
+
+	GtkAllocation allocation;
+	gtk_widget_get_allocation (widget, &allocation);
+
+#ifdef USE_GLX
+	Display *dpy = GDK_WINDOW_XDISPLAY (gtk_widget_get_window(w));
+	XID       win = gdk_x11_window_get_xid (gtk_widget_get_window(w));
+	_XxVisual *visual = GDK_VISUAL_XVISUAL (gdk_window_get_visual (gtk_widget_get_window(w)));
+	int       width, height;
+
+	width=gdk_window_get_width (gtk_widget_get_window(w));
+	height=gdk_window_get_height (gtk_widget_get_window(w));
+
+	if (!glxtarget && (moonlight_flags & RUNTIME_INIT_HW_ACCELERATION)) {
+		GLXContext  ctx = (GLXContext) 0;
+		XVisualInfo templ, *visinfo;
+		int         n;
+
+		templ.visualid = XVisualIDFromVisual (visual);
+		visinfo = XGetVisualInfo (dpy, VisualIDMask, &templ, &n);
+		g_assert (visinfo);
+
+		ctx = glXCreateContext (dpy, visinfo, 0, True);
+		if (ctx) {
+			gdk_error_trap_push ();
+			glXMakeCurrent (dpy, win, ctx);
+			gdk_flush ();
+			if (gdk_error_trap_pop ()) {
+				g_warning ("Failed to make GLX context current for window: "
+					   "0x%x", (int) win);
+				glXDestroyContext (dpy, ctx);
+				ctx = (GLXContext) 0;
+			}
+		}
+		else {
+			g_warning ("Failed to create GLX context for VisualID: 0x%x",
+				   (int) XVisualIDFromVisual (visual));
+		}
+
+		glxtarget = new MoonGLXSurface ();
+
+		if (ctx) {
+			OpenGLContext *context = new MoonGLXContext (glxtarget, dpy, ctx);
+
+			if (context->Initialize ()) {
+				const char *extensions = (const char *)
+					glXGetClientString (dpy, GLX_EXTENSIONS);
+
+				if (strstr (extensions, "GLX_MESA_copy_sub_buffer"))
+					glxcopysubbuffer = glxtarget->GetProcAddress
+						("glXCopySubBufferMESA");
+
+				glxctx = context;
+			}
+			else {
+				glXDestroyContext (dpy, ctx);
+				delete context;
+			}
+		}
+	}
+
+	if (glxtarget && glxctx) {
+		cairo_rectangle_int_t area;
+		Rect r0 = Rect (0, 0, width, height);
+		Rect r = Rect (area.x,
+					   area.y,
+					   area.width,
+					   area.height);
+		Region *region = new Region (r);
+		int    y = height - (area.y + area.height);
+
+		glXMakeCurrent (dpy,
+				win,
+				static_cast<MoonGLXContext *> (glxctx)->GetGLXContext ());
+
+		glxtarget->Reshape (width, height);
+
+		glxctx->Push (Context::Clip (r));
+		surface->Paint (glxctx, region, GetTransparent (), true);
+		glxctx->Pop ();
+
+		glxctx->Flush ();
+
+		if (region->RectIn (r0) == CAIRO_REGION_OVERLAP_IN) {
+			glXSwapBuffers (dpy, win);
+		}
+		else if (glxcopysubbuffer) {
+			PFNGLXCOPYSUBBUFFERPROC glXCopySubBufferMESA =
+				(PFNGLXCOPYSUBBUFFERPROC) glxcopysubbuffer;
+
+			glXCopySubBufferMESA (dpy,
+								  win,
+								  area.x,
+								  y,
+								  area.width,
+								  area.height);
+		}
+		else {
+			glDrawBuffer (GL_FRONT);
+			glViewport (-1, -1, 2, 2);
+			glRasterPos2f (0, 0);
+			glViewport (0, 0, width, height);
+
+			glBitmap (0, 0, 0, 0,
+					area.x,
+					y,
+					NULL);
+
+			glCopyPixels (area.x, y,
+					area.width,
+					area.height,
+					GL_COLOR);
+
+			glDrawBuffer (GL_BACK);
+			glFlush ();
+		}
+
+		return true;
+	}
+#endif
+
+	PaintToDrawable (gdk_window_get_visual (gtk_widget_get_window(w)),
+					 cr,
+					 allocation,
+					 GetTransparent (),
+					 true);
+
+	return true;
+}
+#else
 gboolean
 MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 {
@@ -737,6 +988,7 @@ MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
 
 	return true;
 }
+#endif
 
 gboolean
 MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer data)
@@ -986,6 +1238,7 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 	return true;
 }
 
+#ifndef MOONLIGHT_GTK3
 cairo_surface_t *
 MoonWindowGtk::CreateCairoSurface (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height)
 {
@@ -1021,7 +1274,136 @@ MoonWindowGtk::CreateCairoSurface (GdkWindow *drawable, GdkVisual *visual, bool 
 
 	return surface;
 }
+#endif
 
+#ifdef MOONLIGHT_GTK3
+/**
+ * @fn	   void PaintToDrawable (GdkVisual *visual, cairo_t *cr_t, GtkAllocation &allocation, bool transparent, bool clear_transparent);
+ * @brief   Paints to moonlight window drawable and sets transparency to display the video
+ *		   and sends the video-rect event  to uniplayer
+ * @param   visual			GdkVisual
+ * @param   cr_t       		cairo_t
+ * @param   allocation   	GtkAllocation
+ * @param   transparent			bool
+ * @param   clear_transparent	bool
+ * @return  void
+ */
+void
+MoonWindowGtk::PaintToDrawable (GdkVisual *visual, cairo_t *cr_t, GtkAllocation &allocation, bool transparent, bool clear_transparent)
+{
+	SetCurrentDeployment ();
+
+#if 0
+#if TIME_REDRAW
+	STARTTIMER (expose, "redraw");
+#endif
+	if (cache_size_multiplier == -1)
+	{
+		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
+	}
+#endif
+
+	Context *ctx;
+
+	cairo_rectangle_int_t area;
+	area.x = allocation.x;
+	area.y = allocation.y;
+	area.width = allocation.width;
+	area.height = allocation.height;
+
+	MoonSurface *src;
+	Rect r = Rect (area.x, area.y, area.width, area.height);
+
+	Region *region = new Region ();
+	int count = 0;
+
+	cairo_region_t *t_region  = cairo_region_create_rectangle(&area);
+	count = cairo_region_num_rectangles (t_region);
+	cairo_rectangle_int_t rects[count];
+	
+	for(int i=0;i<count;i++)
+	{
+		cairo_region_get_rectangle (t_region, i, &rects[i]);
+	}
+
+	while (count--)
+	{
+		cairo_rectangle_int_t c = rects[count];
+		region->Union (Rect (c.x, c.y, c.width, c.height));
+	}
+
+#ifdef USE_GALLIUM
+	if (gctx)
+	{
+			ctx = gctx;
+	}
+	else
+	{
+		struct pipe_resource pt, *texture;
+		GalliumSurface       *target;
+
+		memset (&pt, 0, sizeof (pt));
+		pt.target = PIPE_TEXTURE_2D;
+		pt.format = PIPE_FORMAT_B8G8R8A8_UNORM;
+		pt.width0 = width;
+		pt.height0 = height;
+		pt.depth0 = 1;
+		pt.last_level = 0;
+		pt.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_TRANSFER_WRITE |
+				PIPE_BIND_TRANSFER_READ;
+
+		g_assert (screen);
+
+		texture = (*screen->resource_create) (screen, &pt);
+
+		target = new GalliumSurface (texture);
+		pipe_resource_reference (&texture, NULL);
+		ctx = new GalliumContext (target);
+		target->unref ();
+
+		if (gctxn < CONTEXT_CACHE_SIZE)
+		{
+			gctxn++;
+			gctx = ctx;
+		}
+	}
+#else
+    CairoSurface *target = new CairoSurface (1, 1);
+	ctx = new CairoContext (target);
+	target->unref ();
+#endif
+	ctx->Push (Context::Group (r));
+	surface->Paint (ctx, region, transparent, true);
+
+	r = ctx->Pop (&src);
+	if (!r.IsEmpty ())
+	{
+		cairo_surface_t *image = (cairo_surface_t*) src->Cairo ();
+	
+			cairo_surface_flush (image);
+			cairo_set_source_surface (cr_t, image, r.x, r.y); 
+			cairo_set_operator (cr_t, clear_transparent ? CAIRO_OPERATOR_SOURCE : CAIRO_OPERATOR_OVER);
+		region->Draw (cr_t);
+		cairo_fill (cr_t);
+
+		cairo_surface_destroy (image);
+		src->unref ();
+	}
+
+
+#ifdef USE_GALLIUM
+    if (ctx != gctx)
+#endif
+	    delete ctx;
+
+        delete region;
+
+#if TIME_REDRAW
+        ENDTIMER (expose, "redraw");
+#endif
+}
+
+#else
 void
 MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent)
 {
@@ -1133,6 +1515,7 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 #endif
 
 }
+#endif
 
 void
 MoonWindowGtk::install_application (MoonWindowGtk *window)
