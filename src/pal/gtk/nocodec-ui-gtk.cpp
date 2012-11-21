@@ -158,19 +158,38 @@ GtkNoCodecsUI::Show ()
 	gint label_width = 400;
 
 	// Build HIG Dialog Box
+#ifdef MOONLIGHT_GTK3
+	dialog = gtk_dialog_new_with_buttons ("Moonlight Codecs Installer", NULL, (GtkDialogFlags)
+		(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT), NULL);
+#else
 	dialog = gtk_dialog_new_with_buttons ("Moonlight Codecs Installer", NULL, (GtkDialogFlags)
 		(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR), NULL);
+#endif
 	ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), "_Ok", GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 	
 	AdaptToParentWindow ();
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+
+#ifdef MOONLIGHT_GTK3
+	g_object_set (GTK_WIDGET (dialog), "resizable", false, NULL);
+#else
 	gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
+#endif
 
 	// HIG HBox
+#ifdef MOONLIGHT_GTK3
+	GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+#else
 	GtkWidget *hbox = gtk_hbox_new (false, 12);
+#endif
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+
+#ifdef MOONLIGHT_GTK3
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area((GtkDialog*)dialog)), hbox, true, true, 0);
+#else
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, true, true, 0);
+#endif
 
 	// Message box icon
 	icon = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_DIALOG);
@@ -178,7 +197,11 @@ GtkNoCodecsUI::Show ()
 	gtk_box_pack_start (GTK_BOX (hbox), icon, false, false, 0);
 
 	// Contents container
+#ifdef MOONLIGHT_GTK3
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+#else
 	vbox = gtk_vbox_new (false, 0);
+#endif
 	gtk_box_set_spacing (GTK_BOX (vbox), 10);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, true, true, 0);
 
@@ -207,7 +230,11 @@ GtkNoCodecsUI::Show ()
 	// Connect and go
 	g_signal_connect (G_OBJECT (dialog), "response", G_CALLBACK (ResponseEventHandler), this);
 
+#ifdef MOONLIGHT_GTK3
+	g_object_set (GTK_WIDGET (ok_button), "has-focus", true, "has-default", true, NULL);
+#else
 	gtk_object_set (GTK_OBJECT (ok_button), "has-focus", true, "has-default", true, NULL);
+#endif
 
 	gtk_widget_show_all (dialog);
 
