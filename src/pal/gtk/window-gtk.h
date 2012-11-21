@@ -95,16 +95,23 @@ protected:
 	int backing_store_width;
 	int backing_store_height;
 
-	cairo_surface_t* CreateCairoSurface (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height);
+#ifdef MOONLIGHT_GTK3
 
+	void PaintToDrawable (GdkVisual *visual, cairo_t *cr_t, GtkAllocation &allocation, bool transparent, bool clear_transparent);
+#else
+	cairo_surface_t* CreateCairoSurface (GdkWindow *drawable, GdkVisual *visual, bool native, int width, int height);
 	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
+#endif
 
 	static gboolean container_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
 private:
+
+#ifndef MOONLIGHT_GTK3
 	GdkPixmap *backing_store;
 	GdkGC *backing_store_gc;
-	
+#endif
+
 	GtkWidget *widget;
 
 	GtkWidget *container;
@@ -126,8 +133,13 @@ private:
 	int left;
 	int top;
 
+#ifdef MOONLIGHT_GTK3
+	gboolean ExposeEvent (GtkWidget *w, cairo_t *cr);
+#else
 	gboolean ExposeEvent (GtkWidget *w, GdkEventExpose *event);
+#endif
 	static gboolean expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
+	static gboolean draw_event (GtkWidget *widget, cairo_t *cr, gpointer user_data); 
 	static gboolean motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);
 	static gboolean crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpointer user_data);
 	static gboolean key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
