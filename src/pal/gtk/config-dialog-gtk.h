@@ -36,10 +36,17 @@ public:
 private:
 	void AddNotebookPage (const char *label, ConfigDialogPage *page);
 
+#ifdef MOONLIGHT_GTK3
 	static void notebook_switch_page (GtkNotebook     *notebook,
-					  GtkNotebookPage *page,
+					  GtkWidget *page,
 					  guint            page_num,
 					  MoonConfigDialogGtk *dialog);
+#else
+	static void notebook_switch_page (GtkNotebook     *notebook,
+					  GtkNotebookPage *page, 
+					  guint            page_num,
+					  MoonConfigDialogGtk *dialog);
+#endif
 
 	ArrayList* pages;
 
