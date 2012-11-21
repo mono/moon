@@ -11,7 +11,10 @@
 #include <config.h>
 #include "im-gtk.h"
 #include <cairo.h>
+
+#ifndef MOONLIGHT_GTK3
 #include <gtk/gtkimmulticontext.h>
+#endif
 
 using namespace Moonlight;
 
