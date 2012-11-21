@@ -20,6 +20,11 @@
 #define Visual _XxVisual
 #define Region _XxRegion
 #include <gdk/gdkx.h>
+
+#ifdef MOONLIGHT_GTK3
+#include <cairo/cairo-xlib.h>
+#endif
+
 #undef Visual
 #undef Region
 
@@ -156,7 +161,67 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 	if (!surface)
 		return false;
 
-	switch (xev->type) {
+
+	switch (xev->type) 
+	{
+
+#ifdef MOONLIGHT_GTK3
+	case GraphicsExpose: {
+		XGraphicsExposeEvent* xexpose = &xev->xgraphicsexpose;
+		NPWindow *window = plugin->GetWindow();
+        NPSetWindowCallbackStruct *ws_info = (NPSetWindowCallbackStruct*)window->ws_info;
+
+        cairo_surface_t* drawable = cairo_xlib_surface_create(ws_info->display, xexpose->drawable,
+                        					      ws_info->visual,
+						                      xexpose->width, xexpose->height);
+
+        cairo_t *cr = cairo_create (drawable);
+
+		if (drawable) {
+			GdkVisual *visual = gdk_x11_screen_lookup_visual(gdk_screen_get_default(),visualid);
+
+			if (visual) {
+				GdkEventExpose expose;
+
+				expose.type = GDK_EXPOSE;
+				expose.window = NULL;
+				expose.send_event = FALSE;
+			       
+				expose.area.x = xev->xgraphicsexpose.x;
+				expose.area.y = xev->xgraphicsexpose.y;
+				expose.area.width = xev->xgraphicsexpose.width;
+				expose.area.height = xev->xgraphicsexpose.height;
+				/* XXX ugh */
+				expose.area.x -= x;
+				expose.area.y -= y;
+				expose.region = cairo_region_create_rectangle (&expose.area);
+
+				GtkAllocation allocation;
+                                allocation.x = xev->xgraphicsexpose.x;
+                                allocation.y = xev->xgraphicsexpose.y;
+                                allocation.width = xev->xgraphicsexpose.width;
+                                allocation.height = xev->xgraphicsexpose.height;
+
+				PaintToDrawable (visual, cr, allocation, GetTransparent(), false);
+
+				handled = MoonEventHandled;
+
+				cairo_region_destroy(expose.region);
+			} 
+			else 
+			{
+				d(printf ("no gdk visual\n"));
+			}
+			cairo_destroy(cr);
+			cairo_surface_destroy(drawable);
+		} 
+		else 
+		{
+			d(printf ("no gdk drawable\n"));
+		}
+		break;
+	}
+#else
 	case GraphicsExpose: {
 		GdkNativeWindow x11_drawable = (GdkNativeWindow)xev->xgraphicsexpose.drawable;
 		GdkDrawable *drawable;
@@ -205,6 +270,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		}
 		break;
 	}
+#endif
 	case MotionNotify: {
 		GdkEventMotion motion;
 		
@@ -416,6 +482,15 @@ MoonWindowlessGtk::SetSurface (Surface *s)
 	s->HandleUIWindowAvailable ();
 }
 
+#ifdef MOONLIGHT_GTK3
+gpointer
+MoonWindowlessGtk::GetPlatformWindow ()
+{
+	GdkWindow *gdk;
+	MOON_NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&gdk);
+	return gdk;
+}
+#else
 gpointer
 MoonWindowlessGtk::GetPlatformWindow ()
 {
@@ -424,3 +499,4 @@ MoonWindowlessGtk::GetPlatformWindow ()
 	GdkWindow *gdk = gdk_window_foreign_new (window);
 	return gdk;
 }
+#endif
