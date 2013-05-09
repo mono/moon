@@ -1,6 +1,7 @@
 {
   "name": "Novell Moonlight",
   "version": "@CHROME_VERSION@",
+  "manifest_version": 2,
 
   "description": "The open source implementation of Microsoft Silverlight",
 
